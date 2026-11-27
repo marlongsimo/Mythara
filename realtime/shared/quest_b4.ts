@@ -4,7 +4,8 @@
  * Einstieg und Wachstube (Schläger, Armbrustschützen), Schlüsselbund (bedingte Beute), Kartentisch (Angriffsplan auf Weidenhain), Truhe im Beutelager
  * (Silberleuchter aus B3), Versammlungshalle (zwei Wellen), Kammer des Anführers als Instanz: Hauptmann Rotmantel, Brief mit Rabensiegel, das rote Banner.
  * Lohn: je 1.000 XP Stärke, Geschick, Defense, 500 LP-XP, 500 Splitter, eine seltene Waffe nach Wahl (Schwert, Zweihänder, Kurzbogen, Stab), 1 Questpunkt.
- * Die Wahl: vier Abschluss-Antworten, jede gibt eine andere Waffe (geben beim Abschluss). Das rote Banner nimmt man in der Kammer selbst mit.
+ * Die Wahl: heute vier Abschluss-Antworten, jede gibt eine andere Waffe (geben beim Abschluss). Nach der Regel „Belohnung zur Auswahl“ (Kanon 27.11.) soll die Wahl ins
+ * Abschlussfenster (Bild, Werte, Rückfrage) – sobald der Baukasten ein Wahl-Feld hat (Issue). Die nicht gewählten Waffen verkauft Othmar danach für 1.000 Splitter. Das rote Banner nimmt man in der Kammer selbst mit.
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Issue #16 (Boss-Baukasten, Instanz, Tür mit Schlüssel, Ereignis für die Wellen, Gegenstände)
  * Othmar spricht in Quest 1, B3 und B4 (Figur in mehreren Quests, questbau.figurQuest, #48). Liste: doku/quests/b3-b4-bausteine.md.
@@ -28,6 +29,11 @@ const WAHL: { id: string; text: string; g: string; name: string; satz: string }[
   { id: "wahl_stab", text: "Den Stab.", g: "sternenszepter", name: "einen seltenen Zauberstab", satz: "Einen Stab hätte ich bei Banditen nicht erwartet. Gestohlen, sicher. Jetzt gehört er dir." },
 ];
 /* Den Rabenbrief behält der Spieler: Bertold Krähe will ihn in C1 sehen (shared/quest_c1.ts) */
+/** Belohnung zur Auswahl (Kanon): Die nicht gewählten Waffen bleiben erreichbar – Othmar verkauft sie nach der Quest aus Rotmantels Waffenkammer (auch als Ersatz bei Verlust) */
+const KAUFPREIS = 1000;
+const KAUF = WAHL.map((w) => ({ id: "kauf_" + w.g, text: `${w.text.replace(/\.$/, "")} aus der Waffenkammer kaufen (${KAUFPREIS} Splitter).`,
+  wenn: { ...FERTIG, verloren: w.g, anzahl: { g: "splitter", min: KAUFPREIS } },
+  folge: [{ f: { weiter: true, nehmen: [{ g: "splitter", n: KAUFPREIS }], geben: [{ g: w.g, name: w.name }], zeilen: ["Othmar schließt die Waffenkammer auf. „Rotmantel braucht sie nicht mehr. Und Weidenhain braucht Splitter.“"] } }] }));
 const abschluss = (w: (typeof WAHL)[number]): Folge => ({ abschluss: true, nehmen: [{ g: "silberleuchter" }], geben: [{ g: w.g, name: w.name }],
   zeilen: [w.satz, "Weidenhain schuldet dir mehr, als ich zahlen kann. Nimm, was ich habe.",
     "Und der Brief … „Die Insel wartet.“ Federn, Splitter, eine Insel. Das führt ins Rabenmoor.", "Behalt ihn. Zeig ihn Bertold Krähe, dem Schulzen von Rabenmoor. Wenn einer weiß, welche Insel gemeint ist, dann er."] });
@@ -86,7 +92,7 @@ export const QUEST_B4: QuestDef = {
           "Er war Söldner der Wacht, damals. Jetzt hat er unter der Westmark eine Bande, die mehr frisst, als die Wiesen hergeben. Rotmantel bezahlt seine Leute nicht mit Äpfeln.",
           "Irgendwer bezahlt ihn. Finde heraus, wer – und sorg dafür, dass er nicht nach Weidenhain kommt."], antworten: ["annehmen", "wacht", "spaeter"] },
         { wenn: NEU, zeilen: ["Weidenhain hat wieder Gäste, seit die Straße offen ist. Nicht alle davon sind mir lieb."], antworten: ["tschuess"] },
-        { wenn: FERTIG, zeilen: ["Weidenhain schläft wieder ruhig. Ich nicht. Ich denke an diese Insel."], antworten: ["wacht", "tschuess"] },
+        { wenn: FERTIG, zeilen: ["Weidenhain schläft wieder ruhig. Ich nicht. Ich denke an diese Insel.", "In Rotmantels Waffenkammer liegen noch Waffen. Willst du eine, sag es."], antworten: ["wacht", ...KAUF.map((k) => k.id), "tschuess"] },
         { wenn: { ...LAEUFT, alle: true, hat: "rabenbrief" }, zeilen: ["Du lebst. Und Rotmantel?", "…Zeig mir, was du gefunden hast."], antworten: ["zeigen", ...WAHL.map((w) => w.id), "tschuess"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Rotmantel ist gefallen, höre ich. Aber der Brief, den er bei sich trug – wo ist er?"], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["rotmantel"] }, zeilen: ["Rotmantel ist geschlagen? Dann bring mir, was er bei sich hatte. Alles."], antworten: ["hilfe", "tschuess"] },
@@ -106,6 +112,7 @@ export const QUEST_B4: QuestDef = {
           "Othmar bricht das Siegel nicht – es ist schon gebrochen. Ein Rabe, in schwarzes Wachs gedrückt.", "„Für jeden Splitter, den ihr bringt, eine Feder. Die Insel wartet. – Der Oberste.“",
           "Er legt den Brief auf den Tisch, ganz langsam. Dann die Leuchter daneben.", "In Rotmantels Kammer lagen Waffen, sagt Gesa. Gute Waffen. Such dir eine aus – du hast sie dir verdient."] } }] },
         ...WAHL.map((w) => ({ id: w.id, text: w.text, wenn: { ...LAEUFT, alle: true, hat: "rabenbrief" }, folge: [{ f: abschluss(w) }] })),
+        ...KAUF,
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Gute Wege. Und pass auf dich auf."] } }] },
       ],
     },
