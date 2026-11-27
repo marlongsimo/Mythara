@@ -1,5 +1,5 @@
 /*
- * Riftmere – die zwei Waffen-Quests der mittleren Stufe (Ausgabe 1) Ende zu Ende: echter Spielserver (localhost:8870), nachgebildete Supabase (localhost:8869), echte Welt.
+ * Riftmere – die zwei Waffen-Quests der mittleren Stufe (Ausgabe 1) Ende zu Ende: echter Spielserver (localhost:8882), nachgebildete Supabase (localhost:8881), echte Welt.
  * Ida spielt „Hartwigs Eibenbogen“ (Eibe am Waldweg, Bogensehne, Rabenfedern bei Hedda, Hartwig baut den Bogen, anlegen, drei Treffer an der Zielscheibe),
  * Cora zugleich „Der Stab der Linde“ (Zweig der Linde, drei Irrlichter im Rabenmoor, Mira bindet ihn mit einem Heiltrank, Bindestein, anlegen, drei Treffer mit Magie).
  * Tom (Heldenlevel 1) ist die Gegenprobe. Lohn mit „abholen“.
@@ -8,7 +8,7 @@
 import { starte, starkerHeld, roh, QUESTS } from "./questwelt.mjs";
 
 const viel = (g, n) => Array.from({ length: n }, () => g);
-const W = await starte({ sb: 8869, srv: 8870, helden: { /* localhost:8869 · localhost:8870 */
+const W = await starte({ sb: 8881, srv: 8882, helden: { /* localhost:8881 · localhost:8882 */
   ida: starkerHeld({ fertig: ["nordwald_waldsaebel"] /* Hartwig bietet sonst zuerst den Waldsäbel (Q3) an */, berufe: { holzfaellerei: 40, handwerk: 10 }, rucksack: ["holzbeil_einfach", "flachs", ...viel("moorgloeckchen", 2)] }),
   cora: starkerHeld({ berufe: { splitterbinden: 40 }, rucksack: ["heiltrank"] }),
   tom: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: [], v: 2 } } } });

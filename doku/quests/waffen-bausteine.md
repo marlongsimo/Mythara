@@ -4,7 +4,7 @@ Rolle Quests, 27.11.2026. Wunsch des Nutzers: Fernkampf und Magie bekommen je ei
 
 - **Datei:** `realtime/shared/quest_waffen.ts`
 - **Stand:** **Entwurf** in `shared/quest_entwuerfe.ts`, bis Integration die zwei Waffen einträgt. Der Server lädt Entwürfe nicht, deshalb geht nichts halb fertig live.
-- **Welt-Test:** `realtime/test/waffen-welt.test.mjs` (Ports 8869/8870)
+- **Welt-Test:** `realtime/test/waffen-welt.test.mjs` (Ports 8881/8882)
   - Mit vorläufigen Waffen im Probelauf: grün in 31 s.
   - Solange die Quests Entwurf sind, endet der Test sofort grün.
 
