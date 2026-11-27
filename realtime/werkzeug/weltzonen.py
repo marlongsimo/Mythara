@@ -30,9 +30,9 @@ BESONDERS = {
                  "lager": [("waldgolem", 6314, 6360), ("waldgolem", 6328, 6355), ("waldgolem", 6342, 6366), ("waldgolem", 6322, 6370), ("waldgolem", 6336, 6378)]},
     # Zielscheiben am Südturm der Waldmark (Phase 2 „Waldland“, Quest A1, 26.11.2026): unverwundbare Strohscheiben, greifen nie an (config.ts zielscheibe)
     "waldmark": {"aggro": 0, "leine": 1, "wandern": 0, "lager": [("zielscheibe", 6436, 6460), ("zielscheibe", 6433, 6460)]},
-    # Der Moosrain im Osthof (Quest „Der stille Rain“, 23.11.2026): sieben passive Mooshocker in lockeren Gruppen nordöstlich der Windmühle, Leine 8, Streifen 2
+    # Der Moosrain im Osthof (Quest „Der stille Rain“, 23.11.2026): zehn passive Mooshocker (#81: drei mehr) in lockeren Gruppen nordöstlich der Windmühle, Leine 8, Streifen 2
     "osthof": {"aggro": 0, "leine": 8, "wandern": 2,
-               "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408)]
+               "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408), ("mooshocker", 6572, 6414), ("mooshocker", 6574, 6405), ("mooshocker", 6591, 6409)]  # +3 (#81)
                # Kuhgehege (Handwerk, 25.11.2026): zehn friedliche Kühe hinter Zaun (shared/handwerk_welt.json), Kuhhaut für die Werkbank
                + [("kuh", 6522, 6409), ("kuh", 6527, 6408), ("kuh", 6533, 6409), ("kuh", 6539, 6408), ("kuh", 6524, 6412), ("kuh", 6530, 6412), ("kuh", 6536, 6413), ("kuh", 6521, 6416), ("kuh", 6528, 6416), ("kuh", 6538, 6417)]},
 }

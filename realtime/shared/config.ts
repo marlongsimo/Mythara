@@ -185,6 +185,10 @@ export const MONSTER: Record<string, MonsterDef> = {
   /* Mooshocker (Quest „Der stille Rain“, Osthof, 23.11.2026): passiver Trainingsgegner wie die Sand Crab in OSRS – viel Leben, Max Hit 1, langsam, greift nie von selbst an.
      Für Helden um Kampflevel 5–6 gedacht (gut eine Minute je Mooshocker), ab Level 1 machbar. Modell img/figuren-echt3d/mooshocker3d.glb. */
   mooshocker: { name: "Mooshocker", familie: "wald", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 62, lp: 40, tempo: 1.5, angriffswert: { nah: 1, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.4, aggressiv: false,
+    /* #81: nach „Der stille Rain“ greifen sie den Helden im Umkreis von 8 Feldern an (Schalter aus shared/quest02.ts); ein Wurf Beute, keine Ausrüstung (Wegerich folgt, sobald es den Gegenstand gibt) */
+    aggressivNach: { schalter: "moosrain_wach", weit: 8 },
+    drops: [{ wurf: [{ g: "wurm", chance: 15, anzahl: [1, 3] }, { g: "stamm_eiche", chance: 8, anzahl: [1, 2] }, { g: "stamm_tanne", chance: 4 }, { g: "erz_kupfer", chance: 6, anzahl: [1, 2] },
+      { g: "erz_eisen", chance: 3 }, { g: "seelenlicht", chance: 3 }] }],
     angriff: { name: "Kopfstoß", art: "nah", schaden: [1, 1], takt: 3.0, reich: 1.5, aushol: 0 },
     v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -50, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } }, /* trifft selten (Angriffsbonus −50): Simulation – Level 1: 98–100 % Siege, 110–150 s, −2 bis −4 LP · Kampflevel 6–7: 55–70 s (Stab 128 s), −1 LP */
     info: "Ein gedrungenes Wesen mit einem breiten, moosbewachsenen Panzer. Es bewegt sich langsam und sucht feuchte Steine, an denen es seinen Rücken reibt. Es wirkt träge, hält aber erstaunlich viel aus. Bei Bedrängnis stößt es mit dem Kopf nach seinem Angreifer." },
