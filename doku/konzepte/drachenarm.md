@@ -34,13 +34,13 @@ Achtung: Der Kanon nennt als Großstadt ⑦ **Letzthafen**. Liegt sie im Drachen
 ## Gegner (Vorschlag, Modelle vom Nutzer)
 
 - Die Strandräuber am Südzipfel (Stufe 30) passen nicht und sollten weg (Welt/Integration).
-- **Drakling** (gibt es), **Drache** (groß, Fernkampf-Feuer aus der Luft), **Schuppenreiter** (Gefallener der Wacht auf einer Echse), **Glaskriecher** (Glasküste), **Splitterwyrm** (selten, Elitegegner).
+- **Drakling** (gibt es), **Drache** (groß, Fernkampf-Feuer aus der Luft), **Schuppenreiter** (Gefallener der Wacht auf einer Echse), **Glaskriecher** (an den Bergseen), **Splitterwyrm** (selten, Elitegegner).
 
 ## Quests (Skizze, Block J)
 
 1. Über den Brandpass zur Letzten Wacht.
 2. Die Draklinge: Woher kommen sie? (Spur zum Splitter)
-3. Die Glasküste: verschollene Späher der Wacht.
+3. Die Bergseen: verschollene Späher der Wacht.
 4. Der Horst: der große Drache (Boss-Quest, schwache Fassung).
 5. Die Freischalt-Kette für den Raid: der Schlüssel zur Wachtfeste.
 
