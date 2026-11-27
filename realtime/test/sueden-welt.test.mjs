@@ -5,6 +5,8 @@
  */
 import { createServer } from "node:http"; import { spawn } from "node:child_process"; import { createRequire } from "node:module";
 import { QB, QUESTS, xpFuer } from "./sim.gebaut.mjs";
+import { readFileSync } from "node:fs";
+const KRAUT = JSON.parse(readFileSync(new URL("../welt/kraeuter_standorte.json", import.meta.url), "utf8"));
 const require = createRequire(import.meta.url), WebSocket = require("ws");
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
 const A = "00000000-0000-0000-0000-00000000c501", B = "00000000-0000-0000-0000-00000000c502";
@@ -150,7 +152,7 @@ try {
     check(ute.b[S2.id] === "fertig" && anzahl(ute, "ringelblume") === rb - 3 && anzahl(ute, "kleiner_heiltrank") === vor + 1, "S2 fertig, Lohn abgeholt: ein kleiner Heiltrank"); }
 
   console.log("Miras Rezeptbuch (Waldmark, Rabenmoor)");
-  { const M = QUESTS.find((q) => q.id === "waldmark_miras_rezeptbuch"), WEG = [[6458.5, 6429.5, "wegerich_1"], [6453.5, 6437.5, "wegerich_3"], [6423.5, 6431.5, "wegerich_4"]];
+  { const M = QUESTS.find((q) => q.id === "waldmark_miras_rezeptbuch"), WEG = ["wegerich_1", "wegerich_3", "wegerich_4"].map((id) => { const k = KRAUT.stellen.find((s) => s.id === id); return [k.x, k.y, id]; }); /* Plätze aus Welts Daten – Welt darf sie verschieben */
     await zu(ute, fig(M, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "annehmen"); await schlaf(400);
     check(stand(ute, M).phase === "laeuft" && anzahl(ute, "leeres_flaeschchen") >= 1, "Ute nimmt Miras Rezeptbuch an und bekommt ein leeres Fläschchen");
     let i = 0; const t0 = Date.now(); while (anzahl(ute, "wegerich") < 5 && Date.now() - t0 < 90000) { const [x, y, id] = WEG[i++ % 3]; await sammeln(ute, "kraut", id, x, y, "wegerich", Math.min(5, anzahl(ute, "wegerich") + 1), 15000); }

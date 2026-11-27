@@ -572,7 +572,7 @@
   {
    "id": "kraeutergarten_kessel",
    "station": "kessel",
-   "x": 6469.5,
+   "x": 6470,
    "y": 6439.5,
    "quelle": "welt/regionen/waldmark (Objekt)",
    "innen": false,

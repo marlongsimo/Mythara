@@ -139,49 +139,64 @@
    ],
    "bankkiste": {
     "id": "kraeutergarten_bankkiste",
-    "x": 6469.4,
-    "y": 6437.8
+    "x": 6469.6,
+    "y": 6438.2
    },
    "stationen": [
     {
      "id": "kessel_kraeutergarten",
      "station": "kessel",
-     "x": 6469.4,
-     "y": 6441
+     "x": 6469.6,
+     "y": 6440.8
     }
    ],
    "kraeuter": [
-    "kraeutergarten_ringelblume_1",
-    "kraeutergarten_eisenhut_2",
-    "kraeutergarten_moorgloeckchen_3",
-    "kraeutergarten_nebelkraut_4",
-    "kraeutergarten_wegerich_5",
-    "kraeutergarten_eisenhut_6"
+    "kraeutergarten_wegerich_1",
+    "kraeutergarten_eisenhut_1",
+    "kraeutergarten_nebelkraut_1",
+    "kraeutergarten_mondsalbei_1",
+    "kraeutergarten_glutwurz_1",
+    "kraeutergarten_splitterlilie_1",
+    "kraeutergarten_mondsalbei_2",
+    "kraeutergarten_glutwurz_2",
+    "kraeutergarten_splitterlilie_2"
    ],
    "beete": [
     [
-     6464.5,
-     6437.5
+     6464.3,
+     6437.4
     ],
     [
-     6466.5,
-     6437.5
+     6466.3,
+     6437.4
     ],
     [
-     6464.5,
-     6439.5
+     6468.3,
+     6437.4
     ],
     [
-     6466.5,
-     6439.5
+     6464.3,
+     6439.4
     ],
     [
-     6464.5,
-     6441.5
+     6466.3,
+     6439.4
     ],
     [
-     6466.5,
-     6441.5
+     6468.3,
+     6439.4
+    ],
+    [
+     6464.3,
+     6441.4
+    ],
+    [
+     6466.3,
+     6441.4
+    ],
+    [
+     6468.3,
+     6441.4
     ]
    ]
   }
@@ -251,45 +266,66 @@
  ],
  "kraeuter": [
   {
-   "id": "kraeutergarten_ringelblume_1",
-   "art": "ringelblume",
-   "x": 6464.5,
-   "y": 6437.5,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_eisenhut_2",
-   "art": "eisenhut",
-   "x": 6466.5,
-   "y": 6437.5,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_moorgloeckchen_3",
-   "art": "moorgloeckchen",
-   "x": 6464.5,
-   "y": 6439.5,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_nebelkraut_4",
-   "art": "nebelkraut",
-   "x": 6466.5,
-   "y": 6439.5,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_wegerich_5",
+   "id": "kraeutergarten_wegerich_1",
    "art": "wegerich",
-   "x": 6464.5,
-   "y": 6441.5,
+   "x": 6464.3,
+   "y": 6437.4,
    "region": "waldmark"
   },
   {
-   "id": "kraeutergarten_eisenhut_6",
+   "id": "kraeutergarten_eisenhut_1",
    "art": "eisenhut",
-   "x": 6466.5,
-   "y": 6441.5,
+   "x": 6466.3,
+   "y": 6437.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_nebelkraut_1",
+   "art": "nebelkraut",
+   "x": 6468.3,
+   "y": 6437.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_mondsalbei_1",
+   "art": "mondsalbei",
+   "x": 6464.3,
+   "y": 6439.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_glutwurz_1",
+   "art": "glutwurz",
+   "x": 6466.3,
+   "y": 6439.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_splitterlilie_1",
+   "art": "splitterlilie",
+   "x": 6468.3,
+   "y": 6439.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_mondsalbei_2",
+   "art": "mondsalbei",
+   "x": 6464.3,
+   "y": 6441.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_glutwurz_2",
+   "art": "glutwurz",
+   "x": 6466.3,
+   "y": 6441.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_splitterlilie_2",
+   "art": "splitterlilie",
+   "x": 6468.3,
+   "y": 6441.4,
    "region": "waldmark"
   }
  ]
