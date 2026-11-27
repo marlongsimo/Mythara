@@ -61,8 +61,8 @@ zunftStationen("kochzunft", [
   ...[6235.5, 6239.5].map((x, i) => ({ id: `backofen_kochzunft_${i + 1}`, station: "backofen" as const, x, y: 6969.4, ort: "fl_186_211" })),
   { id: "kessel_kochzunft", station: "kessel", x: 6242.4, y: 6968.2, ort: "fl_186_211" }]);
 /* Waldmark: der Kräutergarten der Heilkundigen am Teich neben Mira – sechs Beete (kraeuter_standorte.json), ein Kessel */
-zunftEinrichten("kraeutergarten", { feld: [6461, 6437, 6463, 6441] }, { id: "kraeutergarten_bankkiste", x: 6469.4, y: 6437.8 });
-zunftStationen("kraeutergarten", [{ id: "kessel_kraeutergarten", station: "kessel", x: 6469.4, y: 6441, ort: "waldmark" }]);
+zunftEinrichten("kraeutergarten", { feld: [6461, 6437, 6463, 6441] }, { id: "kraeutergarten_bankkiste", x: 6469.6, y: 6438.2 });
+zunftStationen("kraeutergarten", [{ id: "kessel_kraeutergarten", station: "kessel", x: 6469.6, y: 6440.8, ort: "waldmark" }]);
 /* Kielmund: die Fischerzunft am Privatsteg südwestlich – sechs Fangstellen (Integration), Räucherhütte */
 zunftEinrichten("fischerzunft", { feld: [6399, 7350, 6401, 7354] }, { id: "fischerzunft_bankkiste", x: 6399, y: 7359 });
 zunftStationen("fischerzunft", [{ id: "raeucherhuette_fischerzunft", station: "raeucherhuette", x: 6396, y: 7351, ort: "fl_186_225" }]);

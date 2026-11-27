@@ -366,6 +366,57 @@
    ]
   },
   {
+   "id": "fischerzunft_silberbarsch",
+   "name": "Fischerzunft: Silberbarsch",
+   "art": "silberbarsch",
+   "region": "fl_186_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6375.5,
+     7350.5
+    ],
+    [
+     6374.5,
+     7353.5
+    ]
+   ]
+  },
+  {
+   "id": "fischerzunft_sturmhecht",
+   "name": "Fischerzunft: Sturmhecht",
+   "art": "sturmhecht",
+   "region": "fl_186_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6373.5,
+     7350.5
+    ],
+    [
+     6372.5,
+     7353.5
+    ]
+   ]
+  },
+  {
+   "id": "fischerzunft_tiefseeaal",
+   "name": "Fischerzunft: Tiefseeaal",
+   "art": "tiefseeaal",
+   "region": "fl_186_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6371.5,
+     7350.5
+    ],
+    [
+     6370.5,
+     7353.5
+    ]
+   ]
+  },
+  {
    "id": "moewenbucht_steg",
    "name": "Die Möwenbucht",
    "art": "hering",

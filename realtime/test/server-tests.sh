@@ -49,6 +49,7 @@ TESTS=(
   welt-zunft
   welt-fahleweiten
   welt-kielmund
+  steinhag-welt
   phase5
   phase8-10
   abholen
