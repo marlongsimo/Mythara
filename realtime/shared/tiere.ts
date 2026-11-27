@@ -21,13 +21,22 @@ export const TIER_TAKT = 14;
 /** fester Zufall 0…1 aus Zahlen */
 function zufall(...n: number[]): number { let h = 2166136261; for (const v of n) { h ^= Math.floor(v * 1000) | 0; h = Math.imul(h, 16777619) >>> 0; h ^= h >>> 13; h = Math.imul(h, 2246822519) >>> 0; } return (h >>> 0) / 4294967296; }
 const kennzahl = (s: string): number => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
-/** Ziel des Abschnitts k: ein Punkt im Umkreis (frei: nur begehbare Punkte – sonst die Mitte) */
+/** Ist die gerade Linie begehbar (alle ¼ Feld geprüft)? */
+function linieFrei(ax: number, ay: number, bx: number, by: number, frei: (x: number, y: number) => boolean): boolean {
+  const n = Math.ceil(Math.hypot(bx - ax, by - ay) * 4); for (let j = 0; j <= n; j++) { const f = n ? j / n : 0; if (!frei(ax + (bx - ax) * f, ay + (by - ay) * f)) return false; } return true; }
+/** Ziel des Abschnitts k: ein Punkt im Umkreis, von der Mitte aus gerade erreichbar (frei: sonst die Mitte) – so führt der Weg über die Mitte immer über begehbaren Boden */
 function punkt(p: Tierplatz, s: number, k: number, frei?: (x: number, y: number) => boolean): [number, number] {
-  for (let c = 0; c < 6; c++) { const a = zufall(s, k, c) * Math.PI * 2, d = p.radius * Math.sqrt(zufall(s, k, c + 17)), x = p.x + Math.cos(a) * d, y = p.y + Math.sin(a) * d; if (!frei || frei(x, y)) return [x, y]; }
+  for (let c = 0; c < 6; c++) { const a = zufall(s, k, c) * Math.PI * 2, d = p.radius * Math.sqrt(zufall(s, k, c + 17)), x = p.x + Math.cos(a) * d, y = p.y + Math.sin(a) * d; if (!frei || linieFrei(p.x, p.y, x, y, frei)) return [x, y]; }
   return [p.x, p.y]; }
 /** Wo ist Tier i des Platzes zur Zeit t (Sekunden)? geht: unterwegs (sonst Pause) */
 export function tierStelle(p: Tierplatz, i: number, t: number, frei?: (x: number, y: number) => boolean): { x: number; y: number; dx: number; dy: number; geht: boolean } {
   const s = kennzahl(p.id) + i * 7919, T = t + zufall(s, 99) * TIER_TAKT, k = Math.floor(T / TIER_TAKT), u = T - k * TIER_TAKT;
   const [ax, ay] = punkt(p, s, k, frei), [bx, by] = punkt(p, s, k + 1, frei), dauer = Math.min(TIER_TAKT * 0.6, Math.hypot(bx - ax, by - ay) / TIERARTEN[p.art].tempo);
-  if (u < dauer) { const f = u / dauer; return { x: ax + (bx - ax) * f, y: ay + (by - ay) * f, dx: bx - ax, dy: by - ay, geht: true }; }
+  if (u < dauer) {
+    const f = u / dauer;
+    if (!frei || linieFrei(ax, ay, bx, by, frei)) return { x: ax + (bx - ax) * f, y: ay + (by - ay) * f, dx: bx - ax, dy: by - ay, geht: true };
+    // gerade versperrt (Fels, Zaun): erst zur Mitte, dann zum Ziel
+    const l1 = Math.hypot(p.x - ax, p.y - ay), l2 = Math.hypot(bx - p.x, by - p.y), w = f * (l1 + l2);
+    if (w < l1) { const g = l1 ? w / l1 : 1; return { x: ax + (p.x - ax) * g, y: ay + (p.y - ay) * g, dx: p.x - ax, dy: p.y - ay, geht: true }; }
+    const g = l2 ? (w - l1) / l2 : 1; return { x: p.x + (bx - p.x) * g, y: p.y + (by - p.y) * g, dx: bx - p.x, dy: by - p.y, geht: true }; }
   return { x: bx, y: by, dx: bx - ax, dy: by - ay, geht: false }; }
