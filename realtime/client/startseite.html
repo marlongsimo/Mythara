@@ -2,6 +2,19 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
+  <link rel="manifest" href="manifest.webmanifest">
+  <script>
+    /* Alte Einstiege (#157): Einladungslinks ?von=…, Links mit Angaben und die App vom Startbildschirm gehen direkt ins Spiel (echtzeit/),
+       mit allen Angaben. Wer die Adresse im Browser öffnet, sieht diese Seite. Mit ?start bleibt man in jedem Fall hier. */
+    (function () {
+      try {
+        var q = location.search;
+        if (/[?&]start\b/.test(q)) return;
+        var app = matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches || navigator.standalone === true;
+        if (q.length > 1 || app) location.replace("echtzeit/" + q + location.hash);
+      } catch (e) { /* ohne matchMedia: Startseite zeigen */ }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Riftmere – Online-Rollenspiel im Browser</title>
   <meta name="description" content="Riftmere: eine lebendige Fantasy-Welt im Browser. Erkunde die Splitterlande mit anderen Spielern, kämpfe, sammle, handle und schreibe deine Geschichte – kostenlos, auf Handy und PC.">
