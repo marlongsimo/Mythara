@@ -11879,6 +11879,258 @@
     "fest": true
    },
    "kollision": null
+  },
+  {
+   "id": "hochland_stolleneingang",
+   "name": "Stolleneingang",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_stolleneingang.webp",
+   "groesse": [
+    231,
+    202
+   ],
+   "anker": [
+    0.5,
+    0.901
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 1.5
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Phase 11, #148), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/stolleneingang.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "hochland_lore",
+   "name": "Lore",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_lore.webp",
+   "groesse": [
+    71,
+    81
+   ],
+   "anker": [
+    0.6408,
+    0.9012
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Phase 11, #148), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/lore.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "hochland_schienen",
+   "name": "Schienen",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_schienen.webp",
+   "groesse": [
+    124,
+    98
+   ],
+   "anker": [
+    0.5,
+    0.8776
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Phase 11, #148), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/schienen.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "hochland_grubenholz",
+   "name": "Grubenholz",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_grubenholz.webp",
+   "groesse": [
+    113,
+    86
+   ],
+   "anker": [
+    0.5,
+    0.8721
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.8
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Phase 11, #148), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/grubenholz.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "hochland_kaeserad",
+   "name": "Käserad",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_kaeserad.webp",
+   "groesse": [
+    45,
+    31
+   ],
+   "anker": [
+    0.4889,
+    0.8065
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Phase 11, #148), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/kaeserad.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "hochland_steinbruecke",
+   "name": "Steinbrücke",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_steinbruecke.webp",
+   "groesse": [
+    334,
+    279
+   ],
+   "anker": [
+    0.5,
+    0.8996
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Phase 11, #148), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/steinbruecke.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "hochland_pass_schranke",
+   "name": "Pass-Schranke",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_pass_schranke.webp",
+   "groesse": [
+    251,
+    168
+   ],
+   "anker": [
+    0.5,
+    0.869
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Phase 11, #148), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/pass_schranke.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "hochland_gipfelkreuz",
+   "name": "Gipfelkreuz",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_gipfelkreuz.webp",
+   "groesse": [
+    63,
+    160
+   ],
+   "anker": [
+    0.5397,
+    0.9563
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.5
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Phase 11, #148), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/gipfelkreuz.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "hochland_steinmann",
+   "name": "Steinmann",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_steinmann.webp",
+   "groesse": [
+    36,
+    54
+   ],
+   "anker": [
+    0.4861,
+    0.9074
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Phase 11, #148), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/steinmann.glb",
+    "wind": 0,
+    "fest": true
+   }
   }
  ]
 }
