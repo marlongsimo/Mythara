@@ -27,7 +27,7 @@ Rolle Quests, 27.11.2026. Grundlage: `doku/konzepte/hauptstaedte.md` (Zweig `cla
 
 | Figur | Modell | Ort |
 |---|---|---|
-| Fenn | `npc.junge` | bei den Fischerhäusern am Seeufer, 6951,5 \| 5834,5 |
+| Fenn | `npc.junge` | am Fischerhaus am Seeufer, 6949,5 \| 5866,5 |
 | Hauptfrau Ragnhild | `stadtwache3d` | Burgplatz |
 | Wachmann Kuno | `stadtwache3d` | Südostecke der Mauer |
 | Zunftwächter Bodo | `stadtwache3d` | am Abstieg zum Stollen der Bergmannszunft |
