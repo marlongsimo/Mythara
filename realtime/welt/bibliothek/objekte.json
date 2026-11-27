@@ -12157,6 +12157,84 @@
     "wind": 0,
     "fest": true
    }
+  },
+  {
+   "id": "hochland_bruecke_mitte_ow",
+   "name": "Steinbrücke Mittelstück (West–Ost)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_bruecke_mitte_ow.webp",
+   "groesse": [
+    401,
+    269
+   ],
+   "anker": [
+    0.5,
+    0.8773
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Baukasten Brücke zur Furt, #153), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/bruecke_mitte_ow.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "hochland_bruecke_kopf_w",
+   "name": "Brückenkopf West",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_bruecke_kopf_w.webp",
+   "groesse": [
+    410,
+    301
+   ],
+   "anker": [
+    0.5,
+    0.887
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Baukasten Brücke zur Furt, #153), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/bruecke_kopf_w.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "hochland_bruecke_kopf_o",
+   "name": "Brückenkopf Ost",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hochland_bruecke_kopf_o.webp",
+   "groesse": [
+    410,
+    306
+   ],
+   "anker": [
+    0.5,
+    0.8889
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Baukasten Brücke zur Furt, #153), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/hochlande/bruecke_kopf_o.glb",
+    "wind": 0,
+    "fest": true
+   }
   }
  ]
 }
