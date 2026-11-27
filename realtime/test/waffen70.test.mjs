@@ -26,7 +26,7 @@ console.log("\nWerte");
   check(Object.values(PASSIVE).every((p) => p.chance === 0.15), "alle Passive mit 15 % je Treffer");
   const gezogen = new Set(); for (let i = 0; i < 400; i++) { gezogen.add(beuteAufloesen("@mythisch", Math.random)); gezogen.add(beuteAufloesen("@mythisch:Bogen", Math.random)); }
   check(WAFFEN_STUFE70.every((g) => !gezogen.has(g)) && !Object.values(LAEDEN).some((L) => L.waren.some((w) => WAFFEN_STUFE70.includes(w.g))), "nicht in der Platzhalter-Beute „@mythisch“ und in keinem Laden");
-  check(STUFE70_BEUTE.wurf.length === 3 && STUFE70_BEUTE.wurf.every((w) => G[w.g]), "Drop für den Mini-Boss vorbereitet (noch in keiner Drop-Tabelle)");
+  check(STUFE70_BEUTE.wurf.length === 3 && STUFE70_BEUTE.wurf.every((w) => G[w.g]), "Drop für die Rissgrube (später) vorbereitet, noch in keiner Drop-Tabelle");
   check(handelbar("echoschneide"), "frisch (ungeladen) handelbar");
   check(WAFFEN_STUFE70.every((g) => G[g].ebenen[0] === "waffe." + g && G[g].bild === `img/objekte3d/ausruestung/stufe70/${g}.webp`) && G.seelenfokus.zweihand, "eigene Modelle (waffe.<name>) und Rucksackbilder der Figuren; Seelenfokus zweihändig"); }
 

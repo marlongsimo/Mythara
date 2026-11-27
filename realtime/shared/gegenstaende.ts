@@ -549,7 +549,7 @@ export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math
 /* ───────── #151 Waffen der Stufe 70 (doku/konzepte/waffen-70.md, Entscheidung des Nutzers): Echoschneide, Seelenbogen, Seelenfokus ─────────
    Mythisch mit Anforderung 70 (Rahmen wie Mythisch). Am Bindestein mit 1 Splitter je Ladung laden (höchstens 1.000), Laden bindet die Waffe, jeder Angriff kostet 1 Ladung;
    solange Ladung da ist: 15 % je Treffer die Passive (sim.ts treffen). Geladen wirkt nur die Passive (kein × 1,1 wie bei den anderen geladenen Waffen).
-   Herkunft: Mini-Boss der Hochlande (Block H) – vorbereitet in STUFE70_BEUTE, noch in keiner Drop-Tabelle. Modelle aus den Vorlagen des Nutzers (Figuren d50193d6e): Teile waffe.<name>, Bilder img/objekte3d/ausruestung/stufe70/. */
+   Herkunft: nur das Minispiel Rissgrube (später, Entscheidung des Nutzers 27.11.2026) – vorbereitet in STUFE70_BEUTE, noch in keiner Drop-Tabelle. Modelle aus den Vorlagen des Nutzers (Figuren d50193d6e): Teile waffe.<name>, Bilder img/objekte3d/ausruestung/stufe70/. */
 export type PassivId = "nachhall" | "seelenzug" | "seelenbrand";
 export interface Passiv { id: PassivId; name: string; chance: number; text: string }
 export const PASSIVE: Record<PassivId, Passiv> = {
@@ -570,7 +570,7 @@ export const WAFFEN_STUFE70 = ["echoschneide", "seelenbogen", "seelenfokus"];
   GEGENSTAENDE.seelenfokus = { id: "seelenfokus", name: "Seelenfokus", platz: "waffe", art: "Stab", seltenheit: "mythisch", ebenen: ["waffe.seelenfokus"], bild: B + "seelenfokus.webp", zweihand: true /* Zweihand-Stab (Figuren) */,
     anforderung: { skill: "magie", level: 70 }, waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 30, magieStaerke: 216 }, passiv: PASSIVE.seelenbrand,
     text: "Ein Stab mit einem Herz aus kaltem Feuer. Wen er trifft, der brennt von innen. " + T }; }
-/** Vorbereitet für den Mini-Boss der Hochlande (Block H): je Waffe 1 : 100 in der starken Fassung, keine in der Quest-Fassung – noch nicht eingetragen */
+/** Vorbereitet für das Minispiel Rissgrube (später): Würfe je Waffe 1 : 100 – noch nicht eingetragen, bleibt inaktiv, bis die Rissgrube gebaut wird (nicht beim Mini-Boss der Hochlande) */
 export const STUFE70_BEUTE = { wurf: WAFFEN_STUFE70.map((g) => ({ g, chance: 1 })) };
 
 /* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
@@ -579,7 +579,7 @@ export const beutePlatzhalter = (g: string): boolean => g.startsWith("@");
 /** Platzhalter auflösen: eine zufällige Waffe oder Rüstung dieser Seltenheit (ohne Werkzeuge, Questlohn und Set-Teile); Art-Filter über GegenstandDef.art (Teilwort) */
 export function beuteAufloesen(g: string, zufall: () => number = Math.random): string | null { if (!beutePlatzhalter(g)) return g;
   const [sel, art] = g.slice(1).split(":"), werkzeug = /^(holzbeil|spitzhacke|angel)/;
-  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !G.passiv /* #151: Stufe 70 nur vom Mini-Boss */ && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
+  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !G.passiv /* #151: Stufe 70 nur aus der Rissgrube (später) */ && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
   return L.length ? L[Math.floor(zufall() * L.length)].id : null; }
 
 /* ───────── Phase 7 (#40): Graufurt, Ostufer, Turm – Bilder img/objekte3d/graufurt/symbole/ und Wels img/objekte3d/skilling/angeln/symbole/ (Figuren #37) ───────── */
