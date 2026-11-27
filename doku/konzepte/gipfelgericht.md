@@ -49,7 +49,7 @@ Werte etwa **+8 % über Mythisch (65)**, dazu ein **Set-Bonus** für alle drei T
 | Satz | Teile | Werte (Richtwert, Abwehr nah/fern/magie) | Set-Bonus (3 Teile) |
 |---|---|---|---|
 | **Gipfelwacht** (Nahkampf, Platte) | Helm, Brustplatte, Beinschienen (+ Turmschild) | Helm 49/50/−1 · Brust 112/114/−6 · Beine 71/71/−4 · Schild 64/65/0 | +2 Stärke, −10 % Schaden durch Stampf-/Flächenangriffe |
-| **Sturmschwinge** (Fernkampf, Leder mit Federn) | Haube, Wams, Hose | Haube 13/13/11 · Wams 58/59/54 · Hose 27/29/26 · Fernkampf-Angriff wie Mythisch +2 | +2 Fernkampf-Stärke |
+| **Sturmfeder** (Fernkampf, Leder mit Federn) | Haube, Wams, Hose | Haube 13/13/11 · Wams 58/59/54 · Hose 27/29/26 · Fernkampf-Angriff wie Mythisch +2 | +2 Fernkampf-Stärke |
 | **Frostschleier** (Magie, Robe) | Kapuze, Robe, Rock | Kapuze 16/16/7 · Robe 54/54/33 · Rock 36/36/24 · Magie-Angriff wie Mythisch +2 | +2 % Magieschaden (neu, siehe Idee „Ausrüstung mit Stilboni“) |
 
 **Drops:**
@@ -80,5 +80,5 @@ Die Bergvögtin von Steinhag zweifelt, ob Fremde die Hochlande schützen können
 1. Gefällt das Prinzip (4 Hüter + Gipfelprobe)?
 2. Drei Sätze je Kampfstil, Werte und Set-Boni so recht?
 3. Chancen (1 : 60 je Sieg, 1 : 15 Tagestruhe), handelbar?
-4. Namen: Gipfelgericht, Hüter, Gipfelwacht / Sturmschwinge / Frostschleier, „Das Recht der Vögte“, Vogtssiegel.
+4. Namen: Gipfelgericht, Hüter, Gipfelwacht / Sturmfeder / Frostschleier, „Das Recht der Vögte“, Vogtssiegel.
 5. Gruppe 2–4 und allein – wie bei der Rissgrube?
