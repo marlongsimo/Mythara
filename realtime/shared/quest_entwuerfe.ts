@@ -24,7 +24,6 @@ import { QUEST_G1 } from "./quest_g1";
 import { QUEST_G2 } from "./quest_g2";
 import { QUEST_G3 } from "./quest_g3";
 import { QUEST_G4 } from "./quest_g4";
-import { QUEST_KRAEUTERHOF } from "./quest_kraeuterhof";
 
 /** Entwurf → worauf er wartet (Issue) */
 export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
@@ -49,5 +48,4 @@ export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_G2, wartet: "Phase 10: Leuchtturm, Hering, Rezepte lampenoel und splitterglut" },
   { q: QUEST_G3, wartet: "Phase 10: Wrack, Klippenhöhlen mit Instanz, Wrackkapitän" },
   { q: QUEST_G4, wartet: "Phase 10: Möwenbucht, Räucherhütte, Rezepte fischernetz und raeucherhering" },
-  { q: QUEST_KRAEUTERHOF, wartet: "Sammelstellen der Beete nach der Quest (Schalter kraeuterhof_beete, Systeme)" },
 ];

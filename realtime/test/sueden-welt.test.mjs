@@ -15,7 +15,7 @@ const MERKER = ["schmieden"], viel = (g, n) => Array.from({ length: n }, () => g
 const KAMPF = { skill_staerke: xpFuer(12), skill_geschick: xpFuer(12), skill_defense: xpFuer(12), skill_lp: xpFuer(12), skill_fernkampf: xpFuer(12), skill_magie: xpFuer(12) };
 const HELD = {
   /* Ute: Bergbau 15, Heldenlevel ab 10 – darf S5 und S9 */
-  [A]: { ...roh(), ...KAMPF, inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["hammer", "sichel", { g: "splitter", n: 20 }], v: 2, merker: MERKER, berufe: { bergbau: xpFuer(15), holzfaellerei: xpFuer(10), schmieden: xpFuer(12), kraeuterkunde: xpFuer(10) } }, quests: { die_gesperrte_strasse: { s: "fertig" }, weidenhain_wasser_auf_die_muehle: { s: "fertig" } } },
+  [A]: { ...roh(), ...KAMPF, inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["hammer", "sichel", { g: "leeres_flaeschchen", n: 2 }, { g: "splitter", n: 20 }], v: 2, merker: MERKER, berufe: { bergbau: xpFuer(15), holzfaellerei: xpFuer(10), schmieden: xpFuer(12), kraeuterkunde: xpFuer(20) } }, quests: { die_gesperrte_strasse: { s: "fertig" }, weidenhain_wasser_auf_die_muehle: { s: "fertig" } } },
   /* Bea: ohne Bergbau, Heldenlevel 1 */
   [B]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: [{ g: "splitter", n: 20 }], v: 2, merker: MERKER } } };
 const SETZEN = [], ABSCHLUSS = [], GUTSCHRIFT = [];
@@ -160,8 +160,23 @@ try {
     check(QB.erledigt(M, ute.b[M.id], "hedda") && anzahl(ute, "rezeptheft") === 1, "Hedda prüft und gibt das Rezeptheft heraus");
     const ht = anzahl(ute, "heiltrank"); await zu(ute, fig(M, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "abgeben"); await schlaf(600);
     check(ute.b[M.id] === "fertig" && anzahl(ute, "rezeptheft") === 0 && anzahl(ute, "heiltrank") === ht + 3, `Miras Rezeptbuch fertig, Lohn abgeholt: 3 Heiltränke (${anzahl(ute, "heiltrank") - ht})`); }
+
+  console.log("Der Kräuterhof (Küste, Waldmark, Rabenmoor)");
+  { const K = QUESTS.find((q) => q.id === "kueste_der_kraeuterhof"), kob = (id) => K.objekte.find((o) => o.id === id);
+    await zu(ute, fig(K, "frieda")); await rede(ute, "frieda"); await sag(ute, "frieda", "annehmen"); await schlaf(400);
+    check(stand(ute, K).phase === "laeuft", "Ute nimmt den Kräuterhof an (nach Miras Rezeptbuch, Kräuterkunde 20)");
+    await zu(ute, fig(K, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "samen_nehmen"); await schlaf(300);
+    await zu(ute, fig(K, "hedda")); await rede(ute, "hedda"); await sag(ute, "hedda", "ableger_bitten"); await schlaf(300);
+    check(anzahl(ute, "ringelblumensamen") === 1 && anzahl(ute, "moorgloeckchen_ableger") === 1, "Samen von Mira, Ableger von Hedda");
+    for (const id of ["kh_beet_1", "kh_beet_2"]) { const o = kob(id); await stelle(ute, o.x, o.y - 1); await ding(ute, id); }
+    check(QB.erledigt(K, ute.b[K.id], "beet_1") && QB.erledigt(K, ute.b[K.id], "beet_2"), "Beide Beete angelegt");
+    let i = 0; const t0 = Date.now(); while (anzahl(ute, "ringelblume") < 2 && Date.now() - t0 < 60000) { const [x, y, id] = RINGEL[i++ % 3]; await sammeln(ute, "kraut", id, x, y, "ringelblume", anzahl(ute, "ringelblume") + 1, 15000); }
+    const ht = anzahl(ute, "heiltrank"); const r = await herstellen(ute, 6422 - 1.2, 7063.4, "brauen_heiltrank", 2);
+    check(r === "ok" && QB.erledigt(K, ute.b[K.id], "traenke") && anzahl(ute, "heiltrank") >= ht + 2, `Zwei Heiltränke am Kessel des Kräuterhofs (${r})`);
+    await zu(ute, fig(K, "frieda")); await rede(ute, "frieda"); await sag(ute, "frieda", "abgeben"); await schlaf(600);
+    check(ute.b[K.id] === "fertig", "Der Kräuterhof ist fertig, Lohn abgeholt"); }
   check(!/Server-Fehler|TypeError|ReferenceError/.test(log), "Keine Fehler im Server-Log");
 } catch (e) { console.error(e); f++; }
 srv.kill(); sb.close();
-console.log(f ? `\nSüden (S2, S4, S5, S6, S9) und Miras Rezeptbuch: ${f} FEHLER` : "\nSüden (S2, S4, S5, S6, S9) und Miras Rezeptbuch: alles in Ordnung");
+console.log(f ? `\nSüden (S2, S4, S5, S6, S9) Miras Rezeptbuch und Kräuterhof: ${f} FEHLER` : "\nSüden (S2, S4, S5, S6, S9) Miras Rezeptbuch und Kräuterhof: alles in Ordnung");
 process.exit(f ? 1 : 0);
