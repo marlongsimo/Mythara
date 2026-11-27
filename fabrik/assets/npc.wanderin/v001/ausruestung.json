@@ -1,0 +1,119 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.wanderin – Wanderin (Südstraße): blaugraues Gewand, Umhang, grünes Kopftuch, Wanderstock (Süden #121; aus npcfrau3d, Gewand/Tuch als Hüllen, vorhandene Werkzeuge).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "kleidung.umhang",
+      "platz": "umhang",
+      "art": "umhang",
+      "glb": "npc.agnes/v001/quelle/teile/kleidung.umhang.glb"
+    },
+    {
+      "id": "werkzeug.stock",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.stock/v001/quelle/stock.glb",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.gewand",
+      "platz": "kutte",
+      "farbe": "#4a5a6a",
+      "dicke": 0.03,
+      "unten": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberarm.L",
+          0,
+          1
+        ],
+        [
+          "oberarm.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0,
+          0.8
+        ],
+        [
+          "unterarm.R",
+          0,
+          0.8
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.95
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.95
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.kopftuch",
+      "platz": "kopftuch",
+      "farbe": "#7a8a5a",
+      "dicke": 0.035,
+      "gesicht_frei": true,
+      "ueberlage": true,
+      "bereich": [
+        [
+          "kopf",
+          0.2,
+          1
+        ],
+        [
+          "hals",
+          0.2,
+          1
+        ]
+      ]
+    }
+  ],
+  "teilnetze": []
+}

@@ -1,0 +1,19 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "gegner.grabwaechter – Grabwächter: Steinfigur in Wacht-Rüstung im Hügelgrab (fabrik/stein.py, dunkler und moosiger als der Turmwächter), Rundumschlag. Aus stadtwache3d v002 (Meshy „Azure Lionguard“).",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "stich2h",
+    "rundumschlag",
+    "treffer",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": []
+}
