@@ -90,6 +90,7 @@ TESTS=(
   hueter
   gegner-stufe
   gefahr
+  sperren
   zunft-rohstoffe
   zunft
   bank-orte

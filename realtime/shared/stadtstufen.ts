@@ -9,6 +9,11 @@ export interface Stadt { id: string; name: string; /** in Reihenfolge; schalter 
 /** Schalternamen sind ein Vorschlag – die Quests (E-Reihe) setzen sie über QuestDef.schalter */
 export const STAEDTE: Stadt[] = [
   { id: "grauwacht", name: "Grauwacht", stufen: [{ id: "verlassen" }, { id: "abtei", schalter: "grauwacht_abtei" }, { id: "burg", schalter: "grauwacht_burg" }] },
+  /* #186 (Welt #185, welt/sperren.json): Sperren ohne Gebäude – Bergsturz am Drachenarm (9 Felsen und Trümmer), Schneesturm vor der Frostkrone (109 Sturmstücke); sie verschwinden mit der Stufe */
+  { id: "drachenarm", name: "Drachenarm", stufen: [{ id: "verschuettet" }, { id: "drachenarm_frei", schalter: "drachenarm_frei" }] },
+  { id: "frostkrone", name: "Frostkrone", stufen: [{ id: "sturm" }, { id: "frostkrone_frei", schalter: "frostkrone_frei" }] },
+  /* #179: das zweite Boot im Hafen von Kielmund (Welt: ausbau „kielmund_boot“) erst nach der Quest „Kiel auf Stapel“ */
+  { id: "kielmund", name: "Kielmund", stufen: [{ id: "kielmund_alt" }, { id: "kielmund_boot", schalter: "kielmund_neues_boot" }] },
 ];
 const JE_STUFE = new Map<string, { stadt: Stadt; i: number }>(); for (const s of STAEDTE) s.stufen.forEach((x, i) => JE_STUFE.set(x.id, { stadt: s, i }));
 /** Die Stufe (Index) einer Stadt für einen Spieler */
