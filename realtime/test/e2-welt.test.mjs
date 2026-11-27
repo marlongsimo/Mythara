@@ -7,9 +7,9 @@ import { starte, starkerHeld, QUESTS, QB } from "./questwelt.mjs";
 const Q = (id) => QUESTS.find((q) => q.id === id);
 const E1 = Q("grauwacht_der_weg"), E2 = Q("grauwacht_die_glocke"), E3 = Q("grauwacht_fahnenflucht"), E4 = Q("grauwacht_grab_des_hauptmanns");
 const SCHAFE = Q("heidrast_mettes_schafe"), GRAEBER = Q("grauwacht_ruhelose_graeber");
-const BERUFE = { holzfaellerei: 40, schmieden: 45, kochen: 45, splitterbinden: 35, handwerk: 30 }; /* Kochen 45: die Glocke gießt man am Herd (Rezept glocke, Station herd) */
+const BERUFE = { kochen: 90, splitterbinden: 35 }; /* Kochen 90: der Eintopf (Stufe 30) verbrennt dann kaum – Mette gibt das Fleisch nur einmal */
 const viel = (g, n) => Array.from({ length: n }, () => g);
-const SACHEN = [...viel("erz_kupfer", 16), ...viel("erz_splittereisen", 4), "stamm_kernbaum", "krug_wasser"];
+const SACHEN = ["krug_wasser"]; /* nur, was dieser Teil braucht (ein voller Rucksack nimmt keine Grablichter mehr) */
 /* eine Waffe, wie man sie in dieser Stufe trägt (Heldenlevel 42+), statt des Anfänger-Ritterschwerts */
 const mitWaffe = (H) => { H.inventar.angelegt.waffe = "eidschwert_episch"; return H; };
 const W = await starte({ sb: 8841, srv: 8842, helden: {
@@ -37,7 +37,7 @@ try {
   console.log("Ruhelose Gräber");
   check(await sprich(ida, GRAEBER, "gunhild", "annehmen") && stand(ida, GRAEBER).phase === "laeuft", "Gunhild: angenommen (Splitterbinden 35)");
   { const L = [[6464.5, 5764.5, "hg_grab_1"], [6476.5, 5763.5, "hg_grab_2"], [6467.5, 5772.5, "hg_grab_3"], [6478.5, 5770.5, "hg_grab_4"], [6471.5, 5775.5, "hg_grab_5"]];
-    let i = 0; const t0 = Date.now(); while (anzahl(ida, "grablicht") < 3 && Date.now() - t0 < 120000) { const [x, y, id] = L[i++ % L.length]; await sammeln(ida, "licht", id, x, y, "grablicht", anzahl(ida, "grablicht") + 1, 20000); }
+    let i = 0; const t0 = Date.now(); while (anzahl(ida, "grablicht") < 3 && Date.now() - t0 < 180000) /* ein Grablicht hält nur jedes zweite Mal (fall 0.5), darum rasch von Grab zu Grab */ { const [x, y, id] = L[i++ % L.length]; await sammeln(ida, "licht", id, x, y, "grablicht", anzahl(ida, "grablicht") + 1, 12000); }
     check(anzahl(ida, "grablicht") === 3 && erl(ida, GRAEBER, "lichter"), `Drei Grablichter gefangen, der Questgegenstand fällt dazu (${anzahl(ida, "grablicht")})`); }
   for (const id of ["eg_kammer_1", "eg_kammer_2", "eg_kammer_3"]) await objekt(ida, GRAEBER, id);
   check(["kammer_1", "kammer_2", "kammer_3"].every((x) => erl(ida, GRAEBER, x)) && anzahl(ida, "grablicht") === 0, "Drei Grabkammern zur Ruhe gelegt");

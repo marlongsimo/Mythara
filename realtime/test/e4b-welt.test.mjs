@@ -11,7 +11,7 @@ const SCHAFE = Q("heidrast_mettes_schafe"), GRAEBER = Q("grauwacht_ruhelose_grae
 const SIEGEL = standNach(QUESTS.find((q) => q.id === "grauwacht_grab_des_hauptmanns"), [{ art: "betreten", region: "hauptmann_grab" }, ...Array(2).fill({ art: "erlegen", typ: "grabwaechter" }), { art: "objekt", id: "e4_siegel" }]);
 const BERUFE = { holzfaellerei: 40, schmieden: 45, kochen: 45, splitterbinden: 35, handwerk: 30 }; /* Kochen 45: die Glocke gießt man am Herd (Rezept glocke, Station herd) */
 const viel = (g, n) => Array.from({ length: n }, () => g);
-const SACHEN = [...viel("erz_kupfer", 16), ...viel("erz_splittereisen", 4), "stamm_kernbaum", "krug_wasser"];
+const SACHEN = [];
 /* eine Waffe, wie man sie in dieser Stufe trägt (Heldenlevel 42+), statt des Anfänger-Ritterschwerts */
 const mitWaffe = (H) => { H.inventar.angelegt.waffe = "eidschwert_episch"; return H; };
 const W = await starte({ sb: 8847, srv: 8848, helden: {

@@ -9,7 +9,7 @@ const E1 = Q("grauwacht_der_weg"), E2 = Q("grauwacht_die_glocke"), E3 = Q("grauw
 const SCHAFE = Q("heidrast_mettes_schafe"), GRAEBER = Q("grauwacht_ruhelose_graeber");
 const BERUFE = { holzfaellerei: 40, schmieden: 45, kochen: 45, splitterbinden: 35, handwerk: 30 }; /* Kochen 45: die Glocke gießt man am Herd (Rezept glocke, Station herd) */
 const viel = (g, n) => Array.from({ length: n }, () => g);
-const SACHEN = [...viel("erz_kupfer", 16), ...viel("erz_splittereisen", 4), "stamm_kernbaum", "krug_wasser"];
+const SACHEN = [];
 /* eine Waffe, wie man sie in dieser Stufe trägt (Heldenlevel 42+), statt des Anfänger-Ritterschwerts */
 const mitWaffe = (H) => { H.inventar.angelegt.waffe = "eidschwert_episch"; return H; };
 const W = await starte({ sb: 8843, srv: 8844, helden: {
