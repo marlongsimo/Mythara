@@ -17,7 +17,7 @@ const NEU = ["feldhase", "kraehenschwarm", "wildbienen_schwarm", "schilfkroete",
 
 console.log("\nGegner und Beute");
 check(NEU.every((t) => MONSTER[t] && MONSTER[t].v2 && MONSTER[t].drops), "zehn Gegner des Südens mit Werten (v3) und Beute");
-check(NEU.every((t) => MONSTER[t].stufe >= 2 && MONSTER[t].stufe <= 30), "Stufen 2–30");
+check(NEU.every((t) => MONSTER[t].planStufe >= 2 && MONSTER[t].planStufe <= 30), "Stufen 2–30");
 check([...NEU, "schaf", "ente"].flatMap((t) => MONSTER[t].drops.flatMap((R) => R.wurf.map((w) => w.g))).every((g) => g.startsWith("@") || GEGENSTAENDE[g]), "alle Beute-Gegenstände gibt es");
 check(NEU.every((t) => MONSTER[t].drops.every((R) => R.wurf.reduce((a, w) => a + w.chance, 0) <= 100.0001)), "je Wurf höchstens 100 %");
 check(MONSTER.graupelz.wiederkehr === 900 && !MONSTER.graupelz.boss && MONSTER.steinschlucker.familie === "stein" && MONSTER.wegelagerer_knueppel.fliehen && MONSTER.schaf.aggressiv === false, "Graupelz alle 15 min (kein Boss) · Steinschlucker Familie Stein · Wegelagerer fliehen · Schafe friedlich");

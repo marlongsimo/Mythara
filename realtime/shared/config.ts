@@ -7,7 +7,7 @@
  *  2. Schadenswurf: Bei einem Treffer wird zwischen Mindest- und Höchstschaden der Waffe gewürfelt.
  * Verteidigung senkt also die Trefferchance, nicht den Schaden. Torvalds Schild erhöht seinen Verteidigungswurf; Schutzpunkte fangen Schaden ab.
  */
-import type { GegnerV3 } from "./kampfwerte";
+import { gegnerStufe, type GegnerV3 } from "./kampfwerte";
 export const TICK = 20;            // Rechenschritte je Sekunde (Server-Simulation)
 export const DT = 1 / TICK;
 export const ZUSTAND_JE = 1;       // jeder Schritt geht an den Client: 20 Zustände je Sekunde
@@ -110,7 +110,7 @@ export const HELDEN: Record<string, HeldDef> = {
 };
 export const HELDENREIHE = ["schildwaechter", "elementarist", "lichtbringer", "assassine", "kopfgeldjaeger"];
 
-export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (Anzeige; die Werte stehen fest am Gegner) */ stufe?: number; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; ruhe?: string; ruheMass?: [number, number, number]; hoehe?: number; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; /** #160 (Hüter der Hochlande): Schaden je Angriffsart mal (stark: 0,5, schwach: 1,5) */ widerstand?: Partial<Record<Schadensart, number>>; boss?: boolean;
+export interface MonsterDef { name: string; /** angezeigte Stufe – mit Werten (v2) aus ihnen errechnet (stufeVon, KANON 0eeea8e8b), sonst von Hand */ stufe?: number; /** die von Hand gesetzte Stufe des Konzepts (Gebietsplanung) */ planStufe?: number; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; ruhe?: string; ruheMass?: [number, number, number]; hoehe?: number; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; /** #160 (Hüter der Hochlande): Schaden je Angriffsart mal (stark: 0,5, schwach: 1,5) */ widerstand?: Partial<Record<Schadensart, number>>; boss?: boolean;
   angriff: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number };
   /* Spezialangriff auf eine Fläche: Der Gegner hält inne und lädt (laden Sekunden), die Fläche ist am Boden zu sehen; dann trifft er jeden, der noch darin steht. alle: Pause bis zum nächsten Mal. */
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
@@ -660,3 +660,10 @@ Object.assign(MONSTER, {
 
 /** Trefferchance aus Angriffs- und Verteidigungswert (beide würfeln 0 bis Wert, der höhere Angriffswurf trifft) */
 export const trefferchance = (a: number, d: number) => (a > d ? 1 - (d + 2) / (2 * (a + 1)) : a / (2 * (d + 1)));
+
+/* ───────── Entscheidung des Nutzers (27.11., KANON 0eeea8e8b, #175): die Stufe jedes Gegners wird aus seinen Werten errechnet (kampfwerte.ts gegnerStufe) –
+   ein von Hand gesetztes stufe zählt nicht mehr, sobald der Gegner Werte (v2) hat. Nur die Anzeige; das Gleichgewicht bleibt. ───────── */
+/** Stufe eines Gegners: aus seinen Werten; lp = sein Höchstleben (die Quest-Fassung eines Bosses hat weniger – Schnappschuss: max); ohne v2 die gesetzte Stufe */
+export const stufeVon = (art: string, lp?: number): number => { const M = MONSTER[art]; if (!M) return 1; return M.v2 ? gegnerStufe(M.v2, lp ?? M.lp) : M.stufe ?? 1; };
+/* die gesetzte Stufe bleibt als planStufe (Stufe des Gebiets im Konzept, für die Planung und die Inhaltstests) */
+for (const art of Object.keys(MONSTER)) { const M = MONSTER[art]; if (M.v2) { M.planStufe = M.stufe; M.stufe = stufeVon(art); } }

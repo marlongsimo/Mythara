@@ -11,7 +11,7 @@ await build({ stdin: { contents: 'export { MONSTER } from "./shared/config"; exp
 const { MONSTER, GEGENSTAENDE, VERBRAUCH, rezept, WELTKAMPF } = await import(datei);
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
 const S = { steppenwolf: 46, ockerhyaene: 50, hochlandwidder: 52, hochlandbaer: 54, klippenadler: 56, bergtroll: 58, tundraelch: 62, frostwolf: 64, drakling: 66, eisgolem: 72 };
-check(Object.entries(S).every(([t, s]) => MONSTER[t] && MONSTER[t].v2 && MONSTER[t].stufe === s), "zehn Gegner mit Werten (v3) in der Stufe aus #130");
+check(Object.entries(S).every(([t, s]) => MONSTER[t] && MONSTER[t].v2 && MONSTER[t].planStufe === s), "zehn Gegner mit Werten (v3) in der Stufe aus #130");
 check(Object.keys(S).flatMap((t) => MONSTER[t].drops.flatMap((R) => R.wurf.map((w) => w.g))).every((g) => g.startsWith("@") || GEGENSTAENDE[g]), "alle Beute-Gegenstände gibt es");
 check(Object.keys(S).every((t) => MONSTER[t].drops.every((R) => R.wurf.reduce((a, w) => a + w.chance, 0) <= 100.0001)), "je Wurf höchstens 100 %");
 check(!/flieg|schweb/i.test(MONSTER.drakling.info) && MONSTER.drakling.angriff.art === "magie", "der Drakling ist ein Bodengegner (fliegt nicht)");
