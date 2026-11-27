@@ -28,10 +28,12 @@ export interface WeltkarteOpts {
 const STUFE = (art: string, gebiet: boolean): "gross" | "mittel" | "land" | "klein" =>
   art === "Stadt" ? "gross" : art === "Dorf" || (gebiet && (art === "Gehöft" || art === "Ruineninsel")) ? "mittel" : art === "Landschaft" || art === "Wald" ? "land" : "klein";
 
-const PX = 4; /* Bildpunkte je Feld bei Zoom 1 */
+/** Bildpunkte je Feld auf der Leinwand. #183: die Leinwand wird gleich in Bildschirmgröße aufgebaut (Breite / SICHT_FELDER, Zoom ≈ 1) –
+ *  vorher 4 px je Feld mit scale(0,13): WebKit (iPhone) rasterte dafür eine Ebene von 9600×12672 px */
+let PX = 4;
 /** So viele Felder zeigt die Karte in der Breite (fester Zoom, #11: von den Riedwiesen bis Graufurt) */
 export const SICHT_FELDER = 750;
-/** #183: feste Zoomstufen als Anteil der Leinwand (PX je Feld): Welt · Gegend · Nah – geöffnet wird mit „Gegend“ */
+/** #183: feste Zoomstufen als Anteil von 4 px je Feld (0,4 / 1,2 / 4 CSS-px je Feld): Welt · Gegend · Nah – geöffnet wird mit „Gegend“ */
 export const STUFEN = [0.1, 0.3, 1.0];
 const optionen = { eigeneSymbole: true };
 let stufeJetzt = -1, ebeneJetzt: HTMLElement | null = null, umrechnen: ((x: number, y: number) => { x: number; y: number }) | null = null;
@@ -54,7 +56,7 @@ export function uebersicht(o: WeltkarteOpts): void {
   if (offen) { offen(); return; }
   if (!o.regionen.length) return;
   stil();
-  const C = o.chunkFelder;
+  const C = o.chunkFelder; PX = 4 * STUFEN[1]; /* #183: Leinwand in der Dichte von „Gegend“ aufgebaut (Zoom 1), die anderen Stufen skalieren davon aus – kein riesiges scale(0,1…0,3) für WebKit */
   /* Umriss der ganzen Welt in Feldern */
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const r of o.regionen) { x0 = Math.min(x0, r.ursprung[0] * C); y0 = Math.min(y0, r.ursprung[1] * C); x1 = Math.max(x1, (r.ursprung[0] + r.chunks[0]) * C); y1 = Math.max(y1, (r.ursprung[1] + r.chunks[1]) * C); }
@@ -71,7 +73,9 @@ export function uebersicht(o: WeltkarteOpts): void {
   const kacheln: { im: HTMLImageElement; x: number; y: number; w: number; h: number; an: boolean }[] = [];
   for (const r of o.regionen) {
     const im = document.createElement("img"); im.alt = ""; im.draggable = false; im.decoding = "async"; im.dataset.src = `${o.daten}karte-${r.id}.webp${o.stand ? "?v=" + o.stand : ""}`; im.dataset.region = r.id;
-    const k = { im, x: (r.ursprung[0] * C - x0) * PX, y: (r.ursprung[1] * C - y0) * PX, w: r.chunks[0] * C * PX, h: r.chunks[1] * C * PX, an: false };
+    /* Kanten auf ganze Pixel: bei Bruchteil-Pixeln je Feld blieben zwischen benachbarten Regionen feine Nähte */
+    const l = Math.round((r.ursprung[0] * C - x0) * PX), t = Math.round((r.ursprung[1] * C - y0) * PX), rr = Math.round(((r.ursprung[0] + r.chunks[0]) * C - x0) * PX), u = Math.round(((r.ursprung[1] + r.chunks[1]) * C - y0) * PX);
+    const k = { im, x: l, y: t, w: rr - l, h: u - t, an: false };
     Object.assign(im.style, { left: k.x + "px", top: k.y + "px", width: k.w + "px", height: k.h + "px" });
     lw.appendChild(im); kacheln.push(k);
   }
@@ -127,10 +131,10 @@ export function uebersicht(o: WeltkarteOpts): void {
   const melden = () => window.dispatchEvent(new CustomEvent("ez-karte-zoom", { detail: { stufe: stufeJetzt, z } }));
   let gleitT = 0;
   const zoomen = (s: number, px = flaeche.clientWidth / 2, py = flaeche.clientHeight / 2) => { s = Math.max(0, Math.min(STUFEN.length - 1, s)); if (s === stufeJetzt) return;
-    const n = STUFEN[s]; vx = px - (px - vx) * (n / z); vy = py - (py - vy) * (n / z); z = n; stufeJetzt = s; lw.classList.add("gleitet"); setzen(); melden();
+    const n = (STUFEN[s] * 4) / PX; vx = px - (px - vx) * (n / z); vy = py - (py - vy) * (n / z); z = n; stufeJetzt = s; lw.classList.add("gleitet"); setzen(); melden();
     clearTimeout(gleitT); gleitT = window.setTimeout(() => { lw.classList.remove("gleitet"); namenZ = -1; ordnen(); lw.style.willChange = "auto"; requestAnimationFrame(() => { lw.style.willChange = ""; }); }, 260); };
   const zuMir = () => { const i = o.ich(); if (!i) return; vx = flaeche.clientWidth / 2 - (i.x - x0) * PX * z; vy = flaeche.clientHeight / 2 - (i.y - y0) * PX * z; setzen(); };
-  stufeJetzt = 1; z = STUFEN[1]; zuMir(); if (!o.ich()) setzen(); melden();
+  stufeJetzt = 1; z = (STUFEN[1] * 4) / PX; zuMir(); if (!o.ich()) setzen(); melden();
 
   /* eigene Stelle laufend nachführen (der Held läuft weiter, auch während die Karte offen ist) */
   let lauf = 0;
@@ -198,6 +202,10 @@ function stil() {
 #ez-uebersicht button:hover{background:rgba(60,46,26,.95)}
 #ez-uebersicht .wk-zu{position:absolute;right:max(14px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));font-size:18px}
 #ez-uebersicht .wk-hilfe{position:absolute;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;font:12px/1.3 Georgia,serif;color:#cbb88a;opacity:.8;text-align:center;pointer-events:none;max-width:calc(100% - 140px)}
+/* #183: leichtere Schatten (WebKit malt drop-shadow und mehrfache text-shadow teuer); beim Ziehen ganz ohne – die Ebene wird dann nur verschoben */
+#ez-uebersicht .wk-leinwand .wk-name{text-shadow:0 0 3px #000,0 1px 1px #000}
+#ez-uebersicht .wk-flaeche.zieht .wk-symbol{filter:none}
+#ez-uebersicht .wk-flaeche.zieht .wk-name{text-shadow:none}
 @media (max-width:600px){#ez-uebersicht .wk-hilfe{display:none}}`;
   document.head.appendChild(s);
 }

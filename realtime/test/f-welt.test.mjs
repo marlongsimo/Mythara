@@ -16,7 +16,7 @@ const F1_ID = "glutsande_ende_des_grases", F2_ID = "glutsande_salz_und_feuer", F
 const W = await starte({ sb: 8815, srv: 8816, helden: {
   ida: geruestet(starkerHeld({ fertig: [D2] })),                                                              /* F1 */
   bea: geruestet(starkerHeld({ fertig: [D2, F1_ID], berufe: { schmieden: 55 }, rucksack: ["hammer", "barren_splittereisen", "barren_splittereisen"] })), /* F2 */
-  dora: geruestet(starkerHeld({ fertig: [D2, F1_ID, F2_ID], berufe: { fischen: 70, kochen: 70 }, rucksack: ["reuse", { g: "salz", n: 5 }] })), /* F4 */
+  dora: geruestet(starkerHeld({ fertig: [D2, F1_ID, F2_ID], berufe: { fischen: 70, kochen: 99 }, rucksack: ["reuse", { g: "salz", n: 12 }, { g: "fisch_glutwels_roh", n: 3 }] })), /* F4 – Kochen 99 und drei Welse Vorrat: die Kruste (Stufe 65) verbrennt sonst leicht */
   ella: geruestet(starkerHeld({ fertig: [D2, E4, F1_ID, F3_ID], berufe: { kraeuterkunde: 35 }, rucksack: ["steinhaut_schwach"] })),          /* Karte */
   tom: starkerHeld({}) } });
 const { check, spieler, sprich, objekt, stand, erl, fertig, kampf, kaempfen, kampfBis, stelle, herstellen, fischen, anzahl, schlaf, rede } = W;
@@ -65,8 +65,8 @@ try {
   async function spielF4() {
     console.log("F4 „Der Strom trägt“");
     check(await sprich(dora, F4, "nalia", "annehmen") && stand(dora, F4).phase === "laeuft", "Dora nimmt F4 an (nach F2, Fischen und Kochen 65)");
-    check(await fischen(dora, "glutstrom", "fisch_glutwels_roh", 2) && erl(dora, F4, "welse"), `Zwei Glutwelse aus dem Strom (${anzahl(dora, "fisch_glutwels_roh")})`);
-    { let r = await herstellen(dora, 7121 - 1.2, 6946, "glutwels_salzkruste"); if (!erl(dora, F4, "kruste") && anzahl(dora, "fisch_glutwels_roh") > 0) r = await herstellen(dora, null, null, "glutwels_salzkruste"); /* verbrannt: noch ein Wels */ check(r === "ok" && anzahl(dora, "glutwels_salzkruste") === 1 && erl(dora, F4, "kruste"), `Glutwels in Salzkruste am Herd von Glutbrunn (${r})`); }
+    check(await fischen(dora, "glutstrom", "fisch_glutwels_roh", 5) && erl(dora, F4, "welse"), `Zwei Glutwelse aus dem Strom (${anzahl(dora, "fisch_glutwels_roh")})`);
+    { let r = await herstellen(dora, 7121 - 1.2, 6946, "glutwels_salzkruste"); for (let i = 0; i < 4 && !erl(dora, F4, "kruste") && anzahl(dora, "fisch_glutwels_roh") > 0; i++) r = await herstellen(dora, null, null, "glutwels_salzkruste"); /* verbrannt: der nächste Wels */ check(r === "ok" && anzahl(dora, "glutwels_salzkruste") === 1 && erl(dora, F4, "kruste"), `Glutwels in Salzkruste am Herd von Glutbrunn (${r})`); }
     check(await sprich(dora, F4, "nalia", "abgeben") && fertig(dora, F4) && anzahl(dora, "glutwels_salzkruste") === 0, "F4 fertig, Lohn abgeholt");
 
   }

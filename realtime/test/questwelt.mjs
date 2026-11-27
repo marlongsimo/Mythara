@@ -7,7 +7,7 @@
  */
 import { createServer } from "node:http"; import { spawn } from "node:child_process"; import { createRequire } from "node:module";
 import { build } from "esbuild"; import { tmpdir } from "node:os"; import { join } from "node:path"; import { pathToFileURL } from "node:url";
-import { QB, QUESTS, xpFuer, FANGSTELLEN } from "./sim.gebaut.mjs";
+import { QB, QUESTS, xpFuer, FANGSTELLEN, MONSTER } from "./sim.gebaut.mjs";
 const require = createRequire(import.meta.url), WebSocket = require("ws");
 
 /* Kampfgebiete der Welt (shared/weltzonen.ts, gebaut mit werkzeug/weltzonen.py): welches Gebiet liegt an einer Weltstelle? */
@@ -90,10 +90,19 @@ export async function starte({ sb: SB, srv: SRV, helden, env = {} }) {
   async function kaempfen(z, arten, bis, ms = 180000, nur = () => true) { let siege = 0; const t0 = Date.now(), aus = new Map(); /* Ziele, die nicht fallen (unerreichbar, fliehen), eine Weile auslassen */
     while (!bis(siege) && Date.now() - t0 < ms) { const ich = z.w.find((w) => w[1] === 1), jetzt = Date.now(), lebt = z.w.filter((w) => arten.includes(w[2]) && !w[10] && nur(w) && !((aus.get(w[0]) || 0) > jetzt));
       if (!ich || !lebt.length) { await schlaf(300); continue; } const ziel = lebt.sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
-      const ab = z.ev.length; z.ws.send(JSON.stringify({ t: "ziel", id: ziel[0] })); let fiel = false;
-      for (let i = 0; i < 250; i++) { await schlaf(100); if (z.ev.slice(ab).some((e) => e.a === "tot" && e.id === ziel[0])) { siege++; fiel = true; break; } if (bis(siege)) break; }
+      const ab = z.ev.length; z.ws.send(JSON.stringify({ t: "ziel", id: ziel[0] })); let fiel = false, gebunden = false;
+      for (let i = 0; i < 250; i++) { await schlaf(100); const neu = z.ev.slice(ab); if (neu.some((e) => e.a === "tot" && e.id === ziel[0])) { siege++; fiel = true; break; } if (bis(siege)) break;
+        if (neu.some((e) => e.a === "text" && e.id === ziel[0] && /Kämpft schon/.test(e.t || ""))) { gebunden = true; break; } }
+      if (gebunden) { await binderBekaempfen(z, ziel[0], aus); continue; } /* #154: ein anderer Gegner (oft ein Fernkämpfer) bindet den Helden im Einzelkampf */
       if (!fiel) aus.set(ziel[0], Date.now() + 20000); }
     return siege; }
+  /** Einzelkampf (#154): Wer gebunden ist, kann kein anderes Ziel nehmen („Kämpft schon mit jemand anderem“). Dann erst den nächsten anderen Gegner besiegen – wer bindet, steht nicht in den Daten. */
+  async function binderBekaempfen(z, ohne, aus) { const ich = z.w.find((w) => w[1] === 1); if (!ich) return;
+    const andere = z.w.filter((w) => w[0] !== ohne && w[1] !== 1 && !w[10] && MONSTER[w[2]] && !((aus.get(w[0]) || 0) > Date.now())).sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]));
+    for (const b of andere.slice(0, 3)) { const ab = z.ev.length; z.ws.send(JSON.stringify({ t: "ziel", id: b[0] }));
+      for (let i = 0; i < 250; i++) { await schlaf(100); const neu = z.ev.slice(ab); if (neu.some((e) => e.a === "tot" && e.id === b[0])) return;
+        if (neu.some((e) => e.a === "text" && e.id === b[0] && /Kämpft schon/.test(e.t || ""))) break; } /* auch dieser bindet nicht: der nächste */
+      aus.set(b[0], Date.now() + 20000); } }
   /** Gegner an dieser Stelle bekämpfen, bis die Bedingung stimmt; schließt die Verbindung danach */
   async function kampfBis(s, wx, wy, arten, bis, ms = 240000) { await stelle(s, wx, wy); const z = await kampf(s.name, wx, wy); if (!z) return { z: null, siege: 0 };
     const siege = await kaempfen(z, arten, bis, ms); await schlaf(800);

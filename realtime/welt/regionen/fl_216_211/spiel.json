@@ -47,6 +47,90 @@
    },
    {
     "art": "rechteck",
+    "x0": 185,
+    "y0": 419,
+    "x1": 186,
+    "y1": 420
+   },
+   {
+    "art": "rechteck",
+    "x0": 180,
+    "y0": 417,
+    "x1": 181,
+    "y1": 418
+   },
+   {
+    "art": "rechteck",
+    "x0": 185,
+    "y0": 413,
+    "x1": 186,
+    "y1": 414
+   },
+   {
+    "art": "rechteck",
+    "x0": 201,
+    "y0": 224,
+    "x1": 202,
+    "y1": 225
+   },
+   {
+    "art": "rechteck",
+    "x0": 195,
+    "y0": 221,
+    "x1": 196,
+    "y1": 222
+   },
+   {
+    "art": "rechteck",
+    "x0": 200,
+    "y0": 218,
+    "x1": 201,
+    "y1": 219
+   },
+   {
+    "art": "rechteck",
+    "x0": 170,
+    "y0": 317,
+    "x1": 171,
+    "y1": 318
+   },
+   {
+    "art": "rechteck",
+    "x0": 165,
+    "y0": 315,
+    "x1": 166,
+    "y1": 316
+   },
+   {
+    "art": "rechteck",
+    "x0": 169,
+    "y0": 311,
+    "x1": 170,
+    "y1": 312
+   },
+   {
+    "art": "rechteck",
+    "x0": 118,
+    "y0": 440,
+    "x1": 119,
+    "y1": 441
+   },
+   {
+    "art": "rechteck",
+    "x0": 113,
+    "y0": 438,
+    "x1": 114,
+    "y1": 439
+   },
+   {
+    "art": "rechteck",
+    "x0": 118,
+    "y0": 434,
+    "x1": 119,
+    "y1": 435
+   },
+   {
+    "art": "rechteck",
     "x0": 284,
     "y0": 168,
     "x1": 285,
@@ -65,6 +149,69 @@
     "y0": 164,
     "x1": 282,
     "y1": 165
+   },
+   {
+    "art": "rechteck",
+    "x0": 142,
+    "y0": 371,
+    "x1": 143,
+    "y1": 372
+   },
+   {
+    "art": "rechteck",
+    "x0": 138,
+    "y0": 372,
+    "x1": 139,
+    "y1": 373
+   },
+   {
+    "art": "rechteck",
+    "x0": 139,
+    "y0": 368,
+    "x1": 140,
+    "y1": 369
+   },
+   {
+    "art": "rechteck",
+    "x0": 162,
+    "y0": 243,
+    "x1": 163,
+    "y1": 244
+   },
+   {
+    "art": "rechteck",
+    "x0": 157,
+    "y0": 243,
+    "x1": 158,
+    "y1": 244
+   },
+   {
+    "art": "rechteck",
+    "x0": 159,
+    "y0": 239,
+    "x1": 160,
+    "y1": 240
+   },
+   {
+    "art": "rechteck",
+    "x0": 140,
+    "y0": 354,
+    "x1": 141,
+    "y1": 355
+   },
+   {
+    "art": "rechteck",
+    "x0": 136,
+    "y0": 355,
+    "x1": 137,
+    "y1": 356
+   },
+   {
+    "art": "rechteck",
+    "x0": 137,
+    "y0": 351,
+    "x1": 138,
+    "y1": 352
    }
   ],
   "freigeben": [
@@ -211,6 +358,41 @@
    }
   },
   {
+   "id": "brunnenkreis",
+   "art": "lesen",
+   "x": 158,
+   "y": 434,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Brunnenkreis. Ein Wasserloch, ein Kreis aus Zelten – und jede Karawane hält hier, ob sie will oder nicht."
+   }
+  },
+  {
+   "id": "rast_ockerlande_1",
+   "art": "lesen",
+   "x": 155.5,
+   "y": 343.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz an der Karawanenstraße. Asche, Dattelkerne, ein umgestürzter Krug."
+   }
+  },
+  {
+   "id": "fischplatz_wasserloch_1",
+   "art": "lesen",
+   "x": 161.5,
+   "y": 430.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wasserloch in der Lehmsteppe. Erstaunlich, was hier im trüben Wasser schwimmt.",
+    "fisch": "moorhecht",
+    "stufe": 20
+   }
+  },
+  {
    "id": "wegweiser_glutbrunn_west_lesen",
    "x": 196,
    "y": 183.2,
@@ -231,6 +413,24 @@
   {
    "x": 282,
    "y": 167.3,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 140.1,
+   "y": 370.7,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 159.9,
+   "y": 242.1,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 138.3,
+   "y": 353.6,
    "r": 5,
    "tiefe": 1.1
   }
