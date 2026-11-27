@@ -26,6 +26,8 @@ BESONDERS = {
     "hauptmann_gruft": {"leine": 14, "wandern": 0, "mehrkampf": [[11200, 9600, 11231, 9631]], "lager": [("grauer_hauptmann", 11216, 9619)]},
     "tempel_kammer": {"leine": 14, "wandern": 0, "mehrkampf": [[11360, 9600, 11391, 9631]], "lager": [("sandmutter", 11376, 9612)]},
     "wrack_kajuete": {"leine": 14, "wandern": 0, "mehrkampf": [[11488, 9600, 11519, 9631]], "lager": [("wrackkapitaen", 11504, 9614)]},
+    # #147 (Welt c51186c7): das Erzberg-Bergwerk unter den Hochlanden (Untergrund) – Stollen, Trollhalle, Urkammer; vorerst ohne Gegner und ohne Boss (die Trollhalle für den Mini-Boss später)
+    "hochlande_bergwerk": {"leine": 10, "wandern": 2, "lager": []},
     # Phase 10 (#92): Klippenhöhlen (Untergrund, Welt #82) – Strandräuber im Schmugglerversteck, Krabben im Gezeitenbecken; der Wrackkapitän in der Kajüte (Instanz wrack_kajuete)
     "klippenhoehlen": {"leine": 10, "wandern": 2,
                        "lager": [("strandraeuber_saebel", 11442, 9618), ("strandraeuber_armbrust", 11444, 9614), ("strandraeuber_saebel", 11470, 9616), ("strandraeuber_armbrust", 11468, 9614),
