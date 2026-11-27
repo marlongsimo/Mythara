@@ -7,7 +7,7 @@
  * Boss-Regel (#116): In der Quest kämpfst du allein gegen eine schwächere Fassung (Schalter federmutter_kammer), danach die stärkere öffentlich oder als eigene Instanz (federmutter_danach).
  * Lohn: Rabenbeinschützer, Fernkampf 800, Magie 600, Defense 800 XP, 1 Questpunkt. Schalter gruft_offen (Abstieg in den Rabengrund).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 6 (Gesang mit Zeitfenster, Verkleidung, Akoluth-Beute, Federmutter, Zufalls-Reihenfolge je Spieler)
+ * Im Spiel (shared/quests.ts) seit 27.11. (Phase 6, Federmutter #116, Gegenstände ffb6891f).
  * und auf Figuren in mehreren Quests (Hedda auch in „Miras Rezeptbuch“ und C3). Liste: doku/quests/c-bausteine.md.
  */
 import type { QuestDef, QuestObjekt, Bed, Sperre } from "./questbau";
