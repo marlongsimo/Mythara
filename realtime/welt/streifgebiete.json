@@ -10,13 +10,13 @@
    "land": "Die Fahlen Weiten",
    "region": "fl_186_183",
    "mitte": [
-    6232.5,
+    6272.5,
     5980.5
    ],
    "rechteck": [
-    6172,
+    6212,
     5920,
-    6291,
+    6331,
     6039
    ],
    "meiden": [],
@@ -31,13 +31,13 @@
    "land": "Die Hochlande",
    "region": "fl_216_169",
    "mitte": [
-    7152.5,
+    7132.5,
     5674.5
    ],
    "rechteck": [
-    7092,
+    7072,
     5614,
-    7211,
+    7191,
     5733
    ],
    "meiden": [],
@@ -52,13 +52,13 @@
    "land": "Die Glutsande",
    "region": "fl_201_225",
    "mitte": [
-    6532.5,
+    6572.5,
     7346.5
    ],
    "rechteck": [
-    6472,
+    6512,
     7286,
-    6591,
+    6631,
     7405
    ],
    "meiden": [],
@@ -71,16 +71,16 @@
    "anzahl": 7,
    "stufe": 50,
    "land": "Die Glutsande",
-   "region": "fl_216_198",
+   "region": "fl_201_211",
    "mitte": [
-    7212.5,
-    6598.5
+    6772.5,
+    7006.5
    ],
    "rechteck": [
-    7152,
-    6538,
-    7271,
-    6657
+    6712,
+    6946,
+    6831,
+    7065
    ],
    "meiden": [],
    "modell": "vorhanden"
@@ -92,15 +92,15 @@
    "anzahl": 7,
    "stufe": 50,
    "land": "Die Ockerlande",
-   "region": "fl_216_225",
+   "region": "fl_231_225",
    "mitte": [
-    7212.5,
+    7652.5,
     7442.5
    ],
    "rechteck": [
-    7152,
+    7592,
     7382,
-    7271,
+    7711,
     7501
    ],
    "meiden": [],

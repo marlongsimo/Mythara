@@ -24,7 +24,7 @@ const pflicht = ["heidrast", "heidrast_wegstein", "schafpferch", "grenzposten", 
 const fehlt = pflicht.filter((id) => !alleIa.has(id)), weg = pflicht.filter((id) => alleIa.has(id) && !greifbar(OBEN, alleIa.get(id).x, alleIa.get(id).y));
 check(!fehlt.length, `${pflicht.length} Lesestellen und Eingänge vorhanden`, fehlt);
 check(!weg.length, "alle von Heidrast aus zu Fuß erreichbar (Grauwacht, Abtei, Burg, Gräber, Tal, Grenzposten)", weg);
-check(!OBEN(6744, 5760) && !OBEN(6760, 5760), "die Brücke zur Furt endet im Wasser – zu Fuß nicht hinüber");
+check(OBEN(6744, 5760) && OBEN(6760, 5760), "die Brücke zur Furt führt seit Phase 11 (#147) über den Grauen Sund – Wache und Schild, keine Sperre (Weg in die Hochlande prüft welt-hochlande)");
 const A = JSON.parse(readFileSync(join(WELT, "grauwacht_ausbau.json"), "utf8"));
 const nicht = [...A.adern, ...A.eisenhut, ...A.kernbaeume].filter((p) => !greifbar(OBEN, p.x, p.y, 1.6));
 check(!nicht.length, `Adern (${A.adern.length}), Eisenhut (${A.eisenhut.length}) und Kernbäume (${A.kernbaeume.length}) erreichbar`, nicht.map((p) => p.id));

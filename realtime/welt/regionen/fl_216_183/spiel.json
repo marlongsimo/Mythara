@@ -1,16 +1,250 @@
 {
  "start": [
   [
-   240.0,
-   240.0
+   240,
+   240
   ]
  ],
  "figuren": [],
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
-  "freigeben": []
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 138,
+    "y0": 13,
+    "x1": 139,
+    "y1": 14
+   },
+   {
+    "art": "rechteck",
+    "x0": 134,
+    "y0": 13,
+    "x1": 135,
+    "y1": 14
+   },
+   {
+    "art": "rechteck",
+    "x0": 134,
+    "y0": 8,
+    "x1": 135,
+    "y1": 9
+   },
+   {
+    "art": "rechteck",
+    "x0": 139,
+    "y0": 8,
+    "x1": 140,
+    "y1": 9
+   },
+   {
+    "art": "rechteck",
+    "x0": 307,
+    "y0": 141,
+    "x1": 308,
+    "y1": 142
+   },
+   {
+    "art": "rechteck",
+    "x0": 302,
+    "y0": 140,
+    "x1": 303,
+    "y1": 141
+   },
+   {
+    "art": "rechteck",
+    "x0": 303,
+    "y0": 135,
+    "x1": 304,
+    "y1": 136
+   },
+   {
+    "art": "rechteck",
+    "x0": 308,
+    "y0": 136,
+    "x1": 309,
+    "y1": 137
+   },
+   {
+    "art": "rechteck",
+    "x0": 18,
+    "y0": 36,
+    "x1": 19,
+    "y1": 37
+   },
+   {
+    "art": "rechteck",
+    "x0": 13,
+    "y0": 37,
+    "x1": 14,
+    "y1": 38
+   },
+   {
+    "art": "rechteck",
+    "x0": 15,
+    "y0": 32,
+    "x1": 16,
+    "y1": 33
+   },
+   {
+    "art": "rechteck",
+    "x0": 293,
+    "y0": 122,
+    "x1": 294,
+    "y1": 123
+   },
+   {
+    "art": "rechteck",
+    "x0": 289,
+    "y0": 123,
+    "x1": 290,
+    "y1": 124
+   },
+   {
+    "art": "rechteck",
+    "x0": 290,
+    "y0": 119,
+    "x1": 291,
+    "y1": 120
+   }
+  ],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 99.1,
+    "y0": 4,
+    "x1": 107,
+    "y1": 6.6
+   }
+  ]
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "steinhag",
+   "art": "lesen",
+   "x": 80.5,
+   "y": 34.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Steinhag. Die Bergstadt am See – Stein auf Stein, Dächer mit Schiefer beschwert. Wer in die Hochlande will, kommt hier vorbei."
+   }
+  },
+  {
+   "id": "steinhag_vogthof",
+   "art": "lesen",
+   "x": 79,
+   "y": 23.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Hof der Bergvögte. Über dem Tor das Zeichen der Hochlande: zwei gekreuzte Hämmer unter einem Berg."
+   }
+  },
+  {
+   "id": "steinhag_bank_tuer",
+   "art": "lesen",
+   "x": 57,
+   "y": 23,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Steinhag. Dasselbe Konto wie im Tal – nur das Gold riecht nach Stollen."
+   }
+  },
+  {
+   "id": "steinhag_wegstein",
+   "art": "lesen",
+   "x": 72,
+   "y": 34.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Wegstein von Steinhag."
+   }
+  },
+  {
+   "id": "steinhag_bindestein",
+   "art": "lesen",
+   "x": 84,
+   "y": 34.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Bindestein am Brunnen von Steinhag."
+   }
+  },
+  {
+   "id": "steinhag_werkstatt",
+   "art": "lesen",
+   "x": 95,
+   "y": 64,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkstatt von Steinhag: Esse, Amboss und eine Werkbank, an der Grubenholz zugeschnitten wird."
+   }
+  },
+  {
+   "id": "fischplatz_steinhagsee",
+   "art": "lesen",
+   "x": 102,
+   "y": 3,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Steg aus beißen im kalten Steinhagsee die Welse.",
+    "fisch": "wels",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "almhuette",
+   "art": "lesen",
+   "x": 274,
+   "y": 145.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Almhütte auf der Hohen Alm. Im Sommer weiden hier Schafe und Ziegen, und in der Käserei reifen Laibe so groß wie Wagenräder."
+   }
+  },
+  {
+   "id": "wegweiser_steinhag_west",
+   "art": "lesen",
+   "x": 26.5,
+   "y": 42.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Wegweiser: Norden – Hochpass, Passwacht · Westen – die Furt, Grauwacht"
+   }
+  },
+  {
+   "id": "wegweiser_steinhag_ost",
+   "art": "lesen",
+   "x": 130.5,
+   "y": 42.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Wegweiser: Osten – Erzberg, Bergwerk · Süden – Hohe Alm"
+   }
+  }
+ ],
+ "senken": [
+  {
+   "x": 16,
+   "y": 35.5,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 291.3,
+   "y": 121.7,
+   "r": 5,
+   "tiefe": 1.1
+  }
+ ]
 }
