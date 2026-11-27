@@ -1,0 +1,16 @@
+{
+ "id": "klippenhoehlen",
+ "name": "Die Klippenhöhlen",
+ "untertitel": "Unter dem Leuchtturm",
+ "ursprung": [
+  357,
+  300
+ ],
+ "chunks": [
+  2,
+  2
+ ],
+ "biom": "hoehle",
+ "stufe": 5,
+ "ebene": "untergrund"
+}

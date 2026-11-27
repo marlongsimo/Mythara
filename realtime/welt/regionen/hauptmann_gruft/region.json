@@ -1,0 +1,16 @@
+{
+ "id": "hauptmann_gruft",
+ "name": "Die Gruft des Grauen Hauptmanns",
+ "untertitel": "Instanz",
+ "ursprung": [
+  350,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 9,
+ "ebene": "untergrund"
+}

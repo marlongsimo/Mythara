@@ -26,6 +26,22 @@
    "daten": {
     "text": "Eine weite, stille Lichtung mitten im Wald. Das Gras steht hoch, dazwischen blühen Wildblumen."
    }
+  },
+  {
+   "id": "ort_wegweiser_kreuzweg_lesen",
+   "art": "lesen",
+   "x": 170,
+   "y": 45.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wegweiser: Nach Waldmark ↖ · Nach Graufurt → · Nach Weidenhain ↓",
+    "ziele": [
+     "Nach Waldmark ↖",
+     "Nach Graufurt →",
+     "Nach Weidenhain ↓"
+    ]
+   }
   }
  ],
  "ausgaenge": [],

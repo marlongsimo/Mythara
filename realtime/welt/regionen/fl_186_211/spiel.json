@@ -9,8 +9,230 @@
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
-  "freigeben": []
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 232,
+    "y0": 328,
+    "x1": 233,
+    "y1": 329
+   },
+   {
+    "art": "rechteck",
+    "x0": 234,
+    "y0": 344,
+    "x1": 235,
+    "y1": 345
+   },
+   {
+    "art": "rechteck",
+    "x0": 208,
+    "y0": 284,
+    "x1": 209,
+    "y1": 285
+   },
+   {
+    "art": "rechteck",
+    "x0": 214,
+    "y0": 280,
+    "x1": 215,
+    "y1": 281
+   }
+  ],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 232.1,
+    "y0": 406.7,
+    "x1": 240,
+    "y1": 409.3
+   }
+  ]
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "leuchtturm",
+   "art": "lesen",
+   "x": 224,
+   "y": 283.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Leuchtturm auf der Klippe. Oben brennt kein Licht mehr – seit das Schiff unten am Strand liegt."
+   }
+  },
+  {
+   "id": "waerterhaus",
+   "art": "lesen",
+   "x": 234.5,
+   "y": 283.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Wärterhaus. Auf dem Tisch ein Logbuch, die letzte Seite ist herausgerissen."
+   }
+  },
+  {
+   "id": "fischplatz_klippe",
+   "art": "lesen",
+   "x": 198.5,
+   "y": 352.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Unten an der Klippe schäumt die Brandung – Klippenbarsche stehen im Kehrwasser.",
+    "fisch": "klippenbarsch",
+    "stufe": 35
+   }
+  },
+  {
+   "id": "klippenhoehlen_eingang",
+   "art": "eingang",
+   "x": 228,
+   "y": 339.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spalt in der Klippe, aus dem kalte, salzige Luft weht.",
+    "tat": "klippenhoehle",
+    "knopf": "Hineingehen",
+    "ziel": [
+     11456,
+     9658
+    ]
+   }
+  },
+  {
+   "id": "raeucherhuette",
+   "art": "lesen",
+   "x": 262.5,
+   "y": 414.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Räucherhütte. Heringe hängen in Reihen im Rauch – hier wird Räucherhering gemacht.",
+    "station": "raeucherhuette"
+   }
+  },
+  {
+   "id": "moewenbucht",
+   "art": "lesen",
+   "x": 268,
+   "y": 409,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Möwenbucht. Netze trocknen zwischen den Katen, und über allem kreischen die Möwen."
+   }
+  },
+  {
+   "id": "fischplatz_moewenbucht",
+   "art": "lesen",
+   "x": 238.5,
+   "y": 406.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Steg aus fängt man Heringe.",
+    "fisch": "hering",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "kraeuterhof",
+   "art": "lesen",
+   "x": 466,
+   "y": 312.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Kräuterhof. Beete voller Salzkraut, Strandflieder und Meerfenchel – ein zweites Kräutergebiet."
+   }
+  },
+  {
+   "id": "summweide",
+   "art": "lesen",
+   "x": 466,
+   "y": 154,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Summweide. Über der Blumenwiese summt es, und es riecht nach Honig."
+   }
+  },
+  {
+   "id": "bienenstoecke",
+   "art": "lesen",
+   "x": 462,
+   "y": 161,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Bienenstöcke in einer Reihe. Einer fehlt – nur ein heller Fleck im Gras.",
+    "questobjekt": "bienenstock"
+   }
+  },
+  {
+   "id": "saegemuehle",
+   "art": "lesen",
+   "x": 438,
+   "y": 250.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Sägemühle von Erlengrund. Das Rad steht still – die Welle klemmt.",
+    "questobjekt": "saegemuehle_rad"
+   }
+  },
+  {
+   "id": "saegemuehle_werkbank",
+   "art": "lesen",
+   "x": 443,
+   "y": 255.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkbank in der Sägemühle.",
+    "station": "werkbank",
+    "schalter": "saegemuehle_frei"
+   }
+  },
+  {
+   "id": "koehlermeiler",
+   "art": "lesen",
+   "x": 452,
+   "y": 247.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Köhlermeiler. Er qualmt seit drei Tagen."
+   }
+  },
+  {
+   "id": "waldsenke",
+   "art": "lesen",
+   "x": 390,
+   "y": 218.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Senke im Wald. Abgenagte Knochen, Pfotenabdrücke so groß wie ein Teller."
+   }
+  },
+  {
+   "id": "wegweiser_moewenbucht_lesen",
+   "x": 282,
+   "y": 421.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Kielmund ↘ · Nach Leuchtturm ↖",
+    "ziele": [
+     "Nach Kielmund ↘",
+     "Nach Leuchtturm ↖"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  }
+ ]
 }

@@ -1,0 +1,9 @@
+[
+ {"id":"steinsaeule_1","objekt":"hoehle_steinsaeule_01","x":8.5,"y":7.5},
+ {"id":"steinsaeule_2","objekt":"hoehle_steinsaeule_01","x":24.5,"y":7.5},
+ {"id":"steinsaeule_3","objekt":"hoehle_steinsaeule_01","x":8.5,"y":21.5},
+ {"id":"steinsaeule_4","objekt":"hoehle_steinsaeule_01","x":24.5,"y":21.5},
+ {"id":"feuerkorb_5","objekt":"moor_feuerkorb_01","x":5.5,"y":14.5},
+ {"id":"feuerkorb_6","objekt":"moor_feuerkorb_01","x":27.5,"y":14.5},
+ {"id":"feuerkorb_7","objekt":"moor_feuerkorb_01","x":16.5,"y":3.5}
+]

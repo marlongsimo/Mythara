@@ -16,9 +16,9 @@ ffffffffffffffffff...................................................,,,,,..ffff
 ffffffffffffffffff...........................................................fffffffffffff...fff
 ffffffffffffffffff......ff...................................................fffffffffffff...fff
 ffffffffffffffffff......ff...,,,,,...........................................ffffffffffffff..fff
-ffffffffffffffffff..........,,,,,,,...........................................ffffffffffffff.fff
-fffffffffffffffffff.........,,,,,,,........................,,,,...............ffffffffffffffffff
-ffffffffffffffffff.........,,,,,,,,............ee.........,,,,,,..............ffffffffffffffffff
+ffffffffffffffffff..........,,,,,,,..................................,,.......ffffffffffffff.fff
+fffffffffffffffffff.........,,,,,,,........................,,,,......,,,......ffffffffffffffffff
+ffffffffffffffffff.........,,,,,,,,............ee.........,,,,,,.....,,,......ffffffffffffffffff
 ffffffffffffffffff.........,,,,,,,.............ee........,,,,,,,..............ffffffffffffffffff
 ffffffffffffffffff..........,,,,,..............ee........,,,,,,,...............fffffffffffffffff
 ffffffffffffffffff.............................ee.......,,,,,,,................fffffffffffffffff
@@ -29,9 +29,9 @@ ffffffffffffffffff.,,,.....................pppppppppp...........................
 ffffffffffffffffff,,,,,...................pppppppppppp.............................fffffffffffff
 ffffffffffffffffff,,,,,...................pppppppppppp..............................ffffffffffff
 ffffffffffffffffff,,,,,...eeeeeeeeeeeeeeeeppppppppppppeeeeeeeeeeeeeeee..............ffffffffffff
-ffffffffffffffffff,,,,,..eeeeeeeeeeeeeeeeppppppppppppppeeeeeeeeeeeeeeeeeeeeeeee.....ffffffffffff
-ffffffffffffffffff,,,,...eeeeeeeeeeeeeeeeppppppppppppppeeeeeeeeeeeeeeeeeeeeeeee.....ffffffffffff
-fffffffffffffffff,,,,.....................pppppppppppp................eeeeeeeee.....ffffffffffff
+ffffffffffffffffff,,,,,..eeeeeeeeeeeeeeeeppppppppppppppeeeeeeeeeeeeeeeeeeeeeeee...,,ffffffffffff
+ffffffffffffffffff,,,,...eeeeeeeeeeeeeeeeppppppppppppppeeeeeeeeeeeeeeeeeeeeeeee...,,ffffffffffff
+fffffffffffffffff,,,,.....................pppppppppppp................eeeeeeeee...,,ffffffffffff
 ffffffffffffffff,,,.......................pppppppppppp..............................ffffffffffff
 ffffffffffffffff.......................ee.ppppppppppppee............................ffffffffffff
 fffffffffffffff.......................eee..pppppppppp.eee..........................fffffffffffff

@@ -1,0 +1,387 @@
+{
+ "hinweis": "Ortsnamen und Grenzen (#90) für die Weltkarte und den Schriftzug beim Betreten (Oberfläche). gebiete: Grenze [x0, y0, x1, y1] und Schriftpunkt in Weltfeldern; orte: einzelne Namen auf der Karte.",
+ "gebiete": [
+  {
+   "id": "waldmark",
+   "name": "Die Waldmark",
+   "art": "Stadt",
+   "untertitel": "Die Zuflucht der Wanderer",
+   "grenze": [
+    6400,
+    6400,
+    6496,
+    6464
+   ],
+   "schrift": [
+    6448,
+    6432
+   ]
+  },
+  {
+   "id": "weidenhain",
+   "name": "Weidenhain",
+   "art": "Dorf",
+   "untertitel": "Das Dorf am Mühlgraben",
+   "grenze": [
+    6400,
+    6656,
+    6528,
+    6752
+   ],
+   "schrift": [
+    6464,
+    6704
+   ]
+  },
+  {
+   "id": "osthof",
+   "name": "Der Osthof",
+   "art": "Gehöft",
+   "untertitel": "Felder und Windmühle östlich der Waldmark",
+   "grenze": [
+    6496,
+    6400,
+    6592,
+    6464
+   ],
+   "schrift": [
+    6544,
+    6432
+   ]
+  },
+  {
+   "id": "waldweg",
+   "name": "Der Kreuzwald",
+   "art": "Wald",
+   "untertitel": "Steinwege nach Westen und Osten, der Feldweg nach Weidenhain",
+   "grenze": [
+    6336,
+    6464,
+    6592,
+    6656
+   ],
+   "schrift": [
+    6464,
+    6560
+   ]
+  },
+  {
+   "id": "nordwald",
+   "name": "Der Nordwald",
+   "art": "Wald",
+   "untertitel": "Köhlerlichtung, die verfallene Feste und ein alter Friedhof",
+   "grenze": [
+    6272,
+    6336,
+    6400,
+    6464
+   ],
+   "schrift": [
+    6336,
+    6400
+   ]
+  },
+  {
+   "id": "rabenmoor",
+   "name": "Rabenmoor",
+   "art": "Dorf",
+   "untertitel": "Das Dorf im Schwarzmoor",
+   "grenze": [
+    6272,
+    6656,
+    6400,
+    6752
+   ],
+   "schrift": [
+    6336,
+    6704
+   ]
+  },
+  {
+   "id": "obstwiesen",
+   "name": "Die Obstwiesen",
+   "art": "Landschaft",
+   "untertitel": "Apfelgärten östlich von Weidenhain",
+   "grenze": [
+    6528,
+    6656,
+    6592,
+    6752
+   ],
+   "schrift": [
+    6560,
+    6704
+   ]
+  },
+  {
+   "id": "westmark",
+   "name": "Die Westmark",
+   "art": "Landschaft",
+   "untertitel": "Wiesen und karges Moor am Westweg",
+   "grenze": [
+    6272,
+    6464,
+    6336,
+    6656
+   ],
+   "schrift": [
+    6304,
+    6560
+   ]
+  },
+  {
+   "id": "westried",
+   "name": "Die Riedwiesen",
+   "art": "Landschaft",
+   "untertitel": "Wiesen am Westrand, im Süden beginnt das Moor",
+   "grenze": [
+    6144,
+    6336,
+    6272,
+    6592
+   ],
+   "schrift": [
+    6208,
+    6464
+   ]
+  },
+  {
+   "id": "aschenwerth",
+   "name": "Aschenwerth",
+   "art": "Ruineninsel",
+   "untertitel": "Die Ruineninsel im Sumpf – nur über die alte Brücke",
+   "grenze": [
+    6144,
+    6592,
+    6272,
+    6752
+   ],
+   "schrift": [
+    6208,
+    6672
+   ]
+  },
+  {
+   "id": "nordsaum",
+   "name": "Der Nordsaum",
+   "art": "Wald",
+   "untertitel": "Grenzwald im Norden, der Uferweg zum alten Friedhof",
+   "grenze": [
+    6400,
+    6336,
+    6784,
+    6400
+   ],
+   "schrift": [
+    6592,
+    6368
+   ]
+  },
+  {
+   "id": "osthang",
+   "name": "Der Osthang",
+   "art": "Landschaft",
+   "untertitel": "Hügelland am Steinweg nach Graufurt",
+   "grenze": [
+    6592,
+    6400,
+    6656,
+    6752
+   ],
+   "schrift": [
+    6624,
+    6576
+   ]
+  },
+  {
+   "id": "graufurt",
+   "name": "Graufurt",
+   "art": "Stadt",
+   "untertitel": "Die Stadt am grauen Fluss",
+   "grenze": [
+    6656,
+    6400,
+    6784,
+    6752
+   ],
+   "schrift": [
+    6720,
+    6576
+   ]
+  },
+  {
+   "id": "ostufer",
+   "name": "Das Ostufer",
+   "art": "Landschaft",
+   "untertitel": "Jenseits des grauen Flusses – nur mit der Fähre",
+   "grenze": [
+    6784,
+    6400,
+    6912,
+    6752
+   ],
+   "schrift": [
+    6848,
+    6576
+   ]
+  }
+ ],
+ "orte": [
+  {
+   "name": "Kreuzweg",
+   "art": "Kreuzung",
+   "x": 6506,
+   "y": 6508
+  },
+  {
+   "name": "Heidrast",
+   "art": "Dorf",
+   "x": 6596,
+   "y": 5872
+  },
+  {
+   "name": "Grauwacht",
+   "art": "Stadt",
+   "x": 6706,
+   "y": 5740
+  },
+  {
+   "name": "Hügelgräber",
+   "art": "Ort",
+   "x": 6462,
+   "y": 5770
+  },
+  {
+   "name": "Grenzposten",
+   "art": "Ruine",
+   "x": 6640,
+   "y": 6112
+  },
+  {
+   "name": "Kernbaum-Tal",
+   "art": "Tal",
+   "x": 6236,
+   "y": 5778
+  },
+  {
+   "name": "Glutbrunn",
+   "art": "Stadt",
+   "x": 7160,
+   "y": 6950
+  },
+  {
+   "name": "Salzpfanne",
+   "art": "Ort",
+   "x": 7330,
+   "y": 6642
+  },
+  {
+   "name": "Der versandete Tempel",
+   "art": "Ort",
+   "x": 7112,
+   "y": 6680
+  },
+  {
+   "name": "Oase",
+   "art": "Ort",
+   "x": 7256,
+   "y": 6800
+  },
+  {
+   "name": "Ende des Grases",
+   "art": "Wegmarke",
+   "x": 6914,
+   "y": 6742
+  },
+  {
+   "name": "Kielmund",
+   "art": "Stadt",
+   "x": 6426,
+   "y": 7314
+  },
+  {
+   "name": "Möwenbucht",
+   "art": "Dorf",
+   "x": 6214,
+   "y": 7160
+  },
+  {
+   "name": "Leuchtturm",
+   "art": "Ort",
+   "x": 6176,
+   "y": 7036
+  },
+  {
+   "name": "Kräuterhof",
+   "art": "Ort",
+   "x": 6418,
+   "y": 7064
+  },
+  {
+   "name": "Mangroven",
+   "art": "Landschaft",
+   "x": 6508,
+   "y": 7590
+  },
+  {
+   "name": "Gehöft",
+   "art": "Ort",
+   "x": 6150,
+   "y": 6236
+  },
+  {
+   "name": "Mühle am Bach",
+   "art": "Ort",
+   "x": 6224,
+   "y": 6282
+  },
+  {
+   "name": "Köhlerhütte",
+   "art": "Ort",
+   "x": 6188,
+   "y": 6262
+  },
+  {
+   "name": "Schrein",
+   "art": "Ort",
+   "x": 6420,
+   "y": 6300
+  },
+  {
+   "name": "Alte Wachruine",
+   "art": "Ruine",
+   "x": 6320,
+   "y": 6232
+  },
+  {
+   "name": "Die Fahlen Weiten",
+   "art": "Landschaft",
+   "x": 6450,
+   "y": 5700
+  },
+  {
+   "name": "Die Glutsande",
+   "art": "Landschaft",
+   "x": 7200,
+   "y": 6750
+  },
+  {
+   "name": "Die Smaragdküste",
+   "art": "Landschaft",
+   "x": 6330,
+   "y": 7150
+  },
+  {
+   "name": "Die Furtklamm",
+   "art": "Ort",
+   "x": 6684,
+   "y": 6443
+  },
+  {
+   "name": "Der Turm mit dem grünen Licht",
+   "art": "Ort",
+   "x": 6840,
+   "y": 6518
+  }
+ ]
+}
