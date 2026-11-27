@@ -383,11 +383,14 @@ function tabZeichnen(): void {
   const el = tabEl(); if (!el || !tabJetzt) return; let neu = "";
   /* nur neu zeichnen, wenn sich der Inhalt ändert – im Kampf kommen ständig XP, sonst würde ein Knopf mitten im Antippen ersetzt */
   const setzen = (): boolean => { if ((el as HTMLElement & { _html?: string })._html === neu) return false; (el as HTMLElement & { _html?: string })._html = neu; el.innerHTML = `<button type="button" class="tzu" data-tzu="1" aria-label="Schließen">✕</button><div class="tinhalt">${neu}</div>`; return true; }; /* Inhalt eigens (scrollt), der Rahmen mit Rauten bleibt außen */
-  if (tabJetzt === "stil") { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, auto = autoLesen();
-    const zeile = (i: number) => { const k = kampfwerte(x, an, i, skillPlus(wirkungenJetzt())), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}" title="${STILE[art][i].text}"><i class="punkt"></i><b>${STILE[art][i].name}</b><small>${STILE[art][i].text}</small></button>`; };
-    neu = `<div class="kopf gross stilkopf"><b class="hl">Heldenlevel <em>${heldenlevel(x)}</em></b><small class="waffe">${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
-      <div class="stile pergament">${STILE[art].map((_, i) => zeile(i)).join("")}</div>
-      <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; setzen(); return; }
+  if (tabJetzt === "stil") { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, wid = an.waffe, w = wid ? GEGENSTAENDE[wid] : null, auto = autoLesen(), n = STILE[art].length;
+    /* Kopf: Waffe als Bild, Kampfart und Heldenlevel; darunter die Stile als Felder mit den Symbolen der Skills, die sie trainieren; unten der Autoangriff */
+    const feld = (i: number) => { const St = STILE[art][i], sk = Object.keys(St.xp || {}) as Skill[];
+      return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}" title="${St.name}: ${St.text}"><b>${St.name}</b><span class="szeichen">${sk.map((k) => SKILL_ZEICHEN[k]).join("")}</span><small>${St.text}</small></button>`; };
+    neu = `<div class="kopf"><span class="swaffe">${wid ? `<canvas width="96" height="96" data-bild="${wid}"></canvas>` : `<span class="leer">${PLATZBILD.waffe}</span>`}</span><span class="stitel"><b>${w ? w.name : "Fäuste"}</b><small>${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"} · Heldenlevel ${heldenlevel(x)}</small></span></div>
+      <div class="stile n${n}">${STILE[art].map((_, i) => feld(i)).join("")}</div>
+      <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`;
+    if (setzen()) el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); return; }
   if (tabJetzt === "freunde") { neu = freundeHtml(); setzen(); return; }
   if (tabJetzt === "quests") { const alle = questListe(), fertig = alle.filter((q) => q.art === "fertig"), offen = alle.filter((q) => q.art !== "fertig"), zeigen = questReiter === "fertig" ? fertig : offen;
     neu = `<div class="kopf"><b>Quests</b><small>${offen.filter((q) => q.art !== "neu").length} aktiv · ${questpunkte()} Questpunkte</small></div>
