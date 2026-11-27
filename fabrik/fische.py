@@ -134,5 +134,14 @@ if __name__ == "__main__":
     for art in arten:
         for z in zust:
             teile = fisch(art, z); png = os.path.join(ZIEL, f"_fisch_{art}_{z}.png"); bild(teile, os.path.abspath(png))
+            if opt.get("glb") == "1":                                                    # 3D-Modell dazu (Modifikatoren angewandt, Bauch auf z = 0)
+                h_ = bpy.data.objects.get("halter")
+                if h_: h_.rotation_euler = (0, 0, 0); bpy.context.view_layer.update()   # ohne die Schrägansicht des Rucksackbilds
+                for o in teile:
+                    bpy.context.view_layer.objects.active = o
+                    for m in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=m.name)
+                bpy.ops.object.select_all(action="DESELECT")
+                for o in teile: o.select_set(True)
+                bpy.ops.export_scene.gltf(filepath=os.path.abspath(os.path.join(ZIEL, f"fisch_{art}_{z}.glb")), export_format="GLB", use_selection=True)
             Image.open(png).resize((256, 256), Image.LANCZOS).save(os.path.join(ZIEL, f"fisch_{art}_{z}.webp"), "WEBP", quality=90); os.remove(png)
             print("Fisch:", art, z)

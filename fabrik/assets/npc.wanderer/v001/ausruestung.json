@@ -1,0 +1,106 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.wanderer – Wanderer (Südstraße): graues Gewand, Umhang, Strohhut, Wanderstock (Süden #121; aus npcmann3d, Gewand/Tuch als Hüllen, vorhandene Werkzeuge).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "kleidung.kopf.strohhut",
+      "platz": "kopf",
+      "art": "kopf",
+      "glb": "kleidung.kopf.strohhut/v001/quelle/strohhut.glb",
+      "sitz": 0.32
+    },
+    {
+      "id": "kleidung.umhang",
+      "platz": "umhang",
+      "art": "umhang",
+      "glb": "npc.agnes/v001/quelle/teile/kleidung.umhang.glb"
+    },
+    {
+      "id": "werkzeug.stock",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.stock/v001/quelle/stock.glb",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.gewand",
+      "platz": "kutte",
+      "farbe": "#5a5a4a",
+      "dicke": 0.03,
+      "unten": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberarm.L",
+          0,
+          1
+        ],
+        [
+          "oberarm.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0,
+          0.8
+        ],
+        [
+          "unterarm.R",
+          0,
+          0.8
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.95
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.95
+        ]
+      ]
+    }
+  ],
+  "teilnetze": []
+}

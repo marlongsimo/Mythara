@@ -1,12 +1,14 @@
 """Mythara Fabrik – kleine Raben, ganz aus einfachen Formen gebaut (wenige Polygone – viele gleichzeitig im Bild), mit Skelett und Bewegungen.
 
-  <blender-python> fabrik/rabe.py -- <art> <ziel.blend>      art: moorrabe | kueken | seevogel
+  <blender-python> fabrik/rabe.py -- <art> <ziel.blend>      art: moorrabe | kueken | seevogel | kraehe | ente
 Danach: fabrik/export3d.py <ziel.blend> <spiel.glb> echtzeit=1
 
 moorrabe – Gegner, ≈ 0,5 m lang, 0,95 m Spannweite, schwarz mit grünlichem Schimmer; schwebt in 1 m Höhe (Ruhelage in der Luft).
   fliegen (Schleife, ein Flügelschlag je 0,6 s) · sturz (Flügel anlegen, herabstoßen, Treffer, wieder hoch) · treffer · tod (trudelt zu Boden, bleibt liegen)
 seevogel – Seevogel der Smaragdküste (Phase 10, St. 26): Möwe ×1,4 (≈ 0,7 m, 1,3 m Spannweite), weiß, graue Flügel mit schwarzen Spitzen, gelber Schnabel;
   schwebt in 1,4 m Höhe; Bewegungen wie der Moorrabe (sturz = Sturzflug)
+kraehe – Krähe (Süden #121, Schwarm auf den Feldern, St. 2–5): Moorrabe ×0,85, mattschwarz mit grauem Nacken – gleiche Bewegungen
+ente – Ente (Süden #121, Stimmungstier am Schilfsee): Form des Kükens ×1,9, grauer Leib, grüner Kopf, weißer Halsring, oranger Schnabel – ruhe, laufen
 kueken – Begleiter (Pet), ≈ 0,22 m hoch, flauschig rund, großer Kopf, Stummelflügel; steht am Boden.
   ruhe (wippt, pickt zweimal, plustert die Flügel) · laufen (watschelt in kleinen Hüpfern)
 Gesicht nach -y, oben +z. Jedes Teil hängt starr an einem Knochen (keine Verformung nötig).
@@ -15,7 +17,7 @@ import math, os, sys
 import bpy
 from mathutils import Quaternion, Vector
 
-a_ = sys.argv[sys.argv.index("--") + 1:]; ART, ZIEL = a_[0], a_[1]; RABE = ART in ("moorrabe", "seevogel"); F = 1.4 if ART == "seevogel" else 1.0   # Seevogel: alles 1,4-mal so groß
+a_ = sys.argv[sys.argv.index("--") + 1:]; ART, ZIEL = a_[0], a_[1]; RABE = ART in ("moorrabe", "seevogel", "kraehe"); F = {"seevogel": 1.4, "kraehe": 0.85, "ente": 1.9}.get(ART, 1.0)   # Seevogel ×1,4, Krähe ×0,85, Ente ×1,9 (aus dem Küken)
 bpy.ops.wm.read_factory_settings(use_empty=True)
 def mat(n, c, r=0.6, glanz=0.0):
     m = bpy.data.materials.get(n)
@@ -37,6 +39,7 @@ def flaeche(punkte, m, kn, dicke=0.008):
 
 if RABE:
     Z = 1.0; FED = mat("feder", (28, 32, 34), 0.45, 0.25); SCH = mat("schimmer", (30, 52, 48), 0.35, 0.3); SN = mat("schnabel", (45, 42, 40), 0.5); AUG = mat("auge", (210, 160, 40), 0.3); KOE = FED
+    if ART == "kraehe": KOE = mat("kraehe", (36, 36, 40), 0.7); FED = mat("kraehe_dunkel", (22, 22, 26), 0.6); SCH = mat("kraehe_grau", (70, 72, 76), 0.7); SN = mat("kraehe_schnabel", (30, 28, 28), 0.5); AUG = mat("auge", (40, 34, 30), 0.3)
     if ART == "seevogel": KOE = mat("weiss", (236, 236, 232), 0.6); FED = mat("spitzen", (36, 36, 40), 0.5); SCH = mat("grau", (150, 158, 166), 0.55); SN = mat("gelb", (232, 190, 60), 0.4); AUG = mat("auge", (240, 220, 120), 0.3)
     kugel((0, 0, Z), (0.075, 0.17, 0.07), KOE, "koerper")
     kugel((0, -0.17, Z + 0.04), (0.055, 0.06, 0.055), KOE, "kopf")
@@ -53,11 +56,14 @@ if RABE:
         KN["fluegel." + S] = ((sx * 0.05, 0.01, Z + 0.02), (sx * 0.235, 0.01, Z + 0.02), "koerper"); KN["spitze." + S] = ((sx * 0.235, 0.01, Z + 0.02), (sx * 0.45, 0.04, Z + 0.02), "fluegel." + S)
         KN["bein." + S] = ((sx * 0.03, 0.02, Z - 0.05), (sx * 0.03, 0.02, Z - 0.12), "koerper")
 else:
-    Z = 0.0; FLAUM = mat("flaum", (62, 62, 70), 0.95); BAUCH = mat("bauch", (150, 145, 140), 0.95); SN = mat("schnabel", (215, 190, 120), 0.5); AUG = mat("auge", (20, 18, 22), 0.2); GLANZ = mat("glanz", (250, 250, 250), 0.2)
+    Z = 0.0; FLAUM = mat("flaum", (62, 62, 70), 0.95); BAUCH = mat("bauch", (150, 145, 140), 0.95); SN = mat("schnabel", (215, 190, 120), 0.5); AUG = mat("auge", (20, 18, 22), 0.2); GLANZ = mat("glanz", (250, 250, 250), 0.2); KOPF = FLAUM
+    if ART == "ente": FLAUM = mat("entenleib", (140, 132, 120), 0.7); BAUCH = mat("entenbrust", (150, 100, 70), 0.7); SN = mat("entenschnabel", (232, 160, 50), 0.5); KOPF = mat("entenkopf", (40, 100, 60), 0.35)
     kugel((0, 0, 0.085), (0.075, 0.08, 0.07), FLAUM, "koerper"); kugel((0, -0.035, 0.075), (0.055, 0.05, 0.05), BAUCH, "koerper")
-    kugel((0, -0.03, 0.165), (0.06, 0.058, 0.055), FLAUM, "kopf")
-    for k in range(3): kugel((0.012 * (k - 1), -0.01, 0.22 + 0.004 * (k % 2)), (0.008, 0.02, 0.018), FLAUM, "kopf", 6, 4)   # Flaumbüschel
-    kegel((0, -0.095, 0.16), 0.016, 0.035, SN, "kopf", (math.radians(90), 0, 0))
+    kugel((0, -0.03, 0.165), (0.06, 0.058, 0.055), KOPF, "kopf")
+    if ART == "ente": kugel((0, -0.03, 0.125), (0.05, 0.05, 0.012), mat("halsring", (240, 240, 236), 0.6), "kopf", 10, 4)
+    for k in range(3 if ART == "kueken" else 0): kugel((0.012 * (k - 1), -0.01, 0.22 + 0.004 * (k % 2)), (0.008, 0.02, 0.018), FLAUM, "kopf", 6, 4)   # Flaumbüschel
+    sn_ = kegel((0, -0.095 - 0.01 * (ART == "ente"), 0.16), 0.016, 0.035 * (1.4 if ART == "ente" else 1), SN, "kopf", (math.radians(90), 0, 0))
+    if ART == "ente": sn_.scale = (1.8, 0.45, 1.0)                                                   # breiter, flacher Entenschnabel
     for sx in (-1, 1): kugel((sx * 0.03, -0.075, 0.18), (0.013, 0.01, 0.015), AUG, "kopf", 8, 6); kugel((sx * 0.034, -0.084, 0.186), (0.004, 0.003, 0.004), GLANZ, "kopf", 6, 4)
     for S, sx in (("L", 1), ("R", -1)):
         kugel((sx * 0.072, 0.01, 0.095), (0.015, 0.04, 0.03), FLAUM, "fluegel." + S)
@@ -137,5 +143,5 @@ for name, (fn, n, rate, schleife, mehr) in B_.items():
         PB["wurzel"].keyframe_insert("location", frame=i + 1, group="wurzel")
     a["bilder"] = k; a["rate"] = rate; a["schleife"] = schleife; a["mehr"] = __import__("json").dumps(mehr); print("Bewegung:", name, k, "Bilder")
 arm.animation_data.action = bpy.data.actions[list(B_)[0]]; bpy.context.scene.frame_set(1)
-if not RABE: arm["pet"] = True; arm["hoehe"] = 0.23
+if ART == "kueken": arm["pet"] = True; arm["hoehe"] = 0.23
 bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(ZIEL)); print("geschrieben:", ZIEL)

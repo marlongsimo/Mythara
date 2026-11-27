@@ -1,0 +1,100 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.bauer – Bauer (Heckenhof): olivgrünes Gewand, Strohhut, Sichel (Süden #121; aus npcmann3d, Gewand/Tuch als Hüllen, vorhandene Werkzeuge).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "kleidung.kopf.strohhut",
+      "platz": "kopf",
+      "art": "kopf",
+      "glb": "kleidung.kopf.strohhut/v001/quelle/strohhut.glb",
+      "sitz": 0.32
+    },
+    {
+      "id": "werkzeug.sichel",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "skilling/utensilien/sichel/v001/hand/sichel.glb",
+      "griff": 0.15,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.gewand",
+      "platz": "kutte",
+      "farbe": "#6f7a44",
+      "dicke": 0.03,
+      "unten": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberarm.L",
+          0,
+          1
+        ],
+        [
+          "oberarm.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0,
+          0.8
+        ],
+        [
+          "unterarm.R",
+          0,
+          0.8
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.95
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.95
+        ]
+      ]
+    }
+  ],
+  "teilnetze": []
+}

@@ -9356,6 +9356,168 @@
     "wind": 0,
     "fest": true
    }
+  },
+  {
+   "id": "sueden_vogelscheuche",
+   "name": "Vogelscheuche",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/sueden_vogelscheuche.webp",
+   "groesse": [
+    74,
+    98
+   ],
+   "anker": [
+    0.4932,
+    0.9184
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/sueden_objekte.py (Süden #121), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/sueden/vogelscheuche.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "sueden_bienenstock",
+   "name": "Bienenstock",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/sueden_bienenstock.webp",
+   "groesse": [
+    46,
+    61
+   ],
+   "anker": [
+    0.4891,
+    0.9016
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/sueden_objekte.py (Süden #121), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/sueden/bienenstock.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "sueden_saegemuehle",
+   "name": "Sägemühle",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/sueden_saegemuehle.webp",
+   "groesse": [
+    365,
+    273
+   ],
+   "anker": [
+    0.2452,
+    0.8901
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 1.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/sueden_objekte.py (Süden #121), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/sueden/saegemuehle.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "sueden_trittsteine",
+   "name": "Trittsteine",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/sueden_trittsteine.webp",
+   "groesse": [
+    191,
+    68
+   ],
+   "anker": [
+    0.5,
+    0.75
+   ],
+   "massstab": 1,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/sueden_objekte.py (Süden #121), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/sueden/trittsteine.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "sueden_trophaee_hecht",
+   "name": "Trophäe „Der alte Hecht“",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/sueden_trophaee_hecht.webp",
+   "groesse": [
+    83,
+    55
+   ],
+   "anker": [
+    0.3614,
+    0.8364
+   ],
+   "massstab": 1,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/sueden_objekte.py (Süden #121), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/sueden/trophaee_hecht.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "sueden_trophaee_graupelz",
+   "name": "Trophäe „Der Graupelz“",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/sueden_trophaee_graupelz.webp",
+   "groesse": [
+    32,
+    50
+   ],
+   "anker": [
+    0.4844,
+    0.9
+   ],
+   "massstab": 1,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/sueden_objekte.py (Süden #121), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/sueden/trophaee_graupelz.glb",
+    "wind": 0,
+    "fest": true
+   }
   }
  ]
 }
