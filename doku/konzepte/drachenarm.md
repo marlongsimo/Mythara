@@ -2,7 +2,9 @@
 
 *Entwurf Konzept-Chat, 27.11.2026, noch nicht abgesegnet.* Eigener Riftmere-Entwurf.
 Grundlage: Kanon (Großregion Drachenarm auf der Karte), `endgame.md` (Raid „Sturm auf die Wachtfeste“ und Weltenkern im Drachenarm), `phase-12.md` („Drachenarm bleibt danach“).
-Auf der Karte: drei Kacheln „Der Drachenarm“ im Osten, rechts der Hochlande (etwa x 7840–8350, y 5400–6750), lang und schmal. Gegner dort ist bisher nur der **Drakling** (Stufe 111).
+Auf der Karte (Bestandsaufnahme Welt, Issue #181): etwa **106 000 Landfelder**, 72 % begehbar, östlich der Hochlande. Drei Teile:
+**Wurzel** (Dünen, Steppe), **schmaler Hals** (70–80 Felder breit) und **Faust** (Felsmassiv, Dünenhochfläche, zwei Bergseen, höchster Punkt der Nordinsel).
+Zugang **nur über die Hochlande**: im Nordwesten von der Einsiedelei (ca. 570 Felder) oder im Westen von der Hohen Alm. Heute gibt es dort keine Wege, Orte oder Arbeitsstellen, aber 113 Gegnerplätze, meist mit alten Werten um Stufe 56 (Plan 60–75). Am Südzipfel stehen unpassende Strandräuber der Stufe 30.
 
 ## Rolle im Spiel
 
@@ -12,7 +14,7 @@ Auf der Karte: drei Kacheln „Der Drachenarm“ im Osten, rechts der Hochlande 
 
 ## Geschichte (Vorschlag)
 
-Der Drachenarm ist eine lange Halbinsel aus schwarzem Fels, die ins Splittermeer greift, zum Himmelsriss hin.
+Der Drachenarm greift wie ein Arm mit geballter Faust nach Osten, zum Himmelsriss hin.
 Beim Himmelsriss stürzte hier der größte Splitter nieder. Darum herum baute die Wacht ihre letzte Feste.
 Die **Drachen** sind keine alten Herrscher, sondern **Kinder des Risses**: Echsen, die das Splitterlicht über Generationen verwandelt hat. Je näher am Kern, desto größer und verderbter. Die Draklinge sind ihre Jüngsten.
 
@@ -20,17 +22,18 @@ Die **Drachen** sind keine alten Herrscher, sondern **Kinder des Risses**: Echse
 
 | Teil | Lage | Was |
 |---|---|---|
-| **Brandpass** | Übergang von den Hochlanden | Einstieg, Lager der **Letzten Wacht** (Rest der alten Wacht, Hauptort, siehe unten) |
-| **Schuppenwald** | Mitte | verkohlter Wald, Draklinge und Echsenreiter-Gefallene, hohe Holzarten |
-| **Glasküste** | Ostküste am Splittermeer | Strand aus Splitterglas, Fischplätze der höchsten Stufe, Seeungeheuer-Gegner |
-| **Hornspitze** | Norden | Horst eines großen Drachen: möglicher **Unikat-Boss** (statt oder neben der Frostkrone) |
-| **Wachtfeste** | Spitze des Arms | der Raid, darunter der Weltenkern |
+| **Wurzel** | Westen, Dünen und Steppe, Übergang von den Hochlanden | Einstieg über Einsiedelei oder Hohe Alm, Lager der **Letzten Wacht** (Hauptort, siehe unten), niedrigere Gegner des Drachenarms |
+| **Der Hals** | schmale Landbrücke (70–80 Felder) | **Brandpass**: einziger Weg zur Faust, Wachtürme und Sperren der Gefallenen, guter Ort für Quests |
+| **Faust – Dünenhochfläche** | Osten | Draklinge, Schuppenreiter, hohe Holz- und Erzstellen |
+| **Faust – Bergseen** | zwei Seen im Massiv | Fischplätze der höchsten Stufe, Glaskriecher am Ufer |
+| **Faust – Felsmassiv** | höchster Punkt der Nordinsel | **Horst** eines großen Drachen (möglicher Unikat-Boss) und auf dem Gipfel die **Wachtfeste** (Raid), darunter der Weltenkern |
 
 **Hauptort:** „**Letztwacht**“, ein Grenzlager, das mit Quests zur Festung wächst (wie Grauwacht über Stadtstufen). Mit Bank, Läden der höchsten Stufe und einem Wegstein-Ziel.
 Achtung: Der Kanon nennt als Großstadt ⑦ **Letzthafen**. Liegt sie im Drachenarm, ist sie der Hauptort, und „Letztwacht“ fällt weg.
 
 ## Gegner (Vorschlag, Modelle vom Nutzer)
 
+- Die Strandräuber am Südzipfel (Stufe 30) passen nicht und sollten weg (Welt/Integration).
 - **Drakling** (gibt es), **Drache** (groß, Fernkampf-Feuer aus der Luft), **Schuppenreiter** (Gefallener der Wacht auf einer Echse), **Glaskriecher** (Glasküste), **Splitterwyrm** (selten, Elitegegner).
 
 ## Quests (Skizze, Block J)
