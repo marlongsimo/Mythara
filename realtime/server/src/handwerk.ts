@@ -96,7 +96,7 @@ function wartenAbholen(s: HandwerkSpieler, r0: Rezept): string | null { const W 
   if (jetzt < W.fertig) return `Noch nicht fertig – noch ${zeitText(W.fertig - jetzt)}.`;
   const je = r.menge || 1; let k = 0; while (k < W.n && aufnehmen(sb, s.nutzer, r.ergebnis, je, false) === je) k++;
   if (!k) return "Dein Rucksack ist voll.";
-  berufXpDazu(sb, s.nutzer, rezeptBeruf(r), r.xp * k); if (r.quest) for (let i = 0; i < k; i++) HANDWERK_QUEST.fertig(s.nutzer, r);
+  berufXpDazu(sb, s.nutzer, rezeptBeruf(r), r.xp * k); for (let i = 0; i < k; i++) HANDWERK_QUEST.fertig(s.nutzer, r); /* jedes Stück zählt für Quests (G4: drei Räucherheringe) – wie beim sofortigen Herstellen, auch ohne Quest-Rezept */
   wartenSetzen(sb, s.nutzer, k < W.n ? { ...W, n: W.n - k } : null);
   senden(s, { t: "handwerk", tat: "abgeholt", rezept: r.id, menge: k * je, rest: W.n - k });
   senden(s, { t: "chat", kanal: "system", text: `Du nimmst ${k * je} × ${(GEGENSTAENDE[r.ergebnis] || { name: r.ergebnis }).name} aus dem Rauch.${k < W.n ? " Der Rest hängt noch – dein Rucksack ist voll." : ""}`, zeit: Date.now() }); return null; }
