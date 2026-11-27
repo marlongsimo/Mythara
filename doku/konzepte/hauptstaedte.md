@@ -66,8 +66,12 @@ Regel des Nutzers: **jede etwas größere Stadt mindestens ein Bankschalter**. W
 | Quests | kleine Stadt-Quests |
 | Integration | Waren, Einbau, live |
 
-## Offen (Nutzer)
+## Entschieden (27.11.)
 
-- Mindeststufe der Zunfthäuser (Vorschlag 60) – gleich für alle oder je Beruf anders?
-- Namen der Zunfthäuser und Viertel.
-- Stadt-Quests ja/nein und wie viele.
+- Zunfthäuser für alle Berufe **ab Stufe 60**.
+- **Kleine Stadt-Quests** ja (3–5 je Hauptstadt).
+- **Steinhag zuerst** – Start freigegeben.
+
+## Offen
+
+- Namen der Zunfthäuser und Viertel (Vorschläge oben gelten als Arbeitsnamen).

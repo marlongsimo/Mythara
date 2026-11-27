@@ -95,7 +95,7 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - **Glutsteinschild** (27.11.): seltener Schild (Nebenhand), Anforderung **Defense 40**, Abwehr **34/34/−1** (zwischen Stufe 35 und 45), als **einziger Schild mit Angriffsboni: +5 Geschick, +3 Stärke**; **Drop der Sandmutter** (starke Fassung nach F3, etwa 1 : 100), handelbar. Modell vom Nutzer.
 
-- **Hauptstädte und Zunfthäuser** (27.11.): Hauptstadt Norden **Steinhag**, Süden **Kielmund** – beide auf große Hauptstädte ausbauen (Mauern, Wahrzeichen, Viertel, 2 Banken, viele Läden); **Zunfthäuser** ab Berufsstufe, **Bergbau unterirdisch**; **jede etwas größere Stadt hat mindestens einen Bankschalter**. Konzept `doku/konzepte/hauptstaedte.md`.
+- **Hauptstädte und Zunfthäuser** (27.11.): Hauptstadt Norden **Steinhag**, Süden **Kielmund** – beide auf große Hauptstädte ausbauen (Mauern, Wahrzeichen, Viertel, 2 Banken, viele Läden); **Zunfthäuser** ab Berufsstufe, **Bergbau unterirdisch**; **jede etwas größere Stadt hat mindestens einen Bankschalter**; Zunfthäuser **ab Stufe 60**; **kleine Stadt-Quests** ja; **Steinhag zuerst** (freigegeben). Konzept `doku/konzepte/hauptstaedte.md`.
 - **Skills-Fenster** (27.11.): Kachel **Heldenlevel** entfernen, wieder **2 Reihen**.
 
 ## Für später (Ideen, noch nicht geplant)
