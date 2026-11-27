@@ -195,7 +195,8 @@ export function antworte(npc: string, a: string): void { senden({ t: "antwort", 
 export function dialogZu(): void { senden({ t: "dialogzu" }); }
 /** Questbelohnung: die Skill-XP auf dem Gerät nachtragen (der Server hat sie schon gutgeschrieben) und als Drops zeigen */
 /** #77: „Okay“ im Abschlussfenster – den Lohn dieser Quest abholen (der Server bucht genau einmal und antwortet mit „abgeholt“) */
-export function questAbholen(id: string): void { senden({ t: "abholen", id }); }
+/** „Okay“ im Abschlussfenster; wahl: die gewählte Belohnung (#146, QuestDef.belohnung.wahl) – der Server prüft sie */
+export function questAbholen(id: string, wahl?: string): void { senden(wahl ? { t: "abholen", id, wahl } : { t: "abholen", id }); }
 /** #65: eine Handels-Nachricht an den Server (client/src/handel.ts) */
 export function handelSenden(m: object): void { senden({ t: "handel", ...m }); }
 function belohnungBuchen(b: Record<string, number>) { const x = skillsLesen(); for (const k of Object.keys(x) as (keyof typeof x)[]) x[k] += Math.max(0, Number(b[k]) || 0);
