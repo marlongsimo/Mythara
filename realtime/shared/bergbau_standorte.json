@@ -1089,29 +1089,29 @@
   {
    "name": "Steinbruch von Steinhag",
    "ort": "steinhag",
-   "x": 6922.2,
-   "y": 5921.6,
+   "x": 6928,
+   "y": 5891.5,
    "r": 5,
    "adern": [
     {
      "id": "steinbruch_von_steinhag_sterneisen_1",
      "art": "sterneisen",
-     "x": 6924.5,
-     "y": 5922.5,
+     "x": 6930.5,
+     "y": 5892.5,
      "region": "fl_216_183"
     },
     {
      "id": "steinbruch_von_steinhag_sterneisen_2",
      "art": "sterneisen",
-     "x": 6920.5,
-     "y": 5923.5,
+     "x": 6925.5,
+     "y": 5893.5,
      "region": "fl_216_183"
     },
     {
      "id": "steinbruch_von_steinhag_splittereisen_3",
      "art": "splittereisen",
-     "x": 6921.5,
-     "y": 5919.5,
+     "x": 6927.5,
+     "y": 5888.5,
      "region": "fl_216_183"
     }
    ]
@@ -1179,36 +1179,36 @@
   {
    "name": "Kupfer und Eisen bei Steinhag",
    "ort": "steinhag",
-   "x": 7015.1,
-   "y": 5970.1,
+   "x": 6983.2,
+   "y": 5953.6,
    "r": 5,
    "adern": [
     {
      "id": "kupfer_und_eisen_bei_steinhag_kupfer_1",
      "art": "kupfer",
-     "x": 7017.5,
-     "y": 5971.5,
+     "x": 6985.5,
+     "y": 5954.5,
      "region": "fl_216_183"
     },
     {
      "id": "kupfer_und_eisen_bei_steinhag_kupfer_2",
      "art": "kupfer",
-     "x": 7014.5,
-     "y": 5972.5,
+     "x": 6982.5,
+     "y": 5956.5,
      "region": "fl_216_183"
     },
     {
      "id": "kupfer_und_eisen_bei_steinhag_eisen_3",
      "art": "eisen",
-     "x": 7012.5,
-     "y": 5969.5,
+     "x": 6980.5,
+     "y": 5952.5,
      "region": "fl_216_183"
     },
     {
      "id": "kupfer_und_eisen_bei_steinhag_eisen_4",
      "art": "eisen",
-     "x": 7016.5,
-     "y": 5967.5,
+     "x": 6984.5,
+     "y": 5951.5,
      "region": "fl_216_183"
     }
    ]
@@ -1216,29 +1216,29 @@
   {
    "name": "Schwarzeisen am Stadtrand",
    "ort": "steinhag",
-   "x": 6921.7,
-   "y": 5940.9,
+   "x": 7040.1,
+   "y": 5928.5,
    "r": 5,
    "adern": [
     {
      "id": "schwarzeisen_am_stadtrand_eisen_1",
      "art": "eisen",
-     "x": 6924.5,
-     "y": 5941.5,
+     "x": 7042.5,
+     "y": 5929.5,
      "region": "fl_216_183"
     },
     {
      "id": "schwarzeisen_am_stadtrand_schwarzeisen_2",
      "art": "schwarzeisen",
-     "x": 6919.5,
-     "y": 5942.5,
+     "x": 7038.5,
+     "y": 5930.5,
      "region": "fl_216_183"
     },
     {
      "id": "schwarzeisen_am_stadtrand_schwarzeisen_3",
      "art": "schwarzeisen",
-     "x": 6921.5,
-     "y": 5938.5,
+     "x": 7039.5,
+     "y": 5925.5,
      "region": "fl_216_183"
     }
    ]
@@ -1283,15 +1283,15 @@
   {
    "name": "Splitterfels über dem Steinhagsee",
    "ort": "steinhag",
-   "x": 7037.1,
-   "y": 5813,
+   "x": 7065.2,
+   "y": 5839.1,
    "r": 3,
    "adern": [
     {
      "id": "splitterfels_uber_dem_steinhagsee_splittereisen_1",
      "art": "splittereisen",
-     "x": 7037.5,
-     "y": 5812.5,
+     "x": 7065.5,
+     "y": 5839.5,
      "region": "fl_216_169"
     }
    ],
@@ -1324,6 +1324,66 @@
      "art": "splittereisen",
      "x": 6937.5,
      "y": 5518.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 2)",
+   "ort": "hlweg_2",
+   "x": 7047.8,
+   "y": 5914,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_2_eisen_1",
+     "art": "eisen",
+     "x": 7050.5,
+     "y": 5914.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_2_eisen_2",
+     "art": "eisen",
+     "x": 7045.5,
+     "y": 5915.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_2_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7047.5,
+     "y": 5911.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 4)",
+   "ort": "hlweg_4",
+   "x": 6951.7,
+   "y": 5840.3,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_4_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 6954.5,
+     "y": 5841.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_4_sterneisen_2",
+     "art": "sterneisen",
+     "x": 6949.5,
+     "y": 5841.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_4_sterneisen_3",
+     "art": "sterneisen",
+     "x": 6951.5,
+     "y": 5837.5,
      "region": "fl_216_169"
     }
    ]
@@ -1385,6 +1445,66 @@
      "x": 6890.5,
      "y": 5820.5,
      "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 10)",
+   "ort": "hlweg_10",
+   "x": 7075.7,
+   "y": 5876.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_10_eisen_1",
+     "art": "eisen",
+     "x": 7078.5,
+     "y": 5877.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_10_eisen_2",
+     "art": "eisen",
+     "x": 7073.5,
+     "y": 5878.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_10_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7075.5,
+     "y": 5874.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 12)",
+   "ort": "hlweg_12",
+   "x": 7031.7,
+   "y": 5947.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_12_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 7034.5,
+     "y": 5948.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_12_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7029.5,
+     "y": 5949.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_12_sterneisen_3",
+     "art": "sterneisen",
+     "x": 7031.5,
+     "y": 5945.5,
+     "region": "fl_216_183"
     }
    ]
   },

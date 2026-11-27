@@ -46,6 +46,7 @@ TESTS=(
   welt-sammelstellen
   welt-streifgebiete
   welt-hochlande
+  welt-zunft
   phase5
   phase8-10
   abholen

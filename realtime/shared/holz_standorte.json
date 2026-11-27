@@ -1036,29 +1036,29 @@
     {
      "id": "bergwald_unter_steinhag_kernbaum_1",
      "art": "kernbaum",
-     "x": 6984.5,
-     "y": 5968.5,
+     "x": 7050.5,
+     "y": 5869.5,
      "region": "fl_216_183"
     },
     {
      "id": "bergwald_unter_steinhag_kernbaum_2",
      "art": "kernbaum",
-     "x": 6979.5,
-     "y": 5967.5,
+     "x": 7046.5,
+     "y": 5869.5,
      "region": "fl_216_183"
     },
     {
      "id": "bergwald_unter_steinhag_eibe_3",
      "art": "eibe",
-     "x": 6979.5,
-     "y": 5962.5,
+     "x": 7046.5,
+     "y": 5864.5,
      "region": "fl_216_183"
     },
     {
      "id": "bergwald_unter_steinhag_eibe_4",
      "art": "eibe",
-     "x": 6984.5,
-     "y": 5963.5,
+     "x": 7051.5,
+     "y": 5864.5,
      "region": "fl_216_183"
     }
    ]
@@ -1146,30 +1146,30 @@
     {
      "id": "eichen_und_tannen_bei_steinhag_eiche_1",
      "art": "eiche",
-     "x": 6984.5,
-     "y": 5811.5,
-     "region": "fl_216_169"
+     "x": 6933.5,
+     "y": 5920.5,
+     "region": "fl_216_183"
     },
     {
      "id": "eichen_und_tannen_bei_steinhag_eiche_2",
      "art": "eiche",
-     "x": 6979.5,
-     "y": 5810.5,
-     "region": "fl_216_169"
+     "x": 6928.5,
+     "y": 5919.5,
+     "region": "fl_216_183"
     },
     {
      "id": "eichen_und_tannen_bei_steinhag_tanne_3",
      "art": "tanne",
-     "x": 6980.5,
-     "y": 5805.5,
-     "region": "fl_216_169"
+     "x": 6929.5,
+     "y": 5914.5,
+     "region": "fl_216_183"
     },
     {
      "id": "eichen_und_tannen_bei_steinhag_tanne_4",
      "art": "tanne",
-     "x": 6984.5,
-     "y": 5806.5,
-     "region": "fl_216_169"
+     "x": 6934.5,
+     "y": 5915.5,
+     "region": "fl_216_183"
     }
    ]
   },
@@ -1180,22 +1180,22 @@
     {
      "id": "eiben_am_steinhagsee_eibe_1",
      "art": "eibe",
-     "x": 6965.5,
-     "y": 5974.5,
+     "x": 6959.5,
+     "y": 5949.5,
      "region": "fl_216_183"
     },
     {
      "id": "eiben_am_steinhagsee_eibe_2",
      "art": "eibe",
-     "x": 6960.5,
-     "y": 5972.5,
+     "x": 6954.5,
+     "y": 5947.5,
      "region": "fl_216_183"
     },
     {
      "id": "eiben_am_steinhagsee_moorweide_3",
      "art": "moorweide",
-     "x": 6964.5,
-     "y": 5968.5,
+     "x": 6958.5,
+     "y": 5944.5,
      "region": "fl_216_183"
     }
    ]
@@ -1251,6 +1251,33 @@
      "x": 7001.5,
      "y": 5956.5,
      "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 5)",
+   "ort": "hlweg_5",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_5_eiche_1",
+     "art": "eiche",
+     "x": 7051.5,
+     "y": 5848.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_5_tanne_2",
+     "art": "tanne",
+     "x": 7046.5,
+     "y": 5846.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_5_tanne_3",
+     "art": "tanne",
+     "x": 7050.5,
+     "y": 5843.5,
+     "region": "fl_216_169"
     }
    ]
   },
@@ -1629,6 +1656,67 @@
      "x": 6903.5,
      "y": 5897.5,
      "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Hain des Holzfällerhofs: Kernbäume",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "holzfaellerhof_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6393.5,
+     "y": 7013.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_kernbaum_2",
+     "art": "kernbaum",
+     "x": 6399.5,
+     "y": 7014.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_kernbaum_3",
+     "art": "kernbaum",
+     "x": 6405.5,
+     "y": 7013.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_eibe_4",
+     "art": "eibe",
+     "x": 6407.5,
+     "y": 7018.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Hain des Holzfällerhofs: Weltenbaum-Setzlinge",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "holzfaellerhof_weltenbaum_5",
+     "art": "weltenbaum",
+     "x": 6394.5,
+     "y": 7019.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_weltenbaum_6",
+     "art": "weltenbaum",
+     "x": 6400.5,
+     "y": 7020.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_eibe_7",
+     "art": "eibe",
+     "x": 6404.5,
+     "y": 7022.5,
+     "region": "fl_186_211"
     }
    ]
   }
