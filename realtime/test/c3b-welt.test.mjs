@@ -4,12 +4,12 @@
  * Aufruf: node test/c3-welt.test.mjs   (nach node build.mjs und python3 werkzeug/weltzonen.py)
  */
 const SB = 8835, SRV = 8836, FERTIG = ["westmark_das_rote_banner", "obstwiesen_fallobst", "rabenmoor_schwarze_federn", "aschenwerth_gesang_der_spiralsteine"];
-import { starte, starkerHeld, standNach, QUESTS, QB } from "./questwelt.mjs";
+import { starte, starkerHeld, LEGENDAER, standNach, QUESTS, QB } from "./questwelt.mjs";
 const C1 = QUESTS.find((q) => q.id === "rabenmoor_schwarze_federn"), C2 = QUESTS.find((q) => q.id === "aschenwerth_gesang_der_spiralsteine"), C3 = QUESTS.find((q) => q.id === "rabengrund_der_oberste");
 const C3_ID = "rabengrund_der_oberste", C3Q = QUESTS.find((q) => q.id === C3_ID);
 const MITTE = standNach(C3Q, [{ art: "betreten", region: "rabengrund", x: 10645, y: 9620 }, { art: "aufheben", g: "kerkerschluessel" }, { art: "objekt", id: "c3_kaefige" }, { art: "objekt", id: "c3_linde" }, { art: "objekt", id: "c3_becken" }]);
 const W = await starte({ sb: SB, srv: SRV, helden: {
-  ute: starkerHeld({ fertig: FERTIG, staende: { [C3_ID]: MITTE }, berufe: { holzfaellerei: 40, handwerk: 30 }, rucksack: ["holzbeil_einfach", "hammer", "federsiegel", ...Array(5).fill("stamm_tanne")] }),
+  ute: starkerHeld({ angelegt: LEGENDAER /* Ausrüstung in passender Stufe für den Obersten */, fertig: FERTIG, staende: { [C3_ID]: MITTE }, berufe: { holzfaellerei: 40, handwerk: 30 }, rucksack: ["holzbeil_einfach", "hammer", "federsiegel", ...Array(5).fill("stamm_tanne")] }),
   bea: starkerHeld({}) } });
 const { check, schlaf, anzahl, stelle, rede, sprich, objekt, stand, erl, fertig, kampf, kaempfen, aufheben, sammeln, herstellen, sende } = W;
 const K0 = { hat: () => false, verloren: () => false };
