@@ -7,7 +7,7 @@
  * Die Wahl: heute vier Abschluss-Antworten, jede gibt eine andere Waffe (geben beim Abschluss). Nach der Regel „Belohnung zur Auswahl“ (Kanon 27.11.) soll die Wahl ins
  * Abschlussfenster (Bild, Werte, Rückfrage) – sobald der Baukasten ein Wahl-Feld hat (Issue). Die nicht gewählten Waffen verkauft Othmar danach für 1.000 Splitter. Das rote Banner nimmt man in der Kammer selbst mit.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Issue #16 (Boss-Baukasten, Instanz, Tür mit Schlüssel, Ereignis für die Wellen, Gegenstände)
+ * Im Spiel (shared/quests.ts). Als Entwurf wartete die Quest auf Issue #16 (Boss-Baukasten, Instanz, Tür mit Schlüssel, Ereignis für die Wellen, Gegenstände)
  * Othmar spricht in Quest 1, B3 und B4 (Figur in mehreren Quests, questbau.figurQuest, #48). Liste: doku/quests/b3-b4-bausteine.md.
  * Rotmantel (Kanon 27.11.): In der Quest kämpfst du immer allein, gegen eine schwächere, gut machbare Fassung (Instanz). Nach der Quest gibt es die stärkere Fassung öffentlich oder als eigene Instanz.
  * Orte: Issue #21 (Welt, 81778e67): Unterschlupf (Ursprung 10240 | 9600), Kammer rotmantel_kammer (Ursprung 10432 | 9600).

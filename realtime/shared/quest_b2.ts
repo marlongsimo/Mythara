@@ -7,7 +7,7 @@
  * Lohn: 300 Splitter, 300 Schmieden-XP, 1 Questpunkt. Schalter: wehr_heil (Mühlrad dreht, Fanggrund Wehrkolk), werkstatt_weidenhain (Esse, Amboss, Werkbank
  * in Tebbes Schuppen), hanne_mehl (Hanne verkauft Mehl).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Issue #6 (Rolle Spiel): Quest-Rezepte schuetztafel, eisenbaender, hanftau; Gegenstände schuetztafel,
+ * Im Spiel (shared/quests.ts). Als Entwurf wartete die Quest auf Issue #6 (Rolle Spiel): Quest-Rezepte schuetztafel, eisenbaender, hanftau; Gegenstände schuetztafel,
  * eisenband, hanftau; Schalter und Drehteil. Tebbe und Hanne sind heute Dorffiguren der Welt – wie Agnes werden sie Questfiguren.
  * Kennungen und Stellen: doku/quests/b2-bausteine.md.
  */

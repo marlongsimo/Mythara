@@ -4,7 +4,7 @@
  * Ein Fischernetz aus Garn knüpfen (Werkbank, Handwerk 20, Quest-Rezept), fünf Heringe fangen, drei in der Räucherhütte räuchern.
  * Lohn: Fischen 1.500, Kochen 1.500, Handwerk 800 XP, 250 Splitter, 1 Questpunkt; die Räucherhütte ist frei (Schalter raeucherhuette_frei – während der Quest und danach).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Möwenbucht, Räucherhütte als Kochstation, Hering, Rezepte fischernetz und raeucherhering). Liste: doku/quests/g-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9/10, 9c0d16bd und e7f482af). Liste: doku/quests/g-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { G1 } from "./quest_g1";

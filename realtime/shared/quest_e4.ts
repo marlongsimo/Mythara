@@ -74,7 +74,8 @@ export const QUEST_E4: QuestDef = {
     },
   },
   /* Die Klinge liegt nach dem Kampf in der Gruft (Questobjekt e4_klinge) – keine Beute-Tabelle nötig */
-  schalter: { hauptmann_gruft: LAEUFT },
+  /* Boss-Regel (#116): in der Quest allein und schwächer, danach die stärkere Fassung öffentlich oder als eigene Instanz */
+  schalter: { hauptmann_gruft: LAEUFT, hauptmann_danach: FERTIG },
   glueckwunsch: "Er ruht. Trag seine Klinge gut. Er hätte nichts anderes gewollt.",
   belohnungText: "Belohnung: die Klinge des Grauen Hauptmanns (seltenes Langschwert), Stärke 1.000, Defense 1.000, LP 500 XP, 600 Splitter",
   belohnung: { xp: { staerke: 1000, defense: 1000, lp: 500 }, splitter: 600, gegenstaende: [{ g: "klinge_hauptmann" }] },

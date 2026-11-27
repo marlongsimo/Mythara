@@ -32,6 +32,15 @@ import { QUEST_E2 } from "./quest_e2";
 import { QUEST_E3 } from "./quest_e3";
 import { QUEST_E4 } from "./quest_e4";
 import { QUEST_SCHAFE, QUEST_GRAEBER } from "./quest_e_neben";
+import { QUEST_F1 } from "./quest_f1";
+import { QUEST_F2 } from "./quest_f2";
+import { QUEST_F3 } from "./quest_f3";
+import { QUEST_F4 } from "./quest_f4";
+import { QUEST_KARTE } from "./quest_karte";
+import { QUEST_G1 } from "./quest_g1";
+import { QUEST_G2 } from "./quest_g2";
+import { QUEST_G3 } from "./quest_g3";
+import { QUEST_G4 } from "./quest_g4";
 import { QUEST_S1 } from "./quest_s1";
 import { QUEST_S3 } from "./quest_s3";
 import { QUEST_S4 } from "./quest_s4";
@@ -39,7 +48,7 @@ import { QUEST_S6 } from "./quest_s6";
 import { QUEST_S7 } from "./quest_s7";
 import { QUEST_S8 } from "./quest_s8";
 
-export const QUESTS: QuestDef[] = [QUEST1, QUEST2, QUEST3, QUEST_A1, QUEST_A2, QUEST_A3, QUEST_B1, QUEST_SCHILF, QUEST_TAVERNE, QUEST_B2, QUEST_B3, QUEST_B4, QUEST_MIRA, QUEST_KRAEUTERHOF, QUEST_C1, QUEST_C2, QUEST_C3, QUEST_D1, QUEST_D2, QUEST_D3, QUEST_E1, QUEST_E2, QUEST_E3, QUEST_E4, QUEST_SCHAFE, QUEST_GRAEBER, QUEST_S1, QUEST_S2, QUEST_S3, QUEST_S4, QUEST_S5, QUEST_S6, QUEST_S7, QUEST_S8, QUEST_S9];
+export const QUESTS: QuestDef[] = [QUEST1, QUEST2, QUEST3, QUEST_A1, QUEST_A2, QUEST_A3, QUEST_B1, QUEST_SCHILF, QUEST_TAVERNE, QUEST_B2, QUEST_B3, QUEST_B4, QUEST_MIRA, QUEST_KRAEUTERHOF, QUEST_C1, QUEST_C2, QUEST_C3, QUEST_D1, QUEST_D2, QUEST_D3, QUEST_E1, QUEST_E2, QUEST_E3, QUEST_E4, QUEST_SCHAFE, QUEST_GRAEBER, QUEST_F1, QUEST_F2, QUEST_F3, QUEST_F4, QUEST_KARTE, QUEST_G1, QUEST_G2, QUEST_G3, QUEST_G4, QUEST_S1, QUEST_S2, QUEST_S3, QUEST_S4, QUEST_S5, QUEST_S6, QUEST_S7, QUEST_S8, QUEST_S9];
 export const questDef = (id: string): QuestDef | undefined => QUESTS.find((q) => q.id === id);
 
 /** Ist ein Schalter je Spieler an (irgendeine Quest schaltet ihn ein)? stand: Stand einer Quest für diesen Spieler */

@@ -11,8 +11,8 @@
  * je 6.000 XP Stärke, Geschick, Defense, Fernkampf, Magie, 4.000 LP, 3.000 Splitter, 4 Questpunkte. Haken: Die Karte zeigt die angrenzenden Regionen – die Smaragdküste mit Kielmund südlich von Weidenhain und die Hochlande hinter der Furt bei Grauwacht.
  * (Entscheidung des Nutzers 26.11.: Die Karte wächst in die Breite, den Quests folgend; die Splitterinsel ist kein Haken.)
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 9 (Reisekarte als Gegenstand mit täglichem Sprung, Kartenstücke, Steinhaut-Rezept aus 5c)
- * und auf „Figur in mehreren Quests“ (Ysolde, Hagan, Hedda, Merit). Stellen: shared/quest_f_orte.ts. Liste: doku/quests/f-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9, Kartenstücke und Reisekarte).
+ * Figuren in mehreren Quests: Ysolde, Hagan, Hedda, Merit. Stellen: shared/quest_f_orte.ts. Liste: doku/quests/f-bausteine.md.
  */
 import type { QuestDef, Bed, Option } from "./questbau";
 import { D2 } from "./quest_d2";

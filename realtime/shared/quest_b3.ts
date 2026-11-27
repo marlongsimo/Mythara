@@ -5,7 +5,7 @@
  * die gestohlenen Kisten an der verlassenen Hütte – ab hier ist die Leiter in den Unterschlupf offen –, Kisten zu Gisbert, Othmar liest den Brief.
  * Lohn: Fernkampf 500, Geschick 300, LP 200, 10 Äpfel, 120 Splitter, 1 Questpunkt. Danach verkauft Gisbert Äpfel.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Issue #15 (Gegner bandit_spaeher, bedingte Beute b3_karrenbrief, Gegenstände, Schalter)
+ * Im Spiel (shared/quests.ts). Als Entwurf wartete die Quest auf Issue #15 (Gegner bandit_spaeher, bedingte Beute b3_karrenbrief, Gegenstände, Schalter)
  * Othmar spricht in Quest 1, B3 und B4 (Figur in mehreren Quests, questbau.figurQuest, #48). Liste: doku/quests/b3-b4-bausteine.md.
  * Orte: Issue #21 (Welt, 81778e67).
  */
