@@ -277,71 +277,71 @@
   {
    "id": "hochlande_eisenhut_1",
    "art": "eisenhut",
-   "x": 6894.5,
-   "y": 5650.5,
-   "region": "fl_201_169"
+   "x": 7003.5,
+   "y": 5543.5,
+   "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_2",
    "art": "nebelkraut",
-   "x": 7014.5,
-   "y": 5566.5,
+   "x": 7107.5,
+   "y": 5799.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_3",
    "art": "eisenhut",
-   "x": 7059.5,
-   "y": 5529.5,
+   "x": 7036.5,
+   "y": 5519.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_4",
    "art": "nebelkraut",
-   "x": 7156.5,
-   "y": 5796.5,
+   "x": 7016.5,
+   "y": 5527.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_5",
    "art": "eisenhut",
-   "x": 7139.5,
-   "y": 5767.5,
+   "x": 6991.5,
+   "y": 5554.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_6",
    "art": "nebelkraut",
-   "x": 7020.5,
-   "y": 5520.5,
+   "x": 7107.5,
+   "y": 5464.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_7",
    "art": "eisenhut",
-   "x": 7167.5,
-   "y": 5782.5,
+   "x": 7030.5,
+   "y": 5505.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_8",
    "art": "nebelkraut",
-   "x": 6866.5,
-   "y": 5688.5,
-   "region": "fl_201_169"
+   "x": 6947.5,
+   "y": 5642.5,
+   "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_9",
    "art": "eisenhut",
-   "x": 7100.5,
-   "y": 5478.5,
+   "x": 6929.5,
+   "y": 5664.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_10",
    "art": "nebelkraut",
-   "x": 6999.5,
-   "y": 5596.5,
+   "x": 7062.5,
+   "y": 5528.5,
    "region": "fl_216_169"
   },
   {
@@ -441,6 +441,132 @@
    "x": 6466.5,
    "y": 6441.5,
    "region": "waldmark"
+  },
+  {
+   "id": "huegelgrund_wegerich_1",
+   "art": "wegerich",
+   "x": 6160.5,
+   "y": 5815.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "huegelgrund_ringelblume_2",
+   "art": "ringelblume",
+   "x": 6162.5,
+   "y": 5815.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "huegelgrund_wegerich_3",
+   "art": "wegerich",
+   "x": 6164.5,
+   "y": 5815.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "huegelgrund_ringelblume_4",
+   "art": "ringelblume",
+   "x": 6166.5,
+   "y": 5815.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "heidrast_wegerich_1",
+   "art": "wegerich",
+   "x": 6588.5,
+   "y": 5884.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "heidrast_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6604.5,
+   "y": 5884.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "kohlstatt_wegerich_1",
+   "art": "wegerich",
+   "x": 6410.5,
+   "y": 5866.5,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "kohlstatt_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6430.5,
+   "y": 5866.5,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "brechstein_wegerich_1",
+   "art": "wegerich",
+   "x": 6646.5,
+   "y": 5934.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "brechstein_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6666.5,
+   "y": 5934.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "wollhag_wegerich_1",
+   "art": "wegerich",
+   "x": 6560.5,
+   "y": 5726.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "wollhag_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6580.5,
+   "y": 5726.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "weiherhof_wegerich_1",
+   "art": "wegerich",
+   "x": 6330.5,
+   "y": 5822.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "weiherhof_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6350.5,
+   "y": 5822.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "fahleweiten_eisenhut_1",
+   "art": "eisenhut",
+   "x": 6500.5,
+   "y": 5720.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "fahleweiten_nebelkraut_2",
+   "art": "nebelkraut",
+   "x": 6380.5,
+   "y": 5740.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "fahleweiten_eisenhut_3",
+   "art": "eisenhut",
+   "x": 6560.5,
+   "y": 5800.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "fahleweiten_nebelkraut_4",
+   "art": "nebelkraut",
+   "x": 6260.5,
+   "y": 5840.5,
+   "region": "fl_186_169"
   },
   {
    "id": "kraeuterhof_ringelblume_1",

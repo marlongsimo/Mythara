@@ -37,7 +37,8 @@ const hebe = (x, y, h) => { const k = Math.floor(x) + "," + Math.floor(y); hoehe
 const male = (x0, y0, x1, y1, f) => { for (let y = Math.floor(y0); y < Math.ceil(y1); y++) for (let x = Math.floor(x0); x < Math.ceil(x1); x++) { const c = f(x + 0.5, y + 0.5); if (c) setze(x, y, c); } };
 const koerper = []; let nr = 0;
 const ding = (objekt, x, y, mehr = {}) => { const b = BIB.get(objekt); if (!b) throw new Error("unbekanntes Objekt " + objekt); const s = mehr.s ?? 1;
-  const kk = b.kollision?.koerper || (b.kollision?.art === "rechteck" ? [{ x0: b.kollision.x, x1: b.kollision.x + b.kollision.b, y0: b.kollision.y, y1: b.kollision.y + b.kollision.h }] : []);
+  if (b.kategorie !== "bewuchs" && Number.isInteger(y / 32)) y -= 0.01;   /* Fußpunkt nicht genau auf eine Gebietsgrenze: der Körper reicht nach oben ins Nachbargebiet und würde dort abgeschnitten */
+  const kk = b.kollision?.koerper || (b.kollision?.art === "rechteck" ? [{ x0: b.kollision.x, x1: b.kollision.x + b.kollision.b, y0: b.kollision.y, y1: b.kollision.y + b.kollision.h }] : b.kollision?.art === "kreis" ? [{ x0: -b.kollision.r, x1: b.kollision.r, y0: -b.kollision.r, y1: b.kollision.r }] : []);
   for (const k of kk) { const r = [x + k.x0 * s, y + k.y0 * s, x + k.x1 * s, y + k.y1 * s]; const hit = koerper.find((q) => r[0] < q[2] && q[0] < r[2] && r[1] < q[3] && q[1] < r[3]); if (hit && b.kategorie === "gebaeude") throw new Error(`${mehr.id || objekt} überdeckt ${hit[4]}`); koerper.push([...r, mehr.id || objekt]); }
   const o = { id: mehr.id || `hl_${objekt.replace(/^(dorf|graufurt|stil|k|moor|hand|welt|weidenhain|wald|burg|hoehle|wz|holz)_/, "").replace(/_\d+$/, "")}_${++nr}`, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...mehr }; objekte.push(o); return o; };
 const lies = (id, x, y, text, mehr = {}) => interaktionen.push({ id, art: mehr.tat ? "eingang" : "lesen", x: +x.toFixed(2), y: +y.toFixed(2), radius: mehr.tat ? 2.0 : 1.8, abgleich: "keiner", daten: { text, ...mehr } });
@@ -116,7 +117,7 @@ const [SX, SY] = ORTE.steinhag;
   lies("steinhag_bank_tuer", SX - 21, SY - 13, "Die Bank von Steinhag. Dasselbe Konto wie im Tal – nur das Gold riecht nach Stollen.");
   lies("steinhag_wegstein", SX - 6, SY - 1.4, "Der Wegstein von Steinhag."); lies("steinhag_bindestein", SX + 6, SY - 1.4, "Ein Bindestein am Brunnen von Steinhag.");
   /* Häuser an der Hauptgasse (Tür zur Gasse) */
-  for (const [dx, o] of [[-45, "graufurt_steinhaus_01"], [-37, "graufurt_steinhaus_02"], [-28, "dorf_haus_holz_03"], [27, "graufurt_steinhaus_01"], [36, "graufurt_steinhaus_02"], [45, "graufurt_steinhaus_01"]]) ding(o, SX + dx, SY + 7);
+  for (const [dx, o] of [[-45, "hochland_ladenhaus_02"], [-37, "hochland_ladenhaus_01"], [-28, "hochland_ladenhaus_02"], [27, "hochland_ladenhaus_01"], [36, "hochland_ladenhaus_02"], [45, "hochland_ladenhaus_01"]]) ding(o, SX + dx, SY + 7);   /* Ladenhäuser an der Hauptgasse (Figuren #167) */
   /* zwischen den Gassen: Schmiede mit Werkbank, Häuser (Tür zur Unteren Gasse) */
   ding("dorf_schmiede_01", SX + 14, SY + 24, { id: "steinhag_schmiede" }); ding("hand_werkbank_01", SX + 21, SY + 23.4, { id: "steinhag_werkbank" });
   lies("steinhag_werkstatt", SX + 17, SY + 28, "Die Werkstatt von Steinhag: Esse, Amboss und eine Werkbank, an der Grubenholz zugeschnitten wird.");
@@ -139,7 +140,7 @@ const BW_U = [362, 300], [BX, BY] = ORTE.bergwerk;
   male(BX - 8, BY - 1, BX + 7, BY + 9, (x, y) => (Math.hypot((x - BX) / 7.5, (y - BY - 4) / 5.5) < 1 ? "h" : null)); male(BX - 6, BY + 4, BX + 2, BY + 16, (x, y) => (strecke(x, y, [[BX, BY + 4], [BX - 3, BY + 14]]) < 2.4 ? "g" : null));
   ding("hochland_stolleneingang", BX, BY - 1, { id: "bergwerk_eingang" }); ding("hochland_grubenholz", BX + 5, BY + 3, { id: "bergwerk_grubenholz_1" }); ding("hochland_grubenholz", BX + 6.5, BY + 5, { id: "bergwerk_grubenholz_2", spiegeln: true });
   ding("hochland_lore", BX - 1.5, BY + 6, { id: "bergwerk_lore" }); ding("hochland_schienen", BX - 1.5, BY + 3.5, { id: "bergwerk_schienen_1" }); ding("hochland_schienen", BX - 1.5, BY + 6, { id: "bergwerk_schienen_2" }); ding("dorf_holzstapel_01", BX + 4, BY + 6); ding("moor_feuerkorb_01", BX - 2, BY + 2);
-  ding("moor_kate_02", BX - 14, BY + 12, { id: "bergwerk_kaue" }); ding("k_kiste", BX - 9.5, BY + 12.4, { id: "bergwerk_bankkiste" });
+  ding("moor_kate_02", BX - 14, BY + 12, { id: "bergwerk_kaue" }); ding("steinhag_bankkiste", BX - 9.5, BY + 12.4, { id: "bergwerk_bankkiste" });
   lies("bergwerk_bankkiste", BX - 9.5, BY + 13.8, "Die Bankkiste an der Kaue. Wer sein Erz nicht bis Steinhag schleppen will, legt es hier ein – es liegt auf demselben Konto.");
   lies("bergwerk_eingang", BX, BY + 1.2, "Der Stollen ins Erzberg-Bergwerk. Kalte Luft, das Klopfen von Hämmern – und tief drinnen etwas Schweres, das sich bewegt.", { tat: "bergwerk", knopf: "Hineingehen", ziel: [BW_U[0] * 32 + 48, BW_U[1] * 32 + 58] });
   npc.push({ id: "steiger", rolle: "Steiger (Bergwerk)", x: BX - 4, y: BY + 3 }, { id: "bergmann_1", rolle: "Bergmann", x: BX + 3, y: BY + 4 }, { id: "bergmann_2", rolle: "Bergfrau", x: BX - 12, y: BY + 13.5 }); }
@@ -209,7 +210,7 @@ const stationen = [], reisende = [];
   const fest = (x, y) => { for (let r = 0; r < 20; r++) for (let a = 0; a < 6.3; a += 0.4) { const px = Math.floor(x + Math.cos(a) * r) + 0.5, py = Math.floor(y + Math.sin(a) * r) + 0.5; if (!"F~wMS".includes(jetzt(px, py))) return [px, py]; } return [x, y]; };
   for (const [i, [x, y]] of [[6982, 5700], [6990, 5712], [7120, 5770], [7180, 5760], [7230, 5640]].entries()) { const [a, b] = fest(x, y); npc.push({ id: "ziege_" + (i + 1), rolle: "Ziege (Stimmung)", x: a, y: b }); }
   for (const [i, [x, y]] of [[6948, 5640], [6976, 5590], [7110, 5790], [7172, 5786], [7280, 5380]].entries()) { const [a, b] = fest(x, y); npc.push({ id: "murmeltier_" + (i + 1), rolle: "Murmeltier (Stimmung)", x: a, y: b }); }
-  reisende.push({ id: "bergleute_steinhag_erzberg", rolle: "Bergleute auf dem Weg zur Schicht (Reisende nach der Uhr)", punkte: W_ERZ.map(([x, y]) => [+x.toFixed(1), +y.toFixed(1)]) }); }
+  }
 
 /* ═══════ 8c. Hauptstadt Steinhag (#167, Plan welt/plaene/steinhag_plan.png): Ringmauer mit drei Toren (Entscheidung: West, Nordwest, Ost; zur Alm durchs Osttor), Vogtsburg auf dem Fels am See, Viertel mit ~100 Gebäuden,
  *        Zunftviertel mit zweiter Bank, Zunftschmiede, Brennofen und dem Abstieg in den Stollen der Bergmannszunft. Nur vorhandene Modelle (fehlende: #167 an Figuren). ═══════ */
@@ -217,7 +218,7 @@ const ZS_U = [370, 300];   /* Stollen der Bergmannszunft (Untergrund, 2 × 2 Chu
 const MAUER = { x0: 6936, y0: 5826, x1: 7074, y1: 5950 }, TORE = { west: [MAUER.x0, 5901], nordwest: [6944, MAUER.y0], ost: [MAUER.x1, 5901] }, BURG = { x0: 7034, y0: 5827, x1: 7073, y1: 5857 };
 const inStadt = (x, y, rand = 0) => x > MAUER.x0 - rand && x < MAUER.x1 + rand && y > MAUER.y0 - rand && y < MAUER.y1 + rand;
 const VIERTEL = (x, y) => (y < 5868 ? (x >= BURG.x0 ? "Burgviertel" : "Seeufer") : x >= 7040 ? "Zunftviertel" : y >= 5932 ? "Unterstadt" : "Marktviertel");
-const SOLL = { Burgviertel: 12, Seeufer: 16, Marktviertel: 30, Zunftviertel: 24, Unterstadt: 18 };
+const SOLL = { Burgviertel: 12, Seeufer: 16, Marktviertel: 36, Zunftviertel: 24, Unterstadt: 22 };
 const hauptstadt = { mauer: [MAUER.x0, MAUER.y0, MAUER.x1, MAUER.y1], tore: TORE, burg: [BURG.x0, BURG.y0, BURG.x1, BURG.y1], banken: [], stationen: [], laeden: [], viertel: {}, zunftstollen: null };
 { /* Gassen (Steinweg): Hauptgasse von Tor zu Tor, Steig zum Südtor, Gassen in den Vierteln, Uferweg um den See, Burgsteig */
   eben.push([MAUER.x0 + 2, 5866, BURG.x0, MAUER.y1 - 1], [BURG.x0, BURG.y1, MAUER.x1 - 1, MAUER.y1 - 1]);
@@ -233,11 +234,11 @@ const hauptstadt = { mauer: [MAUER.x0, MAUER.y0, MAUER.x1, MAUER.y1], tore: TORE
   /* Ringmauer: Mauerstücke zu zwei Feldern, Ecktürme, Torhäuser; der Grauhornbach fließt durch einen Durchlass */
   let mz = 0; const mid = () => "steinhag_mauer_" + ++mz;
   const bach = (x0, y0, x1, y1) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (nass(jetzt(x + 0.5, y + 0.5))) return true; return false; };
-  for (const Y of [MAUER.y0, MAUER.y1]) for (let x = MAUER.x0 + 2; x < MAUER.x1 - 2; x += 2) {
+  for (const Y of [MAUER.y0, MAUER.y1]) for (let x = MAUER.x0; x < MAUER.x1; x += 2) {   /* von Ecke zu Ecke: keine Lücke zur West- und Ostmauer */
     if (Y === MAUER.y0 && Math.abs(x + 1 - TORE.nordwest[0]) < 3) continue;
     if (bach(x - 1, Y - 2, x + 3, Y + 2)) { for (let y = Y - 1; y <= Y + 1; y++) for (let u = x; u < x + 2; u++) setze(u, y, "~"); continue; }
     ding("burg_mauer_quer", x + 1, Y + 1, { id: mid() }); }
-  for (const X of [MAUER.x0, MAUER.x1]) for (let y = MAUER.y0 + 2; y < MAUER.y1 - 2; y += 2) { if (Math.abs(y + 1 - 5901) < 3) continue; ding("burg_mauer_laengs", X, y + 2, { id: mid() }); }
+  for (const X of [MAUER.x0, MAUER.x1]) for (let y = MAUER.y0; y < MAUER.y1 - 1; y += 2) {   /* ab y0: keine Lücke an den Ecken */ if (Math.abs(y + 1 - 5901) < 3) continue; ding("burg_mauer_laengs", X, y + 2, { id: mid() }); }
   for (const [x, y] of [[MAUER.x0, MAUER.y0], [MAUER.x1, MAUER.y0], [MAUER.x0, MAUER.y1], [MAUER.x1, MAUER.y1], [6966, MAUER.y0], [6946 + 0, MAUER.y1], [7030, MAUER.y1], [MAUER.x0, 5860], [MAUER.x0, 5930], [MAUER.x1, 5930]])
     ding("burg_eckturm", x, y + 1.3, { id: mid() });
   ding("burg_torhaus_tief", MAUER.x0, 5901 + 1.5, { id: "steinhag_tor_west" }); ding("burg_torhaus_tief", MAUER.x1, 5901 + 1.5, { id: "steinhag_tor_ost" }); ding("burg_torhaus", TORE.nordwest[0], MAUER.y0 + 1, { id: "steinhag_tor_nordwest" });
@@ -262,14 +263,17 @@ const hauptstadt = { mauer: [MAUER.x0, MAUER.y0, MAUER.x1, MAUER.y1], tore: TORE
   for (let x = ZH.x0; x < ZH.x1; x += 2) ding("burg_mauer_quer", x + 1, ZH.y0 + 2, { id: mid() });
   for (let x = ZH.x0; x < ZH.x1; x += 2) if (x + 1 < ZH.tor - 2 || x + 1 > ZH.tor + 2) ding("burg_mauer_quer", x + 1, ZH.y1, { id: mid() });
   for (let y = ZH.y0 + 2; y < ZH.y1 - 1; y += 2) { ding("burg_mauer_laengs", ZH.x0, y + 2, { id: mid() }); ding("burg_mauer_laengs", ZH.x1, y + 2, { id: mid() }); }
-  ding("dorf_schmiede_01", 7059, 5930, { id: "steinhag_zunftschmiede", s: 1.4 }); lies("steinhag_zunftschmiede", 7059, 5932.4, "Die Zunftschmiede der Bergleute: vier Essen, zwei Ambosse, und an der Wand die Meisterstücke der Zunft.");
-  ding("hand_backofen_01", 7051.5, 5928, { id: "steinhag_brennofen", s: 1.3 }); lies("steinhag_brennofen", 7051.5, 5930.4, "Der Brennofen der Zunft. Hier werden Tiegel und Formen gebrannt.");
-  ding("k_kiste", 7067, 5926, { id: "steinhag_zunftschmiede_bankkiste" }); lies("steinhag_zunftschmiede_bankkiste", 7067, 5927.4, "Die Bankkiste der Zunftschmiede. Was du hier einlegst, liegt auf deinem Konto.");
+  /* Zunfthaus von Figuren (#167, hochland_zunfthaus_01): Halle 12 × 8 mit Tor, drinnen vier Ambosse, zwei Öfen (Essen), Kessel; Turm im Nordosten */
+  const ZF = [7056, 5932]; ding("hochland_zunfthaus_01", ...ZF, { id: "steinhag_zunftschmiede" }); lies("steinhag_zunftschmiede", ZF[0], ZF[1] + 0.6, "Die Zunftschmiede der Bergleute: vier Ambosse, zwei Essen, und an der Wand die Meisterstücke der Zunft.");
+  ding("steinhag_brennofen", 7067.4, 5930.6, { id: "steinhag_brennofen" }); lies("steinhag_brennofen", 7066.2, 5932.8, "Der Brennofen der Zunft. Hier werden Tiegel und Formen gebrannt.");
+  ding("steinhag_bankkiste", 7050.6, 5933, { id: "steinhag_zunftschmiede_bankkiste" }); lies("steinhag_zunftschmiede_bankkiste", 7052.2, 5933.2, "Die Bankkiste der Zunftschmiede. Was du hier einlegst, liegt auf deinem Konto.");
+  ding("steinhag_zunftschild_amboss", ZH.tor - 3.5, ZH.y1 + 1.2, { id: "steinhag_zunftschmiede_schild" });
   lies("steinhag_zunftschmiede_tor", ZH.tor + 3.2, ZH.y1 + 1.6, "Das Tor zum Hof der Zunftschmiede. „Nur für Meister der Schmiedekunst – ab Stufe 60.“");
-  hauptstadt.stationen.push(...[7055, 7057.7, 7060.3, 7063].map((x, i) => ({ id: `esse_zunft_${i + 1}`, station: "esse", x, y: 5931.2 })), ...[7056.3, 7061.7].map((x, i) => ({ id: `amboss_zunft_${i + 1}`, station: "amboss", x, y: 5932.8 })),
-    { id: "brennofen_zunft", station: "brennofen (neu, Systeme)", x: 7051.5, y: 5930.4 });
-  hauptstadt.zunftschmiede = { flaeche: [ZH.x0, ZH.y0, ZH.x1, ZH.y1], tor: [ZH.tor - 2, ZH.y1 - 2, ZH.tor + 1, ZH.y1 - 1], wache: [ZH.tor, ZH.y1 + 1.6], bankkiste: { id: "steinhag_zunftschmiede_bankkiste", x: 7067, y: 5927.4 }, beruf: "schmieden", ab: 60 };
-  npc.push({ id: "zunftschmied", rolle: "Meisterschmied der Zunft", x: 7062, y: 5930.8 }, { id: "zunftschmiede_wache", rolle: "Wache am Tor der Zunftschmiede (ab Stufe 60)", x: ZH.tor - 3, y: ZH.y1 + 1.6 });
+  hauptstadt.stationen.push(...[-3.8, -1.2, 1.4, 3.8].map((dx, i) => ({ id: `amboss_zunft_${i + 1}`, station: "amboss", x: ZF[0] + dx, y: ZF[1] - 3.6, drinnen: "steinhag_zunftschmiede" })),
+    ...[-3.8, 2.5].map((dx, i) => ({ id: `esse_zunft_${i + 1}`, station: "esse", x: ZF[0] + dx, y: ZF[1] - 5.9, drinnen: "steinhag_zunftschmiede" })),
+    { id: "brennofen_zunft", station: "brennofen (neu, Systeme)", x: 7066.2, y: 5932.8 });
+  hauptstadt.zunftschmiede = { flaeche: [ZH.x0, ZH.y0, ZH.x1, ZH.y1], tor: [ZH.tor - 2, ZH.y1 - 2, ZH.tor + 1, ZH.y1 - 1], wache: [ZH.tor, ZH.y1 + 1.6], bankkiste: { id: "steinhag_zunftschmiede_bankkiste", x: 7052.2, y: 5933.2 }, beruf: "schmieden", ab: 60 };
+  npc.push({ id: "zunftschmied", rolle: "Meisterschmied der Zunft (in der Halle)", x: ZF[0] + 0.2, y: ZF[1] - 3, drinnen: "steinhag_zunftschmiede" }, { id: "zunftschmiede_wache", rolle: "Wache am Tor der Zunftschmiede (ab Stufe 60)", x: ZH.tor - 3, y: ZH.y1 + 1.6 });
   for (const [i, x] of [7049, 7057].entries()) { ding(["dorf_marktstand_02", "dorf_marktstand_03"][i], x, 5905.5, { id: "steinhag_zunftstand_" + (i + 1) }); hauptstadt.laeden.push({ id: "steinhag_zunftstand_" + (i + 1), art: "Marktstand", x, y: 5906.6, blick: [0, -1], vor: [x, 5903.4] }); }
   ding("hochland_stolleneingang", 7066, 5943, { id: "steinhag_zunftstollen_eingang" });
   lies("steinhag_zunftstollen_eingang", 7066, 5944.6, "Der Abstieg in den Stollen der Bergmannszunft. Ein Schild: „Nur für Zunftmitglieder – Meisterschaft ab Stufe 60.“", { tat: "zunftstollen", knopf: "Hinabsteigen", ziel: [ZS_U[0] * 32 + 32, ZS_U[1] * 32 + 57] }); ding("hochland_lore", 7061, 5944.5, { id: "steinhag_zunftstollen_lore" }); ding("dorf_kiste_01", 7070, 5944.5);
@@ -279,7 +283,8 @@ const hauptstadt = { mauer: [MAUER.x0, MAUER.y0, MAUER.x1, MAUER.y1], tore: TORE
   uferplatz("fischplatz_steinhagsee_west", "muehlbarsch", 10, 6952, 5848, "Am Westufer des Steinhagsees ziehen Mühlbarsche durchs Schilf.");
   for (const [x, y] of [[6956, 5862], [6976, 5869.5], [7012, 5869.5]]) ding("dorf_fass_01", x, y);
   /* Häuser: Reihen an den Gassen, je Viertel bis zur Sollzahl (Stein überwiegt; Holz und Fachwerk dazwischen) */
-  const HAUS = ["graufurt_steinhaus_01", "graufurt_steinhaus_02", "graufurt_steinhaus_01", "graufurt_steinhaus_02", "graufurt_steinhaus_01", "dorf_haus_holz_01", "dorf_haus_holz_03", "weidenhain_fachwerk_02", "weidenhain_fachwerk_03", "dorf_huette_holz_01"];
+  const HAUS = ["hochland_stadthaus_01", "hochland_stadthaus_02", "hochland_stadthaus_03", "hochland_stadthaus_04", "hochland_stadthaus_01", "hochland_stadthaus_03", "graufurt_steinhaus_01", "dorf_haus_holz_03", "weidenhain_fachwerk_02"];   /* Stadthäuser von Figuren (#167) */
+  const LADEN = ["hochland_ladenhaus_01", "hochland_ladenhaus_02"];
   const bb = (objekt, s) => { const k = BIB.get(objekt).kollision; const kk = k.koerper || [{ x0: k.x, x1: k.x + k.b, y0: k.y, y1: k.y + k.h }]; return [Math.min(...kk.map((c) => c.x0)) * s, Math.min(...kk.map((c) => c.y0)) * s, Math.max(...kk.map((c) => c.x1)) * s, Math.max(...kk.map((c) => c.y1)) * s]; };
   const istGeb = (o) => BIB.get(o.objekt)?.kategorie === "gebaeude" && inStadt(o.x, o.y);
   const zahl = {}; for (const o of objekte.filter(istGeb)) zahl[VIERTEL(o.x, o.y)] = (zahl[VIERTEL(o.x, o.y)] || 0) + 1;
@@ -288,6 +293,7 @@ const hauptstadt = { mauer: [MAUER.x0, MAUER.y0, MAUER.x1, MAUER.y1], tore: TORE
   const BODEN = new Set([...".,fgas"]), ROAD = new Set([..."kpe"]);
   const passt = (x, y, objekt, s) => { const [a, b, c, d] = bb(objekt, s), r = [x + a, y + b, x + c, y + d];
     if (!inStadt(r[0], r[1], -3) || !inStadt(r[2], r[3], -3) || (r[2] > BURG.x0 - 1 && r[1] < BURG.y1 + 1)) return null;
+    if (regionVon(r[0], r[1] - 0.5) !== regionVon(r[2], r[3] + 0.5)) return null;   /* nicht über eine Gebietsgrenze bauen (Kollision würde abgeschnitten) */
     for (let v = Math.floor(r[1]) - 1; v < Math.ceil(r[3]) + 1; v++) for (let u = Math.floor(r[0]) - 1; u < Math.ceil(r[2]) + 1; u++) if (!BODEN.has(jetzt(u + 0.5, v + 0.5))) return null;
     if (koerper.some((q) => r[0] - 1.6 < q[2] && q[0] < r[2] + 1.6 && r[1] - 1.6 < q[3] && q[1] < r[3] + 1.6)) return null;
     if (punkte.some(([px, py]) => px > r[0] - 2.5 && px < r[2] + 2.5 && py > r[1] - 2.5 && py < r[3] + 2.5)) return null;
@@ -296,11 +302,11 @@ const hauptstadt = { mauer: [MAUER.x0, MAUER.y0, MAUER.x1, MAUER.y1], tore: TORE
     return vorn ? 2 : hinten ? 1 : null; };
   const UFERHAUS = ["moor_fischer_01", "dorf_huette_holz_01", "dorf_haus_holz_03", "graufurt_steinhaus_01"];
   for (const guete of [2, 1]) for (let y = MAUER.y0 + 4; y < MAUER.y1 - 2; y++) for (let x = MAUER.x0 + 4; x < MAUER.x1 - 3; x++) {
-    const v = VIERTEL(x, y); if ((zahl[v] || 0) >= SOLL[v]) continue; const objekt = wahl(v === "Seeufer" ? UFERHAUS : HAUS), s = +(0.95 + wurf() * 0.15).toFixed(2), p = passt(x, y, objekt, s); if (!p || p < guete) continue;
+    const v = VIERTEL(x, y); if ((zahl[v] || 0) >= SOLL[v]) continue; const objekt = wahl(v === "Seeufer" ? UFERHAUS : y > 5895 && y < 5900 && wurf() < 0.7 ? LADEN : HAUS), s = +(0.95 + wurf() * 0.15).toFixed(2), p = passt(x, y, objekt, s); if (!p || p < guete) continue;
     wurf(); ding(objekt, x, y, { s }); zahl[v] = (zahl[v] || 0) + 1; }   /* räumliche Gebäude werden nicht gespiegelt */
   hauptstadt.viertel = zahl;
   /* Läden: die vorhandenen (shared/laeden.ts) und Vorschläge in Häusern an der Hauptgasse (Händler vor der Tür) */
-  const anGasse = objekte.filter((o) => istGeb(o) && /^hl_/.test(o.id) && Math.abs(o.y - 5899) < 1.5).sort((a, b) => Math.abs(a.x - 6990) - Math.abs(b.x - 6990)).slice(0, 5);
+  const anGasse = objekte.filter((o) => istGeb(o) && /^hl_/.test(o.id) && Math.abs(o.y - 5898) < 2.5).sort((a, b) => (/ladenhaus/.test(b.objekt) - /ladenhaus/.test(a.objekt)) || Math.abs(a.x - 6990) - Math.abs(b.x - 6990)).slice(0, 5);
   for (const o of anGasse) hauptstadt.laeden.push({ id: "steinhag_laden_" + o.id.replace(/^hl_/, ""), art: "Ladenhaus", gebaeude: o.id, x: o.x, y: +(o.y + 1.2).toFixed(1), blick: [0, 1] });
   /* Bäume und Felsen bleiben draußen (Abschnitt 9), Laternen an den Gassen */
   for (let x = MAUER.x0 + 8; x < MAUER.x1 - 4; x += 14) for (const y of [5903.4, 5939.2]) if (BODEN.has(jetzt(x, y)) && !koerper.some((q) => x > q[0] - 1 && x < q[2] + 1 && y > q[1] - 1 && y < q[3] + 1)) ding("dorf_laterne_01", x, y);
@@ -310,7 +316,7 @@ const hauptstadt = { mauer: [MAUER.x0, MAUER.y0, MAUER.x1, MAUER.y1], tore: TORE
   const seen = new Set([(MAUER.x0 - 6) + ",5901"]), q = [[MAUER.x0 - 6, 5901]];
   while (q.length) { const [x, y] = q.pop(); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const k = x + dx + "," + (y + dy); if (seen.has(k) || zu(x + dx, y + dy)) continue; seen.add(k); q.push([x + dx, y + dy]); } }
   const nahErreicht = (px, py) => { for (let r = 0; r <= 2; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (seen.has(Math.floor(px + dx) + "," + Math.floor(py + dy))) return true; return false; };
-  const fehlt = [[TORE.ost[0] + 5, 5901, "Osttor"], [TORE.nordwest[0], MAUER.y0 - 6, "Nordwesttor"], [7053, 5845, "Burghof"], ...interaktionen.filter((i) => inStadt(i.x, i.y)).map((i) => [i.x, i.y, i.id]), ...npc.filter((n) => inStadt(n.x, n.y)).map((n) => [n.x, n.y, n.id]),
+  const fehlt = [[TORE.ost[0] + 5, 5901, "Osttor"], [TORE.nordwest[0], MAUER.y0 - 6, "Nordwesttor"], [7053, 5845, "Burghof"], ...interaktionen.filter((i) => inStadt(i.x, i.y)).map((i) => [i.x, i.y, i.id]), ...npc.filter((n) => inStadt(n.x, n.y) && !n.drinnen).map((n) => [n.x, n.y, n.id]),   /* drinnen: im Gebäude (Innenraum), hier nicht geprüft */
     ...hauptstadt.laeden.map((l) => [l.x, l.y, l.id]), ...punkte.slice(-15).map(([x, y]) => [x, y, "shared " + x + "|" + y])].filter(([x, y]) => !nahErreicht(x, y));
   if (fehlt.length) throw new Error("Steinhag: nicht erreichbar – " + fehlt.map((f) => f[2]).join(", "));
   console.log(`Steinhag: ${Object.values(zahl).reduce((a, b) => a + b, 0)} Gebäude in den Mauern`, JSON.stringify(zahl), `${mz} Mauerstücke, ${hauptstadt.laeden.length} neue Ladenplätze`); }
@@ -330,6 +336,22 @@ for (let i = 0; i < 9000 && (zaehl.Felsen || 0) < 140; i++) { const x = 6840 + w
   if (!"g,.".includes(jetzt(x, y)) || imOrt(x, y) || wegNah(x, y, 2) || besetzt(x, y, 3)) continue; ding(jetzt(x, y) === "g" ? wahl(["k_fels_gross", "k_fels_breit", "k_fels_klein"]) : "k_fels_klein", x, y, { s: +(0.6 + wurf() * 0.6).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }); z("Felsen"); }
 for (let i = 0; i < 9000 && (zaehl.Büsche || 0) < 180; i++) { const x = 6840 + wurf() * 780, y = 5440 + wurf() * 760;
   if (!".,g".includes(jetzt(x, y)) || imOrt(x, y) || wegNah(x, y, 2) || besetzt(x, y, 2)) continue; ding(wahl(["stil_busch_01", "stil_busch_02"]), x, y); z("Büsche"); }
+
+/* ═══════ 9b. Wege der Reisenden: kürzester begehbarer Weg (Gassen und Wege bevorzugt) über die fertige Fläche, Wegpunkte dicht genug für gerade Stücke ═══════ */
+const pfad = ([ax, ay], [bx, by]) => { const X0 = Math.floor(Math.min(ax, bx)) - 40, Y0 = Math.floor(Math.min(ay, by)) - 40, B = Math.ceil(Math.abs(ax - bx)) + 80, H = Math.ceil(Math.abs(ay - by)) + 80;
+  const zu = new Uint8Array(B * H); for (let y = 0; y < H; y++) for (let x = 0; x < B; x++) { const c = jetzt(X0 + x + 0.5, Y0 + y + 0.5); if (nass(c) || c === "F" || c === "?") zu[y * B + x] = 1; }
+  const SAMMEL = [join(WELT, "sammelstellen.json"), join(WELT, "..", "shared", "holz_standorte.json"), join(WELT, "..", "shared", "bergbau_standorte.json")].filter(existsSync).flatMap((f) => { const d = JSON.parse(readFileSync(f, "utf8")); return [...(d.lichtungen || []), ...(d.senken || [])].flatMap((l) => l.baeume || l.adern); });
+  for (const p of SAMMEL) for (let y = Math.floor(p.y) - 1; y <= Math.floor(p.y) + 1; y++) for (let x = Math.floor(p.x) - 1; x <= Math.floor(p.x) + 1; x++) if (x >= X0 && y >= Y0 && x < X0 + B && y < Y0 + H) zu[(y - Y0) * B + x - X0] = 1;   /* Bäume und Adern (auch aus früheren Läufen) */
+  for (const q of koerper) for (let y = Math.floor(q[1] - 0.4); y < Math.ceil(q[3] + 0.4); y++) for (let x = Math.floor(q[0] - 0.4); x < Math.ceil(q[2] + 0.4); x++) { const i = (y - Y0) * B + x - X0; if (x >= X0 && y >= Y0 && x < X0 + B && y < Y0 + H) zu[i] = 1; }
+  const kosten = new Float64Array(B * H).fill(Infinity), vor = new Int32Array(B * H).fill(-1), s0 = (Math.floor(ay) - Y0) * B + Math.floor(ax) - X0, z0 = (Math.floor(by) - Y0) * B + Math.floor(bx) - X0; kosten[s0] = 0;
+  const offen = [[0, s0]]; while (offen.length) { offen.sort((a, b) => b[0] - a[0]); const [k, i] = offen.pop(); if (i === z0) break; if (k > kosten[i]) continue; const x = i % B, y = (i / B) | 0;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= B || ny >= H) continue; const j = ny * B + nx; if (zu[j]) continue;
+      const w = k + ("ekp".includes(jetzt(X0 + nx + 0.5, Y0 + ny + 0.5)) ? 1 : 4); if (w < kosten[j]) { kosten[j] = w; vor[j] = i; offen.push([w, j]); } } }
+  if (vor[z0] < 0) throw new Error(`kein Weg von ${ax}|${ay} nach ${bx}|${by}`); const zellen = []; for (let i = z0; i >= 0; i = vor[i]) zellen.push([X0 + (i % B) + 0.5, Y0 + ((i / B) | 0) + 0.5]); zellen.reverse();
+  const out = [zellen[0]]; let last = 0; for (let i = 1; i < zellen.length; i++) { const [px, py] = zellen[last], [qx, qy] = zellen[i]; let frei = i - last <= 6;
+    for (let t = 0; frei && t <= 1; t += 0.05) { const x = px + (qx - px) * t, y = py + (qy - py) * t; if (zu[(Math.floor(y) - Y0) * B + Math.floor(x) - X0]) frei = false; }
+    if (!frei) { out.push(zellen[i - 1]); last = i - 1; } } out.push(zellen.at(-1)); return out; };
+reisende.push({ id: "bergleute_steinhag_erzberg", rolle: "Bergleute auf dem Weg zur Schicht (Reisende nach der Uhr): vom Markt durchs Osttor zum Stolleneingang", punkte: pfad([6992.5, 5900.5], [BX + 0.5, BY + 4.5]) });
 
 /* ═══════ 10. Kräuter an Schattenhängen (Nordseiten von Grauhorn und Erzberg) ═══════ */
 { let k = 0; for (let i = 0; i < 6000 && kraeuter.length < 10; i++) { const x = 6860 + wurf() * 340, y = 5460 + wurf() * 380; const art = kraeuter.length % 2 ? "nebelkraut" : "eisenhut";
@@ -473,7 +495,7 @@ const ZUNFT_ADERN = [];
   gruppe = "Oststollen"; [0.2, 0.4, 0.6, 0.85].forEach((t, i) => ader("sterneisen", wand(WEGE[3], t, i % 2 ? 1 : -1)));
   for (const [a, b, r, arten, gr] of [[18, 8, 5, ["ureisen", "ureisen", "splittereisen"], "Urkammer"], [58, 8, 5, ["ureisen", "sterneisen"], "Oststollen"], [9, 20, 4, ["splittereisen", "schwarzeisen"], "Weststollen"]])
     arten.forEach((art, i) => { gruppe = gr; const w = -Math.PI / 2 + (i - (arten.length - 1) / 2) * 1.1; let px = a, py = b; for (let k = 0; k < 8 && g[Math.floor(py + Math.sin(w))]?.[Math.floor(px + Math.cos(w))] === "h"; k++) { px += Math.cos(w); py += Math.sin(w); } ader(art, [Math.floor(px) + 0.5, Math.floor(py) + 0.5]); });
-  const o = oH("zunftstollen"); const dinge = [o("hoehle_leiter_01", 32, 59.4), o("hand_backofen_01", 26, 45, { id: "zunftstollen_schmelzofen", s: 1.4 }), o("k_kiste", 38, 45, { id: "zunftstollen_bankkiste" }), o("moor_feuerkorb_01", 26.5, 51), o("moor_feuerkorb_01", 37.5, 51),
+  const o = oH("zunftstollen"); const dinge = [o("hoehle_leiter_01", 32, 59.4), o("steinhag_schmelzofen", 26, 45, { id: "zunftstollen_schmelzofen" }), o("steinhag_bankkiste", 38, 45, { id: "zunftstollen_bankkiste" }), o("steinhag_zunftschild_hammer", 33.8, 54, { id: "zunftstollen_schild" }), o("moor_feuerkorb_01", 26.5, 51), o("moor_feuerkorb_01", 37.5, 51),
     o("hochland_schienen", 32, 55), o("hochland_schienen", 32, 52.5), o("hochland_lore", 33, 41, { id: "zunftstollen_lore" }), o("hochland_grubenholz", 31, 34), o("hochland_grubenholz", 19, 35.5, { spiegeln: true }), o("hochland_grubenholz", 47, 32.6), o("hoehle_tisch_01", 32, 44.6), o("dorf_holzstapel_01", 36, 53)];
   gebiet("steinhag_zunftstollen", { name: "Der Stollen der Bergmannszunft", untertitel: "Unter dem Zunftviertel von Steinhag", ursprung: ZS_U, chunks: [2, 2], biom: "hoehle", stufe: 12, ebene: "untergrund" }, g, dinge,
     { start: [[32, 57]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] },

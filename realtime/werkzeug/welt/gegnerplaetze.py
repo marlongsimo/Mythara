@@ -58,10 +58,13 @@ if os.path.exists(_sm):
 for s in json.load(open(os.path.join(W, 'troedler_standorte.json'), encoding='utf8'))['standorte']: ausnahmen.append({'x': s['x'], 'y': s['y'], 'r': 6, 'grund': f"Trödler {s['id']}"})
 # Hauptstadt Steinhag (#167): in der Ringmauer und ~12 Felder davor keine Gegner (Kreise im Raster, damit die Prüfung sie kennt)
 _ho = os.path.join(W, 'hochlande_orte.json')
-if os.path.exists(_ho) and json.load(open(_ho, encoding='utf8')).get('hauptstadt'):
-    _m = json.load(open(_ho, encoding='utf8'))['hauptstadt']['mauer']
+_fo = os.path.join(W, 'fahleweiten_orte.json')
+_mauern = ([(json.load(open(_ho, encoding='utf8'))['hauptstadt']['mauer'], 'Stadt Steinhag (Ringmauer)')] if os.path.exists(_ho) and json.load(open(_ho, encoding='utf8')).get('hauptstadt') else []) + \
+          ([(json.load(open(_fo, encoding='utf8'))['grauwacht']['mauer'], 'Stadt Grauwacht (Stadtmauer, #171)')] if os.path.exists(_fo) and json.load(open(_fo, encoding='utf8')).get('grauwacht') else []) + \
+          ([([6370] + json.load(open(os.path.join(W, 'kielmund_orte.json'), encoding='utf8'))['mauer'][1:], 'Stadt Kielmund (Stadtmauer und Hafen, #174)')] if os.path.exists(os.path.join(W, 'kielmund_orte.json')) else [])
+for _m, _grund in _mauern:
     for _x in range(int(_m[0]) - 4, int(_m[2]) + 5, 12):
-        for _y in range(int(_m[1]) - 4, int(_m[3]) + 5, 12): ausnahmen.append({'x': _x, 'y': _y, 'r': 17, 'grund': 'Stadt Steinhag (Ringmauer)'})
+        for _y in range(int(_m[1]) - 4, int(_m[3]) + 5, 12): ausnahmen.append({'x': _x, 'y': _y, 'r': 17, 'grund': _grund})
 AUS = np.zeros((H, B), bool); yy, xx = np.mgrid[0:H, 0:B]
 for a in ausnahmen:
     cx, cy, r = int(a['x'] - X0), int(a['y'] - Y0), int(math.ceil(a['r']))
