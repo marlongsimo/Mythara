@@ -41,6 +41,7 @@ import { HolzWelt } from "./holz3d";
 import { musikStarten } from "../musik";
 import { BergWelt } from "./berg3d";
 import { PflanzenWelt } from "./pflanzen3d";
+import { KraeuterWelt } from "./kraeuter3d";
 import { LichterWelt } from "./lichter3d";
 import { FischWelt, WurmWelt } from "./fischen3d";
 import { SPIEL_SYMBOLE } from "../../../shared/kartensymbole";
@@ -136,7 +137,7 @@ export class Spielwelt3D implements WeltKern {
     this.bank = new BankWelt(this); /* Bankmitarbeiter hinter den Bankschaltern (shared/bank.ts) */
     this.holz = new HolzWelt(this); /* Holzfällerei: Bäume auf den Lichtungen (shared/holz.ts) */
     this.berg = new BergWelt(this); /* Bergbau: Erzadern in den Senken (shared/bergbau.ts) */
-    this.pflanzen = new PflanzenWelt(this); this.lichter = new LichterWelt(this); /* Splitterbinden: Seelenlichter (Phase 3a) */ this.fische = new FischWelt(this); this.wuermer = new WurmWelt(this); /* Fischen (Phase 3b) */ this.handwerk = new HandwerkWelt(this); /* Handwerk: Flachs und Hanf im Osthof, Werkstätten in der Waldmark (shared/handwerk.ts) */
+    this.pflanzen = new PflanzenWelt(this); this.kraeuter = new KraeuterWelt(this); /* Kräuterkunde (#133) */ this.lichter = new LichterWelt(this); /* Splitterbinden: Seelenlichter (Phase 3a) */ this.fische = new FischWelt(this); this.wuermer = new WurmWelt(this); /* Fischen (Phase 3b) */ this.handwerk = new HandwerkWelt(this); /* Handwerk: Flachs und Hanf im Osthof, Werkstätten in der Waldmark (shared/handwerk.ts) */
     addEventListener("ez-getrunken", () => { const f = this.figur as { trinken?: () => number }; if (f.trinken) f.trinken(); }); /* Trank: Hand zum Mund */
     addEventListener("keydown", (e) => { if (e.key === "Shift" && !e.repeat && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) this.sprint(); }); /* Umschalt: Sprint an/aus */
     addEventListener("ez-zurueck", (e) => { const m = (e as CustomEvent).detail as { x: number; y: number }; if (typeof m.x === "number" && typeof m.y === "number") this.springen(m.x, m.y); }); /* ohne Freigabe hinter der Sperre: zurück */
@@ -186,7 +187,7 @@ export class Spielwelt3D implements WeltKern {
     try { const r = M.r as THREE.WebGLRenderer & { compileAsync?: (s: THREE.Object3D, k: THREE.Camera, z?: THREE.Scene) => Promise<unknown> }; if (r.compileAsync) await r.compileAsync(g, M.kamera, M.szene); else r.compile(g, M.kamera, M.szene); } catch { /* egal */ }
     await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null)))); /* einmal mitzeichnen (auch in die Schattenkarte) */ M.szene.remove(g); }
   /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
-  quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null; bank: BankWelt | null = null; holz: HolzWelt | null = null; berg: BergWelt | null = null; pflanzen: PflanzenWelt | null = null; lichter: LichterWelt | null = null; fische: FischWelt | null = null; wuermer: WurmWelt | null = null; handwerk: HandwerkWelt | null = null;
+  quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null; bank: BankWelt | null = null; holz: HolzWelt | null = null; berg: BergWelt | null = null; pflanzen: PflanzenWelt | null = null; kraeuter: KraeuterWelt | null = null; lichter: LichterWelt | null = null; fische: FischWelt | null = null; wuermer: WurmWelt | null = null; handwerk: HandwerkWelt | null = null;
   alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : []), ...this.ausbauSperren()]; }
   /** Stadtstufen (#102): Felder der Stufen-Objekte, die für diesen Spieler gerade dastehen */
   private ausbauSperren(): number[][] { const aus: number[][] = []; for (const d of this.daten.values()) if (d !== "holt" && d.ausbau) for (const A of d.ausbau) if (markeDa(A.m, stufenAn)) for (const [i, j] of A.f) aus.push([i, j, i + 1, j + 1]); return aus; }
@@ -331,6 +332,7 @@ export class Spielwelt3D implements WeltKern {
     { const h = this.holz && this.holz.stelle(x, y); if (h) return h; }
     { const b = this.berg && this.berg.stelle(x, y); if (b) return b; }
     { const p = this.pflanzen && this.pflanzen.stelle(x, y); if (p) return p; }
+    { const p = this.kraeuter && this.kraeuter.stelle(x, y); if (p) return p; }
     { const p = this.lichter && this.lichter.stelle(x, y); if (p) return p; }
     { const p = this.fische && this.fische.stelle(x, y); if (p) return p; }
     { const p = this.wuermer && this.wuermer.stelle(x, y); if (p) return p; }
@@ -357,6 +359,7 @@ export class Spielwelt3D implements WeltKern {
     if (this.holz) for (const p of this.holz.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.8 });
     if (this.berg) for (const p of this.berg.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.7 });
     if (this.pflanzen) for (const p of this.pflanzen.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.6 });
+    if (this.kraeuter) for (const p of this.kraeuter.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.5 });
     if (this.lichter) for (const p of this.lichter.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.6 });
     if (this.fische) for (const p of this.fische.punkte()) kand.push({ x: p.x, y: p.y, h: 0.3, r: 0.8 });
     if (this.wuermer) for (const p of this.wuermer.punkte()) kand.push({ x: p.x, y: p.y, h: 0.3, r: 0.6 });
@@ -486,7 +489,7 @@ export class Spielwelt3D implements WeltKern {
   private ladungT = 0;
   private ladungPruefen(dt: number): void { this.ladungT -= dt; if (this.ladungT > 0) return; this.ladungT = 0.5; const f = this.figur as { aufladen?: (an: boolean, rest?: number) => void };
     if (!f || !f.aufladen) return; const d = inventar().angelegtD, n = (d && d.waffe && d.waffe.ladungen) || 0; f.aufladen(n > 0, Math.min(1, n / 10)); }
-  private bild(dt: number) { this.simZeit += dt; this.ladungPruefen(dt); if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
+  private bild(dt: number) { this.simZeit += dt; this.ladungPruefen(dt); if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.kraeuter) this.kraeuter.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
     const o = this.ort; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry); const direkt = Math.hypot(rx, ry) > 0.05, richtung: [number, number] | null = direkt ? [rx, ry] : null;
     if (direkt) { this.folgenEnde("selbst"); this.handelZiel = null; } else { this.folgenSchritt(dt); this.handelSchritt(); } /* selbst steuern: Folgen endet; sonst das nächste Laufziel hinter dem anderen */
     if (direkt) { this.pfad = []; this.marke.visible = false; }

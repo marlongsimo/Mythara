@@ -198,7 +198,7 @@ export class WeltKampf {
       s.tweens.add({ targets: r, alpha: 0.85, duration: Math.max(100, t * 1000), onComplete: () => r.destroy() }); } }
   /* ---------- Darstellung (2D, Phaser) – die 3D-Welt überschreibt diese Haken (welt3d/kampf3d.ts) ---------- */
   protected bildAufbau(K: (typeof KARTEN)[string]) { const s = this.s; this.ringZiel = s.add.ellipse(0, 0, 54, 27).setStrokeStyle(3, 0xff6a6a, 0.95).setVisible(false); this.ichLb = s.add.graphics().setDepth(1e7);
-    for (const l of K.lager || []) figurVorladen(s, l.art); /* Gegnerfiguren gleich laden, nicht erst beim ersten Anblick */ }
+    if ((K.lager || []).length <= 400) for (const art of new Set((K.lager || []).map((l) => l.art))) figurVorladen(s, art); /* Gegnerfiguren gleich laden, nicht erst beim ersten Anblick – in der großen Welt (#130) erst, wenn einer in die Nähe kommt */ }
   protected bildEnde() { for (const f of this.figuren.values()) { f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); } this.ringZiel.destroy(); this.ichLb.destroy(); }
   protected figurSichtbar(f: Figur, an: boolean) { f.sp.setVisible(an); f.nm.setVisible(an); if (!an) f.lb.clear(); }
   protected figurEntfernen(f: Figur) { f.nm.destroy(); f.lb.destroy();

@@ -4,13 +4,13 @@
  * (alle sehen sie gleich, ohne Server): hin, an den Halten warten, zurück. Der Browser zeigt sie als 3D-Figuren (welt3d/npc3d.ts).
  */
 export interface Reise { id: string; /** Modell (img/figuren-echt3d) */ datei: string; /** Wegpunkte (Weltfelder) */ punkte: [number, number][];
-  /** an diesen Wegpunkten (Index) so viele Sekunden stehen bleiben */ halte: Record<number, number>; /** Felder je Sekunde */ tempo: number; /** Versatz in Sekunden (nicht alle zugleich) */ versatz: number }
+  /** an diesen Wegpunkten (Index) so viele Sekunden stehen bleiben */ halte: Record<number, number>; /** Felder je Sekunde */ tempo: number; /** Versatz in Sekunden (nicht alle zugleich) */ versatz: number; /** zieht diesen Karren hinter sich her (Modell, Pfad ab Spielwurzel) */ karren?: string }
 /** Die Südstraße von Weidenhain bis Kielmund (Kreuzungen und Rastplatz aus wegenetz.mjs) */
-export const SUEDSTRASSE: [number, number][] = [[6448, 6762], [6456, 6840], [6462, 6904], [6466, 6960], [6470, 7003], [6472, 7050], [6472, 7092], [6468, 7160], [6462, 7230], [6450, 7270], [6440, 7286]];
+export const SUEDSTRASSE: [number, number][] = [[6444.5, 6762], [6450.5, 6840], [6456.5, 6904], [6461.5, 6960], [6466, 7008], [6467.5, 7050], [6470, 7092], [6467, 7160], [6461.5, 7230], [6449.5, 7270], [6439.5, 7286]]; /* Straßenmitte (Welt-Abgleich #126); Halt am Halben Weg auf der Kreuzung, nicht auf dem Wegweiser */
 const HALBER_WEG = 4;
 export const REISENDE: Reise[] = [
   /* der Händler mit seinem Karren: steht lange am Rastplatz „Halber Weg“ (Trödler-Platz) */
-  { id: "haendler_sued", datei: "npc.haendler_sued", punkte: SUEDSTRASSE, halte: { 0: 30, [HALBER_WEG]: 240, [SUEDSTRASSE.length - 1]: 30 }, tempo: 0.9, versatz: 0 },
+  { id: "haendler_sued", datei: "npc.haendler_sued", punkte: SUEDSTRASSE, halte: { 0: 30, [HALBER_WEG]: 240, [SUEDSTRASSE.length - 1]: 30 }, tempo: 0.9, versatz: 0, karren: "img/objekte3d/troedler/karren.glb" /* der Karren des Trödlers (#88) */ },
   { id: "wanderer_sued", datei: "npc.wanderer", punkte: SUEDSTRASSE, halte: { 0: 20, [HALBER_WEG]: 40, [SUEDSTRASSE.length - 1]: 20 }, tempo: 1.2, versatz: 400 },
   { id: "wanderin_sued", datei: "npc.wanderin", punkte: SUEDSTRASSE, halte: { 0: 20, 6: 30, [SUEDSTRASSE.length - 1]: 20 }, tempo: 1.1, versatz: 900 },
 ];

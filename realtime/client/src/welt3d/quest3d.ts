@@ -14,8 +14,9 @@ import { questGeladen, rede, questVerfolgt, questStandB, questDing, verfolgteQue
 import { faehreBei, FAEHRE_NAH } from "../../../shared/faehre";
 import { QUESTS as QUESTS_B, questDef, schalterAn } from "../../../shared/quests";
 import { Folger } from "../../../shared/folgen";
-import { zeichenAlle, ziel as zielB, objektLage, gilt, frei, lage, figurDa, figurFolgt, type QuestObjekt, type QuestFigur, type QuestDef, type Schranke } from "../../../shared/questbau";
+import { zeichenAlle, ziel as zielB, objektLage, gilt, frei, lage, figurDa, figurFolgt, type QuestObjekt, type QuestFigur, type QuestDeko, type QuestDef, type Schranke } from "../../../shared/questbau";
 import { STATIONEN } from "../../../shared/handwerk";
+import { gltfLader } from "./gltf";
 import { TUEREN, INSTANZEN } from "../../../shared/bosse";
 import { tuerenZu } from "../../../shared/boss";
 import { inventar } from "../inventar";
@@ -42,9 +43,9 @@ export class QuestWelt {
       g.position.set(x, this.u.motor.hoehe(x, y), y); g.rotation.y = w; g.traverse((o) => { o.castShadow = true; o.receiveShadow = true; }); g.userData.sperre = sp.id; g.userData.q = q.id; this.u.motor.szene.add(g); this.staemme.push(g); }
     for (const q of QUESTS_B) for (const n of q.figuren) { const da = this.figuren.find((f) => f.n.id === n.id); if (da) { da.qs.push(q.id); continue; } /* Figur in mehreren Quests: ein Modell */ const nm = document.createElement("div"); nm.className = "ez-name3d quest"; nm.textContent = n.name; document.body.appendChild(nm);
       const mk = document.createElement("div"); mk.className = "ez-questmarke"; mk.textContent = "!"; mk.hidden = true; document.body.appendChild(mk);
-      let npc: Npc3D | null = null; if (!n.wandert) { npc = new Npc3D(n.modell); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); }
+      let npc: Npc3D | null = null; if (!n.wandert) { npc = new Npc3D(n.modell, undefined, 2.0 * (n.mass ?? 1)); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); }
       this.figuren.push({ n, q: q.id, qs: [q.id], npc, x: n.x, y: n.y, nm, mk }); }
-    this.objekteBauen();
+    this.objekteBauen(); this.dekoBauen();
     /* Mühlenflügel je Spieler (QuestDef.drehen): bei uns steht die Mühle, bis unser Schalter an ist */
     const DREHEN = QUESTS_B.flatMap((q) => q.drehen || []);
     if (DREHEN.length) this.u.motor.drehtHier = (x, z) => { const D = DREHEN.find((d) => Math.hypot(d.x - x, d.y - z) <= d.r); return !D || (questGeladen() && schalterAn((id) => questStandB(id), D.schalter)); };
@@ -109,7 +110,7 @@ export class QuestWelt {
       else if (f.laeuft) { f.fertig = true; if (f.npc) { f.npc.spiele("ruhe"); f.npc.blick(dx, dy); } rede(f.n.id); } }
     else if (f.npc && f.laeuft && !f.fertig) { f.laeuft = false; f.npc.spiele("ruhe"); } }
   schritt(dt: number) { const M = this.u.motor;
-    this.objekteSchritt();
+    this.objekteSchritt(); this.dekoSchritt();
     if (TUEREN.some((t) => t.instanz)) { this.tuerT -= dt; if (this.tuerT <= 0) { this.tuerT = 0.5; this.stand(); } }
     for (const f of this.figuren) if (f.n.kommt) this.entgegen(f, dt);
     for (const f of this.figuren) if (f.n.folgt) this.folgen(f, dt);
@@ -142,6 +143,15 @@ export class QuestWelt {
     const sx = n / 2 + px, sy = n / 2 + py, gr = Math.max(18, n * 0.12); x.save(); x.font = `900 ${gr}px Georgia, serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.lineWidth = Math.max(3, gr * 0.22); x.strokeStyle = "#2a1a05"; x.strokeText("!", sx, sy); x.fillStyle = "#ffd23a"; x.fillText("!", sx, sy); x.restore(); }
   /* ───────── Questobjekte des Baukastens (QuestDef.objekte): Modelle „zaun“ (Bruchstelle, geflickt) und „ruten“ (Rutenbündel) ───────── */
   private objekte: Objekt[] = [];
+  /* ───── Schmuck nach dem Questsstand (#134, QuestDef.deko): Trophäen an der Wand ───── */
+  private deko: { d: QuestDeko; q: string; g: THREE.Group }[] = [];
+  private dekoBauen() { const M = this.u.motor;
+    for (const q of QUESTS_B) for (const d of q.deko || []) { const g = new THREE.Group(); g.position.set(d.x, M.hoehe(d.x, d.y) + (d.h || 0), d.y); g.rotation.y = ((d.dreh || 0) * Math.PI) / 180; g.visible = false; M.szene.add(g);
+      gltfLader().loadAsync("../" + d.glb).then((m) => { const o = m.scene; o.scale.setScalar(d.mass ?? 1); o.traverse((x) => { (x as THREE.Mesh).castShadow = true; }); g.add(o); }).catch((e) => console.warn("Quest-Schmuck:", d.id, e));
+      this.deko.push({ d, q: q.id, g }); } }
+  private dekoSchritt() { if (!this.deko.length) return; const k = { hat: (g: string) => inventar().rucksack.includes(g), verloren: () => false, quest: (id: string) => { const d = questDef(id); return d ? lage(d, questStandB(id)).phase : "neu"; }, schalter: (s: string) => schalterAn((id) => questStandB(id), s) };
+    for (const o of this.deko) { const q = questDef(o.q), nah = Math.hypot(o.d.x - this.u.ort.x, o.d.y - this.u.ort.y) < 45; o.g.visible = nah && questGeladen() && Boolean(q) && gilt(q!, questStandB(o.q), o.d.sichtbar, k);
+      if (o.g.visible) o.g.position.y = this.u.motor.hoehe(o.d.x, o.d.y) + (o.d.h || 0); } }
   private objekteBauen() { const M = this.u.motor, holz = new THREE.MeshStandardMaterial({ color: 0x7a5a3a, roughness: 0.95 }), moos = new THREE.MeshStandardMaterial({ color: 0x4f7a2e, roughness: 1 }),
       stein = new THREE.MeshStandardMaterial({ color: 0x8a8a82, roughness: 0.9 }), rute = new THREE.MeshStandardMaterial({ color: 0x9a8a4a, roughness: 0.9 }), band = new THREE.MeshStandardMaterial({ color: 0x6b8a3a, roughness: 0.9 }),
       leuchten = new THREE.MeshBasicMaterial({ color: 0xffd23a, transparent: true, opacity: 0.5, depthWrite: false });

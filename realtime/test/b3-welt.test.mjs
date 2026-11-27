@@ -87,7 +87,7 @@ try {
   for (const id of ["b3_stiefel", "b3_karren", "b3_apfel"]) { const o = O(id); await stelle(ida, o.x + 1, o.y); await ding(ida, id); }
   await schlaf(300); check(["spur_stiefel", "spur_karren", "spur_apfel"].every((x) => QB.erledigt(Q, ida.b[Q.id] || "", x)), "Drei Spuren untersucht");
   zo.ws.close(); await schlaf(300); await stelle(ida, 6286, 6566); const z = await kampf(TA, 6286, 6566); await schlaf(1500);
-  const sp = () => z.w.filter((w) => w[2] === "bandit_spaeher" && !w[10]);
+  const ich0 = z.w.find((w) => w[1] === 1), sp = () => z.w.filter((w) => w[2] === "bandit_spaeher" && !w[10] && Math.hypot(w[4] - ich0[4], w[5] - ich0[5]) < 18); /* nur das Lager (die Gegnerplätze der Welt #130 stehen weiter weg) */
   check(sp().length === 6, `Im Westmark-Lager stehen sechs Banditen-Späher (${sp().length})`);
   let siege = 0; const t0 = Date.now();
   while (siege < 5 && Date.now() - t0 < 150000) { const ich = z.w.find((w) => w[1] === 1); const ziel = sp().sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];

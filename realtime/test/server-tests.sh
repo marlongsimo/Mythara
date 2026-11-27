@@ -73,6 +73,8 @@ TESTS=(
   bank-platzhalter
   festland-kampf
   inhalt-sueden
+  kraeuterkunde
+  gegnerlast
 )
 [ $# -gt 0 ] && TESTS=("$@")
 
