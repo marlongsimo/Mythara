@@ -52,6 +52,7 @@ Ein ausgebauter Stollenraum vor dem Riss, sicher (kein Kampf):
 ## Belohnung – die Risstruhe
 
 - **Punkte 0–100:** Schaden, Zeit, keine Tode, Wagnis-Segen.
+- **Waffen der Stufe 70** (Echoschneide, Seelenbogen, Seelenfokus, `waffen-70.md`): **nur hier** erhältlich, als seltener Truhenfund (Chance legt der Nutzer fest).
 - **Grundbeute** (immer, mehr bei mehr Punkten): Splitter, hochstufige Erze und Hölzer (nur vorhandene Arten), Tränke der Kräuterkunde, Seelenlichter.
 - **Uralt-Teil (Stufe 75):** bei 100 Punkten etwa **1 : 150** je Durchgang, darunter anteilig weniger. **Kein Pech-Schutz.**
   In der Gruppe würfelt **jeder für sich** (eigene Truhe, keine geteilte Beute).

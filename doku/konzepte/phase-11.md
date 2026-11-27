@@ -33,7 +33,7 @@ Die Hochlande sind die erste Region über Stufe 45. Hier stehen Hochlandwidder, 
 | Klippenadler | 56 | Klippen zur Nordküste |
 | Bergtroll | 58 | Geröllhänge, Bergwerk, Hochpass |
 
-**Mini-Boss** (Idee für die Quests später): ein alter Bergtroll im Bergwerk, als Instanz nach der Boss-Regel (#116).
+**Hüter-Bosse:** Grumhold, Sturmschwinge, Frostwitwe (siehe Block H).
 Neue Gegner-Modelle **nur bei echter Lücke**, als Liste an den Nutzer.
 
 ## Figuren (Vorarbeit)
@@ -69,33 +69,26 @@ Alle mit **Querverbindung** zu bekannten Orten (Kanon „Quests über Regionsgre
 | **H1 „Über den Pass“** (Einstieg) | Der Wachhauptmann von Grauwacht schickt dich über die Brücke zur Furt: Seit Wochen kommen keine Erzwagen mehr aus Steinhag. In Steinhag: Bergvögtin, die Wege sind voller Trolle, die Passwacht hält kaum noch. Botengänge Steinhag → Passwacht → Alm. | Grauwacht (Phase 8), Merit Stahl (Graufurt) will Erz | Wegstein-Ziel **Steinhag**, XP, 1 QP; schaltet Läden in Steinhag frei |
 | **H2 „Käse für die Passwacht“** (klein) | Die Sennerin versorgt die Passwacht, ihre Ziegen sind ausgebüxt (Folgen-Baustein wie S6), Käse reifen lassen (Kochen), zur Passwacht tragen. | Mettes Schafe (Grauwacht, E-Block) | Kochen-XP, Käserad-Rezept (Kochen, Herd der Alm), Laden der Sennerin |
 | **H3 „Tiefer als erlaubt“** | Bergleute sind tiefer gegraben als die Vögte erlaubten – unten in der Trollhalle wurde etwas geweckt. Grubenholz ersetzen (Handwerk), eingestürzten Stollen freilegen (Bergbau), verletzte Bergleute versorgen (Tränke). | Hedda (Rabenmoor) erkennt Splitterlicht in Erzproben (Haken für die Rissgrube später) | Bergbau-/Handwerk-XP, Zugang zur Urkammer (Ureisen) |
-| **H4 „Der alte Bergtroll“** (Boss) | In der Trollhalle wacht **Grumhold**, ein uralter Bergtroll, der das Bergwerk für sein Revier hält. Quest-Kampf allein und schwächer. Danach Wahl: öffentlich oder eigene Instanz, stärkere Fassung. | Bergvögtin, Passwächter | Questpunkte, XP, **Drops in der starken Fassung: Waffen der Stufe 70** (Echoschneide, Seelenbogen, Seelenfokus, je etwa 1 : 100) |
-| **H5 „Das erste Echo“** (Boss) | Nach H3/H4: In der **Urkammer** reißt der Splitterriss auf; heraus tritt **das erste Echo**, ein uralter Ritter aus Splitterlicht. | Hedda (Splitterlicht), Haken für die Rissgrube | Questpunkte, XP; starke Fassung droppt **Nahkampf-Rüstung Stufe 70** |
-| **H6 „Der Sturm über dem Grauhorn“** (Boss) | Die Passwacht meldet gerissene Schafe und zerfetzte Zelte; auf dem Gipfel des Grauhorns nistet **die Sturmschwinge**, ein riesiger Klippenadler. Mit Steinmännern den Horst finden, Köder auslegen. | Passwächter, Sennerin | Questpunkte, XP; starke Fassung droppt **Fernkampf-Rüstung Stufe 70** |
-| **H7 „Das Eis am Hochpass“** (Boss) | Der Hochpass friert mitten im Sommer zu; in einer Eishöhle am Pass hält **die Frostwitwe** Hof, eine Eismagierin aus der Frostkrone. Einsiedler deutet ihre Runen. | Einsiedler, Bergvögtin; Haken zur Frostkrone | Questpunkte, XP; starke Fassung droppt **Magie-Rüstung Stufe 70** |
+| **H4 „Die Hüter der Hochlande“** (Boss-Quest, **eine Quest für alle drei**) | Die Bergvögtin erklärt: Drei alte Hüter halten die Hochlande in Atem – **Grumhold** in der Trollhalle, die **Sturmschwinge** auf dem Grauhorn, die **Frostwitwe** am Hochpass. Nacheinander (Reihenfolge frei) jeden in seiner schwächeren Quest-Fassung allein besiegen; dazwischen kleine Schritte (Steinmänner zum Horst, Einsiedler deutet die Eisrunen, Bergleute zeigen den Weg in die Trollhalle). | Passwächter, Sennerin, Einsiedler, Hedda (Splitterlicht in der Trollhalle – Haken für die Rissgrube) | Questpunkte, XP; danach alle drei Hüter in der **starken Fassung** (öffentlich oder eigene Instanz), jeder droppt **seinen** Rüstungssatz der Stufe 70 |
 | **Nebenquest „Der Einsiedler vom Spiegelsee“** | Der Einsiedler sammelt Bergkräuter und schreibt die Geschichte der Hochlande; Kräuter bringen, Steinmänner am Grauhorn finden (Erkunden). | Mira (Waldmark) | Kräuterkunde-XP, Kessel am Spiegelsee frei |
 
-Mini-Boss **Grumhold** (Vorschlag): Stufe ~72, Nahkampf (Keule), Stampf-Ring (angezeigt), wirft Felsbrocken (Schattenkreis), schwach gegen Magie; Quest-Fassung ~60 %.
-Beute der starken Fassung: Splitter, hochstufige Erze/Barren, Wildbret, selten die Waffen der Stufe 70 (vorbereitet: STUFE70_BEUTE, #151).
+**Die drei Hüter** (Entscheidung des Nutzers, 27.11.): je ein Boss je Kampfstil-Rüstung, **eine gemeinsame Quest** (H4), jeder mit **eigener Mechanik, Stärke und Schwäche** (Dreieck). Boss-Regel #116: vor der Quest leer, in der Quest allein und schwächer, danach öffentlich oder eigene Instanz. Gefährliche Angriffe werden vorher angezeigt.
 
-**Drei Rüstungs-Bosse** (Wunsch des Nutzers, 27.11.): je ein Boss je Kampfstil-Rüstung, jeder mit **eigener Mechanik, Stärke und Schwäche** (ein Dreieck: jeder ist gegen einen Stil stark, gegen einen schwach). Alle nach der Boss-Regel (#116). Gefährliche Angriffe werden vorher angezeigt (auch am Handy spielbar).
-
-| Boss | Ort | stark gegen | schwach gegen | Mechanik | droppt (starke Fassung) |
+| Hüter | Ort | stark gegen | schwach gegen | Mechanik | droppt (starke Fassung) |
 |---|---|---|---|---|---|
-| **Das erste Echo** (Ritter aus Splitterlicht) | Urkammer im Bergwerk | Nahkampf (pariert, wirft einen Teil zurück) | **Magie** | Splitterschwert-Wirbel (Ring um ihn, angezeigt); ruft zwei Splitterlinge, die ihm Schild geben, bis man sie zerschlägt; bei 30 % Leben „Nachhall“: jeder seiner Schläge trifft doppelt | **Echowacht** (Nahkampf: Helm, Brustplatte, Beinschienen, Turmschild) |
-| **Die Sturmschwinge** (Riesenadler) | Horst auf dem Gipfel des Grauhorns | Magie (Wind lenkt Zauber ab, −50 %) | **Fernkampf** | kreist außer Nahkampf-Reichweite, stößt herab (Schattenkreis am Boden); nach dem Sturzflug 4 s am Boden (Fenster für Nahkampf); Sturmböen schieben Spieler über den Gipfel | **Sturmfeder** (Fernkampf: Haube, Wams, Hose) |
-| **Die Frostwitwe** (Eismagierin) | Eishöhle am Hochpass | Fernkampf (Eiswand fängt Geschosse) | **Nahkampf** | friert Bodenfelder ein (verlangsamt, wer zu lange steht, erstarrt); Eissplitter-Wächter; Frostnova (angezeigt) – wer nah dran bleibt, trifft sie hart, muss aber ausweichen | **Frostschleier** (Magie: Kapuze, Robe, Rock) |
+| **Grumhold** (uralter Bergtroll mit Steinplatten und Keule) | Trollhalle im Bergwerk | Nahkampf (Steinhaut, −50 %) | **Magie** | Stampf-Ring aus Geröll (angezeigt, ausweichen); wirft Felsbrocken (Schattenkreis); bei halbem Leben rufen zwei Felsbrocken-Wächter Geröll herab – zerschlagen, sonst heilen sie ihn | **Nahkampf-Rüstung Stufe 70** (Helm, Brustplatte, Beinschienen, Turmschild) |
+| **Die Sturmschwinge** (Riesenadler) | Horst auf dem Gipfel des Grauhorns | Magie (Wind lenkt Zauber ab, −50 %) | **Fernkampf** | kreist außer Nahkampf-Reichweite, stößt herab (Schattenkreis); nach dem Sturzflug 4 s am Boden; Sturmböen schieben Spieler über den Gipfel | **Fernkampf-Rüstung Stufe 70** (Haube, Wams, Hose) |
+| **Die Frostwitwe** (Eismagierin) | Eishöhle am Hochpass | Fernkampf (Eiswand fängt Geschosse) | **Nahkampf** | friert Bodenfelder ein (verlangsamt, wer zu lange steht, erstarrt); Eissplitter-Wächter; Frostnova (angezeigt) | **Magie-Rüstung Stufe 70** (Kapuze, Robe, Rock) |
 
-**Rüstung Stufe 70:** etwa **+8 % über Mythisch (65)**, **Set-Bonus** bei 3 Teilen (Nahkampf +2 Stärke; Fernkampf +2 Fernkampf-Stärke; Magie +2 % Magieschaden – neu). Richtwerte wie im Vorschlag `gipfelgericht.md`.
-**Drops:** jeder Boss nur **seinen** Satz, etwa **1 : 40 je Teil** in der starken Fassung (Vorschlag), kein Pech-Schutz, handelbar (Vorschlag). Dazu immer Splitter, hochstufige Erze/Barren, Wildbret.
-**Modelle:** Echo aus Heldenfigur mit Leuchtschicht; Sturmschwinge aus dem Klippenadler (größer); Frostwitwe aus Menschenfigur + Eis-Material des Eisgolems – oder vom Nutzer (Blender) wie die Waffen. Rüstungssätze: Figuren oder vom Nutzer.
+**Rüstung Stufe 70:** etwa **+8 % über Mythisch (65)**, **Set-Bonus** bei 3 Teilen (Nahkampf +2 Stärke; Fernkampf +2 Fernkampf-Stärke; Magie +2 % Magieschaden – neu). Richtwerte wie im Vorschlag `gipfelgericht.md`. Namen der Sätze offen (Vorschlag: Steinvogt-Platte, Sturmfeder, Frostschleier).
+**Drops:** jeder Hüter nur **seinen** Satz, etwa **1 : 40 je Teil** in der starken Fassung (Vorschlag), kein Pech-Schutz, handelbar (Vorschlag). Dazu immer Splitter, hochstufige Erze/Barren, Wildbret.
+**Die Waffen der Stufe 70** (Echoschneide, Seelenbogen, Seelenfokus) gibt es **nur im Minispiel Rissgrube** (Entscheidung des Nutzers, 27.11.) – nicht bei den Hütern.
 
 ## Was der Nutzer liefern bzw. entscheiden muss
 
-1. **Freigabe Block H** (H1–H4 + Nebenquest) und Namen (Steinhag, Grumhold, Quest-Titel).
-2. **Modell Grumhold:** Variante des Bergtrolls (größer, Moos/Steinplatten, Keule) – **Figuren baut sie aus deinem Bergtroll**; oder du lieferst ein eigenes Modell (Blender wie bei den Gegnern).
-3. **Drop-Chancen:** Stufe-70-Waffen bei Grumhold (Vorschlag 1 : 100 je Waffe), Rüstung bei den drei Bossen (Vorschlag 1 : 40 je Teil).
-5. **Modelle** für die drei Rüstungssätze und die Bosse: lieferst du sie (Blender) oder baut Figuren sie aus Vorlagen?
+1. **Freigabe Block H** (H1–H4 + Nebenquest) und Namen (Steinhag, Grumhold, Sturmschwinge, Frostwitwe, Quest-Titel, Namen der Rüstungssätze).
+2. **Modelle** der drei Hüter und der drei Rüstungssätze: vom Nutzer (Blender) oder Figuren aus Vorlagen (Grumhold aus dem Bergtroll, Sturmschwinge aus dem Klippenadler, Frostwitwe aus Menschenfigur + Eis-Material).
+3. **Drop-Chance** der Rüstung (Vorschlag 1 : 40 je Teil).
 4. Optional: eigene Wünsche für Läden in Steinhag (sonst nur vorhandene Waren).
 
 ## Wer macht was
@@ -103,8 +96,8 @@ Beute der starken Fassung: Splitter, hochstufige Erze/Barren, Wildbret, selten d
 | Rolle | Jetzt | Nach Freigabe Block H |
 |---|---|---|
 | Welt | **Hochlande füllen** (Tabelle oben), Questorte (Stollen, Trollhalle als Arena) | Kleinkram für H1–H4 |
-| Figuren | – | Grumhold (Variante Bergtroll), Ziegen-Questfiguren, Käselaib, Erzwagen |
-| Systeme | NPCs und Läden in Steinhag nach #148 (nur vorhandene Waren), Stationen, Reisende Bergleute, Wegstein-Ziel Steinhag | Grumhold (Boss-Baukasten, #116), Drop STUFE70_BEUTE aktivieren |
+| Figuren | – | drei Hüter, drei Rüstungssätze Stufe 70, Ziegen-Questfiguren, Käselaib, Erzwagen |
+| Systeme | NPCs und Läden in Steinhag nach #148 (nur vorhandene Waren), Stationen, Reisende Bergleute, Wegstein-Ziel Steinhag | drei Hüter (Boss-Baukasten, #116, Mechaniken), Rüstung Stufe 70 mit Set-Bonus, % Magieschaden |
 | Quests | – | H1–H4 + Nebenquest, Welt-Tests |
 | Integration | Inhaltsdaten der Arbeitsplätze | Einbau, live |
 
