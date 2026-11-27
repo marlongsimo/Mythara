@@ -1,6 +1,6 @@
 /*
  * Riftmere – Quest G3 „Was das Wrack verschweigt“ (Wrackkapitän allein, danach wrackkapitaen_danach) Ende zu Ende: echter Spielserver (localhost:8830), nachgebildete Supabase (localhost:8829), Kampfwelt, Lohn mit „abholen“ (#77).
- * Block G ist in zwei Tests geteilt (unter 400 s je Test): g12-welt (G1, G2) und g3-welt (G3, G4, mit G1 als fertig). Tom ist die Gegenprobe.
+ * Block G ist geteilt (unter 400 s je Test): g12-welt (G1, G2), g3-welt (G3 bis zu den Zeugen), g3b-welt (G3: Wrackkapitän, Abgabe, danach), g4-welt. Tom ist die Gegenprobe.
  * Aufruf: node test/g3-welt.test.mjs   (nach node build.mjs und python3 werkzeug/weltzonen.py)
  */
 import { starte, starkerHeld, QUESTS, QB } from "./questwelt.mjs";
@@ -33,16 +33,5 @@ try {
   check(await sprich(I, G3, "bertold", "wrackkiste_bertold") && erl(I, G3, "bertold"), "Bertold Krähe hat die Kiste gesehen");
   check(await sprich(I, G3, "merit", "wrackkiste_merit") && erl(I, G3, "merit"), "Merit Stahl hat die Kiste gesehen");
   check(schalterAn(I, G3, "wrackkapitaen_kajuete") && !schalterAn(I, G3, "wrackkapitaen_danach"), "Während der Quest: Kajüte als Instanz (allein), noch nicht „danach“");
-  { const P = G3.schritte.find((x) => x.id === "kapitaen").wo; await stelle(I, P[0], P[1] + 4); const z = await kampf("ida", P[0], P[1] + 4);
-    const kap = () => z && z.w.find((w) => w[2] === "wrackkapitaen");
-    { const t0 = Date.now(); while (z && !kap() && Date.now() - t0 < 15000) await schlaf(300); }
-    check(Boolean(kap()), "Der Wrackkapitän steht in Idas Kajüte");
-    const n = z ? await kaempfen(z, ["wrackkapitaen", "strandraeuber_saebel", "strandraeuber_armbrust"], () => erl(I, G3, "kapitaen"), 300000) : 0;
-    check(erl(I, G3, "kapitaen"), `Den Wrackkapitän besiegt (${n} Siege, Ansagen ${z ? z.ev.filter((e) => e.a === "ansage").length : 0})`);
-    await objekt(I, G3, "g3_logbuch"); check(erl(I, G3, "logbuch"), "Die Logbuchseite in der Kajüte gelesen");
-    if (z) { z.ws.close(); await schlaf(2500); } }
-  check(await sprich(I, G3, "kranich", "bericht") && fertig(I, G3), "G3 bei Kranich abgegeben, Lohn abgeholt");
-  check(!schalterAn(I, G3, "wrackkapitaen_kajuete") && schalterAn(I, G3, "wrackkapitaen_danach"), "Nach der Quest: wrackkapitaen_danach an (stärkere Fassung öffentlich oder eigene Instanz)");
-
 } catch (e) { console.error(e); check(false, "Ausnahme: " + e.message); }
-W.ende("G3 (Smaragdküste)");
+W.ende("G3 (Smaragdküste, Teil 1)");
