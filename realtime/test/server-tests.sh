@@ -75,6 +75,7 @@ TESTS=(
   inhalt-sueden
   kraeuterkunde
   gegnerlast
+  gegner-vorbereitet
 )
 [ $# -gt 0 ] && TESTS=("$@")
 
