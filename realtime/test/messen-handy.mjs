@@ -42,6 +42,7 @@ if (process.env.DREIECKE) console.log(JSON.stringify(await p.evaluate(() => { co
   const g = o.geometry, n = (g.index ? g.index.count : g.attributes.position.count) / 3 * (o.isInstancedMesh ? o.count : 1); const k = o.isInstancedMesh ? "instanzen" : (o.name || o.geometry.type) + "|" + (o.material && (o.material.name || o.material.type)) + "|" + Math.round(n / (o.isInstancedMesh ? o.count : 1)); je[k] = (je[k] || 0) + n; });
   return Object.fromEntries(Object.entries(je).map(([k, n]) => [k, Math.round(n / 1000) + " Tsd."])); })));
 console.log(`je Bild: ${Math.round(info.dreiecke / 1000)} Tsd. Dreiecke, ${info.aufrufe} Aufrufe`);
+if (process.env.FOTO3D) { await p.evaluate(() => document.querySelectorAll("#ez-start, .ez-start, #ez-laden").forEach((e) => e.remove())); await p.screenshot({ path: process.env.FOTO3D }); }
 const lein = await p.evaluate(() => { const c = document.querySelector("canvas"); return c ? `${c.width}×${c.height}` : "?"; }), weg = await p.evaluate((o) => Math.round(Math.hypot(window.EZW.welt3d.ort.x - o.x, window.EZW.welt3d.ort.y - o.y)), o);
 const mb = (re) => Math.round(geladen.filter((g) => re.test(g.u)).reduce((a, g) => a + g.n, 0) / 1e5) / 10;
 console.log(`Leinwand ${lein} · Stand ${stand.bps} Bilder/s (längstes ${stand.max} ms) · Gehen ${gehen.bps} Bilder/s (längstes ${gehen.max} ms, ${weg} Felder)`);
