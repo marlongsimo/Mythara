@@ -50,7 +50,8 @@ for q in $QUELLEN; do
   if git merge-base --is-ancestor "origin/$q" "origin/$ZIEL"; then echo "$q: nichts Neues"; continue; fi
   echo "$q: $(git rev-list --count "origin/$ZIEL..origin/$q") neue Commits"
   if git diff --name-only "origin/$ZIEL...origin/$q" | grep -Eq "$GETESTET"; then
-    kopf="$(git rev-parse "origin/$q")"; lauf="$(testlauf "$kopf")"
+    # der Workflow „Tests“ läuft nur bei Änderungen unter realtime/ oder supabase/ – also den letzten Commit prüfen, der dort etwas ändert
+    kopf="$(git log -1 --format=%H "origin/$q" -- realtime supabase .github/workflows/tests.yml)"; lauf="$(testlauf "$kopf")"
     if [ "$lauf" = unbekannt ]; then   # ohne Leserecht auf die Prüfungen (Workflow ohne „checks: read“): wie früher zusammenführen, aber laut sagen
       echo "::warning::$q: Testlauf nicht abfragbar (dem Workflow fehlt „checks: read“) – ohne Prüfung zusammengeführt"
     elif [ "$lauf" != success ] && [ "${OHNE_TESTPRUEFUNG:-0}" != 1 ]; then
