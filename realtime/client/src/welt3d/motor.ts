@@ -346,7 +346,10 @@ export class Welt3D {
   /** Ein umhergehender Bewohner mit diesem Modell (Quests: der Bürgermeister im Rathaus), falls sein Chunk geladen ist */
   wandererMit(datei: string): { x: number; z: number } | null { for (const s of this.st.values()) for (const w of s.wanderer || []) if (w.datei === datei) return w; return null; }
   bild() {
-    const dt = Math.min(DT_MAX, this.uhr.getDelta()), H = this.held; ZEIT.value += dt;   /* auf schwachen Geräten bis 0,1 s je Bild – sonst liefe der Held dort langsamer */
+    /* #183: hinter der offenen Weltkarte läuft die Spiellogik gedrosselt (etwa 10-mal je Sekunde, die Zeit wird gesammelt) – der Held läuft weiter, das HUD dahinter wird nicht jedes Bild angefasst */
+    let roh = this.uhr.getDelta() + this.gesammelt; this.gesammelt = 0;
+    if (karteDeckt() && roh < 0.1) { this.gesammelt = roh; return; }
+    const dt = Math.min(DT_MAX, roh), H = this.held; ZEIT.value += dt;   /* auf schwachen Geräten bis 0,1 s je Bild – sonst liefe der Held dort langsamer */
     /* fertig geladene Chunks bauen: einer je Bild, damit nichts ruckelt */
     if (this.warte.length) this.bauSchritt();
     this.lodPruefen();
@@ -384,6 +387,7 @@ export class Welt3D {
     this.r.render(this.szene, this.kamera);
   }
   private bildNr = 0;
+  private gesammelt = 0;
 }
 const FLECK = new THREE.CircleGeometry(0.42, 16); FLECK.userData.geteilt = true;
 /** Leuchtschein über Feuern und Laternen (additiv, ohne Tiefe) */
