@@ -10,7 +10,8 @@ import TROEDLER_STANDORTE from "../welt/troedler_standorte.json";
 export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}` | `zunft_${string}` | `fahleweiten_${string}` | `kielmund_${string}`;
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
-  gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string;
+  gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" };
+  /** #171 Stadtstufen: nur offen, wenn dieser Quest-Schalter für den Spieler an ist (z. B. grauwacht_abtei, grauwacht_burg – shared/stadtstufen.ts); sonst zu */ schalter?: string; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string;
   /** #141: ein Bewohner ohne Laden – nur reden (keine Waren, kein Kartensymbol) */ nurReden?: boolean; /** #141: weitere Gesprächszeilen; angesprochen sagt die Figur zufällig eine davon oder den Gruß */ zeilen?: string[] }
 /** Währung */
 export const WAEHRUNG = "splitter";
@@ -184,6 +185,49 @@ ort("zunft_meisterschmied", { name: "Meisterschmied", spruch: "", haendler: "Mei
   gruss: "Vier Essen, zwei Ambosse – und keiner wartet auf den anderen. So schmiedet ein Meister.", tschuess: "Glück auf.", zeilen: ["Der Brennofen dort hinten macht Tiegel und Formen. Er schmilzt genauso gut wie die Esse."] });
 ort("zunft_meisterfischer", { name: "Meisterfischer", spruch: "", haendler: "Meisterfischer Klaas", modell: "npc.fischer", x: 6390.5, y: 7352, nurReden: true,
   gruss: "Sechs Fangstellen, eine Räucherhütte, die Bankkiste am Ende des Stegs. Mehr braucht ein Fischer nicht.", tschuess: "Wind von achtern!", zeilen: ["Die Aale beißen am besten, wenn die Flut kommt. Frag nicht, warum."] });
+/* ───── #174 Hauptstadt Kielmund (Welt 7a15f6624, welt/kielmund_orte.json): zehn Ladenplätze – drei Stände am Kai, drei Marktstände im Kaufmannsviertel,
+   vier Ladenhäuser; nur vorhandene Waren (Konzept hauptstaedte.md: dazu Fischhändler, Schiffsbedarf, Gewürze). Stände: Händler dahinter, Kunde davor (3,2 Felder). ───── */
+const stand = (x: number, y: number) => ({ x, y, blick: [0, -1] as [number, number], vor: [x, y - 3.2] as [number, number] });
+ort("kielmund_fischmarkt", { name: "Fang vom Kai", spruch: "Was heute Nacht ins Netz ging.", haendler: "Wiebke Hering", modell: "npc.hafen_frau", ...stand(6404, 7309.2),
+  gruss: "Hering, Barsch, Aal – frischer kriegst du's nur, wenn du selbst rausfährst.", tschuess: "Wind von achtern!",
+  waren: [W("fisch_hering_roh", 4), W("fisch_hering_gebraten", 8), W("fisch_klippenbarsch_gebraten", 11), W("fisch_seeaal_gebraten", 14)] });
+ort("kielmund_schiffsbedarf", { name: "Tau und Teer", spruch: "Was ein Fischer braucht.", haendler: "Klaas Knoten", modell: "npc.hafen_mann", ...stand(6412.5, 7323.2),
+  gruss: "Ruten, Reusen, Würmer, Krüge. Netze flick ich dir auch – gegen Bezahlung.", tschuess: "Immer eine Handbreit Wasser unterm Kiel.",
+  waren: [W("angelrute", 10), W("reuse", 40), W("wurm", 2), W("krug", 5), W("garn", 4)] });
+ort("kielmund_rauchfang", { name: "Rauchfang", spruch: "Geräuchert hält länger.", haendler: "Hinrich Rauch", modell: "npc.fischer", ...stand(6400.5, 7343.2), vor: [6402.5, 7343.5] /* vor dem Stand steht ein Lagerhaus – der Kunde kommt von der Seite */,
+  gruss: "Räucherhering für die lange Fahrt, Aalsuppe für den kalten Abend.", tschuess: "Lass dir's schmecken.", waren: [W("raeucherhering", 14), W("aalsuppe", 30)] });
+ort("kielmund_gewuerze", { name: "Salz und Gewürz", spruch: "Aus den Glutsanden und von weiter her.", haendler: "Samira Pfeffer", modell: "npc.kauffrau", ...stand(6440, 7307.2),
+  gruss: "Salz aus der Salzpfanne, Mehl aus Haferstedt, Äpfel aus dem Tal. Was darf's sein?", tschuess: "Beehr mich bald wieder.", waren: [W("salz", 6), W("mehl", 3), W("apfel", 3)] });
+ort("kielmund_waffen", { name: "Klingen der Küste", spruch: "Scharf wie der Wind auf der Mole.", haendler: "Jorge Säbel", modell: "npc.schmied", ...stand(6476, 7307.2),
+  gruss: "Für Räuber am Strand und Schlimmeres in den Klippen. Such dir was aus.", tschuess: "Schlag zuerst.", waren: waffen.map(ware) });
+ort("kielmund_ruestung", { name: "Panzer und Planken", spruch: "Hält Salzwasser und Säbel.", haendler: "Greta Niet", modell: "npc.schmiedin", ...stand(6488, 7307.2),
+  gruss: "Rüstung, die nicht rostet – fast nicht. Probier an.", tschuess: "Bleib heil.", waren: ruestung.map(ware) });
+ort("kielmund_werkzeug", { name: "Werkzeug vom Hafen", spruch: "Gut geschmiedet, gut geölt.", haendler: "Ole Hammer", modell: "npc.hafen_mann", x: 6407, y: 7359.2,
+  gruss: "Beil, Hacke, Hammer, Sichel. Für das Feine geh in die Werkstatt am Markt.", tschuess: "Glück zu.",
+  waren: [W("holzbeil_training", 10), W("holzbeil_einfach", 350), W("spitzhacke_training", 10), W("spitzhacke_einfach", 350), W("hammer", 10), W("sichel", 10)] });
+ort("troedler_kielmund", { name: "Strandgut", spruch: "Ich nehm alles – fast alles.", haendler: "Der Trödler vom Kai", modell: "npc.troedler", x: 6412, y: 7358.2, troedler: true,
+  gruss: "Was das Meer anspült und die Leute nicht mehr brauchen – ich kauf's.", tschuess: "Komm wieder, wenn der Rucksack drückt." });
+ort("kielmund_traenke", { name: "Salbe und Sud", spruch: "Gegen Salzwunden und Seekrankheit.", haendler: "Imke Salbei", modell: "npc.kraeuterfrau", x: 6424, y: 7276.2,
+  gruss: "Ein Heiltrank vor der Fahrt hat noch keinem geschadet.", tschuess: "Gute Besserung – falls nötig.", waren: [W("kleiner_heiltrank", 35), W("heiltrank", 150), W("leeres_flaeschchen", 2)] });
+ort("kielmund_baecker", { name: "Kombüse", spruch: "Brot und Suppe für die Mannschaft.", haendler: "Hanne Kombüse", modell: "npc.baecker", x: 6454, y: 7372.2,
+  gruss: "Schiffszwieback hab ich keinen – aber Brot und Fischsuppe, frisch.", tschuess: "Mahlzeit!", waren: [W("brot", 8), W("mehl", 3), W("fischsuppe", 15)] });
+/* Wachen, Wahrzeichen und Hafenleben (Plätze der Welt, kielmund_orte.json → npc) */
+ort("kielmund_torwache_nord", { name: "Torwache", spruch: "", haendler: "Torwache am Nordtor", modell: "stadtwache3d", x: 6448.5, y: 7265, blick: [0, -1], nurReden: true,
+  gruss: "Kielmund. Die Südstraße endet hier – das Meer fängt an.", tschuess: "Gute Reise.", zeilen: ["Wer hier hereinkommt, riecht zuerst den Hafen. Man gewöhnt sich dran."] });
+ort("kielmund_torwache_bruecke", { name: "Torwache", spruch: "", haendler: "Torwache am Brückentor", modell: "stadtwache3d", x: 6396, y: 7304, blick: [-1, 0], nurReden: true,
+  gruss: "Über die Kielbrücke kommt alles: Fisch, Salz, Gesindel.", tschuess: "Gute Reise.", zeilen: ["Nachts ziehen wir die Brücke nicht hoch. Aber wir schauen genau hin."] });
+ort("kielmund_leuchtturmwaerter", { name: "Leuchtturmwärter", spruch: "", haendler: "Leuchtturmwärter Tamme", modell: "npc.moewen_fischer", x: 6351.1, y: 7336.5, nurReden: true,
+  gruss: "Das Feuer brennt, seit es Kielmund gibt. Ich sorge dafür, dass das so bleibt.", tschuess: "Halt Kurs.", zeilen: ["Bei Sturm sieht man das Licht bis zu den Klippenhöhlen. Und manchmal Schiffe, die keiner kennt."] });
+ort("kielmund_priesterin", { name: "Priesterin", spruch: "", haendler: "Schwester Maren", modell: "npc.nonne", x: 6475.5, y: 7278, nurReden: true,
+  gruss: "Der Tempel ist für alle offen, die vom Meer heimkehren – und für die, die warten.", tschuess: "Mögen die Wellen dich tragen.", zeilen: ["Für jedes Schiff, das nicht zurückkam, brennt eine Kerze."] });
+ort("kielmund_marktrufer", { name: "Marktrufer", spruch: "", haendler: "Marktrufer Pit", modell: "npc.marktschreier", x: 6428.5, y: 7316.5, nurReden: true,
+  gruss: "Frischer Fisch am Kai! Salz und Gewürz am Markt! Klingen und Panzer bei den Ständen!", tschuess: "Kauft, Leute, kauft!", zeilen: ["Zwei Banken hat Kielmund – eine bei den Kaufleuten, eine am Hafen. Mehr Gold als Fisch, sagen manche."] });
+ort("kielmund_matrose_mole", { name: "Matrose", spruch: "", haendler: "Matrose Jan", modell: "npc.hafen_mann", x: 6382, y: 7334, nurReden: true,
+  gruss: "Drei Wochen auf See, und dann gibt's hier nicht mal ordentliches Bier.", tschuess: "Ahoi.", zeilen: ["Hinter den Klippen liegt ein Wrack. Keiner fährt freiwillig dorthin."] });
+ort("kielmund_matrosin_kai", { name: "Matrosin", spruch: "", haendler: "Matrosin Fenja", modell: "npc.hafen_frau", x: 6390, y: 7312, nurReden: true,
+  gruss: "Wir laufen mit der Flut aus. Bis dahin: Taue spleißen.", tschuess: "Ahoi.", zeilen: ["Die Fischerzunft hat ihren eigenen Steg. Da kommt nur rein, wer was vom Fischen versteht."] });
+ort("kielmund_fischfrau", { name: "Fischfrau", spruch: "", haendler: "Fischfrau Gesine", modell: "npc.moewen_fischerin", x: 6426, y: 7321, nurReden: true,
+  gruss: "Am Fischmarkt wird geschrien, nicht geflüstert!", tschuess: "Komm morgen wieder, dann ist's frischer.", zeilen: ["Die Möwen klauen mehr als die Diebe. Und sie sind schneller."] });
 /* ───── Fahle Weiten (#171, Welt e5c7f6f1): Marktstände der Dörfer an den Plätzen aus welt/fahleweiten_orte.json → laeden. Nur vorhandene Waren. ───── */
 ort("fahleweiten_huegelgrund", { name: "Hügelgrunder Markt", spruch: "Was das Land hergibt.", haendler: "Gerda Furch", modell: "npc.marktfrau", x: 6163, y: 5810.7, blick: [0, -1],
   gruss: "Brot vom Ofen, Äpfel vom Hang. Und wer weiter will: ein Trank für unterwegs.", tschuess: "Komm gut über die Weiten.",
@@ -200,35 +244,6 @@ ort("fahleweiten_wollhag", { name: "Wollhager Hofladen", spruch: "Milch und Käs
 ort("fahleweiten_weiherhof", { name: "Am Weiher", spruch: "Fisch und Angeln.", haendler: "Jost Reuse", modell: "npc.fischer", x: 6337, y: 5835.7, blick: [0, -1],
   gruss: "Hecht am Steg, Barsch am Ostufer, und im Süden liegt ein alter Wels. Angel und Würmer hab ich da.", tschuess: "Petri Heil!",
   waren: [W("angelrute", 10), W("wurm", 2), W("fisch_muehlbarsch_gebraten", 9), W("fisch_moorhecht_gebraten", 12), W("fisch_wels_gebraten", 25)] });
-/* ───── #174 Hauptstadt Kielmund (Welt 7a15f6624, welt/kielmund_orte.json → laeden): drei Stände am Kai, drei im Kaufmannsviertel, vier Ladenhäuser.
-   Konzept hauptstaedte.md: wie Steinhag, dazu Fischhändler und Schiffsbedarf. Nur vorhandene Waren. ───── */
-ort("kielmund_hafenstand_1", { name: "Fischmarkt am Kai", spruch: "Heute früh gefangen.", haendler: "Telse Grät", modell: "npc.fischer", x: 6404, y: 7309.2, blick: [0, -1],
-  gruss: "Hering, Aal, Räucherfisch – was das Meer hergibt, liegt hier.", tschuess: "Wind von achtern!",
-  waren: [W("fisch_hering_roh", 4), W("fisch_hering_gebraten", 8), W("raeucherhering", 14), W("fisch_seeaal_gebraten", 10), W("aalsuppe", 30)] });
-ort("kielmund_hafenstand_2", { name: "Schiffsbedarf", spruch: "Leinen, Haken, Krüge.", haendler: "Ole Tau", modell: "npc.hafen_frau", x: 6412.5, y: 7323.2, blick: [0, -1],
-  gruss: "Wer aufs Wasser will, braucht mehr als Mut. Angeln, Würmer, Krüge – alles da.", tschuess: "Und immer eine Handbreit Wasser unterm Kiel.",
-  waren: [W("angelrute", 10), W("wurm", 2), W("krug", 5), W("krug_wasser", 2), W("garn", 4)] });
-ort("kielmund_hafenstand_3", { name: "Hafenküche", spruch: "Warm für die Hafenarbeiter.", haendler: "Gesche Kessel", modell: "npc.marktfrau", x: 6400.5, y: 7343.2, blick: [0, -1],
-  gruss: "Fischsuppe aus dem großen Topf, Brot dazu. Mehr braucht ein Hafenarbeiter nicht.", tschuess: "Lass es dir schmecken.",
-  waren: [W("fischsuppe", 15), W("brot", 8), W("krug_wasser", 2)] });
-ort("kielmund_kaufstand_1", { name: "Obst und Brot", spruch: "Vom Land in die Stadt.", haendler: "Hinrich Korn", modell: "npc.bauer", x: 6440, y: 7307.2, blick: [0, -1],
-  gruss: "Äpfel aus Weidenhain, Mehl aus der Mühle – die Südstraße bringt alles her.", tschuess: "Komm morgen wieder, dann ist's frischer.",
-  waren: [W("apfel", 3), W("brot", 8), W("mehl", 3)] });
-ort("kielmund_kaufstand_2", { name: "Tränke aus Übersee", spruch: "Gegen Wunden und Seekrankheit.", haendler: "Merle Salbei", modell: "npc.kraeuterfrau", x: 6476, y: 7307.2, blick: [0, -1],
-  gruss: "Ein Trank für die Reise? Die Kapitäne kaufen sie kistenweise.", tschuess: "Bleib heil.",
-  waren: [W("kleiner_heiltrank", 40), W("heiltrank", 170), W("leeres_flaeschchen", 2)] });
-ort("kielmund_kaufstand_3", { name: "Tuch und Leder", spruch: "Segeltuch und Stiefelleder.", haendler: "Antje Webel", modell: "npc.kauffrau", x: 6488, y: 7307.2, blick: [0, -1],
-  gruss: "Grobes Tuch, raues Leder, Garn. Was du daraus machst, ist deine Sache.", tschuess: "Gute Fahrt.",
-  waren: [W("garn", 4), W("stoff_grob", 6), W("leder_rau", 8)] });
-ort("kielmund_waffen", { name: "Hafenklingen", spruch: "Stahl gegen Schmuggler.", haendler: "Jasper Haken", modell: "npc.schmied", x: 6407, y: 7359.2, blick: [0, 1],
-  gruss: "Am Hafen trägt jeder was am Gürtel. Such dir aus, was zu dir passt.", tschuess: "Schlag zuerst.", waren: waffen.map(ware) });
-ort("kielmund_ruestung", { name: "Kaiwacht-Rüstungen", spruch: "Hält Salz und Säbel aus.", haendler: "Wiebke Panzer", modell: "npc.schmiedin", x: 6412, y: 7358.2, blick: [0, 1],
-  gruss: "Leder, das kein Salzwasser fürchtet, und Platten für die Mutigen.", tschuess: "Bleib heil.", waren: ruestung.map(ware) });
-ort("kielmund_werkzeug", { name: "Werkzeug der Altstadt", spruch: "Beil, Hacke, Hammer.", haendler: "Claas Feile", modell: "npc.kaufmann", x: 6424, y: 7276.2, blick: [0, 1],
-  gruss: "Gutes Werkzeug ist die halbe Arbeit. Die andere Hälfte machst du.", tschuess: "Und gib auf die Schneide acht.",
-  waren: [W("holzbeil_training", 10), W("holzbeil_einfach", 350), W("spitzhacke_training", 10), W("spitzhacke_einfach", 350), W("hammer", 10), W("sichel", 10)] });
-ort("troedler_kielmund", { name: "Strandgut", spruch: "Was das Meer anspült – und mehr.", haendler: "Der Strandsammler", modell: "npc.troedler", x: 6454, y: 7372.2, blick: [0, 1], troedler: true,
-  gruss: "Ich kauf alles, was sich tragen lässt. Zum halben Preis – das Meer ist ein harter Händler.", tschuess: "Komm wieder, wenn die Flut was bringt." });
 /* #160: die Läden in Steinhag öffnen erst nach H1 „Über den Pass“ (Entscheidung des Nutzers, 27.11.) – die Bank (shared/bank.ts) und die Bergvögtin bleiben immer da */
 export const STEINHAG_LAEDEN: LadenId[] = ["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter", "troedler_steinhag",
   "steinhag_waffen", "steinhag_ruestung", "steinhag_backstube", "steinhag_seefisch", "steinhag_stoffe", "steinhag_zunftbedarf", "steinhag_grubenproviant"];
@@ -260,10 +275,12 @@ ort("hochland_furtwache", { questFigur: "furtwache", name: "Wache an der Furt", 
   gruss: "Die Brücke trägt. Drüben beginnen die Hochlande – und die Trolle.", tschuess: "Pass auf dich auf.", zeilen: ["Früher kamen hier jeden Tag Erzwagen aus Steinhag. Seit Wochen keiner mehr."] });
 export const LADEN_LISTE = Object.values(LAEDEN);
 /** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */
-export const ladenOffen = (L: Laden, stand: (id: string) => string): boolean => !L.wenn || stand(L.wenn.quest) === L.wenn.phase;
+/** schalter: prüft einen Quest-Schalter (Server: quests.schalter, Browser: schalterAn) – ohne ihn bleibt ein Laden mit schalter zu */
+export const ladenOffen = (L: Laden, stand: (id: string) => string, schalter?: (id: string) => boolean): boolean =>
+  (!L.wenn || stand(L.wenn.quest) === L.wenn.phase) && (!L.schalter || Boolean(schalter && schalter(L.schalter)));
 /** Symbol je Laden (Minikarte und Karte) */
-export const LADEN_ZEICHEN: Record<string, string> = { fahleweiten_huegelgrund: "🧺", fahleweiten_kohlstatt: "🪓", fahleweiten_brechstein: "⛏️", fahleweiten_wollhag: "🧀", fahleweiten_weiherhof: "🎣", kielmund_hafenstand_1: "🐟", kielmund_hafenstand_2: "🎣", kielmund_hafenstand_3: "🍲", kielmund_kaufstand_1: "🍞", kielmund_kaufstand_2: "🧪", kielmund_kaufstand_3: "🧵", kielmund_waffen: "⚔️", kielmund_ruestung: "🛡️", kielmund_werkzeug: "🔨", waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
-  haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺", graufurt_alma: "🥧", steinhag_taverne: "🍲", steinhag_waffen: "⚔️", steinhag_ruestung: "🛡️", steinhag_backstube: "🍞", steinhag_seefisch: "🐟", steinhag_stoffe: "🧵", steinhag_zunftbedarf: "🔨", steinhag_grubenproviant: "🍲", steinhag_schmiede: "🔨", steinhag_allerlei: "🧺", steinhag_kraeuter: "🧪" };
+export const LADEN_ZEICHEN: Record<string, string> = { fahleweiten_huegelgrund: "🧺", fahleweiten_kohlstatt: "🪓", fahleweiten_brechstein: "⛏️", fahleweiten_wollhag: "🧀", fahleweiten_weiherhof: "🎣", waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
+  haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺", graufurt_alma: "🥧", steinhag_taverne: "🍲", kielmund_fischmarkt: "🐟", kielmund_schiffsbedarf: "🎣", kielmund_rauchfang: "🐟", kielmund_gewuerze: "🧂", kielmund_waffen: "⚔️", kielmund_ruestung: "🛡️", kielmund_werkzeug: "🔨", kielmund_traenke: "🧪", kielmund_baecker: "🍞", steinhag_waffen: "⚔️", steinhag_ruestung: "🛡️", steinhag_backstube: "🍞", steinhag_seefisch: "🐟", steinhag_stoffe: "🧵", steinhag_zunftbedarf: "🔨", steinhag_grubenproviant: "🍲", steinhag_schmiede: "🔨", steinhag_allerlei: "🧺", steinhag_kraeuter: "🧪" };
 for (const L of LADEN_LISTE) if (L.troedler) LADEN_ZEICHEN[L.id] = "🪙"; /* Trödler (#88) */
 /* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */
 /** Ein Händler zahlt für seine eigenen Waren so viel von seinem Preis; der Trödler so viel vom Grundwert */

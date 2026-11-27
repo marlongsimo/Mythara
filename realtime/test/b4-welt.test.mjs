@@ -115,7 +115,8 @@ try {
   console.log("Rotmantel (eigene Kopie der Kammer)");
   await stelle(ida, 10448, 9624); z = await kampf(TA, 10448, 9624, "rotmantel_kammer"); await schlaf(2000);
   const rm = () => z.w.find((w) => w[2] === "rotmantel"); check(Boolean(rm()), "Rotmantel steht in Idas Kopie");
-  const s3 = await kaempfen(z, ["rotmantel", "bandit_schlaeger"], () => z.ev.some((e) => e.a === "tot" && rm() && e.id === rm()[0]) || !rm() || rm()[10], 300000);
+  const rmId = rm() ? rm()[0] : -1; /* unter Last fehlt Rotmantel kurz im Schnappschuss – Ende nur über seinen Tod (Ereignis oder Totmarke), nicht über „nicht zu sehen“ */
+  const s3 = await kaempfen(z, ["rotmantel", "bandit_schlaeger"], () => z.ev.some((e) => e.a === "tot" && e.id === rmId) || Boolean(rm() && rm()[10]), 300000);
   const ans = z.ev.filter((e) => e.a === "ansage"), ruf = z.ev.some((e) => e.a === "bossphase"), boss = z.ev.some((e) => e.a === "boss" && e.typ === "rotmantel");
   check(ans.length >= 1 && ans.every((e) => e.name === "Rundumschlag" && e.felder.length === 8), `Rundumschlag mit Ansage (8 Felder leuchten): ${ans.length}×`);
   check(ruf && z.w.concat([]).length >= 0 && z.ev.some((e) => e.a === "bossphase" && /Leuten/.test(e.text || "")), "Bei 50 %: Rotmantel ruft nach seinen Leuten");

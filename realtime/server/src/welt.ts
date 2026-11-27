@@ -213,14 +213,14 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Einkaufen geht mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
       const L = LAEDEN[String(e.laden) as LadenId], w = L && L.waren.find((x) => x.g === e.g), nutzerK = s.nutzer; let fehler: string | null = null;
       if (!L || !w) fehler = "Das gibt es hier nicht.";
-      else if (!ladenOffen(L, (id) => questStand(nutzerK, id))) fehler = L.zu || "Hier ist zu.";
+      else if (!ladenOffen(L, (id) => questStand(nutzerK, id), (x) => schalter(nutzerK, x))) fehler = L.zu || "Hier ist zu.";
       else if (s.ort !== "waldmark" || s.wx === undefined || s.wy === undefined || Math.hypot(s.wx - L.x, s.wy - L.y) > KAUF_WEIT) fehler = `Geh näher an den Stand von ${L.haendler}.`;
       else fehler = kaufen(H.sb, s.nutzer, w.g, w.preis, WAEHRUNG);
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt });
       else senden(s, { t: "gekauft", laden: L.id, g: w!.g, preis: w!.preis }); }
     else if (e.t === "verkaufen") { /* #87/#88: an einen Händler verkaufen – nur was er führt (80 %) bzw. beim Trödler alles Handelbare (50 % des Grundwerts) */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Verkaufen geht mit Konto (Menü → Anmelden).", zeit: jetzt }); return; } const nutzerK = s.nutzer;
-      const r = ladenVerkauf(H.sb, s.nutzer, e.laden, e.i, (e as { n?: unknown }).n, s.wx, s.wy, (id) => questStand(nutzerK, id));
+      const r = ladenVerkauf(H.sb, s.nutzer, e.laden, e.i, (e as { n?: unknown }).n, s.wx, s.wy, (id) => questStand(nutzerK, id), (x) => schalter(nutzerK, x));
       if ("fehler" in r) senden(s, { t: "chat", kanal: "system", text: r.fehler, zeit: jetzt }); else { senden(s, { t: "verkauft", ...r }); senden(s, { t: "chat", kanal: "system", text: `Verkauft: ${r.n > 1 ? r.n + " × " : ""}${r.name} für ${r.splitter} Splitter.`, zeit: jetzt }); } }
     else if (e.t === "holz") { /* Holzfällerei (holz.ts): fällen, Kernschlag, aufhören */
       if (e.tat === "start" && typeof e.id === "string") { alleStop(s); const f = holzStart(s, e.id); if (f) senden(s, { t: "holz", tat: "nein", id: e.id, text: f }); }
