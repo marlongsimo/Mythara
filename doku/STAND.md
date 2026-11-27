@@ -1,6 +1,6 @@
 # Stand – wo wir im Fahrplan stehen
 
-Gepflegt von der Rolle Konzept & Review. Zuletzt aktualisiert: **26.11.2026**.
+Gepflegt von der Rolle Konzept & Review. Zuletzt aktualisiert: **27.11.2026, 7:30 UTC**.
 Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzept.pdf` · Arbeitsweise: `doku/ARBEITSWEISE.md`
 
 ## Fahrplan (Grenzland)
@@ -14,13 +14,14 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | — | Fix: Questpunkte aus dem Queststand (Migration 049) | ✅ live |
 | 2 | Waldland: Quests A1–A3, Zielscheibe, Kapelle, Bäckerei, Brot, Golem-Beute, Mühle je Spieler | ✅ live |
 | 3 | Weidenhain & Riedwiesen – 3a Splitterbinden + Wegstein + B1 · 3b Wirkungen, Fischen, Kochen · 3c B2, Werkstatt Weidenhain, Sterneisen/Kernbaum | ✅ live und vom Nutzer getestet (26.11.) |
-| **4** | **Westmark & erster Boss**: Banditen-Varianten, B3, Boss-Baukasten, Instanzen, B4 Rotmantel | 🟡 **als Nächstes live** – Systeme (#48) fertig, Einbau läuft; Konzept `doku/konzepte/phase-4.md`, Beute `beute.md`; Figuren (#19), Welt (#21) und Quest-Entwürfe B3/B4 fertig, Einbau #15, #16, #24 |
-| 5 | Vorbereitung Moor: Kräuterkunde, Gegenstände mit eigenen Daten, geladene Waffen, Set-Bonus | ⬜ Konzept `doku/konzepte/phase-5.md`; Kräuter/Tränke/Sichel (Figuren #28) fertig; Kräuter-Fundstellen (Welt #35) fertig |
-| 6 | Raben-Trilogie & Aschenwerth: Rabenpriester, C1–C3, Rabengrund, Bossing | 🟡 Konzept `doku/konzepte/phase-6.md`; Modelle (#20, #28) und Aschenwerth/Rabengrund (#23) fertig; Einbau #17, #18, #26, #29 |
-| 7 | Graufurt zur Stadt, Fährkette, Ostufer, Grüner Turm | 🟡 Konzept `doku/konzepte/phase-7.md`; Vorarbeit fertig: Welt (#36), Figuren (#37), Quest-Entwürfe D1–D3 (#38); Einbau #40 nach Phase 6 |
-| 8 | Der Weg nach Grauwacht: Fahle Weiten (W3), Grauwacht im Wiederaufbau, Quests E1–E4, Wachtrüstung | 🟡 Konzept `doku/konzepte/phase-8.md` (Annahme: W3 vor W2); Vorarbeit Welt/Figuren/Quests freigegeben |
-| 9 | Glut und Strom: Glutsande (W2), Glutbrunn, Quests F1–F4, Quer-Quest „Die Karte des Boten“ | 🟡 Konzept `doku/konzepte/phase-9.md`; Vorarbeit Welt/Figuren/Quests freigegeben |
-| 10 | Salz und Segel: Smaragdküste (W4), Kielmund, Quests G1–G4, Fischen an der Küste | 🟡 Konzept `doku/konzepte/phase-10.md`; Vorarbeit Welt/Figuren/Quests |
+| 4 | Westmark & erster Boss: Banditen-Varianten, B3, Boss-Baukasten, Instanzen, B4 Rotmantel | ✅ live (27.11.) – bitte im Spiel testen |
+| **5** | **Vorbereitung Moor**: Kräuterkunde, geladene Waffen, Set-Bonus | 🟡 Systeme fertig (#43); Inhalte bei Integration (#29, #31, #47, #80) |
+| 6 | Raben-Trilogie & Aschenwerth: Rabenpriester, C1–C3, Rabengrund, Bossing | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
+| 7 | Graufurt zur Stadt, Fährkette, Ostufer, Grüner Turm | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
+| 8 | Der Weg nach Grauwacht: Fahle Weiten (W3), Grauwacht im Wiederaufbau, Quests E1–E4, Wachtrüstung | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
+| 9 | Glut und Strom: Glutsande (W2), Glutbrunn, Quests F1–F4, Quer-Quest „Die Karte des Boten“ | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
+| 10 | Salz und Segel: Smaragdküste (W4), Kielmund, Quests G1–G4, Fischen an der Küste | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
+| Süden | Dörfer, Arbeits- und Gegnerplätze, kurze Quests S1–S9 entlang der Südstraße | 🟡 Konzept `doku/konzepte/sueden.md`; Welt #120, Figuren #121, Quests #124 |
 
 ## Festland (Weltkonzept)
 
