@@ -456,7 +456,7 @@ Object.assign(MONSTER, {
     angriff: { name: "Kieferbiss", art: "nah", schaden: [1, 16], takt: 2.5, reich: 2.2, aushol: 0 },
     v2: { staerke: 110, geschick: 75, defense: 70, magie: 20, staerkeBonus: 30, ticks: 5, abwehr: { nah: 30, fern: 20, magie: 0 } },
     info: "Die Mutter aller Sandkriecher. Sie schläft in der Kammer unter dem Tempel – bis jemand das Auge öffnet.",
-    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [300, 600] }] }, { wurf: [{ g: "chitin", chance: 100, anzahl: [3, 6] }] }, { wurf: [{ g: "erz_ureisen", chance: 25, anzahl: [2, 4] }] }, { wurf: [{ g: "stamm_weltenbaum", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 10 }, { g: "@episch", chance: 100 / 40 }, { g: "@legendaer", chance: 100 / 400 }] }] },
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [300, 600] }] }, { wurf: [{ g: "chitin", chance: 100, anzahl: [3, 6] }] }, { wurf: [{ g: "erz_ureisen", chance: 25, anzahl: [2, 4] }] }, { wurf: [{ g: "stamm_weltenbaum", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 10 }, { g: "@episch", chance: 100 / 40 }, { g: "@legendaer", chance: 100 / 400 }] }, { stark: true, wurf: [{ g: "glutsteinschild", chance: 1 }] } /* Glutsteinschild: nur in der starken Fassung, 1 : 100 je Sieg (Entscheidung des Nutzers) */] },
   /* ───── Phase 10 (#92): Smaragdküste, Kielmund, Klippenhöhlen (doku/konzepte/phase-10.md; Beute nach den Vorschlägen, beute.md folgt) ───── */
   /** Strandkrabbe: Stufe 22, Panzer (stark gegen Nahkampf), Strände und Wrack */
   strandkrabbe: { name: "Strandkrabbe", stufe: 22, bild: "img/echtzeit/bandit.webp", hoehe: 55, lp: 32, tempo: 2.8, angriffswert: { nah: 22, fern: 0, magie: 0 }, abwehr: { nah: 30, fern: 15, magie: 10 }, r: 0.4,

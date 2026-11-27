@@ -235,7 +235,7 @@ WERKSTAETTEN.push({ id: "esse_haferstedt", station: "esse", x: 6201.4, y: 6992.8
    Bindestein und Brunnen; Hohe Alm: Kessel der Käserei, Herd und Brunnen; Bergwerk: Esse, Amboss und Feuer; Feuer an der Passwacht; Kessel an der Einsiedelei
    (Welt d344565a, hochlande_orte.json → stationen) */
 WERKSTAETTEN.push({ id: "esse_steinhag", station: "esse", x: 7002.4, y: 5913.8, ort: "fl_216_183" }, { id: "amboss_steinhag", station: "amboss", x: 7005.4, y: 5913.6, ort: "fl_216_183" },
-  { id: "werkbank_steinhag", station: "werkbank", x: 7011, y: 5915.5, ort: "fl_216_183" }, { id: "herd_steinhag", station: "herd", x: 7008.2, y: 5874, ort: "fl_216_183" },
+  { id: "werkbank_steinhag", station: "werkbank", x: 7011, y: 5916.6 /* Welt: steinhag_werkbank 7011|5915,4, davor stehen */, ort: "fl_216_183" }, { id: "herd_steinhag", station: "herd", x: 7008.2, y: 5874, ort: "fl_216_183" },
   { id: "kessel_steinhag", station: "kessel", x: 7010.5, y: 5874, ort: "fl_216_183" }, { id: "bindestein_steinhag", station: "bindestein", x: 6996.5, y: 5889.5, ort: "fl_216_183" },
   { id: "brunnen_steinhag", station: "brunnen", x: 6990, y: 5888.35, ort: "fl_216_183" }, { id: "kessel_alm", station: "kessel", x: 7198, y: 6002, ort: "fl_216_183" },
   { id: "brunnen_alm", station: "brunnen", x: 7191, y: 6005.35, ort: "fl_216_183" }, { id: "feuer_passwacht", station: "feuer", x: 6959, y: 5614.6, ort: "fl_216_169" },
