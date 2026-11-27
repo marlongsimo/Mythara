@@ -65,7 +65,9 @@ import { CHUNK_FELDER, chunkName, inZone } from "../../../shared/welt/typen";
 interface Stelle { /** eine Figur zum Reden (kurz antippen: nur hingehen, reden über lange drücken) */ npc?: boolean; x: number; y: number; text: string; tat: () => void; da: () => boolean; /** mehrere Knöpfe untereinander (z. B. je Gegenstand am Boden und „Alles aufheben“) */ knoepfe?: { text: string; tat: () => void }[]; /** weitere Aktionen im Aktionsmenü nach der ersten (Händler: „Laden ansehen“) */ mehr?: { text: string; sym: string; tat: () => void }[] }
 import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../../shared/welt/typen";
 import { aktiverHeld } from "../held";
-import { angelegteEbenen, inventarVomServerDa, inventar } from "../inventar";
+import { angelegteEbenen, inventarVomServerDa, inventar, petBitten } from "../inventar";
+import { PetFigur } from "./npc3d";
+import { PETS } from "../../../shared/pets";
 /* angelegtes Beil / angelegte Spitzhacke: in der Hand zeigen */
 import { serverZusatz } from "../gruppe";
 import { karteDrehen, rucksackVorladen } from "../rahmen";
@@ -142,6 +144,7 @@ export class Spielwelt3D implements WeltKern {
     this.holz = new HolzWelt(this); /* Holzfällerei: Bäume auf den Lichtungen (shared/holz.ts) */
     this.berg = new BergWelt(this); /* Bergbau: Erzadern in den Senken (shared/bergbau.ts) */
     this.pflanzen = new PflanzenWelt(this); this.kraeuter = new KraeuterWelt(this); /* Kräuterkunde (#133) */ this.lichter = new LichterWelt(this); /* Splitterbinden: Seelenlichter (Phase 3a) */ this.fische = new FischWelt(this); this.wuermer = new WurmWelt(this); /* Fischen (Phase 3b) */ this.handwerk = new HandwerkWelt(this); /* Handwerk: Flachs und Hanf im Osthof, Werkstätten in der Waldmark (shared/handwerk.ts) */
+    addEventListener("ez-pet", (e) => { const m = (e as CustomEvent).detail as { tat?: string }; if (m.tat === "fund" && this.meinPet) this.meinPet.freude(); else if (m.tat === "fund") setTimeout(() => this.meinPet && this.meinPet.freude(), 400); }); /* #170 */
     addEventListener("ez-getrunken", () => { const f = this.figur as { trinken?: () => number }; if (f.trinken) f.trinken(); }); /* Trank: Hand zum Mund */
     addEventListener("keydown", (e) => { if (e.key === "Shift" && !e.repeat && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) this.sprint(); }); /* Umschalt: Sprint an/aus */
     addEventListener("ez-zurueck", (e) => { const m = (e as CustomEvent).detail as { x: number; y: number }; if (typeof m.x === "number" && typeof m.y === "number") this.springen(m.x, m.y); }); /* ohne Freigabe hinter der Sperre: zurück */
@@ -343,6 +346,7 @@ export class Spielwelt3D implements WeltKern {
     { const q = this.quest && this.quest.stelle(x, y); if (q) return q; } /* Questfiguren: „Mit … sprechen“ */
     { const h = this.haendler && this.haendler.stelle(x, y); if (h) return h; } /* Händler am Marktplatz: „Mit … sprechen“, dazu „Laden ansehen“ */
     { const b = this.bank && this.bank.stelle(x, y); if (b) return b; } /* Bankmitarbeiter: „Mit … sprechen“, dazu „Bank“ */
+    { const K = BANKKISTEN.find((k) => Math.hypot(k.x - x, k.y - y) <= 1.2); if (K) return { x: K.x, y: K.y + 0.9, text: "Bankkiste öffnen", tat: () => bankZeigen(K.name, true), da: () => Math.hypot(K.x - this.ort.x, K.y - this.ort.y) <= 2.5 }; } /* #169: Bankkiste – nur ablegen und abheben */
     { const h = this.holz && this.holz.stelle(x, y); if (h) return h; }
     { const b = this.berg && this.berg.stelle(x, y); if (b) return b; }
     { const p = this.pflanzen && this.pflanzen.stelle(x, y); if (p) return p; }
@@ -418,6 +422,9 @@ export class Spielwelt3D implements WeltKern {
           gr.push(n ? { kopf: n[1], farbe: FARBE.figur, aktionen: [{ text: "Sprechen", sym: "💬", tat: () => this.ausfuehren(st, st.tat) }, ...(st.mehr || []).map((m) => ({ text: m.text, sym: m.sym, tat: () => this.ausfuehren(st, m.tat, `${m.text}: ${n[1]}`) }))] } : { kopf: st.text, farbe: FARBE.objekt, aktionen: [{ text: st.text, sym: "➜", tat: () => this.ausfuehren(st, st.tat) }] }); } }
       const gehen = { text: "Hierhin gehen", sym: "👣", tat: () => { this.wahlWeg(); this.gehe(b.x, b.z); } };
       if (gehenZuerst) gr.splice(Math.max(0, gr.findIndex((g) => g.farbe === FARBE.objekt || g.farbe === FARBE.figur)), 0, { kopf: "Hier", farbe: FARBE.objekt, aktionen: [gehen] }); else gr.push({ kopf: "", aktionen: [gehen] }); }
+    if (b) { const P = this.meinPet, inv = inventar(); /* #170: das eigene Pet wegschicken; am eigenen Helden ein gefundenes rufen */
+      if (P && Math.hypot(P.x - b.x, P.z - b.z) <= 1.3) gr.unshift({ kopf: PETS[P.id].name, farbe: FARBE.figur, aktionen: [{ text: "Wegschicken", sym: "👋", tat: () => { petBitten(null); } }] });
+      else if (Math.hypot(this.ort.x - b.x, this.ort.y - b.z) <= 1.2 && (inv.pets || []).some((p) => p !== inv.petAktiv)) gr.push({ kopf: "Begleiter", farbe: FARBE.figur, aktionen: (inv.pets || []).filter((p) => p !== inv.petAktiv && PETS[p]).map((p) => ({ text: `${PETS[p].name} rufen`, sym: "🐾", tat: () => { petBitten(p); } })) }); }
     aktionsMenue(px, py, gr); }
   /** Gegenstände am Boden beim Punkt: der nächste (bis gut ein Feld) und alles auf seinem Feld */
   bodenHier(x: number, y: number): { d0: BodenDing; hier: BodenDing[] } | null { let b: BodenDing | null = null, bd = 1.2; for (const d of bodenListe()) { const w = Math.hypot(d.x - x, d.y - y); if (w <= bd) { bd = w; b = d; } }
@@ -503,7 +510,13 @@ export class Spielwelt3D implements WeltKern {
   private ladungT = 0;
   private ladungPruefen(dt: number): void { this.ladungT -= dt; if (this.ladungT > 0) return; this.ladungT = 0.5; const f = this.figur as { aufladen?: (an: boolean, rest?: number) => void };
     if (!f || !f.aufladen) return; const d = inventar().angelegtD, n = (d && d.waffe && d.waffe.ladungen) || 0; f.aufladen(n > 0, Math.min(1, n / 10)); }
-  private bild(dt: number) { this.simZeit += dt; this.ladungPruefen(dt); if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.kraeuter) this.kraeuter.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
+  /* #170: das eigene Pet folgt dem Helden (inventar().petAktiv) */
+  private meinPet: PetFigur | null = null;
+  private petSchritt(dt: number) { const id = inventar().petAktiv;
+    if (this.meinPet && this.meinPet.id !== id) { this.motor.szene.remove(this.meinPet.npc.gruppe); this.meinPet = null; }
+    if (id && PETS[id] && !this.meinPet) { this.meinPet = new PetFigur(this.motor, id, this.ort.x, this.ort.y); this.motor.szene.add(this.meinPet.npc.gruppe); }
+    if (this.meinPet) this.meinPet.schritt(dt, { x: this.ort.x, z: this.ort.y }); }
+  private bild(dt: number) { this.petSchritt(dt); this.simZeit += dt; this.ladungPruefen(dt); if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.kraeuter) this.kraeuter.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
     const o = this.ort; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry); const direkt = Math.hypot(rx, ry) > 0.05, richtung: [number, number] | null = direkt ? [rx, ry] : null;
     if (direkt) { this.folgenEnde("selbst"); this.handelZiel = null; } else { this.folgenSchritt(dt); this.handelSchritt(); } /* selbst steuern: Folgen endet; sonst das nächste Laufziel hinter dem anderen */
     if (direkt) { this.pfad = []; this.marke.visible = false; }

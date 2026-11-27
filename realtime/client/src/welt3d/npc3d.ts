@@ -10,6 +10,7 @@
 import { RUHE_TEMPO } from "./held3d";
 import { reiseStelle, type Reise } from "../../../shared/reisende";
 import { tierStelle, TIERARTEN, type Tierplatz } from "../../../shared/tiere";
+import { PETS, petFolgen } from "../../../shared/pets";
 import { gltfLader } from "./gltf";
 import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
@@ -77,6 +78,17 @@ export class TierFigur {
   constructor(private u: Umgebung, readonly p: Tierplatz, readonly i: number) { const A = TIERARTEN[p.art]; this.npc = new Npc3D(A.datei, undefined, A.hoehe); this.schritt(0); }
   schritt(dt: number) { const s = tierStelle(this.p, this.i, Date.now() / 1000, (x, z) => this.u.gehbar(Math.floor(x), Math.floor(z))); /* gehbar erwartet ganze Felder */ this.x = s.x; this.z = s.y;
     this.npc.gruppe.position.set(s.x, this.u.hoehe(s.x, s.y), s.y); this.npc.blick(s.dx, s.dy); this.npc.spiele(s.geht ? "gehen" : TIERARTEN[this.p.art].pause); this.npc.schritt(dt); }
+}
+
+/** #170: ein Skilling-Pet, das seinem Spieler folgt (shared/pets.ts petFolgen; Modelle von Figuren mit ruhe, gehen, laufen, freude) */
+export class PetFigur {
+  readonly npc: Npc3D; x: number; z: number; private freudeT = 0;
+  constructor(private u: Umgebung, readonly id: string, x: number, z: number) { this.npc = new Npc3D(PETS[id] ? PETS[id].datei : "pet.nagbert", undefined, 1.8); this.x = x + 1; this.z = z + 1; this.setzen(); }
+  private setzen() { this.npc.gruppe.position.set(this.x, this.u.hoehe(this.x, this.z), this.z); }
+  /** Freude beim Fund: einmal die Bewegung „freude“ (1 s) */
+  freude() { this.freudeT = 1; }
+  schritt(dt: number, ziel: { x: number; z: number }) { const s = petFolgen({ x: this.x, y: this.z }, { x: ziel.x, y: ziel.z }, dt); this.x = s.x; this.z = s.y; this.setzen();
+    this.npc.blick(s.dx, s.dy); if (this.freudeT > 0) { this.freudeT -= dt; this.npc.spiele("freude"); } else this.npc.spiele(s.tat); this.npc.schritt(dt); }
 }
 
 /** Ein Bewohner, der in seinem Haus umhergeht, stehen bleibt und ab und zu vor die Tür tritt */

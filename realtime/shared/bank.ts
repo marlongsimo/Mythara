@@ -16,13 +16,24 @@ export const BANK_MAX = 2_147_483_647;
 /** So nah muss man an einem Schalter oder Bankmitarbeiter stehen (Felder) */
 export const BANK_WEIT = 3.5;
 
-export interface Bankschalter { id: string; ort: "waldmark" | "weidenhain"; x: number; y: number }
+export interface Bankschalter { id: string; ort: "waldmark" | "weidenhain"; x: number; y: number; /** Name der Bank im Fenster */ bank?: string }
 /** Die Schalter (wo der Kunde steht) – gleich den Interaktionen in den Weltdaten */
 export const BANKSCHALTER: Bankschalter[] = [
   { id: "bankschalter_links", ort: "waldmark", x: 6476.6, y: 6429.1 },
   { id: "bankschalter_rechts", ort: "waldmark", x: 6479.4, y: 6429.1 },
   { id: "bankschalter", ort: "weidenhain", x: 6436.5, y: 6676.4 },
 ];
+/* #169 (Regel des Nutzers: jede etwas größere Stadt hat mindestens einen Bankschalter): die Bankgebäude der Welt (Bauplan waldmark_bank_01, ungedreht) in Graufurt,
+   Grauwacht, Steinhag, Glutbrunn und Kielmund bekommen den linken Schalter wie in der Waldmark – Schalter 1,4 links und 1,9 hinter dem Bauplan-Punkt, der Bankier 3,7 dahinter.
+   Ort „waldmark“ = die eine Kampfwelt (wie bei Steinhag). Haferstedt und Sandquell folgen, sobald Welt die Gebäude aufstellt (#169). */
+export const BANKGEBAEUDE: { id: string; stadt: string; x: number; y: number; bankier: [string, string] }[] = [
+  { id: "graufurt", stadt: "Graufurt", x: 6703, y: 6482, bankier: ["Albrecht Münzer", "Bankmitarbeiter"] },
+  { id: "grauwacht", stadt: "Grauwacht", x: 6716, y: 5730, bankier: ["Hedwig Taler", "Bankmitarbeiterin"] },
+  { id: "steinhag", stadt: "Steinhag", x: 6969, y: 5878, bankier: ["Greta Pfand", "Bankmitarbeiterin"] },
+  { id: "glutbrunn", stadt: "Glutbrunn", x: 7160, y: 6932, bankier: ["Selim Sandgold", "Bankmitarbeiter"] },
+  { id: "kielmund", stadt: "Kielmund", x: 6452, y: 7296, bankier: ["Ole Heuer", "Bankmitarbeiter"] },
+];
+for (const B of BANKGEBAEUDE) BANKSCHALTER.push({ id: B.id + "_bankschalter", ort: "waldmark", x: B.x - 1.4, y: B.y - 1.9, bank: "Bank von " + B.stadt });
 export const istBankschalter = (id: string): boolean => BANKSCHALTER.some((b) => b.id === id);
 
 export interface Bankier { id: string; name: string; titel: string; ort: "waldmark" | "weidenhain"; modell: string; x: number; y: number; blick: [number, number]; schalter: string; /** Name der Bank im Fenster (sonst nach ort) */ bank?: string }
@@ -30,10 +41,11 @@ export interface Bankier { id: string; name: string; titel: string; ort: "waldma
 export const BANKIERS: Bankier[] = [
   { id: "lorenz", name: "Lorenz Gülden", titel: "Bankmitarbeiter", ort: "waldmark", modell: "npc.bankmitarbeiter", x: 6476.6, y: 6427.3, blick: [0, 1], schalter: "bankschalter_links" },
   { id: "edwin", name: "Edwin Pfennig", titel: "Bankmitarbeiter", ort: "waldmark", modell: "npc.bankmitarbeiter", x: 6479.4, y: 6427.3, blick: [0, 1], schalter: "bankschalter_rechts" },
-  /* Phase 11: die Bank von Steinhag (Welt: steinhag_bank, Platz aus welt/hochlande_orte.json); ort gilt für die eine Kampfwelt wie in der Waldmark */
-  { id: "steinhag_bank", name: "Greta Pfand", titel: "Bankmitarbeiterin", ort: "waldmark", modell: "npc.bankmitarbeiter", x: 6969, y: 5880, blick: [0, 1], schalter: "steinhag_bank", bank: "Bank von Steinhag" },
   { id: "mattis", name: "Mattis Schober", titel: "Bankmitarbeiter", ort: "weidenhain", modell: "npc.bankmitarbeiter", x: 6436.5, y: 6675.1, blick: [0, 1], schalter: "bankschalter" },
 ];
+/* #169: je Bankgebäude ein Bankier hinter dem Schalter (Steinhag: Greta Pfand stand bisher vor dem Gebäude, jetzt hinter dem Schalter) */
+for (const B of BANKGEBAEUDE) BANKIERS.push({ id: B.id === "steinhag" ? "steinhag_bank" : B.id + "_bank", name: B.bankier[0], titel: B.bankier[1], ort: "waldmark", modell: "npc.bankmitarbeiter",
+  x: B.x - 1.4, y: B.y - 3.7, blick: [0, 1], schalter: B.id + "_bankschalter", bank: "Bank von " + B.stadt });
 
 /** Gespräch (wie in OSRS): Gruß, dann drei Antworten */
 export const BANK_GRUSS = "Guten Tag. Wie kann ich dir helfen?";
@@ -49,7 +61,12 @@ export const BANK_TSCHUESS = "Dann einen schönen Tag noch.";
 /* #167/#168: Bankkisten in den Zunfthäusern – nur Ablegen und Abheben (keine Reiter, kein Tauschen, keine Platzhalter). Die Kisten stehen als Interaktionen
    in den Weltdaten (Welt baut sie, die Kennung steht hier). Ort wie bei den Bankmitarbeitern: die eine Kampfwelt („waldmark“). */
 export interface Bankkiste { id: string; name: string; x: number; y: number; ort: string }
-export const BANKKISTEN: Bankkiste[] = [];
+export const BANKKISTEN: Bankkiste[] = [
+  /* Entscheidung des Nutzers (27.11., #169): kleinere Orte mit Laden oder Station bekommen eine Bankkiste – Rabenmoor (bei Harms Werkbank) und Möwenbucht (Ortsmitte).
+     Die Kiste als Gegenstand in der Welt stellt Welt an diese Stellen; antippen geht schon ohne (client/src/welt3d/spielwelt.ts). */
+  { id: "bankkiste_rabenmoor", name: "Bankkiste von Rabenmoor", x: 6311.5, y: 6703.5, ort: "waldmark" },
+  { id: "bankkiste_moewenbucht", name: "Bankkiste der Möwenbucht", x: 6214.5, y: 7159.5, ort: "waldmark" },
+];
 export const istBankkiste = (id: string): boolean => BANKKISTEN.some((k) => k.id === id);
 /** Steht man an einer Bankkiste (und nicht an einer richtigen Bank)? */
 export const nahAnBankkiste = (ort: string, x: number, y: number): boolean => BANKKISTEN.some((k) => k.ort === ort && Math.hypot(k.x - x, k.y - y) <= BANK_WEIT);

@@ -82,6 +82,9 @@ TESTS=(
   boss-quest-machbar
   hueter
   zunft
+  bank-orte
+  pets
+  pets-welt
   bank-platzhalter
   festland-kampf
   inhalt-sueden
