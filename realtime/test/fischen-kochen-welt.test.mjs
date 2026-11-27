@@ -186,7 +186,7 @@ try {
   check(MONSTER.kuh.drops.some((d) => d.wurf.some((w) => w.g === "kuhfleisch" && w.chance === 100)), "Kuh: zweite Beute Kuhfleisch (100 %)");
   check(LAEDEN.handwerker.waren.some((w) => w.g === "angelrute") && LAEDEN.handwerker.waren.some((w) => w.g === "krug") && LAEDEN.baeckerei.waren.some((w) => w.g === "mehl"), "Händler: Angelrute und Krug; Grete: Mehl");
   check(REZEPTE.some((x) => x.id === "angelrute" && x.station === "werkbank" && x.level === 1) && REZEPTE.some((x) => x.id === "reuse" && x.level === 20), "Angelrute (Handwerk 1) und Reuse (Handwerk 20) an der Werkbank");
-  check(Object.values(FISCHE).every((F) => GEG[F.ertrag] && GEG[F.ertrag.replace("_roh", "_gebraten")] && VERBRAUCH[F.ertrag.replace("_roh", "_gebraten")]), "Alle Fische roh, gebraten (Essen) und verbrannt");
+  check(Object.values(FISCHE).filter((F) => !["sturmhecht", "tiefseeaal"].includes(F.art) /* #176: nur als Kruste bzw. Suppe */).every((F) => GEG[F.ertrag] && GEG[F.ertrag.replace("_roh", "_gebraten")] && VERBRAUCH[F.ertrag.replace("_roh", "_gebraten")]), "Alle Fische roh, gebraten (Essen) und verbrannt");
   check(!/Server-Fehler|TypeError|ReferenceError/.test(log), "Keine Fehler im Server-Log");
 } catch (e) { console.error(e); f++; }
 srv.kill(); sb.close();

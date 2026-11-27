@@ -212,6 +212,10 @@ fisch("glutwels", 65, 220, "Fisch"); /* Phase 9 (#86): Kochen 65 */
   B("moorfeuer_schwach", 45, 95, [["nebelkraut", 1], ["eisenhut", 1]]); B("nebelschleier_schwach", 50, 105, [["nebelkraut", 1], ["moorgloeckchen", 1]]);
   B("moorfeuer_stark", 55, 120, [["nebelkraut", 2], ["eisenhut", 1]]); B("nebelschleier_stark", 60, 135, [["nebelkraut", 2], ["moorgloeckchen", 1]]);
   B("lindentau_schwach", 65, 150, [["lindenbluete", 1], ["seelenlicht", 1]]); B("lindentau_stark", 70, 170, [["lindenbluete", 2], ["seelenlicht", 1]]);
+  /* #176 Zunft-Tränke aus den Kräutern des Kräutergartens (Mondsalbei 70, Glutwurz 80, Splitterlilie 90) */
+  B("mondsalbei_elixier", 70, 190, [["mondsalbei", 1], ["wegerich", 1]]); B("staerketrank_stark", 75, 210, [["mondsalbei", 1], ["eisenhut", 2]]);
+  B("glutwurz_feuertrank", 80, 240, [["glutwurz", 1], ["nebelkraut", 1]]); B("splittersicht", 85, 270, [["glutwurz", 1], ["seelenlicht", 1]]);
+  B("splitterlilien_trank", 90, 300, [["splitterlilie", 1], ["mondsalbei", 1]]);
   for (const K of KESSEL) WERKSTAETTEN.push({ id: K.id, station: "kessel", x: K.x, y: K.y, ort: K.region }); /* Kräuterhaus Waldmark, Heddas Hütte (Welt #35, #45) */
   dazu({ id: "sichel", station: "werkbank", ergebnis: "sichel", level: 1, zutaten: [{ g: ["stamm_eiche"], n: 1 }, { g: ["barren_kupfer"], n: 1 }], xp: 20, ticks: 4, stufe: 0, gruppe: "Werkzeug" }); }
 /* Süden (#126): Fleisch und Gerichte (Heil-Staffel wie die Fische: 3 · 5 · 7 · 9) */
@@ -224,6 +228,10 @@ fisch("hering", 20, 60, "Fisch"); fisch("klippenbarsch", 35, 100, "Fisch"); fisc
 dazu({ id: "raeucherhering", station: "raeucherhuette", ergebnis: "raeucherhering", level: 25, zutaten: [{ g: ["fisch_hering_roh"], n: 1 }], xp: 70, ticks: 2, stufe: 0, gruppe: "Räuchern", warten: 180 });
 dazu({ id: "barsch_salzkruste", station: "feuer", ergebnis: "barsch_salzkruste", level: 40, zutaten: [{ g: ["fisch_klippenbarsch_roh"], n: 1 }, { g: ["salz"], n: 1 }], xp: 130, ticks: 5, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_klippenbarsch_verbrannt" });
 dazu({ id: "aalsuppe", station: "kessel", ergebnis: "aalsuppe", level: 50, zutaten: [{ g: ["fisch_seeaal_roh"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 170, ticks: 6, stufe: 0, gruppe: "Suppe", verbrannt: "suppe_verbrannt" });
+/* #176 Zunft-Fische (nur am Steg der Fischerzunft, Fischen 60): Silberbarsch 70 gebraten, Sturmhecht 80 in Kräuterkruste (Herd), Tiefseeaal 90 als Suppe (Kessel) */
+fisch("silberbarsch", 70, 300, "Fisch");
+dazu({ id: "sturmhecht_kraeuterkruste", station: "herd", ergebnis: "sturmhecht_kraeuterkruste", level: 80, zutaten: [{ g: ["fisch_sturmhecht_roh"], n: 1 }, { g: ["wegerich"], n: 2 }], xp: 360, ticks: 6, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_sturmhecht_verbrannt" });
+dazu({ id: "tiefseeaal_suppe", station: "kessel", ergebnis: "tiefseeaal_suppe", level: 90, zutaten: [{ g: ["fisch_tiefseeaal_roh"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 420, ticks: 6, stufe: 0, gruppe: "Suppe", verbrannt: "suppe_verbrannt" });
 dazu({ id: "glutwels_salzkruste", station: "herd", ergebnis: "glutwels_salzkruste", level: 65, zutaten: [{ g: ["fisch_glutwels_roh"], n: 1 }, { g: ["salz"], n: 2 }], xp: 260, ticks: 6, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_glutwels_verbrannt" });
 /* Phase 7 (#40): D3 Welspastete am Herd (Kochen 45), D1 Kettenglieder am Amboss (Schmieden 45, Quest-Rezept: 1 Splittereisenbarren → 1 Glied) */
 dazu({ id: "welspastete", station: "herd", ergebnis: "welspastete", level: 45, zutaten: [{ g: ["fisch_wels_roh"], n: 1 }, { g: ["mehl"], n: 1 }], xp: 160, ticks: 6, stufe: 0, gruppe: "Pastete", verbrannt: "fisch_wels_verbrannt" });
