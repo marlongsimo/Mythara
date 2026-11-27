@@ -1,0 +1,8 @@
+{
+  "id": "waffe.bogen.hartwig",
+  "name": "Hartwigs Eibenbogen",
+  "kategorie": "waffe",
+  "aktuell": "v001",
+  "status": "v001: Quest-Waffe (Ausgabe 1) – Mondlangbogen dunkel umgefärbt (textur_ton ton=20 hell=0.5), Rabenfedern am Griff (fabrik/waffe_zusatz.py); Rucksackbild img/objekte3d/ausruestung/bilder/hartwigs_eibenbogen.webp",
+  "herkunft": "Fabrik (aus Bestand)"
+}
