@@ -87,7 +87,7 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - **Balancing Quest-Waffen** (27.11.): **Waldsäbel** etwas gesenkt auf 16/14 (Stufe 5, +15 % gegen Wald bleibt); **Klinge des Grauen Hauptmanns** erhöht auf Geschick 40 mit 33/34 (bleibt gebunden, nur E4). Dazu Fehler behoben: Jäger-Teile Stufe 35 über Stufe 20, Speer Reichweite 2.
 
-- **Waffen der Stufe 70** (27.11.): Echoschneide (Schwert), Seelenbogen (Kurzbogen), Seelenfokus (**Stab**) – Modelle vom Nutzer; stärker als Stufe 65; **Aufladen mit Splittern bindet** die Waffe; je Angriff 1 Ladung; mit Ladung 15 % Chance auf passive Fähigkeit (Nachhall, Seelenzug, Seelenbrand); **Drop beim Mini-Boss der Hochlande**. Konzept `doku/konzepte/waffen-70.md`.
+- **Waffen der Stufe 70** (27.11.): Echoschneide (Schwert), Seelenbogen (Kurzbogen), Seelenfokus (**Stab**) – Modelle vom Nutzer; stärker als Stufe 65; **Aufladen mit Splittern bindet** die Waffe; je Angriff 1 Ladung; mit Ladung 15 % Chance auf passive Fähigkeit (Nachhall, Seelenzug, Seelenbrand); **Drop beim Mini-Boss der Hochlande**; Laden braucht **Splitterbinden 70**; **kein zusätzliches +10 %** beim Laden (nur die Fähigkeit). Konzept `doku/konzepte/waffen-70.md`.
 
 - **Startseite und Würfelspiel** (27.11.): Die neue Startseite **riftmere.de** (#78) geht live. Das **Würfelspiel wird nicht mehr weiterverfolgt und komplett entfernt** (auch auf `main`, #108). Einladungslinks, App-Start und manifest führen weiter ins Spiel (`echtzeit/`).
 

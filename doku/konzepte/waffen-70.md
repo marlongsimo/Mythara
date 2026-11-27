@@ -15,10 +15,10 @@ Seltenheit: eigene Stufe über Mythisch oder „mythisch“ mit Stufe 70 – ent
 
 ## Aufladen mit Splittern
 
-- Am **Bindestein** (Splitterbinden): **1 Splitter = 1 Ladung**, höchstens **1.000 Ladungen**.
+- Am **Bindestein**, ab **Splitterbinden 70**: **1 Splitter = 1 Ladung**, höchstens **1.000 Ladungen**.
 - **Aufladen bindet die Waffe** (wird „(s)“, nicht mehr handelbar) – wie die übrigen geladenen Waffen. Ungeladen (frisch als Drop) ist sie handelbar.
 - **Jeder Angriff** (Schlag/Schuss/Zauber, auch daneben) verbraucht **1 Ladung**.
-- Solange Ladung da ist: **15 % Chance je Treffer** auf die passive Fähigkeit. Leer = normale Stufe-70-Waffe.
+- Solange Ladung da ist: **15 % Chance je Treffer** auf die passive Fähigkeit. Leer = normale Stufe-70-Waffe. **Kein zusätzliches +10 %** wie bei den anderen geladenen Waffen (Entscheidung 27.11.).
 
 ## Passive Fähigkeiten
 
