@@ -11,6 +11,11 @@ let ok = true; const check = (b, t, e = []) => { console.log(`  ${b ? "✓" : "�
 const G = await gemeinsam(), bib = bibliothek(), lies = (f) => JSON.parse(readFileSync(join(WELT, f), "utf8"));
 const S = lies("sammelstellen.json"), gruppen = [...S.lichtungen.map((l) => ({ ...l, typ: "holz", pts: l.baeume })), ...S.senken.map((s) => ({ ...s, typ: "erz", pts: s.adern }))];
 const ORTE = { ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, leuchtturm: [6176, 7036] };
+/* wirksam ist, was die Welt baut: gleichnamige Gruppen aus shared/ (von Integration übernommen) gehen vor (lichtungen.mjs) */
+const SH = new Map([...JSON.parse(readFileSync(join(REALTIME, "shared", "holz_standorte.json"), "utf8")).lichtungen, ...JSON.parse(readFileSync(join(REALTIME, "shared", "bergbau_standorte.json"), "utf8")).senken].map((l) => [l.name, l]));
+const wirksam = gruppen.map((g) => SH.has(g.name) ? { ...g, pts: SH.get(g.name).baeume || SH.get(g.name).adern } : g);
+const abweichend = gruppen.filter((g) => SH.has(g.name) && JSON.stringify(g.pts.map((p) => [p.art, p.x, p.y])) !== JSON.stringify(wirksam.find((w) => w.name === g.name).pts.map((p) => [p.art, p.x, p.y]))).map((g) => g.name);
+if (abweichend.length) console.log("  ℹ in shared/ noch die alte Fassung (Integration): " + abweichend.join(", "));
 const WEST = [6030, 6650, 6720, 7400], OST = [6860, 6420, 7620, 7680], HOCH = [6780, 5200, 7700, 6300];
 const imUnter = (p) => p.y > 9000, imHoch = (p) => !imUnter(p) && p.x >= HOCH[0] && p.y < 6350, imOst = (p) => !imUnter(p) && p.x >= OST[0] && p.y >= 6350, imWest = (p) => !imUnter(p) && !imHoch(p) && !imOst(p);
 function welt(box, extra = []) {
@@ -51,15 +56,15 @@ check(zahl("erlengrund", "holz") >= 3 && zahl("lehmfurt", "erz") >= 3, `Schwerpu
 const eigene = new Set(gruppen.map((g) => g.name)), ids = gruppen.flatMap((g) => g.pts.map((p) => p.id)), shared = [...JSON.parse(readFileSync(join(REALTIME, "shared", "holz_standorte.json"), "utf8")).lichtungen.filter((l) => !eigene.has(l.name)).flatMap((l) => l.baeume), ...JSON.parse(readFileSync(join(REALTIME, "shared", "bergbau_standorte.json"), "utf8")).senken.filter((s) => !eigene.has(s.name)).flatMap((s) => s.adern)].map((p) => p.id);
 const doppelt = ids.filter((id, i) => ids.indexOf(id) !== i || shared.includes(id)); check(!doppelt.length, `${ids.length} Kennungen eindeutig (auch gegenüber shared/)`, doppelt);
 const region1 = gruppen.filter((g) => new Set(g.pts.map((p) => p.region)).size > 1).map((g) => g.name); check(!region1.length, "jede Gruppe liegt in einem Gebiet", region1);
-const gp = lies("gegnerplaetze.json").plaetze, nah = gruppen.flatMap((g) => g.pts.filter((p) => gp.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 6)).map((p) => `${g.name} ${p.id}`)); check(!nah.length, "keine Gegnerplätze an den Bäumen und Adern", nah);
+const gp = lies("gegnerplaetze.json").plaetze, nah = wirksam.flatMap((g) => g.pts.filter((p) => gp.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 6)).map((p) => `${g.name} ${p.id}`)); check(!nah.length, "keine Gegnerplätze an den Bäumen und Adern", nah);
 /* gesperrt (man läuft nicht durch den Stamm) und von außen erreichbar */
 { const R = welt(WEST, ["weidenhain"]), w = region("weidenhain"), [WX, WY] = w.region.ursprung.map((v) => v * 32), greifbar = flut(R, [WX + w.spiel.start[0][0], WY + w.spiel.start[0][1]], WEST);
-  const west = gruppen.flatMap((g) => g.pts.filter(imWest).map((p) => ({ ...p, g: g.name }))), weg = west.filter((p) => !greifbar(p.x, p.y)), offen = west.filter((p) => R.begehbar(p.x, p.y));
+  const west = wirksam.flatMap((g) => g.pts.filter(imWest).map((p) => ({ ...p, g: g.name }))), weg = west.filter((p) => !greifbar(p.x, p.y)), offen = west.filter((p) => R.begehbar(p.x, p.y));
   check(!weg.length, `Westen/Süden: ${west.length} Bäume und Adern von Weidenhain aus erreichbar`, weg.map((p) => `${p.g} ${p.id} ${p.x}|${p.y}`)); check(!offen.length, "ihre Felder sind gesperrt", offen.map((p) => p.id)); }
 { const R = welt(OST), greifbar = flut(R, [6918, 6740], OST);
-  const ost = gruppen.flatMap((g) => g.pts.filter(imOst).map((p) => ({ ...p, g: g.name }))), weg = ost.filter((p) => !greifbar(p.x, p.y)), offen = ost.filter((p) => R.begehbar(p.x, p.y));
+  const ost = wirksam.flatMap((g) => g.pts.filter(imOst).map((p) => ({ ...p, g: g.name }))), weg = ost.filter((p) => !greifbar(p.x, p.y)), offen = ost.filter((p) => R.begehbar(p.x, p.y));
   check(!weg.length, `Glutsande: ${ost.length} Bäume und Adern vom Pass aus erreichbar`, weg.map((p) => `${p.g} ${p.id} ${p.x}|${p.y}`)); check(!offen.length, "ihre Felder sind gesperrt", offen.map((p) => p.id)); }
 { const R = welt(HOCH), greifbar = flut(R, [6800, 5766], HOCH);
-  const hoch = gruppen.flatMap((g) => g.pts.filter(imHoch).map((p) => ({ ...p, g: g.name }))), weg = hoch.filter((p) => !greifbar(p.x, p.y)), offen = hoch.filter((p) => R.begehbar(p.x, p.y));
+  const hoch = wirksam.flatMap((g) => g.pts.filter(imHoch).map((p) => ({ ...p, g: g.name }))), weg = hoch.filter((p) => !greifbar(p.x, p.y)), offen = hoch.filter((p) => R.begehbar(p.x, p.y));
   check(hoch.length >= 20 && !weg.length, `Hochlande: ${hoch.length} Bäume und Adern von der Furt aus erreichbar`, weg.map((p) => `${p.g} ${p.id} ${p.x}|${p.y}`)); check(!offen.length, "ihre Felder sind gesperrt", offen.map((p) => p.id)); }
 console.log(ok ? "\nSammelstellen: alles in Ordnung" : "\nSammelstellen: FEHLER"); process.exit(ok ? 0 : 1);

@@ -52,13 +52,13 @@
    "land": "Die Glutsande",
    "region": "fl_201_225",
    "mitte": [
-    6492.5,
+    6532.5,
     7442.5
    ],
    "rechteck": [
-    6432,
+    6472,
     7382,
-    6551,
+    6591,
     7501
    ],
    "meiden": [],
@@ -71,16 +71,16 @@
    "anzahl": 7,
    "stufe": 50,
    "land": "Die Glutsande",
-   "region": "fl_216_198",
+   "region": "fl_201_225",
    "mitte": [
-    7132.5,
-    6598.5
+    6755.5,
+    7586.5
    ],
    "rechteck": [
-    7072,
-    6538,
-    7191,
-    6657
+    6695,
+    7526,
+    6814,
+    7645
    ],
    "meiden": [],
    "modell": "vorhanden"
@@ -94,13 +94,13 @@
    "land": "Die Ockerlande",
    "region": "fl_216_225",
    "mitte": [
-    7132.5,
+    7172.5,
     7442.5
    ],
    "rechteck": [
-    7072,
+    7112,
     7382,
-    7191,
+    7231,
     7501
    ],
    "meiden": [],
@@ -115,14 +115,14 @@
    "land": "Die Hochlande",
    "region": "fl_216_183",
    "mitte": [
-    7072.5,
-    6054.5
+    7052.5,
+    6048.5
    ],
    "rechteck": [
-    7012,
-    5994,
-    7131,
-    6113
+    6992,
+    5988,
+    7111,
+    6107
    ],
    "meiden": [],
    "modell": "vorhanden"
@@ -136,14 +136,35 @@
    "land": "Die Frostkrone",
    "region": "fl_201_155",
    "mitte": [
-    6592.5,
-    5306.5
+    6792.5,
+    5272.5
    ],
    "rechteck": [
-    6532,
-    5246,
-    6651,
-    5365
+    6732,
+    5212,
+    6851,
+    5331
+   ],
+   "meiden": [],
+   "modell": "vorhanden"
+  },
+  {
+   "id": "streifgebiet_heidewolf_sueden",
+   "name": "Die Wölfe des Graupelz",
+   "gegner": "heidewolf",
+   "anzahl": 7,
+   "stufe": 30,
+   "land": "Süden",
+   "region": "fl_186_211",
+   "mitte": [
+    6320,
+    6890
+   ],
+   "rechteck": [
+    6260,
+    6830,
+    6379,
+    6949
    ],
    "meiden": [],
    "modell": "vorhanden"

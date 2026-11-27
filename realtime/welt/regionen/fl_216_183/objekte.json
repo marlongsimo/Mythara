@@ -293,7 +293,7 @@
  {"id":"hl_fels_klein_535","objekt":"k_fels_klein","x":296,"y":198.88,"s":0.8,"spiegeln":true},
  {"id":"hl_fels_klein_536","objekt":"k_fels_klein","x":278,"y":294.33,"s":0.77,"spiegeln":true},
  {"id":"hl_fels_klein_541","objekt":"k_fels_klein","x":268,"y":73.07,"s":0.62},
- {"id":"hl_fels_klein_543","objekt":"k_fels_klein","x":320.5,"y":158.03,"s":0.6},
+ {"id":"hl_fels_klein_543","objekt":"k_fels_klein","x":320.48,"y":158.25,"s":0.6},
  {"id":"hl_fels_klein_544","objekt":"k_fels_klein","x":388.5,"y":191.9,"s":1.1,"spiegeln":true},
  {"id":"hl_fels_klein_547","objekt":"k_fels_klein","x":217.5,"y":50.9,"s":1.1,"spiegeln":true},
  {"id":"hl_fels_klein_549","objekt":"k_fels_klein","x":275,"y":95.71,"s":0.99},
@@ -343,5 +343,6 @@
  {"id":"hl_busch_726","objekt":"stil_busch_02","x":188.5,"y":106.5},
  {"id":"hl_busch_728","objekt":"stil_busch_01","x":140.5,"y":49},
  {"id":"hl_busch_730","objekt":"stil_busch_02","x":219.5,"y":146.5},
- {"id":"hl_busch_733","objekt":"stil_busch_01","x":266,"y":102.5}
+ {"id":"hl_busch_733","objekt":"stil_busch_01","x":266,"y":102.5},
+ {"id":"kaesekeller_tuer","objekt":"hoehle_tuer_01","x":281.5,"y":143}
 ]

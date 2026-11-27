@@ -22,13 +22,16 @@ export async function ausrichten(namen, still = false) {
       if (k.art === "gebaeude") { const s = p.s ?? 1, x0 = k.koerper[0].x0 * s, y1 = k.koerper[0].y1 * s;
         p.x = r2(Math.round(p.x + x0) - x0); p.y = r2(Math.round(p.y + y1) - y1); summe.gebaeude++; }
       else { const felder = G.sperrFelder(p, def); if (!felder.length) { summe.frei++; continue; }
-        const i0 = Math.min(...felder.map((f) => f[0])), i1 = Math.max(...felder.map((f) => f[0])), j0 = Math.min(...felder.map((f) => f[1])), j1 = Math.max(...felder.map((f) => f[1]));
-        const s = p.s ?? 1, sp = p.spiegeln ? -1 : 1; let mx, my;
-        if (k.art === "kreis") { mx = p.x + (k.dx || 0) * s * sp; my = p.y + (k.dy || 0) * s; }
-        else { const a = p.x + k.x * s * sp, b = p.x + (k.x + k.b) * s * sp; mx = (a + b) / 2; my = p.y + (k.y + k.h / 2) * s; }
-        p.x = r2(p.x + (i0 + i1 + 1) / 2 - mx); p.y = r2(p.y + (j0 + j1 + 1) / 2 - my);
+        const s = p.s ?? 1, sp = p.spiegeln ? -1 : 1;
+        const ziel = (q, fs) => { const i0 = Math.min(...fs.map((f) => f[0])), i1 = Math.max(...fs.map((f) => f[0])), j0 = Math.min(...fs.map((f) => f[1])), j1 = Math.max(...fs.map((f) => f[1])); let mx, my;
+          if (k.art === "kreis") { mx = q.x + (k.dx || 0) * s * sp; my = q.y + (k.dy || 0) * s; }
+          else { const a = q.x + k.x * s * sp, b = q.x + (k.x + k.b) * s * sp; mx = (a + b) / 2; my = q.y + (k.y + k.h / 2) * s; }
+          return [r2(q.x + (i0 + i1 + 1) / 2 - mx), r2(q.y + (j0 + j1 + 1) / 2 - my)]; };
+        [p.x, p.y] = ziel(p, felder);
         const neu = G.sperrFelder(p, def), gleich = neu.length === felder.length && neu.every((f) => felder.some((g) => g[0] === f[0] && g[1] === f[1]));
         if (!gleich) { p.x = alt[0]; p.y = alt[1]; summe.gleich++; continue; }   /* sperrte jetzt andere Felder: lieber stehen lassen */
+        /* nur verschieben, wenn die neue Lage fest bleibt – liegt die Mitte genau auf einer Feldgrenze, sprang sie sonst bei jedem Lauf um ein halbes Feld hin und her */
+        { const [x2, y2] = ziel(p, neu); if (Math.abs(x2 - p.x) > 0.005 || Math.abs(y2 - p.y) > 0.005) { p.x = alt[0]; p.y = alt[1]; summe.gleich++; continue; } }
         summe.dinge++; }
       if (p.x !== alt[0] || p.y !== alt[1]) geaendert = true; }
     if (geaendert) writeFileSync(join(WELT, "regionen", n, "objekte.json"), "[\n" + d.objekte.map((p) => " " + JSON.stringify(p)).join(",\n") + "\n]\n");
