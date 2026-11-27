@@ -8,7 +8,7 @@
 3. Für jeden davon in dieser Reihenfolge:
    a) Eintrag in fabrik/vorlagen/rucksackbilder.json: {"bild": vorhandenes Bild} oder {"glb": Modell, "kipp", "dreh", "rolle", "ton", "schein", "ziel"}
    b) vorhandenes Bild img/objekte3d/**/symbole/<id>.webp
-   c) Modell img/objekte3d/**/<id>.glb → Bild daneben in symbole/<id>.webp (fabrik/symbol.py, Standard kipp 25, dreh 30)
+   c) Modell img/objekte3d/**/<id>.glb → Bild daneben in symbole/<id>.webp (fabrik/symbol.py, Standard kipp -25 = schräg von oben, dreh 30)
    Gerenderte Bilder: 256 × 256, durchsichtig, Stil der Rucksackbilder. ton=<Grad> dreht den Farbton, schein=<#rrggbb> legt einen weichen Lichtschein dahinter.
 4. Schreibt fabrik/vorlagen/rucksackbilder_pfade.json ({id: bild}) – Systeme trägt die Pfade ein (bild setzen, Laufzeit-„symbol“ entfernen;
    BILDER_AUS_FABRIK greift nur, wenn weder bild noch symbol gesetzt sind) – und meldet, was offen bleibt.
@@ -42,6 +42,7 @@ modelle = {os.path.basename(p)[:-4]: p for p in glob.glob(os.path.join(W, "img",
 rel = lambda p: os.path.relpath(p, W)
 def rendern(id_, glb, e):
     ziel = os.path.join(W, e["ziel"]) if e.get("ziel") else os.path.join(os.path.dirname(glb), "symbole", id_ + ".webp"); os.makedirs(os.path.dirname(ziel), exist_ok=True)
+    e = {"kipp": -25, **e}                                                                        # symbol.py: negatives kipp = schräg von oben (positives zeigt die Unterseite)
     arg = [f"{k}={e[k]}" for k in ("kipp", "dreh", "rolle", "matt", "fuellen") if k in e]
     subprocess.run([BL, os.path.join(W, "fabrik", "symbol.py"), "--", glb, ziel, *arg], capture_output=True, check=True)
     if "ton" in e or "schein" in e:                                                               # nachträglich: Farbton drehen, Lichtschein dahinter
