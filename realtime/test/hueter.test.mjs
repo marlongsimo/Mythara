@@ -9,10 +9,10 @@ import { build } from "esbuild";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 const datei = join(tmpdir(), `riftmere-hueter-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { INSTANZEN, BOSSE, HUETER } from "./shared/bosse"; export { ansageFelder, QUEST_STAERKE } from "./shared/boss"; export { GEGENSTAENDE, SETS, RUESTUNG_STUFE70, beuteAufloesen } from "./shared/gegenstaende"; export { weltJeSpieler, bossWahlSetzen, wahlenVergessen } from "./server/src/bosse"; export { H_QUESTS, H_SCHALTER } from "./shared/hochlande"; export { rezept } from "./shared/handwerk"; export { TUEREN } from "./shared/bosse"; export { WEGSTEIN_ZIELE } from "./shared/wegstein"; export { VERBRAUCH } from "./shared/gegenstaende"; export { begehbar } from "./shared/karte";',
+await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { INSTANZEN, BOSSE, HUETER } from "./shared/bosse"; export { ansageFelder, QUEST_STAERKE, SCHWAECHE, STREIF_ANTEIL } from "./shared/boss"; export { GEGENSTAENDE, SETS, RUESTUNG_STUFE70, beuteAufloesen } from "./shared/gegenstaende"; export { weltJeSpieler, bossWahlSetzen, wahlenVergessen } from "./server/src/bosse"; export { H_QUESTS, H_SCHALTER } from "./shared/hochlande"; export { rezept } from "./shared/handwerk"; export { TUEREN } from "./shared/bosse"; export { WEGSTEIN_ZIELE } from "./shared/wegstein"; export { VERBRAUCH } from "./shared/gegenstaende"; export { begehbar } from "./shared/karte";',
   resolveDir: new URL("..", import.meta.url).pathname, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
 const M = await import(datei);
-const { Sim, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, INSTANZEN, BOSSE, HUETER, MONSTER, ansageFelder, GEGENSTAENDE: G, SETS, RUESTUNG_STUFE70, beuteAufloesen, weltJeSpieler, bossWahlSetzen, wahlenVergessen, H_QUESTS, H_SCHALTER, rezept, TUEREN, WEGSTEIN_ZIELE, VERBRAUCH, begehbar } = M;
+const { SCHWAECHE, STREIF_ANTEIL, gegnerStufe, Sim, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, INSTANZEN, BOSSE, HUETER, MONSTER, ansageFelder, GEGENSTAENDE: G, SETS, RUESTUNG_STUFE70, beuteAufloesen, weltJeSpieler, bossWahlSetzen, wahlenVergessen, H_QUESTS, H_SCHALTER, rezept, TUEREN, WEGSTEIN_ZIELE, VERBRAUCH, begehbar } = M;
 setzeKarte(KARTEN.welt, FEIN);
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
 /* Die Räume der Hüter (Welt a897bc23). Fehlt ein Raum noch in der Kampfwelt (Welt noch nicht eingemischt), kämpft der Hüter zur Probe in einer Kopie der Bergwerkshalle */
@@ -37,8 +37,8 @@ function kampf(typ, stil = "nah", level = 75, an = (D) => (x) => x === D.schalte
 const schritte = (s, n, jeSchritt) => { for (let i = 0; i < n; i++) { if (jeSchritt) jeSchritt(i); s.schritt(); } };
 
 console.log("\nDie drei Hüter");
-check(HUETER.length === 3 && HUETER.every((H) => MONSTER[H.typ] && MONSTER[H.typ].boss && BOSSE[H.typ] && MONSTER[H.typ].stufe >= 70 && MONSTER[H.typ].stufe <= 75),
-  `Grumhold, Sturmschwinge, Frostwitwe: Bosse um Stufe 72 mit Phasen (${HUETER.map((H) => MONSTER[H.typ].name).join(", ")})`);
+check(HUETER.length === 3 && HUETER.every((H) => MONSTER[H.typ] && MONSTER[H.typ].boss && BOSSE[H.typ] && BOSSE[H.typ].phasen.length >= 2 && MONSTER[H.typ].stufe >= 150 && MONSTER[H.typ].stufe <= 200 && MONSTER[H.typ].stufe === gegnerStufe(MONSTER[H.typ].v2, MONSTER[H.typ].lp)),
+  `Grumhold, Sturmschwinge, Frostwitwe: Bosse der Stufe 150–200 nach ihren Werten (#175), mit Phasen (${HUETER.map((H) => `${MONSTER[H.typ].name} ${MONSTER[H.typ].stufe}`).join(", ")})`);
 const W = (t) => MONSTER[t].widerstand || {};
 check(W("grumhold").nah === 0.5 && W("grumhold").magie > 1 && W("sturmschwinge").magie === 0.5 && W("sturmschwinge").fern > 1 && W("frostwitwe").fern === 0.5 && W("frostwitwe").nah > 1,
   "Dreieck: Grumhold stark gegen Nahkampf, schwach gegen Magie · Sturmschwinge stark gegen Magie, schwach gegen Fernkampf · Frostwitwe stark gegen Fernkampf, schwach gegen Nahkampf");
@@ -146,5 +146,31 @@ console.log("\nQuest-Bausteine H1–H4");
   check(T && T.schalter === H_SCHALTER.stollen && zellen.filter(Boolean).length >= 3, `H3: eingestürzter Stollen vor der Urkammer (${zellen.filter(Boolean).length} gangbare Felder im Raster – die Tür sperrt je Spieler, Schalter ${T && T.schalter})`);
   check(HUETER.map((H) => H.schalter).join() === [H_SCHALTER.grumhold, H_SCHALTER.sturmschwinge, H_SCHALTER.frostwitwe].join(), "H4: Schalter der drei Hüter wie in shared/hochlande.ts"); }
 
+console.log("\nBoss-Regeln (#175): Großangriffe angezeigt und vermeidbar, Schläger und Taktiker, Schwächefenster");
+check(BOSSE.grumhold.art === "schlaeger" && BOSSE.sturmschwinge.art === "schlaeger" && BOSSE.frostwitwe.art === "taktiker", "Grumhold und Sturmschwinge sind Schläger, die Frostwitwe ist Taktikerin");
+check(HUETER.every((H) => MONSTER[H.typ].stufe > 115), "jeder Hüter liegt über dem höchsten Heldenlevel (etwa 115)");
+/** Starke Fassung: warten, bis der Boss einen Großangriff auf das Feld des Helden ansagt; ausweichen = vor dem Einschlag auf ein Feld außerhalb */
+function grossangriff(typ, stil, ausweichen) {
+  const K = kampf(typ, stil, 75, (D) => (x) => x === D.danach), { s, U, id, h, b } = K; if (!b) return null;
+  s.eingabe({ t: "ziel", id: b.id }, id); let A = null;
+  for (let n = 0; n < 20 * 120 && !A; n++) { h.lp = h.max; s.schritt(); for (const e of s.zustand().ev || []) if (e.a === "ansage" && e.id === b.id && e.felder.some(([x, y]) => Math.floor(x) === Math.floor(h.x) && Math.floor(y) === Math.floor(h.y))) A = e; }
+  if (!A) return null; const auf = new Set(A.felder.map(([x, y]) => Math.floor(x) + "," + Math.floor(y)));
+  if (ausweichen) { let ziel = null; for (let r = 1; r <= 6 && !ziel; r++) for (let dx = -r; dx <= r && !ziel; dx++) for (let dy = -r; dy <= r && !ziel; dy++) { const x = Math.floor(h.x) + dx + 0.5, y = Math.floor(h.y) + dy + 0.5;
+      if (!auf.has(Math.floor(x) + "," + Math.floor(y)) && begehbar(x, y) && Math.hypot(x - b.x, y - b.y) > 1.2) ziel = { x, y }; }
+    if (ziel) { h.x = ziel.x; h.y = ziel.y; h.pfad = []; } }
+  h.lp = h.max; const vor = h.lp; let n = 0, zeit = 0; const verwundbar = [];
+  for (; n < 20 * 5 && b.ansage; n++) { if (ausweichen) { h.zielId = 0; h.pfad = []; } /* draußen stehen bleiben, nicht zurück an den Boss laufen */ s.schritt(); zeit += 0.05; for (const e of s.zustand().ev || []) if (e.a === "text" && e.id === b.id && /verwundbar/.test(e.t)) verwundbar.push(e); }
+  return { A, verlust: vor - h.lp, vorlauf: A.t, verwundbar: verwundbar.length > 0, schwach: b.boss && b.boss.schwachBis > s.zeit, s, b, h }; }
+{ const G = grossangriff("grumhold", "magie", false), A = G && BOSSE.grumhold.phasen[0].ansagen.find((a) => a.name === G.A.name);
+  check(G && G.vorlauf >= 1 && A && G.verlust >= A.schaden[0], `Schläger, stehen geblieben: ${G ? `„${G.A.name}“ ${G.vorlauf} s vorher angezeigt, trifft voll (${G.verlust} LP)` : "kein Großangriff"}`);
+  check(G && !G.verwundbar && !G.schwach, "… und kein Schwächefenster"); }
+{ const G = grossangriff("grumhold", "magie", true);
+  check(G && G.verlust === 0, `Schläger, ausgewichen: kein Schaden (${G ? G.verlust : "–"} LP)`);
+  check(G && G.verwundbar && G.schwach, `danach Schwächefenster (${SCHWAECHE.sek} s, +${Math.round((SCHWAECHE.mal - 1) * 100)} %): „verwundbar!“`);
+  if (G) { const { s, b, h } = G; b.boss.schwachBis = s.zeit + 1; const l0 = b.lp; s.abziehen(b, 100, h); const mit = l0 - b.lp; b.boss.schwachBis = s.zeit - 1; const l1 = b.lp; s.abziehen(b, 100, h); const ohne = l1 - b.lp;
+    check(mit === Math.round(100 * SCHWAECHE.mal) && ohne === 100, `im Schwächefenster trifft man den Boss stärker (${ohne} → ${mit})`); } }
+{ const G = grossangriff("frostwitwe", "nah", true), A = G && BOSSE.frostwitwe.phasen[0].ansagen.find((a) => a.name === G.A.name);
+  check(G && A && G.verlust >= 1 && G.verlust <= Math.ceil(A.schaden[1] * STREIF_ANTEIL), `Taktikerin, ausgewichen: Streifschaden ${G ? G.verlust : "–"} LP (höchstens ${A ? Math.ceil(A.schaden[1] * STREIF_ANTEIL) : "?"} = ${STREIF_ANTEIL * 100} % des vollen Treffers, Rüstung mindert)`);
+  check(G && G.schwach, "… auch bei ihr danach das Schwächefenster"); }
 console.log(f ? `\nHüter (#160): ${f} FEHLER` : "\nHüter (#160): alles in Ordnung");
 process.exit(f ? 1 : 0);

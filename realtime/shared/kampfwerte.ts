@@ -149,6 +149,10 @@ export const trefferChance = (a: number, v: number): number => (a <= 0 ? 0 : v <
  *  Skills fehlen = Level 1, Angriffs- und Stärkebonus fehlen = 0. Lebenspunkte stehen eigens am Gegner (MonsterDef.lp). */
 export interface GegnerV3 { geschick?: number; staerke?: number; fernkampf?: number; magie?: number; defense?: number; /** Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit) */ angriffBonus?: number; staerkeBonus?: number;
   /** Angriffstakt in Ticks */ ticks: number; /** Verteidigungsboni je Angriffsart */ abwehr: Record<Art, number> }
+/** #175 Boss-Regeln: Stufe eines Gegners aus seinen Werten – wie das Heldenlevel (Combat Level in OSRS), die Lebenspunkte zählen wie das LP-Level.
+ *  Ein Held mit allen Skills auf 100 hat etwa 115; Bosse dürfen weit darüber liegen (viel Leben, hohe Einzelwerte) – besiegbar über ihre Schwäche und Mechanik. */
+export const gegnerStufe = (v: GegnerV3, lp: number): number => { const L = (n?: number) => Math.max(1, n || 1), f = L(v.fernkampf), m = L(v.magie);
+  return Math.floor(0.25 * (L(v.defense) + Math.max(1, lp)) + Math.max(0.325 * (L(v.geschick) + L(v.staerke)), 0.325 * (f + Math.floor(f / 2)), 0.325 * (m + Math.floor(m / 2)))); };
 /** Angriffswurf, Max Hit und Verteidigungswürfe eines Gegners für seine Angriffsart */
 export function gegnerWerte(v: GegnerV3, art: Art): { treffer: number; maxHit: number; abwehr: Record<Art, number> } {
   const L = (n?: number) => Math.max(1, n || 1), aB = v.angriffBonus || 0, sB = v.staerkeBonus || 0;

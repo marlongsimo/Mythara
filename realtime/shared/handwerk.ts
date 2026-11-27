@@ -40,7 +40,9 @@ export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: 
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
 /** Die Werkstätten in der Welt: eine Station kann mehrere Standorte haben (die Werkbank steht auch im Osthof) */
 export interface Werkstatt { id: string; station: WeltStation; x: number; y: number; ort: string; /** nutzbar nur mit diesem Quest-Schalter (shared/quests.ts schalterAn) – sonst dieser Text */ schalter?: string; gesperrt?: string;
-  /** nur von hier aus bedienbar (Weltfelder x0, y0, x1, y1) – wo das Gehraster die Seite nicht kennt, etwa ein Schuppen, der im Raster ein voller Block ist (#57) */ bereich?: [number, number, number, number] }
+  /** nur von hier aus bedienbar (Weltfelder x0, y0, x1, y1) – wo das Gehraster die Seite nicht kennt, etwa ein Schuppen, der im Raster ein voller Block ist (#57) */ bereich?: [number, number, number, number];
+  /** #167 Zunft: nutzbar erst ab dieser Berufsstufe (sonst gesperrt) */ beruf?: { id: string; level: number };
+  /** eigener Name statt des Stationsnamens (#167: Schmelzofen und Brennofen arbeiten wie die Esse) */ name?: string }
 export const WERKSTAETTEN: Werkstatt[] = [
   { id: "esse", station: "esse", x: STATIONEN.esse.x, y: STATIONEN.esse.y, ort: "waldmark" },
   { id: "amboss", station: "amboss", x: STATIONEN.amboss.x, y: STATIONEN.amboss.y, ort: "waldmark" },
