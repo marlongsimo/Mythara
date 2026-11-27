@@ -2,6 +2,10 @@
 import { createRequire } from "node:module"; import { createServer } from "node:http"; import { spawn } from "node:child_process";
 const require = createRequire(import.meta.url), { chromium } = require("playwright");
 const T0 = Date.now(); let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t + (process.env.ZEIT ? ` [${((Date.now() - T0) / 1000).toFixed(0)} s]` : "")); if (!ok) fehler++; };
+/* Klicks im Browser auslösen statt page.click: Playwright wartet bei Software-Grafik (~1 Bild/s) auf ein ruhiges Bild und läuft sonst in die 30-s-Grenze */
+const klick = async (p, sel) => { await p.waitForSelector(sel, { state: "attached", timeout: 20000 }); return p.evaluate((s) => { const e = document.querySelector(s); if (!e) throw new Error("fehlt: " + s); e.click(); }, sel); };
+const rechts = async (p, sel) => { await p.waitForSelector(sel, { state: "attached", timeout: 20000 }); return p.evaluate((s) => { const e = document.querySelector(s); if (!e) throw new Error("fehlt: " + s); const r = e.getBoundingClientRect(); e.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, button: 2, clientX: r.x + r.width / 2, clientY: r.y + r.height / 2 })); }, sel); };
+const menueKlick = async (p, text) => { await p.waitForFunction((t) => [...document.querySelectorAll(".ez-aktionen button")].some((x) => x.textContent.includes(t)), text, { timeout: 20000 }); return p.evaluate((t) => { const b = [...document.querySelectorAll(".ez-aktionen button")].find((x) => x.textContent.includes(t)); if (!b) throw new Error("kein Menüpunkt: " + t); b.click(); }, text); };
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000a001", ["tok_ben__" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000b002" };
 const WERTE = { "00000000-0000-0000-0000-00000000a001": { ep: { schildwaechter: 300 }, seelen: 0 }, "00000000-0000-0000-0000-00000000b002": { ep: { kopfgeldjaeger: 120 }, seelen: 0 } }, SIEGE = [], buchungen = [];
 const EINL = []; const PROFIL = { "00000000-0000-0000-0000-00000000a001": "Anna", "00000000-0000-0000-0000-00000000b002": "Ben" }, AKTIV = { "00000000-0000-0000-0000-00000000b002": "kopfgeldjaeger" }, HELDSETZEN = [];
@@ -61,36 +65,37 @@ try {
   check(o0 && o0.art === "npc" && o0.name === "Jori" && /Bürgermeister braucht deine Hilfe/.test(o0.text) && o0.bild, `Jori läuft auf Anna zu und spricht sie an – mit Kopfbild links (${JSON.stringify(o0)})`);
   { const { gesehen, o } = await bisWahl(anna); if (BILD) await anna.screenshot({ path: BILD + "quest-wahl.png" });
     check(gesehen.some((g) => g.art === "ich" && g.name === "Du") && o && o.antworten.includes("annehmen") && o.passt, `Aussage für Aussage (${gesehen.map((g) => g.name).join(" → ")}), dann „Wähle eine Antwort“: ${o && o.antworten.join(", ")}`); }
-  await anna.click('#ez-gespraech [data-a="annehmen"]'); await anna.waitForTimeout(800);
+  await klick(anna, '#ez-gespraech [data-a="annehmen"]'); await anna.waitForTimeout(800);
   { const a = await offen(anna); check(a && a.art === "ich", "Die gewählte Antwort sagt der eigene Held (Bildnis rechts)"); if (BILD) await anna.screenshot({ path: BILD + "quest-ich.png" }); }
   await anna.keyboard.press(" "); await anna.waitForTimeout(500);
   { const a = await offen(anna); check(a && a.name === "Jori" && /Rathaus/.test(a.text), `Jori: „${a && a.text}“`); }
   await anna.keyboard.press(" "); await anna.waitForTimeout(400); check(!(await offen(anna)), "Nach der letzten Aussage schließt sich das Gespräch");
-  await anna.click('#ez-leiste [data-l="quests"]'); await anna.waitForTimeout(300);
+  await klick(anna, '#ez-leiste [data-l="quests"]'); await anna.waitForTimeout(300);
   { const z = await anna.evaluate(() => { const b = document.querySelector("#ez-queststab .qzeile"); return b ? { text: b.textContent, klasse: b.className, zeilen: Math.round(b.getBoundingClientRect().height / parseFloat(getComputedStyle(b).lineHeight || "20")) <= 2, hell: getComputedStyle(b).color } : null; });
     check(z && z.text === "Die gesperrte Straße" && /aktiv/.test(z.klasse), `Quest-Tab: nur der Titel in einer Zeile, gestartet = dunkel mit heller Schrift (${JSON.stringify(z)})`); }
-  await anna.click("#ez-queststab .qzeile"); await anna.waitForTimeout(400);
+  await klick(anna, "#ez-queststab .qzeile"); await anna.waitForTimeout(400);
   { const d = await anna.evaluate(() => { const t = document.querySelector("#ez-konto .tafel.questinfo"); if (!t) return null; return { vor: /Voraussetzungen\s*Keine/.test(t.textContent), jetzt: (t.querySelector(".qjetzt") || {}).textContent || "", erledigt: t.querySelectorAll(".qschritte li").length, knopf: (t.querySelector("[data-qv]") || {}).textContent || "" }; });
     check(d && d.vor && /Bürgermeister von Waldmark braucht Hilfe/.test(d.jetzt) && d.erledigt === 0 && /Verfolgen/.test(d.knopf), `Kurz antippen: Details auf Pergament – Voraussetzungen, aktueller Schritt, „Verfolgen“ oben rechts (${JSON.stringify(d)})`); }
   if (BILD) await anna.screenshot({ path: BILD + "quest-details.png" });
-  await anna.click("#ez-konto .tafel.questinfo [data-qv]"); await anna.waitForTimeout(500);
+  await klick(anna, "#ez-konto .tafel.questinfo [data-qv]"); await anna.waitForTimeout(500);
   check(await anna.evaluate(() => /Wird verfolgt/.test(document.querySelector("#ez-konto [data-qv]").textContent) && /verfolgt/.test(document.querySelector("#ez-queststab .qzeile").className)), "Verfolgen in den Details: Knopf „Wird verfolgt“, Zeile im Tab hell mit dunkler Schrift");
   await anna.keyboard.press("Escape"); await anna.waitForTimeout(300);
-  await anna.click("#ez-queststab .qzeile", { button: "right" }); await anna.waitForTimeout(300);
+  await rechts(anna, "#ez-queststab .qzeile"); await anna.waitForTimeout(300);
   check(await anna.evaluate(() => [...document.querySelectorAll(".ez-aktionen button")].map((b) => b.textContent).join("|") === "📜Details öffnen|🧭Nicht mehr verfolgen"), "Lange drücken / Rechtsklick auf die Quest: „Details öffnen“ zuerst, dann Verfolgen");
   if (BILD) await anna.screenshot({ path: BILD + "quest-tab.png" }); await anna.keyboard.press("Escape"); await anna.waitForTimeout(500);
   { const P = await anna.evaluate(() => { const W = window.EZW.welt3d, q = W.quest, z = q.ziel(), p = q.pfeil; if (!p || !z) return null; const zum = Math.atan2(z.x - W.ort.x, z.y - W.ort.y), hin = Math.atan2(p.position.x - W.ort.x, p.position.z - W.ort.y);
       return { sichtbar: p.visible, ziel: [Math.round(z.x), Math.round(z.y)], abw: Math.abs(((zum - hin + 3 * Math.PI) % (2 * Math.PI)) - Math.PI), verfolgt: localStorage.getItem("ez_quest_verfolgt") === "die_gesperrte_strasse" ? "1" : null }; });
     check(P && P.sichtbar && P.abw < 0.15 && P.verfolgt === "1", `Quest abgehakt: Pfeil am Helden zeigt zum Bürgermeister (${JSON.stringify(P)})`); }
-  if (BILD) await anna.screenshot({ path: BILD + "quest-tab.png" }); await anna.click('#ez-leiste [data-l="quests"]');
+  if (BILD) await anna.screenshot({ path: BILD + "quest-tab.png" }); await klick(anna, '#ez-leiste [data-l="quests"]');
   /* Hagan geht im Rathaus umher: sein Name schwebt nicht von weitem über dem Dach */
   await anna.evaluate(() => window.EZW.welt3d.versetzen(6450.5, 6440.5)); await anna.waitForTimeout(1500);
   check(await anna.evaluate(() => { const n = [...document.querySelectorAll(".ez-name3d.quest")].find((e) => e.textContent === "Hagan Voss"); return !!n && n.hidden; }), "Von weitem: kein Namensschild über dem Rathausdach");
   if (BILD) await anna.screenshot({ path: BILD + "quest-pfeil.png" });
   /* außer Reichweite (weit im Süden) kein !, in Reichweite (vor dem Rathaus) das ! */
   await anna.evaluate(() => window.EZW.welt3d.versetzen(6475.5, 6455.5)); await anna.waitForTimeout(2500); /* noch in der Waldmark (kein Kampfgebiet), gut 50 Felder vom Rathaus */
-  { const gelb = await anna.evaluate(() => { const c = document.querySelector("canvas.karte3d"); if (!c) return -1; const x = c.getContext("2d"), n = c.width, d = x.getImageData(0, 0, n, n).data; let k = 0;
+  { const zaehlen = () => anna.evaluate(() => { const c = document.querySelector("canvas.karte3d"); if (!c) return -1; const x = c.getContext("2d"), n = c.width, d = x.getImageData(0, 0, n, n).data; let k = 0;
       for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { if (Math.hypot(i - n / 2, j - n / 2) > n / 3) continue; const o = (j * n + i) * 4; if (d[o] > 225 && d[o + 1] > 170 && d[o + 1] < 235 && d[o + 2] < 120) k++; } return k; });
+    let gelb = await zaehlen(); for (let i = 0; i < 8 && gelb >= 6; i++) { await anna.waitForTimeout(1500); gelb = await zaehlen(); } /* die Minikarte zeichnet nach dem Versetzen erst mit dem nächsten Bild neu (Software-Grafik: ~1 Bild/s) */
     check(gelb < 6, `Ziel außer Reichweite der Minikarte: noch kein gelbes ! (${gelb} gelbe Bildpunkte)`); }
   await anna.evaluate(() => window.EZW.welt3d.versetzen(6446.5, 6436.5));
   await anna.waitForFunction(() => { const c = document.querySelector("canvas.karte3d"); if (!c) return false; const n = c.width, d = c.getContext("2d").getImageData(0, 0, n, n).data; let k = 0;
@@ -114,11 +119,11 @@ try {
     check(JSON.stringify(r.aus) === "[[1,0],[1,1],[-1,0]]" && JSON.stringify(r.halb) === "[0.5,1]" && r.mitten && r.n === 5,
       `Feldschritte in der offenen Welt: je 0,5 s ein Feld (gerade ${JSON.stringify(r.aus[0])}, schräg ${JSON.stringify(r.aus[1])}), ein angefangener Schritt wird beendet (${JSON.stringify(r.halb)}), Klickweg über ${r.n} Feldmitten (5 schräg/gerade für 5×3)`); }
   /* Ausrüstungs-Tab mit Auswahl (auf dem Handy war der Kopf abgeschnitten): Kopf mit „i“ ganz sichtbar, nichts überlappt */
-  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]', { button: 'right' }); await anna.waitForTimeout(300);
+  await klick(anna, '#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await rechts(anna, '#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]'); await anna.waitForTimeout(300);
   { const L = await anna.evaluate(() => { const m = document.querySelector(".ez-aktionen"); if (!m) return null; const r = m.getBoundingClientRect(), b = [...m.querySelectorAll("button")].map((x) => x.textContent);
       return { erst: b[0], alle: b, drin: r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight }; });
     check(L && L.erst === "⤵️Ablegen" && L.drin, `Ausrüstung → Schwert: Aktionsmenü an der Klickstelle, „Ablegen“ zuerst (${JSON.stringify(L)})`); }
-  if (BILD) await anna.screenshot({ path: BILD + "ausruestung-tab.png" }); await anna.keyboard.press("Escape"); await anna.click('#ez-leiste [data-l="ausruestung"]');
+  if (BILD) await anna.screenshot({ path: BILD + "ausruestung-tab.png" }); await anna.keyboard.press("Escape"); await klick(anna, '#ez-leiste [data-l="ausruestung"]');
   /* Ben steht vor der Sperre (Stand: bestätigt); für ihn ist sie noch zu, nach dem Gespräch mit Raban offen. Anna bleibt draußen. */
   const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6446.5, 6642.5, "waldweg"]);
   await ben.goto(B + S, { timeout: 120000 }); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen && window.EZW.welt3d.quest, null, { timeout: 120000 });
@@ -130,7 +135,7 @@ try {
   if (BILD) await ben.screenshot({ path: BILD + "quest-sperre.png", timeout: 90000 }).catch(() => {});
   { const q = await ben.evaluate(() => { const W = window.EZW.welt3d; return W.motor.bildschirm(6442.5, W.motor.hoehe(6442.5, 6643.5) + 1, 6643.5); }); await ben.mouse.click(q.x, q.y, { button: "right" }); await ben.waitForTimeout(400);
     const m = await ben.evaluate(() => [...document.querySelectorAll(".ez-aktionen button")].map((b) => b.textContent)); check(m[0] === "💬Sprechen", `Rechtsklick auf Raban (ganze Figur, Brusthöhe): ${JSON.stringify(m)}`);
-    await ben.click('.ez-aktionen button:has-text("Sprechen")', { force: true }); } /* kurz antippen läuft nur hin; reden über lange drücken / Rechtsklick */
+    await menueKlick(ben, "Sprechen"); } /* kurz antippen läuft nur hin; reden über lange drücken / Rechtsklick */
   await ben.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && d.offsetHeight > 0; }, null, { timeout: 60000 }).catch(() => {});
   { const { gesehen, o } = await bisWahl(ben); check(gesehen.some((g) => /Bestätigung/.test(g.text)) && o && o.antworten.includes("durch"), "Raban: „Der Bote aus Waldmark hat uns die Bestätigung gebracht“ – Antwort „Nach Weidenhain weitergehen“");
     if (o) await ben.keyboard.press(String(o.antworten.indexOf("durch") + 1)); }

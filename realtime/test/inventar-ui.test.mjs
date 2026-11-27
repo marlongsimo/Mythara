@@ -2,7 +2,7 @@
    Anna und Ben stehen im Kreuzwald, sehen sich und die Banditen ohne eigene Kampfszene, Anna besiegt Banditen (EP gebucht), durchs Tor zurück in die Waldmark, Teleport, Gast rechnet im Browser. */
 import { createRequire } from "node:module"; import { createServer } from "node:http"; import { spawn } from "node:child_process";
 const require = createRequire(import.meta.url), { chromium } = require("playwright");
-let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) fehler++; };
+let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) fehler++; return ok; };
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000a001", ["tok_ben__" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000b002" };
 const WERTE = { "00000000-0000-0000-0000-00000000a001": { ep: { schildwaechter: 300 }, seelen: 0 }, "00000000-0000-0000-0000-00000000b002": { ep: { kopfgeldjaeger: 120 }, seelen: 0 } }, SIEGE = [], buchungen = [];
 const EINL = []; const PROFIL = { "00000000-0000-0000-0000-00000000a001": "Anna", "00000000-0000-0000-0000-00000000b002": "Ben" }, AKTIV = { "00000000-0000-0000-0000-00000000b002": "kopfgeldjaeger" }, HELDSETZEN = [];
@@ -82,15 +82,18 @@ try {
   /* Handy (iPhone-Safari): echte Touch-Ereignisse. Lange drücken = Aktionsmenü (nichts passiert sonst), kurz tippen = erste Aktion („Ausrüsten“) */
   { const cdp = await anna.context().newCDPSession(anna); await cdp.send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
     const finger = async (x, y, ms) => { await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] }); await anna.waitForTimeout(ms); await anna.waitForFunction(() => document.querySelector(".ez-aktionen"), null, { timeout: 6000 }).catch(() => {}) /* halten, bis das Menü da ist (der Testrechner zeichnet nur ~1 Bild je Sekunde) */; await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] }); await anna.waitForTimeout(400); }, tipp = async (x, y) => { await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] }); await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] }); await anna.waitForTimeout(400); }; /* echte Touch-Ereignisse: synthesizeTapGesture liefert unter Last (Software-Grafik) keinen Klick (#109) */
+    /* #136: Ereignis-Mitschrift für die Touch-Schritte – bei einem Fehler ausgeben (welcher Rechner liefert was, in welcher Reihenfolge) */
+    await anna.evaluate(() => { const L = (window.__ev = []), t0 = performance.now(); for (const n of ["pointerdown", "pointerup", "pointercancel", "click", "contextmenu", "touchstart", "touchend"]) addEventListener(n, (e) => { const z = e.target; L.push(`${Math.round(performance.now() - t0)} ${n}${e.pointerType !== undefined ? "/" + e.pointerType : ""} ${z && z.className ? String(z.className).slice(0, 24) : z && z.tagName} menue=${Boolean(document.querySelector(".ez-aktionen"))}`); }, true); });
+    const mitschrift = async () => console.log("    Ereignisse: " + (await anna.evaluate(() => (window.__ev || []).slice(-40).join(" | "))) + " · " + (await anna.evaluate(() => navigator.userAgent)));
     await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
     const r = await anna.evaluate(() => { const b = document.querySelector('#ez-rucksacktab .ifeld.voll[data-g="rundschild"]').getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; });
     await finger(r.x, r.y, 800);
     const lang = await anna.evaluate(() => ({ m: [...document.querySelectorAll(".ez-aktionen button")].map((b) => b.textContent), an: JSON.parse(localStorage.getItem("ez_inventar") || "{}").angelegt?.nebenhand || null }));
     check(lang.m[0] === "🛡️Ausrüsten" && lang.m.includes("🔍Untersuchen") && !lang.an, `Touch: lange auf den Schild drücken → Menü ${JSON.stringify(lang.m)}, nichts ausgeführt`);
     if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "touch-menue.png" });
-    await tipp(5, 300); check(await anna.evaluate(() => !document.querySelector(".ez-aktionen")), "Touch daneben schließt das Menü");
+    await tipp(5, 300); { const zu = await anna.evaluate(() => !document.querySelector(".ez-aktionen")); check(zu, "Touch daneben schließt das Menü"); if (!zu) await mitschrift(); }
     await tipp(r.x, r.y); await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").angelegt?.nebenhand === "rundschild", null, { timeout: 20000 }).catch(() => {});
-    check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").angelegt?.nebenhand === "rundschild" && !document.querySelector(".ez-aktionen")), "Touch: kurz auf den Schild tippen → gleich ausgerüstet (erste Aktion, kein Menü)");
+    check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").angelegt?.nebenhand === "rundschild" && !document.querySelector(".ez-aktionen")), "Touch: kurz auf den Schild tippen → gleich ausgerüstet (erste Aktion, kein Menü)") || await mitschrift();
     await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400);
     { const a = await anna.evaluate(() => { const b = document.querySelector('#ez-ausruestungtab .ifeld.voll[data-wo="nebenhand"]').getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; }); await tipp(a.x, a.y); }
     await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild"), null, { timeout: 20000 }).catch(() => {});
