@@ -76,6 +76,7 @@ TESTS=(
   kraeuterkunde
   gegnerlast
   gegner-vorbereitet
+  streifgebiete
 )
 [ $# -gt 0 ] && TESTS=("$@")
 
