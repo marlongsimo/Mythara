@@ -81,11 +81,12 @@ export async function starte({ sb: SB, srv: SRV, helden, env = {} }) {
     ws.on("message", (r) => { const m = JSON.parse(String(r)); if (m.t === "z") { Z.w = m.z.w; Z.ich = m.z.ich; for (const e of m.z.ev) Z.ev.push(e); } });
     ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN[name], geraet: geraet(TOKEN[name]) })); setTimeout(() => ok(Z), 1500); }); });
   /** alle lebenden Gegner dieser Arten bekämpfen, bis bis() stimmt (Siege zählen); w: [id, ich?, art, …, x, y, …, tot] */
-  async function kaempfen(z, arten, bis, ms = 180000, nur = () => true) { let siege = 0; const t0 = Date.now();
-    while (!bis(siege) && Date.now() - t0 < ms) { const ich = z.w.find((w) => w[1] === 1), lebt = z.w.filter((w) => arten.includes(w[2]) && !w[10] && nur(w));
+  async function kaempfen(z, arten, bis, ms = 180000, nur = () => true) { let siege = 0; const t0 = Date.now(), aus = new Map(); /* Ziele, die nicht fallen (unerreichbar, fliehen), eine Weile auslassen */
+    while (!bis(siege) && Date.now() - t0 < ms) { const ich = z.w.find((w) => w[1] === 1), jetzt = Date.now(), lebt = z.w.filter((w) => arten.includes(w[2]) && !w[10] && nur(w) && !((aus.get(w[0]) || 0) > jetzt));
       if (!ich || !lebt.length) { await schlaf(300); continue; } const ziel = lebt.sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
-      const ab = z.ev.length; z.ws.send(JSON.stringify({ t: "ziel", id: ziel[0] }));
-      for (let i = 0; i < 400; i++) { await schlaf(100); if (z.ev.slice(ab).some((e) => e.a === "tot" && e.id === ziel[0])) { siege++; break; } if (bis(siege)) break; } }
+      const ab = z.ev.length; z.ws.send(JSON.stringify({ t: "ziel", id: ziel[0] })); let fiel = false;
+      for (let i = 0; i < 250; i++) { await schlaf(100); if (z.ev.slice(ab).some((e) => e.a === "tot" && e.id === ziel[0])) { siege++; fiel = true; break; } if (bis(siege)) break; }
+      if (!fiel) aus.set(ziel[0], Date.now() + 20000); }
     return siege; }
   /** Gegner an dieser Stelle bekämpfen, bis die Bedingung stimmt; schließt die Verbindung danach */
   async function kampfBis(s, wx, wy, arten, bis, ms = 240000) { await stelle(s, wx, wy); const z = await kampf(s.name, wx, wy); if (!z) return { z: null, siege: 0 };
