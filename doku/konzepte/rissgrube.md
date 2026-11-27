@@ -1,6 +1,6 @@
 # Die Rissgrube – PvM-Minispiel (Idee für später)
 
-Konzept vom 27.11.2026 (Leitstelle), **Idee für später** (Entscheidung des Nutzers). Eigener Riftmere-Entwurf, keine Kopie anderer Spiele.
+Konzept vom 27.11.2026 (Leitstelle, Echo-Krieger mit dem Konzept-Chat). **Vom Nutzer abgesegnet (27.11.)**, weiter eine Idee für später. Eigener Riftmere-Entwurf, keine Kopie anderer Spiele.
 Hängt an den **Hochlanden** (Phase 11, `phase-11.md`) und am **Endgame-Konzept** des Nutzers (Stufe 75 „Uralt“, noch nicht entschieden).
 
 ## Kurz
@@ -61,7 +61,7 @@ Ein ausgebauter Stollenraum vor dem Riss, sicher (kein Kampf):
 
 ## Belohnung – die Risstruhe
 
-- **Punkte 0–100** (Vorschlag): je besiegtes Echo **15** (4 × 15 = 60), je Phase des Rissherzes **10** (30), dazu bis **10** für Zeit und keine Tode. Segen verschieben die Punkte (z. B. Wagnis +15), höchstens 100.
+- **Punkte 0–100** (abgesegnet): je besiegtes Echo **15** (4 × 15 = 60), je Phase des Rissherzes **10** (30), dazu bis **10** für Zeit und keine Tode. Segen verschieben die Punkte (z. B. Wagnis +15), höchstens 100.
   Beispiel: Mit nur einem Stil schafft man etwa 2 Echos und 1 Herzphase, also rund 40 Punkte und damit 40 % der vollen Chance.
 - **Grundbeute** (immer, mehr bei mehr Punkten): Splitter, hochstufige Erze und Hölzer (nur vorhandene Arten), Tränke der Kräuterkunde, Seelenlichter.
 - **Uralt-Teil (Stufe 75):** bei 100 Punkten etwa **1 : 150** je Durchgang, darunter anteilig weniger. **Kein Pech-Schutz.**
