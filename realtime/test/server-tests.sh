@@ -49,6 +49,12 @@ TESTS=(
   welt-unterschlupf
   welt-weidenhain
   weltkampf
+  phase6
+  phase6-quest
+  phase8-10
+  inhalt-phase8
+  inhalt-phase9
+  inhalt-phase10
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

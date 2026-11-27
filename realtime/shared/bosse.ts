@@ -22,6 +22,34 @@ export const TUEREN: Tuer[] = [];
 TUEREN.push({ id: "turm_wappentuer", feld: [6840, 6519, 6840, 6519], schalter: "wappentuer_offen", eingang: "turm_wappentuer",
   zu: "Die Tür trägt ein Wappen – ein Turm über drei Wellen. Sie ist verschlossen. Vielleicht weiß jemand in Graufurt, wer hier hineindarf." });
 
+/* ───────── Phase 10 (#92, G3): der Wrackkapitän in seiner Kajüte (Region wrack_kajuete, Weltfelder 11488…11519 × 9600…9631) ─────────
+   Geist eines Kapitäns: Säbelwirbel rundum, ruft unter 60 % zwei Strandräuber, unter 30 % schwappt Geisterwasser durch die Kajüte (Deckung hinter Kisten). Instanz je Spieler (Schalter aus G3). */
+BOSSE.wrackkapitaen = { typ: "wrackkapitaen", phasen: [
+  { ab: 1, ansagen: [{ name: "Säbelwirbel", alle: 4, felder: "rundum", schaden: [6, 11] }] },
+  { ab: 0.6, text: "Der Wrackkapitän ruft seine Mannschaft!", ruf: { art: "strandraeuber_saebel", n: 2, text: "Alle Mann an Deck!" }, ansagen: [{ name: "Säbelwirbel", alle: 3, felder: "rundum", schaden: [6, 11] }] },
+  { ab: 0.3, text: "Geisterwasser flutet die Kajüte!", ansagen: [{ name: "Geisterflut", sek: 4, felder: "raum", deckung: true, vorlauf: 2, schaden: [9, 15] }] } ] };
+INSTANZEN.push({ id: "wrack_kajuete", name: "Die Kajüte des Kapitäns", feld: [11488, 9600, 11519, 9631], schalter: "wrackkapitaen_kajuete",
+  gegner: [{ art: "wrackkapitaen", x: 11504.5, y: 9614.5 }], text: "Die Tür der Kajüte fällt ins Schloss. Am Kartentisch sitzt jemand, durch den man hindurchsieht." });
+
+/* ───────── Phase 9 (#86, F3): die Sandmutter in ihrer Kammer unter dem Tempel (Region tempel_kammer, Weltfelder 11360…11391 × 9600…9631) ─────────
+   Gräbt sich ein (unangreifbar), ruft Sandkriecher, Treibsand auf angesagten Feldern. Instanz je Spieler, solange „sandmutter_kammer“ an ist (F3). */
+BOSSE.sandmutter = { typ: "sandmutter", phasen: [
+  { ab: 1, ansagen: [{ name: "Sandschlag", alle: 4, felder: "rundum", schaden: [9, 15] }] },
+  { ab: 0.6, text: "Die Sandmutter gräbt sich ein!", eingraben: 5, ruf: { art: "sandkriecher", n: 2, text: "Der Sand bebt überall!" },
+    ansagen: [{ name: "Treibsand", sek: 3, felder: "ziel", weite: 1, vorlauf: 2, schaden: [10, 16] }] },
+  { ab: 0.3, text: "Die Sandmutter brüllt!", eingraben: 4, ansagen: [{ name: "Treibsand", sek: 2.5, felder: "ziel", weite: 2, vorlauf: 2, schaden: [12, 18] }, { name: "Sandschlag", alle: 3, felder: "rundum", schaden: [9, 15] }] } ] };
+INSTANZEN.push({ id: "tempel_kammer", name: "Die Kammer der Sandmutter", feld: [11360, 9600, 11391, 9631], schalter: "sandmutter_kammer",
+  gegner: [{ art: "sandmutter", x: 11376.5, y: 9612.5 }], text: "Das Tor mit dem Auge schließt sich. Der Boden der Kammer atmet." });
+
+/* ───────── Phase 8 (#58, E4): der Graue Hauptmann in seiner Gruft (Region hauptmann_gruft, Weltfelder 11200…11231 × 9600…9631) ─────────
+   Ruft Wiedergänger, später Ansage über die Gruft mit Deckung hinter den Grabsteinen. Instanz je Spieler, solange „hauptmann_gruft“ an ist (E4). */
+BOSSE.grauer_hauptmann = { typ: "grauer_hauptmann", phasen: [
+  { ab: 1, ansagen: [{ name: "Rundumschlag", alle: 4, felder: "rundum", schaden: [8, 14] }] },
+  { ab: 0.6, text: "Der Graue Hauptmann ruft seine Wacht!", ruf: { art: "wiedergaenger", n: 2, text: "Steht auf, Wacht!" }, ansagen: [{ name: "Rundumschlag", alle: 3, felder: "rundum", schaden: [8, 14] }] },
+  { ab: 0.3, text: "Ein eisiger Sturm fegt durch die Gruft!", ansagen: [{ name: "Grabessturm", sek: 4, felder: "raum", deckung: true, vorlauf: 2, schaden: [12, 20] }] } ] };
+INSTANZEN.push({ id: "hauptmann_gruft", name: "Die Gruft des Grauen Hauptmanns", feld: [11200, 9600, 11231, 9631], schalter: "hauptmann_gruft",
+  gegner: [{ art: "grauer_hauptmann", x: 11216.5, y: 9619.5 }], text: "Hinter dir schließt sich die Gruft. Am Sarkophag regt sich etwas Graues." });
+
 /* ───────── Phase 6 (#18): Der Oberste Rabenpriester im Thronsaal (doku/konzepte/phase-6.md „Bosskampf“) ─────────
    Thronsaal = Region rabengrund_thronsaal (Weltfelder 10752…10783 × 9600…9631): Becken (10768, 9615), vier Säulen (±6 Felder), Altar im Norden.
    Instanz je Versuch mit Federsiegel; offen, solange der Schalter „rabenpriester_thronsaal“ an ist (C3 im Schritt Thronsaal, danach Bossing). */
