@@ -9,7 +9,14 @@
    "gebaeude": 12,
    "land": "Fahle Weiten",
    "teil": "Norden",
-   "region": "fl_201_169"
+   "region": "fl_201_169",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 1,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": false
   },
   {
    "name": "Heidrast",
@@ -19,7 +26,14 @@
    "gebaeude": 5,
    "land": "Fahle Weiten",
    "teil": "Norden",
-   "region": "fl_201_183"
+   "region": "fl_201_183",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Gehöft",
@@ -29,7 +43,14 @@
    "gebaeude": 1,
    "land": "Fahle Weiten",
    "teil": "Norden",
-   "region": "fl_186_183"
+   "region": "fl_186_183",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Mühle am Bach",
@@ -39,7 +60,14 @@
    "gebaeude": 1,
    "land": "Fahle Weiten",
    "teil": "Norden",
-   "region": "fl_186_183"
+   "region": "fl_186_183",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Köhlerhütte",
@@ -49,7 +77,14 @@
    "gebaeude": 1,
    "land": "Fahle Weiten",
    "teil": "Norden",
-   "region": "fl_186_183"
+   "region": "fl_186_183",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Der Turm mit dem grünen Licht",
@@ -59,7 +94,14 @@
    "gebaeude": 1,
    "land": "Fahle Weiten",
    "teil": "Norden",
-   "region": "ostufer"
+   "region": "ostufer",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Weidenhain",
@@ -67,9 +109,28 @@
    "x": 6464,
    "y": 6704,
    "gebaeude": 35,
+   "grenze": [
+    6400,
+    6656,
+    6528,
+    6752
+   ],
    "land": "Grenzland",
    "teil": "Norden",
-   "region": "weidenhain"
+   "region": "weidenhain",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 1,
+   "bankier": 1,
+   "laeden": 1,
+   "stationen": [
+    "backofen",
+    "bindestein",
+    "feuer",
+    "kessel",
+    "werkbank"
+   ],
+   "groesser": true,
+   "ohne_bank": false
   },
   {
    "name": "Die Waldmark",
@@ -77,9 +138,29 @@
    "x": 6448,
    "y": 6432,
    "gebaeude": 18,
+   "grenze": [
+    6400,
+    6400,
+    6496,
+    6464
+   ],
    "land": "Grenzland",
    "teil": "Norden",
-   "region": "waldmark"
+   "region": "waldmark",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 2,
+   "bankier": 2,
+   "laeden": 5,
+   "stationen": [
+    "amboss",
+    "backofen",
+    "brunnen",
+    "esse",
+    "herd",
+    "kessel"
+   ],
+   "groesser": true,
+   "ohne_bank": false
   },
   {
    "name": "Graufurt",
@@ -87,9 +168,28 @@
    "x": 6720,
    "y": 6576,
    "gebaeude": 11,
+   "grenze": [
+    6656,
+    6400,
+    6784,
+    6752
+   ],
    "land": "Grenzland",
    "teil": "Norden",
-   "region": "graufurt"
+   "region": "graufurt",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 1,
+   "stationen": [
+    "amboss",
+    "backofen",
+    "herd",
+    "kessel",
+    "werkbank"
+   ],
+   "groesser": true,
+   "ohne_bank": false
   },
   {
    "name": "Rabenmoor",
@@ -97,9 +197,25 @@
    "x": 6336,
    "y": 6704,
    "gebaeude": 7,
+   "grenze": [
+    6272,
+    6656,
+    6400,
+    6752
+   ],
    "land": "Grenzland",
    "teil": "Norden",
-   "region": "rabenmoor"
+   "region": "rabenmoor",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [
+    "feuer",
+    "kessel"
+   ],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Der Osthof",
@@ -107,9 +223,26 @@
    "x": 6544,
    "y": 6432,
    "gebaeude": 3,
+   "grenze": [
+    6496,
+    6400,
+    6592,
+    6464
+   ],
    "land": "Grenzland",
    "teil": "Norden",
-   "region": "osthof"
+   "region": "osthof",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [
+    "backofen",
+    "brunnen",
+    "werkbank"
+   ],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Steinhag",
@@ -119,7 +252,14 @@
    "gebaeude": 21,
    "land": "Hochlande",
    "teil": "Norden",
-   "region": "fl_216_183"
+   "region": "fl_216_183",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 0,
+   "bankier": 1,
+   "laeden": 6,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": false
   },
   {
    "name": "Hohe Alm",
@@ -129,7 +269,14 @@
    "gebaeude": 2,
    "land": "Hochlande",
    "teil": "Norden",
-   "region": "fl_216_183"
+   "region": "fl_216_183",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 2,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Erzberg-Bergwerk",
@@ -139,7 +286,14 @@
    "gebaeude": 2,
    "land": "Hochlande",
    "teil": "Norden",
-   "region": "fl_216_169"
+   "region": "fl_216_169",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 3,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Passwacht",
@@ -149,7 +303,14 @@
    "gebaeude": 2,
    "land": "Hochlande",
    "teil": "Norden",
-   "region": "fl_216_169"
+   "region": "fl_216_169",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 2,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Einsiedelei",
@@ -159,7 +320,14 @@
    "gebaeude": 1,
    "land": "Hochlande",
    "teil": "Norden",
-   "region": "fl_216_169"
+   "region": "fl_216_169",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 1,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Glutbrunn",
@@ -169,7 +337,14 @@
    "gebaeude": 9,
    "land": "Glutsande",
    "teil": "Süden",
-   "region": "fl_216_211"
+   "region": "fl_216_211",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": false
   },
   {
    "name": "Sandquell",
@@ -179,7 +354,14 @@
    "gebaeude": 9,
    "land": "Glutsande",
    "teil": "Süden",
-   "region": "fl_216_198"
+   "region": "fl_216_198",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 4,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Salzpfanne",
@@ -189,7 +371,14 @@
    "gebaeude": 3,
    "land": "Glutsande",
    "teil": "Süden",
-   "region": "fl_216_198"
+   "region": "fl_216_198",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Möwenbucht",
@@ -199,7 +388,17 @@
    "gebaeude": 4,
    "land": "Küste",
    "teil": "Süden",
-   "region": "fl_186_211"
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [
+    "feuer",
+    "raeucherhuette"
+   ],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Netzbucht",
@@ -209,7 +408,14 @@
    "gebaeude": 3,
    "land": "Küste",
    "teil": "Süden",
-   "region": "fl_186_211"
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 2,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Haferstedt",
@@ -219,7 +425,14 @@
    "gebaeude": 11,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_186_211"
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 7,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Kielmund",
@@ -229,7 +442,14 @@
    "gebaeude": 9,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_186_225"
+   "region": "fl_186_225",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": false
   },
   {
    "name": "Summweide",
@@ -239,7 +459,14 @@
    "gebaeude": 3,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_186_211"
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 1,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Leuchtturm",
@@ -249,7 +476,14 @@
    "gebaeude": 2,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_186_211"
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Heckenhof",
@@ -259,7 +493,16 @@
    "gebaeude": 2,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_201_211"
+   "region": "fl_201_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [
+    "herd"
+   ],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Erlengrund",
@@ -269,7 +512,14 @@
    "gebaeude": 2,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_186_211"
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Lehmfurt",
@@ -279,7 +529,14 @@
    "gebaeude": 2,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_201_225"
+   "region": "fl_201_225",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Lämmerhang",
@@ -289,7 +546,14 @@
    "gebaeude": 2,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_186_211"
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Kräuterhof",
@@ -299,7 +563,16 @@
    "gebaeude": 1,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_186_211"
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [
+    "kessel"
+   ],
+   "groesser": true,
+   "ohne_bank": true
   },
   {
    "name": "Schilfsee",
@@ -309,7 +582,14 @@
    "gebaeude": 1,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_201_211"
+   "region": "fl_201_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   },
   {
    "name": "Distelhof",
@@ -319,8 +599,37 @@
    "gebaeude": 1,
    "land": "Süden/Westen",
    "teil": "Süden",
-   "region": "fl_201_211"
+   "region": "fl_201_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
   }
+ ],
+ "groessere_orte_ohne_bank": [
+  "Rabenmoor",
+  "Der Osthof",
+  "Hohe Alm",
+  "Erzberg-Bergwerk",
+  "Passwacht",
+  "Einsiedelei",
+  "Sandquell",
+  "Möwenbucht",
+  "Netzbucht",
+  "Haferstedt",
+  "Summweide",
+  "Heckenhof",
+  "Kräuterhof"
+ ],
+ "bank_gebaeude_ohne_schalter": [
+  "Grauwacht",
+  "Graufurt",
+  "Steinhag",
+  "Glutbrunn",
+  "Kielmund"
  ],
  "luecke_weg": {
   "x": 6258,

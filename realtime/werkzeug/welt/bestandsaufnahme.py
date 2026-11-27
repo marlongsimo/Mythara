@@ -66,7 +66,7 @@ orte = []
 for g in on['gebiete']:
     if g['art'] in ('Stadt', 'Dorf', 'Gehöft'):
         x0, y0, x1, y1 = g['grenze']; n = sum(1 for (x, y, _) in GEB if x0 <= x < x1 and y0 <= y < y1)
-        orte.append({'name': g['name'], 'art': g['art'], 'x': g['schrift'][0], 'y': g['schrift'][1], 'gebaeude': n})
+        orte.append({'name': g['name'], 'art': g['art'], 'x': g['schrift'][0], 'y': g['schrift'][1], 'gebaeude': n, 'grenze': g['grenze']})
 for o in on['orte']:
     if o['art'] in RAD:
         n = sum(1 for (x, y, _) in GEB if math.hypot(x - o['x'], y - o['y']) < RAD[o['art']])
@@ -75,6 +75,23 @@ seen = set(); ORTE = []
 for o in orte:
     if o['name'] in seen: continue
     seen.add(o['name']); o['land'] = land(int(o['x']), int(o['y'])); o['teil'] = 'Norden' if o['land'] in NORDEN else 'Süden'; o['region'] = REG[int(o['y']) - Y0, int(o['x']) - X0]; ORTE.append(o)
+# Banken (Wunsch des Nutzers: jede etwas größere Stadt hat mindestens einen Bankschalter), Läden, Stationen
+OBJ_ALLE = []
+for n, r in RN.items():
+    for o in json.load(open(os.path.join(W, 'regionen', n, 'objekte.json'), encoding='utf8')): OBJ_ALLE.append((o['x'] + r['ursprung'][0] * C, o['y'] + r['ursprung'][1] * C, o['objekt']))
+BANK_TS = open(os.path.join(RT, 'shared', 'bank.ts'), encoding='utf8').read()
+SCHALTER = [(float(x), float(y)) for x, y in re.findall(r'\{ id: "[^"]+", ort: "\w+", x: ([\d.]+), y: ([\d.]+) \}', BANK_TS.split('BANKIERS')[0])]
+BANKIERS = [(float(x), float(y)) for x, y in re.findall(r'x: ([\d.]+), y: ([\d.]+), blick', BANK_TS)]
+LAEDEN = [(float(x), float(y)) for x, y in re.findall(r'x: (\d{4}(?:\.\d+)?), y: (\d{4}(?:\.\d+)?)', open(os.path.join(RT, 'shared', 'laeden.ts'), encoding='utf8').read())]
+STATIONEN = [(st['x'], st['y'], st['station']) for st in lies('welt', 'bedienstellen.json')['stationen']]
+for o in ORTE:
+    rr = RAD.get(o['art'], 26) if o['art'] in RAD else 50 if o['art'] == 'Stadt' else 26
+    nah = (lambda x, y, g=o['grenze']: g[0] <= x < g[2] and g[1] <= y < g[3]) if o.get('grenze') else (lambda x, y: math.hypot(x - o['x'], y - o['y']) < rr)
+    o['bank_gebaeude'] = sum(1 for x, y, ob in OBJ_ALLE if nah(x, y) and ob in ('waldmark_bank_01', 'weidenhain_bankschalter_01'))
+    o['bankschalter_im_spiel'] = sum(1 for x, y in SCHALTER if nah(x, y)); o['bankier'] = sum(1 for x, y in BANKIERS if nah(x, y))
+    o['laeden'] = sum(1 for x, y in LAEDEN if nah(x, y)); o['stationen'] = sorted({st for x, y, st in STATIONEN if nah(x, y)})
+    o['groesser'] = o['gebaeude'] >= 8 or o['laeden'] > 0 or bool(o['stationen'])
+    o['ohne_bank'] = o['groesser'] and not o['bank_gebaeude'] and not o['bankschalter_im_spiel']
 ORTE.sort(key=lambda o: (o['teil'], o['land'], -o['gebaeude']))
 
 # ───── 2. Abstände zu Fuß (halbe Auflösung, Mehrquellen-Breitensuche von allen Orten) ─────
@@ -200,6 +217,6 @@ for j_, (L, f) in enumerate(farben.items()): d.rectangle((8, 100 + j_ * 14, 18, 
 img.save(os.path.join(W, 'bestandsaufnahme.png'))
 
 aus_ = {'hinweis': 'Bestandsaufnahme (Messung, nichts gebaut): werkzeug/welt/bestandsaufnahme.py. Abstände zu Fuß in halber Auflösung, 4er-Nachbarschaft (etwas zu lang).',
-        'orte': ORTE, 'luecke_weg': luecke, 'leer_ueber_150': leer, 'unerreichbar_von_orten': unerreichbar, 'gegner': gegner, 'arbeit': arbeit}
+        'orte': ORTE, 'groessere_orte_ohne_bank': [o['name'] for o in ORTE if o['ohne_bank']], 'bank_gebaeude_ohne_schalter': [o['name'] for o in ORTE if o['bank_gebaeude'] and not o['bankschalter_im_spiel']], 'luecke_weg': luecke, 'leer_ueber_150': leer, 'unerreichbar_von_orten': unerreichbar, 'gegner': gegner, 'arbeit': arbeit}
 json.dump(aus_, open(os.path.join(W, 'bestandsaufnahme.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
 print(f"Orte: {len(ORTE)}, Lücke am Weg: {luecke}, Flächen > 150: {len(leer)}, Länder: {sorted(gegner)}")
