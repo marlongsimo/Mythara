@@ -176,14 +176,14 @@ export function menueTafel(zu: () => void) {
   const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc, true);
   f.innerHTML = `<div class="tafel menue"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>
     <h2>Einstellungen</h2><div class="zier"></div>
-    <div class="einst">
+    <div class="espalten"><div class="einst">
       <button type="button" data-t="drops" class="schalter${dropsAn() ? " an" : ""}" role="switch" aria-checked="${dropsAn()}"><span>XP-Drops anzeigen</span><i class="regler"></i></button>
       <button type="button" data-t="daecher" class="schalter${daecherAus() ? " an" : ""}" role="switch" aria-checked="${daecherAus()}"><span>Dächer immer ausblenden</span><i class="regler"></i></button>
       <button type="button" data-t="musik" class="schalter${musikAus() ? "" : " an"}" role="switch" aria-checked="${!musikAus()}"><span>Musik</span><i class="regler"></i></button>
-    </div>
+    </div><div class="erechts">
     <button type="button" class="weltknopf" data-t="welt"><span>Welt</span><b>Riftmere 1</b><i>›</i></button>
     <button type="button" class="weltknopf" data-t="blockiert"><span>Blockierte Spieler</span><b>${blockierteNamen().length}</b><i>›</i></button>
-    ${n ? `<button type="button" class="abmelden" data-t="ab">Abmelden <small>${n}</small></button>` : `<button type="button" class="abmelden" data-t="hin">Anmelden</button>`}
+    ${n ? `<button type="button" class="abmelden" data-t="ab">Abmelden <small>${n}</small></button>` : `<button type="button" class="abmelden" data-t="hin">Anmelden</button>`}</div></div>
     <p class="klein">Riftmere · <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> · <a href="impressum.html" target="_blank" rel="noopener">Impressum</a></p></div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
   f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f) { schliessen(); return; } if (!t) return; const w = t.dataset.t;

@@ -826,6 +826,47 @@
     .qpunkt { flex: none; display: inline-block; width: 8px; height: 8px; transform: rotate(45deg); background: #4a3c26; border: 1px solid #6d5632; } .qzeile.aktiv .qpunkt, .qpunkt.aktiv { background: #c99a3c; border-color: #ffd36a; }
     .qzeile.verfolgt .qpunkt, .qpunkt.verfolgt { background: #ffe08a; border-color: #fff3cf; box-shadow: 0 0 6px rgba(255,224,138,.8); } .qzeile.fertig .qpunkt { background: #6f8a4a; border-color: #a8d070; }
     .seitentab.eng.tab-quests .qzeile { padding: 4px 10px; }
+    /* Oberfläche (#70): Einstellungen und Freunde im neuen Stil – dunkel mit Goldrand (kein Violett mehr), Titel links mit Linie, abgeschrägte Felder, „an“ = grün */
+    #ez-konto .tafel.menue, #ez-konto .tafel.freunde { --f: 6px; background: linear-gradient(#261d12, #16100a) !important; border: 1.5px solid #c99a3c !important; box-shadow: 0 8px 30px rgba(0,0,0,.6) !important; text-align: left; padding: 12px 14px 12px; }
+    #ez-konto .tafel.menue > h2, #ez-konto .tafel.freunde .fkopf h2 { margin: 0; padding: 0 40px 8px 0; font-size: 18px; letter-spacing: .05em; text-align: left; }
+    #ez-konto .tafel.menue > .zier { display: none; }
+    #ez-konto .tafel.menue > h2, #ez-konto .tafel.freunde .fkopf { position: relative; }
+    #ez-konto .tafel.menue > h2::after, #ez-konto .tafel.freunde .fkopf::after { content: ""; position: absolute; left: 0; right: -40px; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, #c99a3c 15%, #c99a3c 85%, transparent); }
+    #ez-konto .tafel.menue > h2::before, #ez-konto .tafel.freunde .fkopf::before { content: ""; position: absolute; left: calc(50% + 20px); bottom: -3px; width: 6px; height: 6px; transform: translateX(-50%) rotate(45deg); background: #1c150d; border: 1px solid #e0b860; z-index: 1; }
+    #ez-konto .tafel.menue { width: min(620px, calc(100vw - 20px)); }
+    #ez-konto .tafel.menue .espalten { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin: 10px 0 6px; } @media (max-width: 520px) { #ez-konto .tafel.menue .espalten { grid-template-columns: 1fr; } }
+    #ez-konto .tafel.menue .einst, #ez-konto .tafel.menue .erechts { display: grid; gap: 6px; margin: 0; align-content: start; }
+    #ez-konto .tafel.menue .schalter, #ez-konto .tafel.menue .weltknopf, #ez-konto .tafel.menue .abmelden, #ez-konto .tafel.menue .weltzeile, #ez-konto .tafel.freunde .fliste li, #ez-konto .tafel.freunde .fanfrage {
+      position: relative; isolation: isolate; margin: 0; min-height: 40px; padding: 7px 12px; border: 0 !important; border-radius: 0 !important; background: #6d5632 !important; box-shadow: none !important; color: #e9dcb8; font: 13.5px Inter, sans-serif; clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); }
+    #ez-konto .tafel.menue .schalter::before, #ez-konto .tafel.menue .weltknopf::before, #ez-konto .tafel.menue .abmelden::before, #ez-konto .tafel.menue .weltzeile::before, #ez-konto .tafel.freunde .fliste li::before, #ez-konto .tafel.freunde .fanfrage::before {
+      content: ""; position: absolute; inset: 1.5px; z-index: -1; background: linear-gradient(90deg, #1f1810, #120d08); clip-path: inherit; }
+    #ez-konto .tafel.menue .schalter:hover, #ez-konto .tafel.menue .weltknopf:hover, #ez-konto .tafel.menue .weltzeile:hover { background: #c99a3c !important; }
+    #ez-konto .tafel.menue .regler { width: 40px; height: 22px; background: #3a2e1c; border-color: #6d5632; } #ez-konto .tafel.menue .regler::after { width: 16px; height: 16px; }
+    #ez-konto .tafel.menue .schalter.an .regler { background: linear-gradient(#5fa045, #2f6a22); border-color: #9ed070; }
+    #ez-konto .tafel.menue .weltknopf b { font-size: 13px; }
+    #ez-konto .tafel.menue .abmelden { display: flex; align-items: center; justify-content: space-between; width: 100%; background: #c99a3c !important; font: 600 13.5px Cinzel, Georgia, serif; color: #ffe7b0; letter-spacing: .04em; text-align: left; }
+    #ez-konto .tafel.menue .abmelden small { display: inline; font: 12px Inter, sans-serif; color: #cdb98a; letter-spacing: 0; } #ez-konto .tafel.menue .abmelden:hover { background: #ffd36a !important; filter: none; }
+    #ez-konto .tafel.menue > p.klein { margin: 4px 0 0; text-align: center; font-size: 11.5px; }
+    #ez-konto .tafel.menue .weltzeile.an { background: #ffd36a !important; } #ez-konto .tafel.menue .weltzeile em { background: rgba(201,154,60,.2); color: #e9cf8e; } #ez-konto .tafel.menue .weltzeile .punkt { border-radius: 0; transform: rotate(45deg); width: 9px; height: 9px; }
+    #ez-konto .tafel.freunde { width: min(480px, calc(100vw - 20px)); max-height: min(88vh, 600px); display: flex; flex-direction: column; overflow: hidden; }
+    #ez-konto .tafel.freunde .finhalt { display: flex; flex-direction: column; gap: 8px; min-height: 0; flex: 1; }
+    #ez-konto .tafel.freunde .fkopf { flex: none; display: flex; align-items: baseline; gap: 10px; } #ez-konto .tafel.freunde .fkopf h2 { padding: 0; } #ez-konto .tafel.freunde .fkopf { padding: 0 40px 8px 0; }
+    #ez-konto .tafel.freunde .fkopf small { margin-left: auto; font: 600 12px Cinzel, Georgia, serif; color: #e9cf8e; }
+    #ez-konto .tafel.freunde .fliste { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; margin: 0; padding: 0 4px 0 0; display: grid; gap: 4px; align-content: start; border: 0; border-radius: 0; background: none; box-shadow: none; scrollbar-width: thin; scrollbar-color: #8a6a3a transparent; }
+    #ez-konto .tafel.freunde .fliste li { display: grid; grid-template-columns: 10px minmax(0, 1fr) 32px 32px; gap: 8px; align-items: center; min-height: 0; padding: 4px 8px 4px 10px; }
+    #ez-konto .tafel.freunde .fliste li.online { background: #8a6a3a !important; } #ez-konto .tafel.freunde .fliste li.online.kampf { background: #b8603a !important; }
+    #ez-konto .tafel.freunde .fliste .dot { width: 8px; height: 8px; border-radius: 0; transform: rotate(45deg); background: #4a3c26; box-shadow: none; border: 1px solid #6d5632; }
+    #ez-konto .tafel.freunde .fliste .online .dot { background: #8fe07a; border-color: #c8ffb0; box-shadow: 0 0 6px rgba(143,224,122,.7); } #ez-konto .tafel.freunde .fliste .kampf .dot { background: #ff8a5a; border-color: #ffc0a0; box-shadow: 0 0 6px rgba(255,138,90,.7); }
+    #ez-konto .tafel.freunde .fliste .wer b { font: 600 13.5px Cinzel, Georgia, serif; } #ez-konto .tafel.freunde .fliste .wer small { font-size: 11.5px; color: #a8946a; }
+    #ez-konto .tafel.freunde .fliste .fk, #ez-konto .tafel.freunde .fanfrage button, #ez-konto .tafel.freunde .fneu button { position: relative; isolation: isolate; width: 32px; height: 30px; min-height: 0; padding: 0; border: 0 !important; border-radius: 0 !important; background: #c99a3c !important; color: #ffe7b0; font: 600 14px Georgia, serif; box-shadow: none !important; clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); }
+    #ez-konto .tafel.freunde .fliste .fk::before, #ez-konto .tafel.freunde .fanfrage button::before, #ez-konto .tafel.freunde .fneu button::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: radial-gradient(#3a2c16, #1c140a); clip-path: inherit; }
+    #ez-konto .tafel.freunde .fliste .fk:disabled { opacity: .3; }
+    #ez-konto .tafel.freunde .fanfragen { flex: none; display: grid; gap: 4px; } #ez-konto .tafel.freunde .fanfrage { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 6px; align-items: center; background: #ffd36a !important; }
+    #ez-konto .tafel.freunde .fanfrage button { width: auto; padding: 0 10px; font: 600 12px Cinzel, Georgia, serif; } #ez-konto .tafel.freunde .fanfrage .ja { background: #8fe07a !important; } #ez-konto .tafel.freunde .fanfrage .nein { background: #b8603a !important; }
+    #ez-konto .tafel.freunde .tleer { flex: 1; display: grid; place-content: center; text-align: center; gap: 4px; padding: 8px 0; } #ez-konto .tafel.freunde .tleer p { margin: 0; font: 600 14px Cinzel, Georgia, serif; color: #ffe7b0; } #ez-konto .tafel.freunde .tleer small { color: #a8946a; font-size: 12px; }
+    #ez-konto .tafel.freunde .fneu { flex: none; display: flex; gap: 6px; } #ez-konto .tafel.freunde .fneu input { flex: 1; min-width: 0; height: 32px; border-radius: 0; border: 1px solid #6d5632; background: #120d08; font: 13.5px Inter, sans-serif; }
+    #ez-konto .tafel.freunde .fneu button { width: auto; height: 32px; padding: 0 12px; font: 600 12.5px Cinzel, Georgia, serif; }
+    #ez-konto .tafel.freunde .foffen, #ez-konto .tafel.freunde .fhinweis { flex: none; margin: 0; font-size: 11.5px; color: #a8946a; text-align: left; }
     .seitentab .sraster { --zeilen: 3; --fuss: 0px; --z: min(58px, calc((100cqw - 30px) / 7), calc((100cqh - 46px - var(--fuss) - (var(--zeilen) - 1) * 5px) / var(--zeilen))); flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, var(--z)); grid-auto-rows: var(--z); gap: 5px; justify-content: center; align-content: center; }
     .seitentab.mitfuss .sraster { --fuss: 52px; }
     .skachel img { width: 60%; height: 60%; display: block; } .skachel em { position: absolute; right: 4px; bottom: 5px; font: 700 13px Inter, sans-serif; font-style: normal; color: #fff3cf; text-shadow: 0 1px 2px #000, 0 0 3px #000; }
