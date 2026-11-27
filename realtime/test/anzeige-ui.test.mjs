@@ -58,7 +58,7 @@ try {
   check(sichtbar.length === 0, "Keine Namensschilder über Figuren (" + sichtbar.slice(0, 3).join(", ") + ")");
   let menueLv = null;
   const balken = () => anna.evaluate(() => [...document.querySelectorAll(".ez-balken3d")].filter((e) => !e.hidden && e.getBoundingClientRect().width > 0 && !e.classList.contains("eigen")).length);
-  check(await balken() === 0, "Gegner außerhalb des Kampfes: kein Lebensbalken");
+  { let n = 1; for (let i = 0; i < 10 && n; i++) { n = await balken(); if (n) await anna.waitForTimeout(300); } check(n === 0, "Gegner außerhalb des Kampfes: kein Lebensbalken"); } /* beim Aufbau kurz sichtbar möglich */
   /* #66: Lebensbalken anderer Spieler nur im Kampf – Ben kommt dazu und steht nur herum */
   const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6537, 6583, "waldweg"]); ben.setDefaultTimeout(90000); await ben.goto(B + S + "&vorwaermen=0"); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   const benBalken = () => anna.evaluate(() => { const K = window.EZK; return [...K.figuren.values()].filter((g) => g.held && !g.tot).map((g) => { const b = K.bilder.get(g); return b ? !b.lb.hidden : null; }); });
@@ -70,10 +70,11 @@ try {
     if (await anna.evaluate(() => { const e = document.getElementById("ez-tat"); return Boolean(e && e.classList.contains("an")); })) break; await anna.keyboard.press("Escape"); }
   const tat = await anna.evaluate(() => { const e = document.getElementById("ez-tat"); return e ? { t: e.textContent, an: e.classList.contains("an") } : null; });
   check(tat && tat.an && /^Angreifen: Bandit/.test(tat.t), "Oben mittig: " + JSON.stringify(tat));
-  /* Ben greift ebenfalls an → Anna sieht seinen Lebensbalken */
-  for (let v = 0; v < 3; v++) { const ziel = await ben.evaluate(() => { const W = window.EZW.welt3d, K = window.EZK; const f = [...K.figuren.entries()].find(([, g]) => !g.held && !g.tot); if (!f) return null; const x = K.zone.x0 + f[1].x, y = K.zone.y0 + f[1].y; return W.motor.bildschirm(x, W.motor.hoehe(x, y) + 0.9, y); });
-    if (ziel) { await ben.mouse.click(ziel.x, ziel.y, { button: "right" }); await ben.waitForTimeout(400); await ben.click('.ez-aktionen button:has-text("Angreifen")', { force: true, timeout: 3000 }).catch(() => {}); await ben.waitForTimeout(300); }
-    if (await ben.evaluate(() => { const e = document.getElementById("ez-tat"); return Boolean(e && e.classList.contains("an")); })) break; await ben.keyboard.press("Escape"); }
+  /* Ben greift ebenfalls an (direkt über seine Verbindung; das Menü prüft der Test bei Anna) → Anna sieht seinen Lebensbalken */
+  { const annasZiel = await anna.evaluate(() => (window.EZK.z && window.EZK.z.ich && window.EZK.z.ich.zielId) || 0);
+    for (let v = 0; v < 20; v++) { const ok = await ben.evaluate((annasZiel) => { const K = window.EZK, W = window.EZW.welt3d; if (K.z && K.z.ich && K.z.ich.zielId) return true;
+        const ox = W.ort.x, oy = W.ort.y, frei = [...K.figuren.entries()].filter(([id, g]) => !g.held && !g.tot && id !== annasZiel).sort((a, b) => Math.hypot(K.zone.x0 + a[1].x - ox, K.zone.y0 + a[1].y - oy) - Math.hypot(K.zone.x0 + b[1].x - ox, K.zone.y0 + b[1].y - oy));
+        if (frei[0]) K.netz.sende({ t: "ziel", id: frei[0][0] }); return false; }, annasZiel); if (ok) break; await ben.waitForTimeout(500); } }
   { let bb = []; for (let i = 0; i < 40 && !bb.some((x) => x === true); i++) { await anna.waitForTimeout(500); bb = await benBalken(); }
     check(bb.some((x) => x === true), "Mitspieler im Kampf: Lebensbalken sichtbar " + JSON.stringify(bb)); }
   check(menueLv && /Bandit \(Level 1\)/.test(menueLv.t) && /rgb\(\d+, 255, 0\)/.test(menueLv.c), "Gedrückt halten / Rechtsklick: „Bandit (Level 1)“, Level grün (leichter als Anna): " + JSON.stringify(menueLv));

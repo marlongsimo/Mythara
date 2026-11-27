@@ -34,6 +34,14 @@ TESTS=(
   splitterbinden-welt
   fischen-kochen-welt
   b2-welt
+  phase6
+  phase6-quest
+  phase4
+  phase5
+  phase8-10
+  abholen
+  handel-welt
+  verkauf
   sprint
   stufe
   teleport-welt
