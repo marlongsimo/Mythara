@@ -34,8 +34,6 @@ TESTS=(
   splitterbinden-welt
   fischen-kochen-welt
   b2-welt
-  phase6
-  phase6-quest
   phase4
   phase4-inhalte
   b3-welt
@@ -60,6 +58,15 @@ TESTS=(
   welt-unterschlupf
   welt-weidenhain
   weltkampf
+  phase6
+  inhalt-phase7
+  inhalt-phase6
+  phase6-quest
+  inhalt-phase8
+  inhalt-phase9
+  inhalt-phase10
+  bosse-116
+  bank-platzhalter
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

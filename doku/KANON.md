@@ -9,9 +9,9 @@ Zuletzt aktualisiert: 26.11.2026.
 |---|---|---|
 | Name des Spiels | **Riftmere** (Domain riftmere.de, iOS-App „Riftmere“) | entschieden |
 | Kontinent | Das **Festland** von Riftmere (Karte im Spiel); Großregionen: Grenzland, Smaragdküste, Fahle Weiten, Glutsande, Hochlande, Ockerlande, Frostkrone, Drachenarm; Meere: Splittermeer (NO), Endloses Meer (SO) | entschieden (Karte) |
-| Riftmere / Mythara | Riftmere = Kontinent und Spiel, Mythara = Name der alten Zeit vor dem Riss | Vorschlag |
-| Großstädte | ① Graufurt ② Kielmund ③ Grauwacht ④ Glutbrunn ⑤ Erzhalden ⑥ Steinkrone ⑦ Letzthafen | Vorschlag (Weltkonzept) |
-| Gebirge | A Smaragdgrat, B Frostkamm, C Glutgrat, D Weiße Zinnen | Vorschlag |
+| Riftmere / Mythara | Riftmere = Kontinent und Spiel, Mythara = Name der alten Zeit vor dem Riss | entschieden |
+| Großstädte | ① Graufurt ② Kielmund ③ Grauwacht ④ Glutbrunn ⑤ Erzhalden ⑥ Steinkrone ⑦ Letzthafen | entschieden |
+| Gebirge | A Smaragdgrat, B Frostkamm, C Glutgrat, D Weiße Zinnen | entschieden |
 | Zeitlinie | altes Mythara → Magierkrieg → die Wacht → Himmelsriss (Splitter, Splittermeer) → Zerfall der Wacht → heute | Vorschlag |
 | Fraktionen | Wacht, Grenzlandbund, Rabenorden, die Freien, Küstenhäuser, Wanderer | Vorschlag |
 | Die Insel der Raben-Trilogie | **Aschenwerth** (Brücke statt Kahn in C1, zwei Steinkreise in C2, Rabengrund unter der Gruft in C3) | Vorschlag (Fahrplan) |
@@ -69,6 +69,8 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Offene Welt statt Sperren:** Großregionen sind zu Fuß erreichbar, wer früher hingeht, trägt das Risiko. Quests öffnen nur Abkürzungen (z. B. E1 den Weg durch den Dornenwall im Nordsaum; D1 die **Fähre** – das Ostufer ist auch über den langen Weg durch die Glutsande und einen Pass im Südosten zu Fuß erreichbar, Welt #74). *(26.11.)*
 - **Handel zwischen Spielern:** „Handeln“ führt den Helden bis auf **ein Feld** an den anderen heran (das ist die Nähe). Der andere bekommt die Anfrage im Chat: Zeile antippen öffnet das Handelsfenster, oder selbst per langem Drücken „Handeln“. *(26.11.)*
 - **Supabase:** Migrationen 050 (Bosszähler) und 051 (Quest-Lohn bis 50.000 XP je Skill) sind **eingespielt**. *(26.11.)*
+- **Entlastung Integration** (27.11.): Systeme baut **vorübergehend die Inhalte für Phase 6–10** ein (#17, #18, #26, #40, #58, #86, #92, #106). Integration: Zusammenführen/Live, Phase 4–5, Kleines, Werkzeuge.
+- **Glocke von Grauwacht** (Phase 8, E2): läutet **pro Spieler** – nur wer E2 selbst abgeschlossen hat, hört sie zur vollen Stunde (Wiedergänger 1 min friedlich). Kein Weltzustand. *(27.11.)*
 - **Quest-Abschluss:** eigenes Abschlussfenster (Glückwunsch, Belohnungen, Questpunkte), gutgeschrieben mit „Okay“ (bleibt abholbereit, nichts geht verloren). Passt etwas nicht in den Rucksack, **landet es auf dem Boden** nach den **allgemeinen Boden-Regeln** (kurz privat, dann offen, dann verfällt). **Gebundene Gegenstände** verschwinden nach derselben allgemeinen Zeit, werden dabei aber **nie für andere sichtbar** (nur der Besitzer sieht und hebt sie auf). *(26.11., #77)*
 - **Verkaufen an Händler:** Jeder Händler kauft **nur Waren, die er selbst führt**, zu **80 % seines Verkaufspreises** (abgerundet). Im Laden ist der Rucksack daneben offen: antippen zeigt den Verkaufspreis, langes Drücken bietet „Verkaufen“. Gebundenes und geladene „(s)“-Ausrüstung kann man nicht verkaufen. *(26.11.)*
 - **Kutsche:** gestrichen für Phase 10, das gebaute Modell bleibt liegen (nicht löschen); **Idee für später** als Kutschennetz zwischen den Großstädten (ab etwa 5 Städten, günstige Reise ohne Splitterbinden, kleine Splitter-Senke). *(26.11.)*
@@ -82,15 +84,19 @@ Zuletzt aktualisiert: 26.11.2026.
 ## Für später (Ideen, noch nicht geplant)
 
 - **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
+- **Die ganze Welt ist Kampfwelt** (auch Festland: Fahle Weiten, Glutsande, Smaragdküste, Süden). *(27.11.)*
+- **Vorhandenes zuerst:** Welt und Figuren (und alle Rollen) schauen **immer zuerst, was es schon gibt**, und bauen darauf auf (Modelle, Orte, Gegenstände wiederverwenden, umfärben, ergänzen), bevor Neues entsteht. *(27.11.)*
+- **Vorerst keine neuen Rohstoffe – außer Fleisch** (Hasen-, Wildschwein-, Wolfsfleisch) für mehr Kochen; sonst Beute und Lohn aus vorhandenen Gegenständen. *(27.11.)*
+- **Süden beleben** (`doku/konzepte/sueden.md`): freigegeben, Namen passen (keine Doppelungen). *(27.11.)*
+- **Bank:** Platzhalter (Feld bleibt stehen, wenn alles herausgenommen ist) und Umsortieren per Ziehen wie im Rucksack. **Nirgends seitlich scrollen**, höchstens von oben nach unten. *(27.11.)*
+- **Bosse** (27.11., präzisiert): **In der Quest** kämpft man den Boss **immer allein** in einer Instanz, in einer **gut machbaren, schwächeren Fassung** (Leben angepasst). **Nach der Quest** gibt es den Boss dauerhaft in der **stärkeren Fassung**, wählbar **öffentlich** (offene Welt, wer da ist, macht mit) oder als **eigene Instanz**. **Vorerst** ist die Instanz bei den jetzigen Bossen **nur allein**; Gruppen-Instanzen (bis 4, Boss wächst mit der Gruppe) sind für später vorgesehen. Beute bekommt jeder für sich.
+- **Namen:** Alle bisher vorgeschlagenen Namen sind bestätigt – Weltkonzept (Riftmere/Mythara, Großstädte, Gebirge A–D), Phase 7 (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm), Phase 8 (Fahle Weiten, Heidrast, Mette Heider, Äbtissin Gunhild, Wigand Fels, Tjark Sölde, Der Graue Hauptmann), Phase 9 (Glutsande, Glutbrunn, Selma Dornfeld, Ruwen Kehl, Hasim Tal, Nalia, Sandmutter), Phase 10 (Smaragdküste, Kielmund, Möwenbucht, „Zum Ankerkraut“, Wrackkapitän, Küstenhäuser). Reihenfolge: W3 (Fahle Weiten) vor W2 (Glutsande). *(27.11.)*
+- **Belohnung zur Auswahl** (27.11.): Eine Auswahl zwischen besonderen Gegenständen ist erlaubt (z. B. Kristallschild, -schwert, -bogen), **aber die nicht gewählten müssen auf anderem Weg noch erreichbar bleiben** – Vorschlag: der Questgeber bietet sie danach gegen Splitter oder eine kleine Folgeaufgabe an. Keine Auswahl, die andere Gegenstände für immer sperrt. Die Wahl geschieht im **Abschlussfenster** mit Bild/Werten und Rückfrage („… nehmen?“), nicht über eine leicht verwechselbare Dialog-Antwort.
+- **Besondere Quest-Belohnungen für Fernkampf und Magie** (Wunsch 27.11.): bisher überwiegen Nahkampf-Belohnungen (Waldsäbel, Klinge des Grauen Hauptmanns). Künftige Quest-Blöcke sollen Belohnungen gleichmäßig auf **Nah, Fern und Magie** verteilen (eigene Bögen/Armbrüste, Stäbe, Köcher/Fokus …). Grundsatz für alle neuen Blöcke; vorhandene Entwürfe bei Gelegenheit prüfen.
+- **Endgame-Ausrüstung Tier 75–80 und Tier 90** (Waffen, Panzer, Schilde … mit besonderen Kniffen): **Konzept baut der Nutzer selbst**; kommt **hauptsächlich aus Drops oder anderen Quellen** (Bosse, Quests …), **kaum durch Herstellen aus Materialien**; bis dahin keine Fernkampf-/Magie-Sonderbelohnungen und keine Kristall-Ausrüstung planen. *(27.11.)*
+- **Neue Rohstoffe aus Gegnerbeute** (Krebsschere, Chitin, Wolfsfell, Giftdrüse, Wachtstein, Federn, grüner Splitterkern …) sollen **verteilt** in die Berufe fließen – auch in **Kräuterkunde/Trankrezepte** und Kochen, nicht alles ins Handwerk. Konzept dazu erst nach dem Endgame-Konzept des Nutzers. *(27.11.)*
 - **Feste Live-Zeiten** (3:00 und 16:00 Uhr deutscher Zeit, 15-Minuten-Countdown im Spiel, Bugfixes jederzeit) – Vorlage in #96 (geschlossen, „für später“).
 - Kutschennetz zwischen den Großstädten · Handelskontor (`doku/konzepte/handelskontor.md`) · Splitterinsel
 
 ## Offen (Fragen an den Nutzer)
 
-- Rotmantel nach Quest B4: öffentlicher Mini-Boss oder Instanz?
-- Bossing allein oder in Gruppen?
-- Phase 10: Namen (Smaragdküste, Kielmund, Möwenbucht, „Zum Ankerkraut“, Wrackkapitän, Küstenhäuser)
-- Phase 9: Namen (Glutsande, Glutbrunn, Selma Dornfeld, Ruwen Kehl, Hasim Tal, Nalia, Sandmutter).
-- Phase 8: Reihenfolge W2/W3 (Konzept nimmt W3 Fahle Weiten zuerst an), Namen (Heidrast, Mette Heider, Äbtissin Gunhild, Wigand Fels, Tjark Sölde, Der Graue Hauptmann)
-- Phase 7: Namen (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm), Turmkampf öffentlich oder Instanz, Ostufer mit Blick auf die Glutsande?
-- Weltkonzept: Namen (Riftmere/Mythara, Städte), Gebirge A–D, Reihenfolge W2/W3, Splitterinsel

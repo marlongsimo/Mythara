@@ -72,7 +72,7 @@ export class Held3D {
   private zustand = "ruhe"; private einmal = false; private gestorben = false; private blickW = Math.PI / 2; private dreh = Math.PI / 2; private weg = false; private an = true;
   fertig: (() => void) | null = null; private effekt: TeleportEffekt | null = null; private skala = 1;
   /** held: eigener Held oder Mitspieler (gefärbt, nur getragene Teile); gegner: ein Gegner-Modell (alle Teile, z. B. Dolch und Beuteschild) */
-  constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string; mass?: number }) {
+  constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string; mass?: number; stile?: string[] }) {
     this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle, true /* Bilder erst laden, wenn das 3D-Modell scheitert */); this.ersatz.aus = true; /* kein 2D-Bild, während das Modell lädt – nur wenn es nicht lädt */ szene.add(this.bild.gruppe);
     /* angelegte Teile (Waffe, Schild, Rüstung) gleich mitladen – nicht erst nach dem Grundmodell: dann stehen Held und Ausrüstung zusammen da */
     if (!gegner && held) { const ids = held.ich && waffenQuelle ? waffenQuelle() : STARTWAFFEN[held.waffe].waffen; for (const id of ids) if (AUSGELAGERT.test(id)) void teilVorlage(MODELLE + "base" + held.aussehen.g + "3d.teile/" + id + ".glb").catch(() => { /* fehlt: später beim Anlegen gemeldet */ }); }
@@ -124,8 +124,10 @@ export class Held3D {
   setze(z: "ruhe" | "laufen" | "rennen" | "block" | "schild_laufen"): void { this.ersatz.setze(z === "rennen" ? "laufen" : z); if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
   /** eine einmalige Bewegung, wenn das Modell sie hat (Rotmantel: rundumschlag, ruf, trinken) */
   bewegungEinmal(name: string): void { if (this.gestorben || !this.mixer || !this.clips.has(name)) return; this.einmal = true; this.spiele(name, true, true); }
+  /** Stilwechsel (Ereignis „stil“): die Angriffsbewegung des neuen Stils */
+  private stilNr = 0; stil(nr: number): void { this.stilNr = nr; }
   angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; const a = this.gegner ? null : angriffFuer(this.held!.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held!.waffe].waffen); /* Bewegung zur angelegten Waffe */
-    const n = this.gegner ? this.gegner.angriff : a && this.clips.has(a) ? a : STARTWAFFEN[this.held!.waffe].angriff, c = this.clips.get(n);
+    const n = this.gegner ? (this.gegner.stile && this.gegner.stile[this.stilNr]) || this.gegner.angriff : a && this.clips.has(a) ? a : STARTWAFFEN[this.held!.waffe].angriff, c = this.clips.get(n);
     this.spiele(n, true, true, c ? (c.duration * 1000) / HIEB_MS : 1); /* jeder Angriff dauert 2 Ticks, egal wie lang der Clip ist */ }
   /* ───────── Holzfällerei: Hieb mit dem Beil (das Beil liegt im Rucksack; während des Hiebs ist es in der rechten Hand, die angelegte Waffe ist so lange weg) ───────── */
   /** was während eines Werkzeugschlags verschwindet */ private verdeckt = /^waffe/; /** Werken ohne Werkzeug: Waffe und Schild sind weg */ private haendeFrei = false;
@@ -206,7 +208,7 @@ export function heldenFigur3D(szene: THREE.Scene, figur: string, hoehe: number, 
   return held3dAn() ? new Held3D(szene, hoehe, eigen || STANDARD, quelle) : new FigurLeinwand(szene, figur, hoehe, eigen, quelle); }
 export type FigurArt = FigurLeinwand | Held3D;
 /** Gegner mit 3D-Modell (img/figuren-echt3d/): bis geladen das bisherige Bild der Fabrik */
-const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string; mass?: number }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
+const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string; mass?: number; /** Angriffsbewegung je Stil (Stilwechsel) */ stile?: string[] }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
   /* Mooshocker: Modell in echter Größe (0,7 m hoch) im Maßstab der Helden (2,0 m statt 1,8 m); die Gegnerhöhe (Name, Lebensbalken) kommt aus MONSTER.hoehe */
   mooshocker: { datei: "mooshocker3d", angriff: "kopfstoss", ersatz: "gegner.bandit.v003", mass: 2.0 },
   waldgolem: { datei: "waldgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003" },
@@ -216,6 +218,42 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   bandit_armbrust: { datei: "bandit3d_armbrust", angriff: "schiessen", ersatz: "gegner.bandit.v003" },
   rotmantel: { datei: "banditenboss3d", angriff: "hieb2h", ersatz: "gegner.bandit.v003" },
   kuh: { datei: "kuh3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
-  zielscheibe: { datei: "zielscheibe3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
+  zielscheibe: { datei: "zielscheibe3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  /* Phase 6 (#26): der Rabenorden (Figuren #20). Federmutter: Angriffsbewegung je Stil (MonsterDef.stile: Stab, Bogen, Speer) */
+  moorrabe: { datei: "moorrabe3d", angriff: "sturz", ersatz: "gegner.bandit.v003" },
+  rabenpriester_novize: { datei: "rabenpriester_novize3d", angriff: "zauber_stab", ersatz: "gegner.bandit.v003" },
+  rabenpriester_akoluth: { datei: "rabenpriester_akoluth3d", angriff: "bogen", ersatz: "gegner.bandit.v003" },
+  rabenpriester_akoluth_speer: { datei: "rabenpriester_akoluth3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  federmutter: { datei: "rabenpriester_federmutter3d", angriff: "zauber_stab", stile: ["zauber_stab", "bogen", "stich2h"], ersatz: "gegner.bandit.v003" },
+  oberster_rabenpriester: { datei: "oberster_rabenpriester3d", angriff: "doppelhieb", ersatz: "gegner.bandit.v003", mass: 2.6 },
+  /* Phase 7 (#40): Graufurt, Ostufer, Turm (Figuren #37) */
+  schlickkrebs: { datei: "schlickkrebs3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  splitterreiher: { datei: "splitterreiher3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  turmwaechter: { datei: "turmwaechter3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  gruenlicht: { datei: "gruenlicht3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  /* Phase 8 (#58): Fahle Weiten und Grauwacht (Figuren #51, Modelle auf dem Figuren-Zweig) */
+  heidewolf: { datei: "heidewolf3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  rudelfuehrer: { datei: "rudelfuehrer3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  wiedergaenger: { datei: "wiedergaenger3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  deserteur_schwert: { datei: "deserteur_schwert3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
+  deserteur_armbrust: { datei: "deserteur_armbrust3d", angriff: "schiessen", ersatz: "gegner.bandit.v003" },
+  tjark: { datei: "tjark3d", angriff: "hieb2h", ersatz: "gegner.bandit.v003" },
+  grabwaechter: { datei: "grabwaechter3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  grauer_hauptmann: { datei: "grauer_hauptmann3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  /* Phase 9 (#86): Glutsande und der versandete Tempel (Figuren #75; bis die Modelle da sind, der Ersatz) */
+  sandkriecher: { datei: "sandkriecher3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  glutskorpion: { datei: "glutskorpion3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  karawanenraeuber_saebel: { datei: "karawanenraeuber_saebel3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
+  karawanenraeuber_bogen: { datei: "karawanenraeuber_bogen3d", angriff: "schiessen", ersatz: "gegner.bandit.v003" },
+  glutgeist: { datei: "glutgeist3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  sandmutter: { datei: "sandmutter3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.4 },
+  /* Phase 10 (#92): Smaragdküste und Klippenhöhlen (Figuren #83, Modelle auf dem Figuren-Zweig) – Seevogel 1,4-mal so groß wie der Moorrabe, der Wrackkapitän durchscheinend */
+  strandkrabbe: { datei: "strandkrabbe3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  riesenkrabbe: { datei: "riesenkrabbe3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  seevogel: { datei: "seevogel3d", angriff: "sturz", ersatz: "gegner.bandit.v003" },
+  strandraeuber_saebel: { datei: "strandraeuber_saebel3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  strandraeuber_armbrust: { datei: "strandraeuber_armbrust3d", angriff: "schiessen", ersatz: "gegner.bandit.v003" },
+  mangrovenlurch: { datei: "mangrovenlurch3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  wrackkapitaen: { datei: "wrackkapitaen3d", angriff: "angriff", ersatz: "gegner.bandit.v003" } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }

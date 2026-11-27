@@ -513,3 +513,103 @@ export const ROHSTOFFE: Record<string, Rohstoff> = {
 export const trankHeilung = (v: Verbrauch, maxLp: number) => Math.round(v.heilt.fest + v.heilt.anteil * maxLp);
 /** Wie viel ein Trank bei diesem Leben tatsächlich heilt: nie über das maximale Leben hinaus (kein Überheilen) */
 export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math.max(0, Math.min(trankHeilung(v, maxLp), maxLp - lp));
+
+/* ───────── Phase 6 (#17, #18, #26): Beute des Rabenordens – Bilder img/objekte3d/beute/symbole/ (Figuren #20) ───────── */
+{ const B = "img/objekte3d/beute/symbole/";
+  GEGENSTAENDE.rabenfedern = { id: "rabenfedern", name: "Rabenfedern", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: B + "rabenfedern.webp",
+    text: "Schwarze Federn, länger als eine Hand, mit violettem Schimmer. Am Bindestein werden 25 davon mit 50 Splittern zu einem Federsiegel." };
+  GEGENSTAENDE.federsiegel = { id: "federsiegel", name: "Federsiegel", art: "Splitterbinden", seltenheit: "selten", stapel: 100, bild: B + "federsiegel.webp",
+    text: "Ein Siegel aus gepressten Rabenfedern um einen Splitter. Der Altar vor dem Thronsaal verlangt eines – für jeden Versuch." };
+  GEGENSTAENDE.splitterkern = { id: "splitterkern", name: "Splitterkern", art: "Splitterbinden", seltenheit: "episch", bild: B + "splitterkern.webp",
+    text: "Das pochende Herz eines großen Splitters. Am Bindestein in den Wegstein gesetzt, fasst er 200 statt 100 Ladungen – einmal je Held." };
+  GEGENSTAENDE.rabenschwinge = { id: "rabenschwinge", name: "Rabenschwinge", platz: "waffe", art: "Einhandschwert", seltenheit: "episch", ebenen: ["waffe.eidschwert"], bild: B + "rabenschwinge.webp",
+    anforderung: { skill: "geschick", level: 35 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 30, staerke: 29 }, abwehr: { nah: 0, fern: 0, magie: 12 },
+    text: "Eine Klinge, schwarz wie eine Feder, aus dem Hort des Obersten Rabenpriesters. Sie fängt Zauber, als wären sie Wind." };
+  GEGENSTAENDE.rabenkueken = { id: "rabenkueken", name: "Rabenküken", art: "Sammelstück", seltenheit: "legendaer", bild: B + "rabenkueken.webp",
+    text: "Ein winziger Rabe mit viel zu großen Augen. Er hat sich dich ausgesucht. (Als Begleiter folgt er dir, sobald es Begleiter gibt.)" }; }
+
+/* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
+/** Ist das eine Platzhalter-Beute („@<seltenheit>[:<Art>]“)? */
+export const beutePlatzhalter = (g: string): boolean => g.startsWith("@");
+/** Platzhalter auflösen: eine zufällige Waffe oder Rüstung dieser Seltenheit (ohne Werkzeuge, Questlohn und Set-Teile); Art-Filter über GegenstandDef.art (Teilwort) */
+export function beuteAufloesen(g: string, zufall: () => number = Math.random): string | null { if (!beutePlatzhalter(g)) return g;
+  const [sel, art] = g.slice(1).split(":"), werkzeug = /^(holzbeil|spitzhacke|angel)/;
+  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
+  return L.length ? L[Math.floor(zufall() * L.length)].id : null; }
+
+/* ───────── Phase 7 (#40): Graufurt, Ostufer, Turm – Bilder img/objekte3d/graufurt/symbole/ und Wels img/objekte3d/skilling/angeln/symbole/ (Figuren #37) ───────── */
+{ const G7 = "img/objekte3d/graufurt/symbole/", A7 = "img/objekte3d/skilling/angeln/symbole/";
+  GEGENSTAENDE.kettenglied = { id: "kettenglied", name: "Kettenglied", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 8, bild: G7 + "kettenglied.webp",
+    text: "Ein schweres Glied aus Splittereisen, frisch vom Amboss. Acht davon braucht die Winde am Westanleger." };
+  GEGENSTAENDE.kettenschloss = { id: "kettenschloss", name: "Kettenschloss", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G7 + "kettenschloss.webp",
+    text: "Ein Schloss, das zwei Kettenenden für immer verbindet. Von der Schmiedin aus Graufurt." };
+  GEGENSTAENDE.splitterkern_gruen = { id: "splitterkern_gruen", name: "Grüner Splitterkern", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: G7 + "splitterkern_gruen.webp",
+    text: "Der Kern des Signalfeuers. Er ist warm und pulsiert grün – als wartete er noch auf eine Antwort." };
+  GEGENSTAENDE.krebsschere = { id: "krebsschere", name: "Krebsschere", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: G7 + "krebsschere.webp", wert: 6,
+    text: "Die Schere eines Schlickkrebses, hart wie Stein. Köche sagen, das Fleisch darin sei das beste am ganzen Fluss." };
+  GEGENSTAENDE.wachtstein = { id: "wachtstein", name: "Wachtstein", art: "Rohstoff", seltenheit: "selten", stapel: 1000, bild: G7 + "wachtstein.webp", wert: 25,
+    text: "Ein Stück der Steinfiguren aus dem Turm, das Wappen der Wacht noch zu erkennen. Die Wacht in Grauwacht würde dafür bezahlen." };
+  GEGENSTAENDE.fisch_wels_roh = { id: "fisch_wels_roh", name: "Graufurter Wels (roh)", art: "Rohstoff", seltenheit: "gewoehnlich", bild: A7 + "fisch_wels_roh.webp",
+    text: "Ein großer Wels aus dem Fährhafen, schwer und glitschig. Am Feuer gebraten heilt er 11 Lebenspunkte – oder er wird zu Almas Welspastete." };
+  GEGENSTAENDE.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", bild: A7 + "fisch_wels_gebraten.webp", trank: "fisch_wels_gebraten",
+    text: "Dick, fett und knusprig. Heilt 11 Lebenspunkte." };
+  GEGENSTAENDE.fisch_wels_verbrannt = { id: "fisch_wels_verbrannt", name: "Verbrannter Wels", art: "Abfall", seltenheit: "anfaenger", bild: A7 + "fisch_wels_verbrannt.webp", text: "Schwarz bis auf die Gräten. Den will niemand essen." };
+  GEGENSTAENDE.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", bild: G7 + "welspastete.webp", trank: "welspastete",
+    text: "Almas Pastete aus Wels und Mehl, das Rezept der Taverne „Zur Furt“. Heilt 14 Lebenspunkte." };
+  VERBRAUCH.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 11, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "11 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Dick, fett und knusprig." };
+  VERBRAUCH.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", heilt: { fest: 14, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "14 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Almas Pastete aus Wels und Mehl." }; }
+
+/* ───────── Phase 8 (#58): Grauwacht – Klöppel (E2) und die Klinge des Grauen Hauptmanns (E4-Lohn); die Wachtrüstung vorerst nicht (Entscheidung 26.11.) ───────── */
+{ const G8 = "img/objekte3d/grauwacht/symbole/";
+  GEGENSTAENDE.kloeppel = { id: "kloeppel", name: "Klöppel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G8 + "kloeppel.webp",
+    text: "Ein Klöppel aus Kernbaum, schwer und gerade. Er gehört in die Glocke von Grauwacht." };
+  GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
+    anforderung: { skill: "geschick", level: 25 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 22, staerke: 22 },
+    text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }
+
+/* ───────── Phase 9 (#86): Glutsande und Glutbrunn – Bilder img/objekte3d/glutsande/symbole/, Glutwels img/objekte3d/skilling/angeln/symbole/ (Figuren #75) ───────── */
+{ const G9 = "img/objekte3d/glutsande/symbole/", A9 = "img/objekte3d/skilling/angeln/symbole/", R = ["I", "II", "III", "IV", "V"];
+  for (let i = 1; i <= 5; i++) GEGENSTAENDE["kartenstueck_" + i] = { id: "kartenstueck_" + i, name: `Kartenstück ${R[i - 1]}`, art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: G9 + `kartenstueck_${i}.webp`,
+    text: `Ein Stück einer alten Karte mit dem Siegel der Wacht, Nummer ${R[i - 1]}. Alle fünf zusammen ergeben die Reisekarte.` };
+  GEGENSTAENDE.reisekarte = { id: "reisekarte", name: "Reisekarte", art: "Splitterbinden", seltenheit: "episch", untauschbar: true, bild: G9 + "reisekarte.webp",
+    text: "Die ganze Karte mit dem Siegel der Wacht. Einmal am Tag bringt sie dich ohne Ladung zu einem Wegstein-Ziel – im Rucksack „Reisen“." };
+  GEGENSTAENDE.salz = { id: "salz", name: "Salz", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: G9 + "salz.webp", wert: 4,
+    text: "Grobes Salz aus der Salzpfanne der Glutsande. In Glutbrunn kocht man damit den Glutwels in der Kruste." };
+  GEGENSTAENDE.fisch_glutwels_roh = { id: "fisch_glutwels_roh", name: "Glutwels (roh)", art: "Rohstoff", seltenheit: "selten", bild: A9 + "fisch_glutwels_roh.webp",
+    text: "Ein Wels aus dem braunen Strom, die Haut rot wie Glut. Gebraten heilt er 15 Lebenspunkte, in der Salzkruste 18." };
+  GEGENSTAENDE.fisch_glutwels_gebraten = { id: "fisch_glutwels_gebraten", name: "Gebratener Glutwels", art: "Essen", seltenheit: "selten", bild: A9 + "fisch_glutwels_gebraten.webp", trank: "fisch_glutwels_gebraten",
+    text: "Feurig und fett. Heilt 15 Lebenspunkte." };
+  GEGENSTAENDE.fisch_glutwels_verbrannt = { id: "fisch_glutwels_verbrannt", name: "Verbrannter Glutwels", art: "Abfall", seltenheit: "anfaenger", bild: A9 + "fisch_glutwels_verbrannt.webp", text: "Kohle mit Gräten." };
+  GEGENSTAENDE.glutwels_salzkruste = { id: "glutwels_salzkruste", name: "Glutwels in Salzkruste", art: "Essen", seltenheit: "episch", bild: G9 + "glutwels_salzkruste.webp", trank: "glutwels_salzkruste",
+    text: "Das Gericht von Glutbrunn: Glutwels, im Salz gegart. Heilt 18 Lebenspunkte." };
+  VERBRAUCH.fisch_glutwels_gebraten = { id: "fisch_glutwels_gebraten", name: "Gebratener Glutwels", art: "Essen", seltenheit: "selten", heilt: { fest: 15, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "15 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Feurig und fett." };
+  VERBRAUCH.glutwels_salzkruste = { id: "glutwels_salzkruste", name: "Glutwels in Salzkruste", art: "Essen", seltenheit: "episch", heilt: { fest: 18, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "18 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Das Gericht von Glutbrunn." }; }
+
+/* ───────── Phase 10 (#92): Smaragdküste und Kielmund – Fische img/objekte3d/skilling/angeln/symbole/, Gerichte und Wrackkiste img/objekte3d/kueste/symbole/ (Figuren #83) ───────── */
+{ const A10 = "img/objekte3d/skilling/angeln/symbole/", K10 = "img/objekte3d/kueste/symbole/";
+  const F10: [string, string, string, number, string][] = [["hering", "Hering", "Gebratener Hering", 6, "Silbrig und fett, frisch vom Kai."], ["klippenbarsch", "Klippenbarsch", "Gebratener Klippenbarsch", 9, "Fest und weiß, aus dem Kehrwasser unter der Klippe."], ["seeaal", "Seeaal", "Gebratener Seeaal", 11, "Lang und zäh, aus dem Wrack gezogen."]];
+  for (const [f, n, nb, heil, t] of F10) {
+    GEGENSTAENDE[`fisch_${f}_roh`] = { id: `fisch_${f}_roh`, name: `${n} (roh)`, art: "Rohstoff", seltenheit: "gewoehnlich", bild: A10 + `fisch_${f}_roh.webp`, text: `${t} Gebraten heilt er ${heil} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", bild: A10 + `fisch_${f}_gebraten.webp`, trank: `fisch_${f}_gebraten`, text: `Knusprig gebraten. Heilt ${heil} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${n}`, art: "Abfall", seltenheit: "anfaenger", bild: A10 + `fisch_${f}_verbrannt.webp`, text: "Kohle mit Gräten." };
+    VERBRAUCH[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: heil, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ["Stapelbar", "nein"]], text: "Knusprig gebraten." }; }
+  GEGENSTAENDE.raeucherhering = { id: "raeucherhering", name: "Räucherhering", art: "Essen", seltenheit: "gewoehnlich", bild: K10 + "raeucherhering.webp", modell3d: "img/objekte3d/kueste/raeucherhering.glb", trank: "raeucherhering",
+    text: "Goldbraun aus der Räucherhütte der Möwenbucht, hält wochenlang. Heilt 8 Lebenspunkte; 20 Minuten lang erholt sich die Ausdauer 15 % schneller." };
+  GEGENSTAENDE.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", bild: K10 + "barsch_salzkruste.webp", modell3d: "img/objekte3d/kueste/barsch_salzkruste.glb", trank: "barsch_salzkruste",
+    text: "Klippenbarsch, in Salz aus den Glutsanden in der Glut gegart. Heilt 12 Lebenspunkte." };
+  GEGENSTAENDE.aalsuppe = { id: "aalsuppe", name: "Aalsuppe", art: "Essen", seltenheit: "selten", bild: K10 + "aalsuppe.webp", modell3d: "img/objekte3d/kueste/aalsuppe.glb", trank: "aalsuppe",
+    text: "Die Suppe der Hafenleute von Kielmund. Heilt 13 Lebenspunkte." };
+  GEGENSTAENDE.wrackkiste = { id: "wrackkiste", name: "Kiste mit dem Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: K10 + "wrackkiste.webp",
+    text: "Eine Kiste aus dem Wrack, versiegelt mit dem Zeichen des Rabenordens. Darin Rechnungen über Splitter – gekauft über Kielmund." };
+  VERBRAUCH.raeucherhering = { id: "raeucherhering", name: "Räucherhering", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 8, anteil: 0 }, wirkung: "raeucherhering", stapelbar: false, modell: "",
+    werte: [["Heilung", "8 (nicht über das maximale Leben)"], ["Wirkung", "Ausdauer erholt sich 20 Minuten lang 15 % schneller (ersetzt anderes Essen)"], ["Stapelbar", "nein"]], text: "Goldbraun geräuchert." };
+  VERBRAUCH.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "In der Glut gegart." };
+  VERBRAUCH.aalsuppe = { id: "aalsuppe", name: "Aalsuppe", art: "Essen", seltenheit: "selten", heilt: { fest: 13, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "13 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Die Suppe der Hafenleute." }; }
+
+/* ───────── Beute Phase 7–10 (doku/konzepte/beute.md, 27.11.): neue Rohstoffe – vorerst nur zum Verkauf an den Trödler (Verwendung kommt mit den Berufen); Bilder folgen (Figuren) ───────── */
+{ const R = (id: string, name: string, wert: number, text: string) => { GEGENSTAENDE[id] = { id, name, art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, wert, symbol: "kristall", text }; };
+  R("federn", "Federn", 3, "Weiße und graue Federn von Reihern und Seevögeln. Leicht, aber zu irgendetwas gut.");
+  R("wolfsfell", "Wolfsfell", 10, "Das graue Fell eines Heidewolfs, dicht und rau.");
+  R("chitin", "Chitin", 14, "Panzerplatten eines Sandkriechers, hart wie Horn.");
+  R("giftdruese", "Giftdrüse", 18, "Die Drüse aus dem Stachel eines Glutskorpions. Vorsichtig anfassen."); }
+GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /* Grundwert für den Trödler (#88) */

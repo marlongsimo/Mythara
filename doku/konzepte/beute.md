@@ -83,3 +83,46 @@ Das Rabenset gibt es nur über die Quests (C1–C3), nicht als Beute.
 - **Seltene Funde sichtbar machen:** Meldung im Chat, kurzer Lichtstrahl am Boden bei Einzigartigem.
 - **Bosszähler** je Konto (wie oft besiegt) – Grundlage für spätere Anzeigen.
 - Begleiter (Rabenküken) braucht eine Figur, die dem Spieler folgt – kann nach Phase 6 kommen.
+
+---
+
+## Phase 7–10 (Ergänzung 27.11., Leitstelle)
+
+Gleiche Grundsätze wie oben: Splitter immer, Ressourcen der Stufe, Seltenes selten, nichts Gebundenes. Werte sind Startpunkte.
+
+### Phase 7 – Ostufer und Turm
+| Gegner (Stufe) | Splitter | Ressourcen | Ausrüstung | Besonderes |
+|---|---|---|---|---|
+| Schlickkrebs (45) | 90 %: 12–25 | Krebsschere 40 % (1–2) · Splittereisenerz 8 % (1–2) | Selten 1/200 | – |
+| Splitterreiher (50) | 90 %: 15–30 | Federn 50 % (2–4) · Seelenlicht 10 % | Selten 1/160 | – |
+| Turmwächter (58) | 100 %: 25–45 | Wachtstein 30 % (1) · Ureisenerz 6 % (1) | Selten 1/64 · Episch 1/512 | – |
+| Grünlicht (60) | 100 %: 20–40 | Seelenlicht 60 % (2–5) | – | grüner Splitterkern 1/100 (Splitterbinden-Material) |
+
+### Phase 8 – Fahle Weiten und Grauwacht
+| Gegner (Stufe) | Splitter | Ressourcen | Ausrüstung | Besonderes |
+|---|---|---|---|---|
+| Heidewolf (32) | 80 %: 6–14 | Wolfsfell 50 % (1) · Fleisch 40 % (1) | – | – |
+| Wiedergänger (38) | 90 %: 8–18 | Seelenlicht 15 % · Eisenhut 8 % | Selten 1/256 | – |
+| Deserteur Schwert/Armbrust (42/44) | 90 %: 10–22 | Eisenbarren 15 % · Heiltrank 8 % | Selten 1/128 | – |
+| Grabwächter (48) | 100 %: 18–35 | Wachtstein 25 % · Schwarzeisenerz 10 % (1–2) | Selten 1/80 | – |
+| **Der Graue Hauptmann** (52, Mini-Boss, Instanz) | 100 %: 150–300 | Wachtstein 100 % (2–4) · Seelenlicht 40 % (3–6) | Selten 1/12 · Episch 1/48 · Legendär 1/600 | **Klinge des Grauen Hauptmanns** nur über E4 (gebunden), nicht als Beute |
+
+### Phase 9 – Glutsande
+| Gegner (Stufe) | Splitter | Ressourcen | Ausrüstung | Besonderes |
+|---|---|---|---|---|
+| Sandkriecher (42) | 85 %: 10–20 | Chitin 40 % (1) · Salz 20 % (1–3) | – | – |
+| Glutskorpion (48) | 90 %: 14–28 | Giftdrüse 30 % (1) · Salz 25 % (1–3) | Selten 1/200 | – |
+| Karawanenräuber Säbel/Bogen (50/52) | 90 %: 15–30 | Splittereisenbarren 12 % · Glutwels 10 % | Selten 1/96 · Episch 1/800 | – |
+| Glutgeist (56) | 100 %: 20–40 | Seelenlicht 40 % (2–4) · Ureisenerz 6 % | Selten 1/120 | – |
+| **Die Sandmutter** (60, Mini-Boss, Instanz) | 100 %: 300–600 | Chitin 100 % (3–6) · Ureisenerz 25 % (2–4) · Weltenbaumstamm 10 % (1–2) | Selten 1/10 · Episch 1/40 · Legendär 1/400 | Kartenstück 5 nur über F3 |
+
+### Phase 10 – Smaragdküste
+| Gegner (Stufe) | Splitter | Ressourcen | Ausrüstung | Besonderes |
+|---|---|---|---|---|
+| Strandkrabbe / Riesenkrabbe (22/34) | 70 %: 3–8 / 85 %: 6–14 | Krebsschere 40 % · Hering 20 % | – / Selten 1/400 | – |
+| Seevogel (26) | 60 %: 2–6 | Federn 50 % (1–3) | – | – |
+| Strandräuber Säbel/Armbrust (30/32) | 85 %: 6–15 | Eibenstamm 15 % · Kupfer-/Eisenerz 15 % | Selten 1/160 | – |
+| Mangrovenlurch (38) | 90 %: 8–18 | Seeaal 15 % · Kräuter (Moorglöckchen) 20 % | Selten 1/200 | – |
+| **Der Wrackkapitän** (40, Mini-Boss, Instanz) | 100 %: 120–250 | Seeaal 50 % (2–4) · Eisenbarren 30 % (3–6) | Selten 1/12 · Episch 1/60 | Wrackkiste mit Rabensiegel nur über G3 |
+
+Neue Rohstoffe (Krebsschere, Federn, Wolfsfell, Chitin, Giftdrüse, Wachtstein, grüner Splitterkern) brauchen Gegenstandseinträge und Bilder; wo Figuren noch keine Bilder hat → Issue `rolle:figuren`. Verwendung (Rezepte) folgt mit den Berufen; bis dahin verkaufbar an Trödler (Grundwert `wert`).
