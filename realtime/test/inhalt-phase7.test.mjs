@@ -35,8 +35,8 @@ setzeKarte(KARTEN.welt, FEIN);
   check(n("schlickkrebs") === 4 && n("splitterreiher") === 5 && n("turmwaechter") === 6 && n("gruenlicht") === 1, `Ostufer: 4 Krebse, 5 Reiher · Turm: 6 Turmwächter, 1 Grünlicht (${NEU.map(n).join("/")})`); }
 
 console.log("\nGrünlicht heilt Turmwächter");
-{ const s = Sim.welt(2, undefined, true); s.wesen = s.wesen.filter((w) => w.held); const id = s.beitreten("schildwaechter", 0, { x: 100, y: 100 }, kampfwerte({ ...NULL_XP, defense: xpFuer(60), lp: xpFuer(70) }, startAusruestung("schwert"), 1)), h = s.nach(id); h.max = h.lp = 1e6; s["karte"].MEHRKAMPF = [[0, 0, 1e5, 1e5]];
-  const g = s["neu"](false, "gruenlicht", 1, { x: 103, y: 100 }, true, 7), t = s["neu"](false, "turmwaechter", 1, { x: 101, y: 100 }, true, 7);
+{ const s = Sim.welt(2, undefined, true), U = KARTEN.welt.ursprung, P = { x: 6800.5 - U[0], y: 6520.5 - U[1] }; /* Weltfelder am Ostufer (der Ursprung der Kampfwelt hängt von den Gebieten ab, #122) */ s.wesen = s.wesen.filter((w) => w.held); const id = s.beitreten("schildwaechter", 0, { x: P.x, y: P.y }, kampfwerte({ ...NULL_XP, defense: xpFuer(60), lp: xpFuer(70) }, startAusruestung("schwert"), 1)), h = s.nach(id); h.max = h.lp = 1e6; s["karte"].MEHRKAMPF = [[0, 0, 1e5, 1e5]];
+  const g = s["neu"](false, "gruenlicht", 1, { x: P.x + 3, y: P.y }, true, 7), t = s["neu"](false, "turmwaechter", 1, { x: P.x + 1, y: P.y }, true, 7);
   for (const w of [g, t]) { w.lp = w.max = MONSTER[w.typ].lp; w.zielId = h.id; w.wach = true; w.streifT = 1e9; } t.lp = Math.floor(t.max * 0.4); const vor = t.lp; const ev = lauf(s, 7);
   check(ev.some((e) => e.a === "text" && e.id === g.id && e.t === "heilt") && t.lp > vor, `der Turmwächter wird geheilt (${vor} → ${Math.round(t.lp)})`); }
 
