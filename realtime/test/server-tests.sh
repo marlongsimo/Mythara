@@ -63,6 +63,7 @@ TESTS=(
   speer
   waffen70
   hochlande-leben
+  tiere
   welt-daten
   welt-grenzen
   welt-raster

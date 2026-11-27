@@ -1,0 +1,10 @@
+{
+ "_hinweis": "Tiere zur Stimmung (shared/tiere.ts): je Platz Art, Mitte (Weltfelder), Umkreis (Felder) und Anzahl. Friedlich, nicht angreifbar, nur im Browser (Stelle nach der Uhr). Arten: ziege, murmeltier, schaf. Plätze der Hohen Alm nach Welt (#148, alm_tier_*), Murmeltiere an den Geröllhängen von Erzberg und Grauhorn.",
+ "plaetze": [
+  { "id": "alm_ziegen", "art": "ziege", "x": 7196, "y": 6016, "radius": 7, "anzahl": 3 },
+  { "id": "alm_schafe", "art": "schaf", "x": 7184, "y": 6017, "radius": 7, "anzahl": 3 },
+  { "id": "erzberg_murmeltiere", "art": "murmeltier", "x": 7150, "y": 5790, "radius": 6, "anzahl": 3 },
+  { "id": "erzberg_murmeltiere_sued", "art": "murmeltier", "x": 7160, "y": 5830, "radius": 6, "anzahl": 2 },
+  { "id": "grauhorn_murmeltiere", "art": "murmeltier", "x": 6990, "y": 5640, "radius": 6, "anzahl": 3 }
+ ]
+}
