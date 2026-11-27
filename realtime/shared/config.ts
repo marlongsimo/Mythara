@@ -415,7 +415,7 @@ Object.assign(MONSTER, {
   /** Der Graue Hauptmann: Mini-Boss, Stufe 52, Geist in Wachtrüstung (Gruft, Instanz – shared/bosse.ts) */
   grauer_hauptmann: { name: "Der Graue Hauptmann", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 260, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 55, magie: 45 }, r: 0.55, untot: true, boss: true, wiederkehr: 600,
     angriff: { name: "Geisterklinge", art: "nah", schaden: [1, 15], takt: 2.5, reich: 1.9, aushol: 0 },
-    v2: { staerke: 100, geschick: 70, defense: 60, magie: 40, staerkeBonus: 30, ticks: 5, abwehr: { nah: 25, fern: 25, magie: 0 } },
+    v2: { staerke: 100, geschick: 70, defense: 60, magie: 40, staerkeBonus: 30, ticks: 5, abwehr: { nah: 30, fern: 30, magie: -5 } /* #178: schwach gegen Magie */ },
     info: "Der letzte Hauptmann von Grauwacht. Er hat seine Wacht nie beendet – und lässt die Toten nicht ruhen.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [150, 300] }] }, { wurf: [{ g: "wachtstein", chance: 100, anzahl: [2, 4] }] }, { wurf: [{ g: "seelenlicht", chance: 40, anzahl: [3, 6] }] }, { wurf: [{ g: "@selten", chance: 100 / 12 }, { g: "@episch", chance: 100 / 48 }, { g: "@legendaer", chance: 100 / 600 }] }] },
 } as Record<string, MonsterDef>);

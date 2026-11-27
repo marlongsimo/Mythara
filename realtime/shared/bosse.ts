@@ -93,7 +93,8 @@ INSTANZEN.push({ id: "tempel_kammer", name: "Die Kammer der Sandmutter", feld: [
 
 /* ───────── Phase 8 (#58, E4): der Graue Hauptmann in seiner Gruft (Region hauptmann_gruft, Weltfelder 11200…11231 × 9600…9631) ─────────
    Ruft Wiedergänger, später Ansage über die Gruft mit Deckung hinter den Grabsteinen. Instanz je Spieler, solange „hauptmann_gruft“ an ist (E4). */
-BOSSE.grauer_hauptmann = { typ: "grauer_hauptmann", phasen: [
+/* #178: Schläger, schwach gegen Magie – Kernmechaniken Deckung (Grabessturm hinter Grabsteinen) und Diener (zwei Wiedergänger) */
+BOSSE.grauer_hauptmann = { typ: "grauer_hauptmann", art: "schlaeger", phasen: [
   { ab: 1, ansagen: [{ name: "Rundumschlag", alle: 4, felder: "rundum", schaden: [8, 14] }] },
   { ab: 0.6, text: "Der Graue Hauptmann ruft seine Wacht!", ruf: { art: "wiedergaenger", n: 2, text: "Steht auf, Wacht!" }, ansagen: [{ name: "Rundumschlag", alle: 3, felder: "rundum", schaden: [8, 14] }] },
   { ab: 0.3, text: "Ein eisiger Sturm fegt durch die Gruft!", ansagen: [{ name: "Grabessturm", sek: 4, felder: "raum", deckung: true, vorlauf: 2, schaden: [12, 20], ansturm: true }] } ] };
