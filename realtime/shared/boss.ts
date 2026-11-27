@@ -58,7 +58,13 @@ export interface BossPhase { /** gilt ab diesem Anteil des Lebens abwärts (erst
   /** Treffer je Grundangriff (Doppelhieb: 2) */ hiebe?: number;
   /** #160 Flug (Sturmschwinge): der Boss kreist für Nahkampf unerreichbar (wie schweben), bis eine Ansage mit landen ihn landen lässt; danach steigt er wieder auf */ flug?: boolean;
   /** Eingraben (#102, Sandmutter): so viele Sekunden ab Eintritt in die Phase für alles unangreifbar, dann taucht er wieder auf (Ansagen nach sek laufen weiter) */ eingraben?: number }
-export interface BossDef { /** Gegnerart in MONSTER */ typ: string; phasen: BossPhase[] }
+export interface BossDef { /** Gegnerart in MONSTER */ typ: string; phasen: BossPhase[];
+  /** #175 Boss-Regeln: Schläger (hoher Grundschaden, ein gemeisterter Großangriff macht 0 Schaden) oder Taktiker (schwächere Grundangriffe,
+   *  auch wer ausweicht, bekommt Streifschaden – STREIF_ANTEIL des vollen Treffers, durch Rüstung gemindert). Ohne Angabe wie Schläger. */ art?: "schlaeger" | "taktiker" }
+/** #175: Streifschaden des Taktikers: höchstens dieser Anteil des vollen Treffers; gute Rüstung halbiert ihn (also etwa 7,5–15 %) */
+export const STREIF_ANTEIL = 0.15;
+/** #175: Schwächefenster – nach einem gemeisterten Großangriff (wer bei der Ansage in der Gefahrenzone stand, ist beim Einschlag draußen) nimmt der Boss so lange mehr Schaden */
+export const SCHWAECHE = { sek: 4, mal: 1.25 };
 
 export interface InstanzGegner { /** Gegnerart (MONSTER) */ art: string; /** Weltfelder */ x: number; y: number }
 export interface InstanzDef { id: string; name: string;
