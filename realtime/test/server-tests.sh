@@ -80,6 +80,7 @@ TESTS=(
   gegnerlast
   gegner-vorbereitet
   streifgebiete
+  belohnung-wahl
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

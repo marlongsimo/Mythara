@@ -278,7 +278,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     else if (e.t === "dialogzu") gespraechEnde(s.nutzer);
     else if (e.t === "handel") handelNachricht(H.sb, s, e as Record<string, unknown>); /* #65: Handel zwischen Spielern (handel.ts) */
     else if (e.t === "abholen") { /* #77: „Okay“ im Abschlussfenster – der Server bucht den Lohn genau einmal */
-      if (s.gast) return; const r = await abholen(H.sb, s.nutzer, String((e as { id?: unknown }).id || "").slice(0, 40), { x: s.wx, y: s.wy });
+      if (s.gast) return; const r = await abholen(H.sb, s.nutzer, String((e as { id?: unknown }).id || "").slice(0, 40), { x: s.wx, y: s.wy }, String((e as { wahl?: unknown }).wahl || "").slice(0, 40)); /* #146: { t: "abholen", id, wahl: g } */
       if (r.fehler) senden(s, { t: "chat", kanal: "system", text: r.fehler, zeit: jetzt }); senden(s, { t: "abgeholt", ...r }); }
     else if (e.t === "qding" || e.t === "untersucht") { /* Questobjekt benutzen (Bruchstelle, Rutenbündel …), Gegner untersuchen – der Server prüft Ort und Entfernung */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Aufträge gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
