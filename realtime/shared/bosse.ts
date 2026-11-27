@@ -56,6 +56,11 @@ TUEREN.push({ id: "turm_wappentuer", feld: [6840, 6519, 6840, 6519], schalter: "
 
 /* ───────── Federmutter (#116/#132): ihr Nest unter dem Steinkreis von Aschenwerth (Region federmutter_kammer, Weltfelder 11520…11551 × 9600…9631) ─────────
    Einstieg federmutter_abstieg im Steinkreis (6242|6728.4). Vor der Quest leer, in der Quest allein und schwächer (Schalter federmutter_kammer), danach öffentlich oder eigene Instanz (federmutter_danach) */
+/* #178 (midgame-bosse.md): Taktikerin, schwach gegen Fernkampf – Federsturm (angezeigte Fläche am Ziel, ausweichen), ab halbem Leben drei Moorraben aus dem Nest, die sie heilen */
+BOSSE.federmutter = { typ: "federmutter", art: "taktiker", phasen: [
+  { ab: 1, ansagen: [{ name: "Federsturm", bewegung: "zauber", sek: 7, felder: "ziel", weite: 1, vorlauf: 3, schaden: [8, 14], art: "fern" }] },
+  { ab: 0.5, text: "Ravena kreischt – das Nest antwortet!", ruf: { art: "moorrabe", n: 3, weite: 3, text: "Drei Moorraben stürzen aus dem Nest!" },
+    ansagen: [{ name: "Federsturm", bewegung: "zauber", sek: 6, felder: "ziel", weite: 1, vorlauf: 3, schaden: [8, 14], art: "fern" }] } ] };
 INSTANZEN.push({ id: "federmutter_kammer", name: "Das Nest der Federmutter", feld: [11520, 9600, 11551, 9631], schalter: "federmutter_kammer", danach: "federmutter_danach",
   gegner: [{ art: "federmutter", x: 11536.5, y: 9611.5 }], text: "Federn liegen knöcheltief. Über dem Nest hebt Ravena den Kopf." });
 
@@ -148,6 +153,6 @@ INSTANZEN.push({ id: "eishoehle_hochpass", name: "Die Eishöhle der Frostwitwe",
    (Standard QUEST_STAERKE). Der Rabenpriester ist Stufe 55 bei empfohlenem Heldenlevel 40, daher am stärksten gemindert. Die gerufenen Helfer teilen die
    Schadensminderung (shared/sim.ts rufen). Die starke Fassung danach bleibt unverändert. */
 const QUEST_MILDE: Record<string, { leben: number; schaden: number; abwehr?: number }> = {
-  thronsaal: { leben: 0.25, schaden: 0.2 }, trollhalle: { leben: 0.2, schaden: 0.2, abwehr: 0.5 } /* H4, Grumhold: auch mit Nahkampf (gegen den er stark ist) in rund 3,5 Minuten; #175: Großangriffe der starken Fassung härter, daher Schaden 20 % */,
+  federmutter_kammer: { leben: 0.5, schaden: 0.45 } /* #178: Federsturm und heilende Moorraben – C2 bleibt gut machbar */, thronsaal: { leben: 0.25, schaden: 0.2 }, trollhalle: { leben: 0.2, schaden: 0.2, abwehr: 0.5 } /* H4, Grumhold: auch mit Nahkampf (gegen den er stark ist) in rund 3,5 Minuten; #175: Großangriffe der starken Fassung härter, daher Schaden 20 % */,
   horst_grauhorn: { leben: 0.25, schaden: 0.3, abwehr: 0.5 }, eishoehle_hochpass: { leben: 0.25, schaden: 0.3, abwehr: 0.5 }, hauptmann_gruft: { leben: 0.4, schaden: 0.5 }, tempel_kammer: { leben: 0.35, schaden: 0.4 }, wrack_kajuete: { leben: 0.4, schaden: 0.4 } };
 for (const D of INSTANZEN) if (QUEST_MILDE[D.id] && !D.questStaerke) D.questStaerke = QUEST_MILDE[D.id];

@@ -10,7 +10,8 @@ const C2_ID = "aschenwerth_gesang_der_spiralsteine", C2Q = QUESTS.find((q) => q.
 const MITTE = standNach(C2Q, [{ art: "objekt", id: "c2_kreis_moor" }, { art: "objekt", id: "c2_kreis_insel" }, ...Array(3).fill({ art: "aufheben", g: "federsiegel" })], ["silben"]);
 const STEINE = ["mond", "welle", "feder", "auge"].reduce((st, k) => QB.ereignis(C2Q, st, { art: "objekt", id: "c2_" + k }), MITTE);
 const W = await starte({ sb: SB, srv: SRV, helden: {
-  ute: starkerHeld({ fertig: FERTIG, staende: { [C2_ID]: STEINE }, berufe: { holzfaellerei: 40, handwerk: 30 }, rucksack: ["holzbeil_einfach", "hammer", ...Array(5).fill("stamm_tanne")] }),
+  ute: starkerHeld({ fertig: FERTIG, staende: { [C2_ID]: STEINE }, berufe: { holzfaellerei: 40, handwerk: 30 }, rucksack: ["holzbeil_einfach", "hammer", ...Array(5).fill("stamm_tanne")],
+    angelegt: { waffe: "mondkurzbogen_legendaer" } /* #178: Ravena ist schwach gegen Fernkampf */ }),
   bea: starkerHeld({}) } });
 const { check, schlaf, anzahl, stelle, rede, sprich, objekt, stand, erl, fertig, kampf, kaempfen, aufheben, sammeln, herstellen, sende } = W;
 const K0 = { hat: () => false, verloren: () => false };
@@ -25,7 +26,7 @@ try {
   await ort(ute, "federmutter_kammer", 11536.5, 9620.5); check(erl(ute, C2, "abstieg"), "Unter den Steinkreis hinabgestiegen");
   { const z = await kampf("ute", 11536.5, 9620.5); const rv = () => z && z.w.find((w) => w[2] === "federmutter");
     check(Boolean(rv()), "Ravena steht in Utes Kopie des Nests");
-    await kaempfen(z, ["federmutter", "rabenpriester_akoluth", "rabenpriester_akoluth_speer"], () => erl(ute, C2, "ravena"), 280000);
+    await kaempfen(z, ["federmutter", "moorrabe", "rabenpriester_akoluth", "rabenpriester_akoluth_speer"] /* #178: die Moorraben aus dem Nest heilen sie */, () => erl(ute, C2, "ravena"), 280000);
     check(erl(ute, C2, "ravena"), "Federmutter Ravena besiegt (Quest-Fassung)"); z && z.ws.close(); await schlaf(2500); }
   await ort(ute, "rabenmoor", 6290.4, 6677.4);
   check(await sprich(ute, C2, "hedda", "fertig") && fertig(ute, C2), "C2 fertig bei Hedda, Lohn abgeholt");

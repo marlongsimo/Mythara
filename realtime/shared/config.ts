@@ -283,6 +283,7 @@ Object.assign(MONSTER, {
   moorrabe: { name: "Moorrabe", stufe: 20, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 25, tempo: 4.2, angriffswert: { nah: 20, fern: 0, magie: 0 }, abwehr: { nah: 15, fern: 10, magie: 15 }, r: 0.35,
     angriff: { name: "Sturz", art: "nah", schaden: [1, 4], takt: 1.5, reich: 1.3, aushol: 0 },
     v2: { geschick: 22, staerke: 28, defense: 15, magie: 5, ticks: 3, abwehr: { nah: 0, fern: -5, magie: 5 } }, aggroReich: 5,
+    heiler: { alle: 4, anteil: 0.03, radius: 14, nur: "federmutter" } /* #178: aus dem Nest gerufen heilen sie Ravena, bis man sie erschlägt (anderswo ist keine Federmutter in der Nähe) */,
     info: "Ein schwarzer Rabe, größer als jeder Rabe sein dürfte. Wo einer ist, sind mehr.",
     drops: [{ wurf: [{ g: "splitter", chance: 50, anzahl: [1, 3] }] }, { wurf: [{ g: "rabenfedern", chance: 40 }] }] },
   /** Rabenpriester-Novize: Stufe 28, 60 LP, Max Hit 7 (Magie), schwach gegen Fernkampf; friedlich gegen Helden mit Rabenkapuze (C2) */
@@ -319,7 +320,7 @@ Object.assign(MONSTER, {
   /** Federmutter Ravena: Mini-Boss, Stufe 40, 200 LP, Max Hit 12; wechselt alle 20 s Stab, Bogen, Speer (Stilwechsel) */
   federmutter: { name: "Federmutter Ravena", stufe: 40, bild: "img/echtzeit/bandit.webp", hoehe: 128, lp: 200, tempo: 3.0, angriffswert: { nah: 45, fern: 45, magie: 45 }, abwehr: { nah: 45, fern: 45, magie: 45 }, r: 0.45, boss: true, wiederkehr: 300,
     angriff: { name: "Rabenstab", art: "magie", schaden: [1, 12], takt: 2.5, reich: 5, aushol: 0 },
-    v2: { magie: 60, fernkampf: 60, staerke: 60, geschick: 55, defense: 45, staerkeBonus: 50, ticks: 5, abwehr: { nah: 10, fern: 10, magie: 10 } },
+    v2: { magie: 60, fernkampf: 60, staerke: 60, geschick: 55, defense: 45, staerkeBonus: 35 /* #178 Taktikerin: schwächere Grundangriffe */, ticks: 5, abwehr: { nah: 35, fern: -5, magie: 35 } /* #178: schwach gegen Fernkampf */ },
     stile: [{ sek: 20, name: "Stab", angriff: { name: "Rabenstab", art: "magie", schaden: [1, 12], takt: 2.5, reich: 5, aushol: 0 }, v2: { ticks: 5 } },
       { sek: 20, name: "Bogen", text: "greift zum Bogen!", angriff: { name: "Federpfeil", art: "fern", schaden: [1, 12], takt: 2.0, reich: 6, aushol: 0 }, v2: { ticks: 4 } },
       { sek: 20, name: "Speer", text: "greift zum Speer!", angriff: { name: "Federspeer", art: "nah", schaden: [1, 12], takt: 2.5, reich: 1.9, aushol: 0 }, v2: { ticks: 5 } }],
