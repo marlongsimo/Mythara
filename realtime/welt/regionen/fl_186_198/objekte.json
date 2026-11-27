@@ -85,7 +85,7 @@
  {"id":"naht_1530","objekt":"stil_schilf_01","x":160.52,"y":290.97,"s":0.85},
  {"id":"naht_1531","objekt":"stil_erle_tot_01","x":174.5,"y":290.5,"s":1.03},
  {"id":"naht_1532","objekt":"stil_erle_tot_01","x":177.5,"y":291.5,"s":0.93,"spiegeln":true},
- {"id":"naht_1533","objekt":"stil_erle_tot_01","x":163.5,"y":292.5,"s":1.03},
+ {"id":"naht_1533","objekt":"stil_busch_01","x":190.5,"y":291.5,"s":0.83,"spiegeln":true},
  {"id":"naht_1534","objekt":"stil_schilf_02","x":159.19,"y":293.36,"s":0.87,"spiegeln":true},
  {"id":"naht_1535","objekt":"stil_schilf_01","x":167.79,"y":293.95,"s":1.04},
  {"id":"naht_1536","objekt":"stil_schilf_02","x":177.62,"y":294.83,"s":0.88,"spiegeln":true},

@@ -3,7 +3,9 @@
   python3 fabrik/fische.py -- <ziel-ordner> [art=alle] [zustand=alle] [glb=1]
 
 Arten: bachling (kleine Bachforelle, rot-schwarz getupft), muehlbarsch (Barsch: grüngold mit dunklen Querbinden, rote Flossen),
-       moorhecht (langer Hecht mit Entenschnabel, olivgrün mit hellen Flecken), wels (Graufurter Wels: dunkelgrau marmoriert, breiter Kopf, Barteln).
+       moorhecht (langer Hecht mit Entenschnabel, olivgrün mit hellen Flecken), wels (Graufurter Wels: dunkelgrau marmoriert, breiter Kopf, Barteln),
+       glutwels (Glutwels, Phase 9: glutrot mit dunklen und goldenen Flecken, Barteln),
+       hering (blau-silbern, schlank), klippenbarsch (rot, dunkel gefleckt, Stachelflosse), seeaal (lang, dunkel marmoriert, Flossensaum) – Phase 10.
 Zustand: roh · gebraten (goldbraun, Grillstreifen) · verbrannt (schwarz verkohlt, Asche).
 Ausgabe: <ziel>/fisch_<art>_<zustand>.webp (und mit glb=1 auch .glb, liegt flach am Boden).
 """
@@ -16,6 +18,10 @@ ARTEN = {   # Länge (m), Höhe/Länge, Breite/Höhe, Kopfspitze, Farben (Rücke
     "bachling":   dict(L=0.30, h=0.27, w=0.55, schnabel=0.0, ruecken=(0.18, 0.2, 0.12), seite=(0.55, 0.5, 0.32), bauch=(0.92, 0.86, 0.7), flosse=(0.55, 0.42, 0.3), muster="tupfen"),
     "muehlbarsch": dict(L=0.34, h=0.32, w=0.5, schnabel=0.0, ruecken=(0.14, 0.24, 0.1), seite=(0.55, 0.6, 0.22), bauch=(0.95, 0.9, 0.72), flosse=(0.85, 0.25, 0.12), muster="binden"),
     "wels":       dict(L=0.7, h=0.17, w=0.95, schnabel=0.0, ruecken=(0.16, 0.15, 0.13), seite=(0.34, 0.32, 0.27), bauch=(0.78, 0.74, 0.66), flosse=(0.22, 0.2, 0.17), muster="marmor"),   # Graufurter Wels (Phase 7): lang, flacher breiter Kopf, Barteln
+    "glutwels":   dict(L=0.75, h=0.17, w=0.95, schnabel=0.0, ruecken=(0.3, 0.07, 0.04), seite=(0.78, 0.3, 0.09), bauch=(0.95, 0.8, 0.55), flosse=(0.8, 0.3, 0.07), muster="glut"),   # Glutwels (Phase 9, Strom bei Glutbrunn): glutrot, dunkle und goldene Flecken, Barteln
+    "hering":     dict(L=0.28, h=0.22, w=0.45, schnabel=0.0, ruecken=(0.12, 0.24, 0.36), seite=(0.72, 0.78, 0.84), bauch=(0.95, 0.95, 0.96), flosse=(0.5, 0.56, 0.62), muster="silber"),   # Phase 10: Hering (Kielmund, Möwenbucht)
+    "klippenbarsch": dict(L=0.38, h=0.34, w=0.5, schnabel=0.0, ruecken=(0.45, 0.1, 0.06), seite=(0.86, 0.32, 0.14), bauch=(0.96, 0.76, 0.55), flosse=(0.82, 0.26, 0.12), muster="klippe"),   # Phase 10: Klippenbarsch (Leuchtturm-Klippe)
+    "seeaal":     dict(L=0.85, h=0.085, w=0.8, schnabel=0.0, ruecken=(0.16, 0.19, 0.15), seite=(0.38, 0.4, 0.3), bauch=(0.8, 0.76, 0.6), flosse=(0.3, 0.3, 0.24), muster="marmor"),   # Phase 10: Seeaal (Wrack, Mangroven)
     "moorhecht":  dict(L=0.62, h=0.19, w=0.6, schnabel=0.12, ruecken=(0.12, 0.17, 0.08), seite=(0.34, 0.42, 0.18), bauch=(0.86, 0.84, 0.66), flosse=(0.45, 0.35, 0.18), muster="flecken"),
 }
 ZUSTAENDE = ["roh", "gebraten", "verbrannt"]
@@ -56,7 +62,7 @@ def fisch(art, zustand):
         r2 = nt.nodes.new("ShaderNodeMapRange"); r2.inputs["From Min"].default_value = 0.65; r2.inputs["From Max"].default_value = 0.8; nt.links.new(wv.outputs["Fac"], r2.inputs["Value"])
         mx = nt.nodes.new("ShaderNodeMixRGB"); mx.blend_type = "MULTIPLY"; mx.inputs["Color2"].default_value = (0.25, 0.3, 0.15, 1); nt.links.new(r2.outputs["Result"], mx.inputs["Fac"]); nt.links.new(farbe, mx.inputs["Color1"]); farbe = mx.outputs["Color"]
     else:                                                                                # Tupfen (Bachling: rot und schwarz) / helle Flecken (Hecht)
-        for skala, farbe_t, schwelle in ({"tupfen": [(38, (0.03, 0.02, 0.02), 0.72), (30, (0.75, 0.08, 0.03), 0.75)], "marmor": [(11, (0.035, 0.035, 0.03), 0.7), (24, (0.06, 0.055, 0.05), 0.7)]}.get(A["muster"]) or [(18, lin((0.85, 0.82, 0.55)), 0.68)]):
+        for skala, farbe_t, schwelle in ({"tupfen": [(38, (0.03, 0.02, 0.02), 0.72), (30, (0.75, 0.08, 0.03), 0.75)], "marmor": [(11, (0.035, 0.035, 0.03), 0.7), (24, (0.06, 0.055, 0.05), 0.7)], "glut": [(12, (0.1, 0.02, 0.012), 0.7), (30, (1.0, 0.62, 0.12), 0.75)], "silber": [(70, (0.92, 0.94, 0.97), 0.7)], "klippe": [(16, (0.35, 0.05, 0.03), 0.7)]}.get(A["muster"]) or [(18, lin((0.85, 0.82, 0.55)), 0.68)]):
             v = nt.nodes.new("ShaderNodeTexVoronoi"); v.inputs["Scale"].default_value = skala; nt.links.new(tc.outputs["Object"], v.inputs["Vector"])
             r2 = nt.nodes.new("ShaderNodeMapRange"); r2.inputs["From Min"].default_value = 0.3; r2.inputs["From Max"].default_value = 0.2; nt.links.new(v.outputs["Distance"], r2.inputs["Value"])
             mk = nt.nodes.new("ShaderNodeMath"); mk.operation = "MULTIPLY"; nt.links.new(r2.outputs["Result"], mk.inputs[0]); mk.inputs[1].default_value = 1.0
@@ -80,8 +86,10 @@ def fisch(art, zustand):
     fm = bpy.data.materials.new("flosse"); fm.use_nodes = True; fb = fm.node_tree.nodes["Principled BSDF"]; fb.inputs["Base Color"].default_value = (*lin(fl_farbe), 1); fb.inputs["Roughness"].default_value = 0.5
     sw = L * 0.22                                                                        # Schwanzflosse (gegabelt)
     flosse([(x0 + 0.01, 0, 0), (x0 - sw, 0, H * 0.55), (x0 - sw * 0.7, 0, 0), (x0 - sw, 0, -H * 0.55)], fm)
-    if art == "muehlbarsch":                                                             # stachlige Rückenflosse
+    if art in ("muehlbarsch", "klippenbarsch"):                                          # stachlige Rückenflosse
         flosse([(x0 + L * 0.45, 0, H * 0.44), (x0 + L * 0.5, 0, H * 0.78), (x0 + L * 0.6, 0, H * 0.7), (x0 + L * 0.68, 0, H * 0.75), (x0 + L * 0.72, 0, H * 0.42)], fm)
+    elif art == "seeaal":                                                                # durchgehender Flossensaum oben und unten
+        flosse([(x0 + L * 0.2, 0, H * 0.4), (x0 + L * 0.3, 0, H * 0.75), (x0 + L * 0.8, 0, H * 0.7), (x0 + L * 0.88, 0, H * 0.45)], fm); flosse([(x0 + L * 0.05, 0, -H * 0.4), (x0 + L * 0.15, 0, -H * 0.72), (x0 + L * 0.55, 0, -H * 0.65), (x0 + L * 0.62, 0, -H * 0.45)], fm)
     elif art == "moorhecht":                                                             # Rückenflosse weit hinten
         flosse([(x0 + L * 0.18, 0, H * 0.35), (x0 + L * 0.22, 0, H * 0.8), (x0 + L * 0.32, 0, H * 0.4)], fm)
     else: flosse([(x0 + L * 0.42, 0, H * 0.42), (x0 + L * 0.5, 0, H * 0.72), (x0 + L * 0.6, 0, H * 0.4)], fm)
@@ -94,7 +102,7 @@ def fisch(art, zustand):
         o.data.materials.append(am); teile.append(o)
         bpy.ops.mesh.primitive_uv_sphere_add(radius=H * 0.055, location=(aug_x + H * 0.03, sy * W * 0.5, ah)); o = bpy.context.object
         pm = bpy.data.materials.new("pupille"); pm.use_nodes = True; pm.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.01, 0.01, 0.01, 1); o.data.materials.append(pm); teile.append(o)
-    if art == "wels":                                                                    # vier Barteln am breiten Maul
+    if art in ("wels", "glutwels"):                                                                  # vier Barteln am breiten Maul
         bm_ = bpy.data.materials.new("bartel"); bm_.use_nodes = True; bm_.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (*lin(fl_farbe), 1)
         mx_ = x0 + L * 1.0
         for sy, lz, dz in ((1, 0.32, -0.02), (-1, 0.32, -0.02), (1, 0.18, -0.1), (-1, 0.18, -0.1)):
@@ -126,5 +134,14 @@ if __name__ == "__main__":
     for art in arten:
         for z in zust:
             teile = fisch(art, z); png = os.path.join(ZIEL, f"_fisch_{art}_{z}.png"); bild(teile, os.path.abspath(png))
+            if opt.get("glb") == "1":                                                    # 3D-Modell dazu (Modifikatoren angewandt, Bauch auf z = 0)
+                h_ = bpy.data.objects.get("halter")
+                if h_: h_.rotation_euler = (0, 0, 0); bpy.context.view_layer.update()   # ohne die Schrägansicht des Rucksackbilds
+                for o in teile:
+                    bpy.context.view_layer.objects.active = o
+                    for m in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=m.name)
+                bpy.ops.object.select_all(action="DESELECT")
+                for o in teile: o.select_set(True)
+                bpy.ops.export_scene.gltf(filepath=os.path.abspath(os.path.join(ZIEL, f"fisch_{art}_{z}.glb")), export_format="GLB", use_selection=True)
             Image.open(png).resize((256, 256), Image.LANCZOS).save(os.path.join(ZIEL, f"fisch_{art}_{z}.webp"), "WEBP", quality=90); os.remove(png)
             print("Fisch:", art, z)

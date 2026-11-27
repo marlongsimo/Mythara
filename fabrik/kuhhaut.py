@@ -1,7 +1,8 @@
 """Mythara Fabrik – Beutestück Kuhhaut in Blender bauen: ein flach am Boden liegendes Fell (Umriss mit vier Beinlappen und Hals),
 leicht gewellt, eine Ecke umgeschlagen; Fleckenmuster weiß/kastanienbraun wie die Kuh, in eine Textur gebacken. Ohne Animation.
 
-  python3 fabrik/kuhhaut.py -- <ziel.glb> [vorschau.blend]
+  python3 fabrik/kuhhaut.py -- <ziel.glb> [vorschau.blend] [wolf]
+Mit „wolf“: Wolfsfell (#119) – gleiche Form, graubraun mit dunklen Flecken statt Kuhmuster.
 """
 import math, os, random, sys
 import bpy, bmesh
@@ -43,7 +44,8 @@ m = bpy.data.materials.new("fell"); m.use_nodes = True; nt = m.node_tree; bs = n
 tc = nt.nodes.new("ShaderNodeTexCoord"); mp = nt.nodes.new("ShaderNodeMapping"); mp.inputs["Scale"].default_value = (1.0, 1.3, 1.0); nt.links.new(tc.outputs["UV"], mp.inputs["Vector"])
 n1 = nt.nodes.new("ShaderNodeTexNoise"); n1.inputs["Scale"].default_value = 2.6; n1.inputs["Detail"].default_value = 3; n1.inputs["Distortion"].default_value = 0.5; nt.links.new(mp.outputs["Vector"], n1.inputs["Vector"])
 r1 = nt.nodes.new("ShaderNodeValToRGB"); r1.color_ramp.elements[0].position = 0.5; r1.color_ramp.elements[1].position = 0.53
-r1.color_ramp.elements[0].color = (0.84, 0.79, 0.70, 1); r1.color_ramp.elements[1].color = (0.30, 0.09, 0.03, 1); nt.links.new(n1.outputs["Fac"], r1.inputs["Fac"])
+WOLF = "wolf" in a_[1:]                                                                            # Wolfsfell (#119): dieselbe Form, grau mit dunklem Rückenstreif
+r1.color_ramp.elements[0].color = (0.84, 0.79, 0.70, 1) if not WOLF else (0.16, 0.15, 0.135, 1); r1.color_ramp.elements[1].color = (0.30, 0.09, 0.03, 1) if not WOLF else (0.05, 0.047, 0.044, 1); nt.links.new(n1.outputs["Fac"], r1.inputs["Fac"])
 n2 = nt.nodes.new("ShaderNodeTexNoise"); n2.inputs["Scale"].default_value = 160; nt.links.new(mp.outputs["Vector"], n2.inputs["Vector"])
 mix = nt.nodes.new("ShaderNodeMixRGB"); mix.blend_type = "MULTIPLY"; mix.inputs["Fac"].default_value = 0.16; nt.links.new(r1.outputs["Color"], mix.inputs["Color1"]); nt.links.new(n2.outputs["Fac"], mix.inputs["Color2"])
 nt.links.new(mix.outputs["Color"], bs.inputs["Base Color"]); fell.data.materials.append(m)

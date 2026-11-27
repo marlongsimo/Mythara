@@ -63,9 +63,15 @@ stellen.append({'id': 'lindenbluete_1', 'art': 'lindenbluete', 'x': 6452.0, 'y':
 # Phase „Süden“ (#120): Stellen aus sueden.mjs (Kennung sueden_…) bleiben erhalten
 _sp = os.path.join(RT, 'welt', 'sueden_orte.json')
 if os.path.exists(_sp): stellen += json.load(open(_sp, encoding='utf8')).get('kraeuter', [])
+# Phase 10 (#82, #133): Kräuterhof an der Küste (kueste.mjs, Hof 6418 · 7064) – Beete („a“, 6410–6425 × 7065–7070) mit vorhandenen Kräutern der Stufe 20–45
+# und Ringelblume für die Zucht-Quest; keine neuen Arten. Kessel vor dem Kräuterhaus (Objekt kraeuterhof_kessel).
+_beet = {'ringelblume': [(6411.5, 7066.5), (6415.5, 7069.5)], 'moorgloeckchen': [(6415.5, 7066.5), (6419.5, 7069.5)],
+         'eisenhut': [(6419.5, 7066.5), (6423.5, 7069.5)], 'nebelkraut': [(6423.5, 7066.5), (6411.5, 7069.5)]}
+stellen += [{'id': f'kraeuterhof_{art}_{i + 1}', 'art': art, 'x': x, 'y': y, 'region': 'fl_186_211'} for art, l in _beet.items() for i, (x, y) in enumerate(l)]
 aus = {'_hinweis': 'Kräuter-Fundstellen (Phase 5, Issue #35). Erzeugt von werkzeug/welt/kraeuter.py; Weltfelder, Stehplatz = Fundstelle. Kessel: siehe kessel.',
        'stellen': stellen,
        'kessel': [{'id': 'kessel_kraeuterhaus', 'ort': 'Kräuterhaus der Waldmark (Möbel im Bauplan)', 'x': 6420.9, 'y': 6437.5, 'stehen': [6420.9, 6438.6], 'region': 'waldmark'},
-                  {'id': 'kessel_hedda', 'ort': 'vor Heddas Hütte (Objekt ort_p5_kessel_hedda)', 'x': 6291.6, 'y': 6677.8, 'stehen': [6291.6, 6679.2], 'region': 'rabenmoor'}]}
+                  {'id': 'kessel_hedda', 'ort': 'vor Heddas Hütte (Objekt ort_p5_kessel_hedda)', 'x': 6291.6, 'y': 6677.8, 'stehen': [6291.6, 6679.2], 'region': 'rabenmoor'},
+                  {'id': 'kessel_kraeuterhof', 'ort': 'vor dem Kräuterhaus am Kräuterhof (Objekt kraeuterhof_kessel)', 'x': 6422.0, 'y': 7062.0, 'stehen': [6422.0, 7063.4], 'region': 'fl_186_211'}]}
 json.dump(aus, open(os.path.join(RT, 'welt', 'kraeuter_standorte.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
 from collections import Counter; print('Kräuter-Fundstellen:', dict(Counter(s['art'] for s in stellen)))

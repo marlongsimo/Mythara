@@ -7,7 +7,7 @@
 import { LADEN_LISTE, ladenOffen } from "../../../shared/laeden";
 import { ladenZeigen } from "../laden";
 import * as THREE from "three";
-import { bildnisseVon } from "../dialog"; /* Gesprächsfenster */
+import { bildnisseVon, dialogOffen, gespraechMit } from "../dialog"; /* Gesprächsfenster */
 import { kopfbild } from "./kopfbild";
 import { eigenesBildnis, aktiverHeld } from "../held";
 import { questGeladen, rede, questVerfolgt, questStandB, questDing, verfolgteQuest, faehreFahren } from "../welt";
@@ -26,7 +26,7 @@ import { type Welt3D, figurWeit } from "./motor";
 /** Was die Welt der Quest zur Verfügung stellt */
 export interface QuestUmgebung { motor: Welt3D; ort: { x: number; y: number }; hier: string; gesperrt: boolean; sperrenNeu(): void }
 /** q: Id der Quest (shared/quests.ts); beiseite: steht gerade zur Seite; laeuft/fertig: entgegenlaufen (kommt) */
-interface Figur { n: QuestFigur; q: string; /** alle Quests, in denen die Figur steht (Othmar: Quest 1, B3, B4) – ein Modell für alle */ qs: string[]; npc: Npc3D | null; x: number; y: number; nm: HTMLElement; mk: HTMLElement; beiseite?: boolean; laeuft?: boolean; fertig?: boolean; /** folgt dem Spieler (QuestFigur.folgt) */ folger?: Folger; zx?: number; zy?: number }
+interface Figur { /** wendet sich gerade dem Helden zu (Gespräch offen, #100) */ zugewandt?: boolean; n: QuestFigur; q: string; /** alle Quests, in denen die Figur steht (Othmar: Quest 1, B3, B4) – ein Modell für alle */ qs: string[]; npc: Npc3D | null; x: number; y: number; nm: HTMLElement; mk: HTMLElement; beiseite?: boolean; laeuft?: boolean; fertig?: boolean; /** folgt dem Spieler (QuestFigur.folgt) */ folger?: Folger; zx?: number; zy?: number }
 interface Objekt { d: QuestObjekt; q: string; g: THREE.Group; kaputt?: THREE.Group; heil?: THREE.Group; ring: THREE.Mesh }
 /** benannte Stellen für den Pfeil (QuestDef-Schritte mit wo: "esse" …) */
 const ORTE: Record<string, [number, number]> = { esse: [STATIONEN.esse.x, STATIONEN.esse.y], amboss: [STATIONEN.amboss.x, STATIONEN.amboss.y] };
@@ -115,6 +115,9 @@ export class QuestWelt {
     for (const f of this.figuren) if (f.n.folgt) this.folgen(f, dt);
     for (const f of this.figuren) { const p = this.wo(f), sichtbar = !!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < figurWeit(); /* #103 */
       if (f.npc) { f.npc.gruppe.visible = sichtbar; if (sichtbar) { f.npc.gruppe.position.set(f.x, M.hoehe(f.x, f.y), f.y); f.npc.schritt(dt); } }
+      if (f.npc && !f.laeuft) { const im = dialogOffen() && gespraechMit() === f.n.id; /* #100: im Gespräch dreht sich die Figur zum Helden, danach zurück in ihre Grundhaltung */
+        if (im) { f.npc.blick(this.u.ort.x - f.x, this.u.ort.y - f.y); f.zugewandt = true; }
+        else if (f.zugewandt) { f.zugewandt = false; const B = f.n.beiseite; f.npc.blick(...(f.beiseite && B ? B.blick : f.n.blick)); } }
       /* wer im Haus umhergeht (der Bürgermeister im Rathaus): Name und Marker nur aus der Nähe – sonst schweben sie über dem Dach */
       const nah = !f.n.wandert || (!!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 7), h = p ? M.hoehe(p.x, p.y) : 0; f.nm.hidden = !sichtbar || !nah || !schildAn(f.nm, M, p!.x, h + 2.35, p!.y);
       /* „!“ / „?“ aus den Quest-Daten, nur beim Verfolgen – eine Einführung zeigt ihren Geber auch vorher */

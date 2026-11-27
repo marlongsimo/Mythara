@@ -1,0 +1,20 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "gegner.wiedergaenger – Wiedergänger: langsamer Toter in zerlumpten Wacht-Resten (Stufe 38): die Wacht-Figur verwittert und moosig mit fahlgrünen Augen (fabrik/stein.py), Gehen halb so schnell. Aus stadtwache3d v002 (Meshy „Azure Lionguard“).",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "stich2h",
+    "treffer",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [],
+  "gangtempo": 0.5,
+  "kampftempo": 0.7
+}

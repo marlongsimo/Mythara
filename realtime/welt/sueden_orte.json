@@ -44,6 +44,18 @@
   "waldsenke": [
    6342,
    6968
+  ],
+  "faehrtenlager": [
+   6608,
+   6834
+  ],
+  "laemmerhang": [
+   6292,
+   7096
+  ],
+  "distelhof": [
+   6560,
+   6966
   ]
  },
  "npc": [
@@ -82,6 +94,24 @@
    "rolle": "Schmied (S5)",
    "x": 6469,
    "y": 7244
+  },
+  {
+   "id": "jaegerin_faehrtenlager",
+   "rolle": "Jägerin",
+   "x": 6610,
+   "y": 6836
+  },
+  {
+   "id": "schaeferin_laemmerhang",
+   "rolle": "Schäferin",
+   "x": 6293,
+   "y": 7095
+  },
+  {
+   "id": "baeuerin_distelhof",
+   "rolle": "Bäuerin",
+   "x": 6561,
+   "y": 6966
   }
  ],
  "gegner": [
@@ -385,7 +415,7 @@
   }
  ],
  "furt": {
-  "x": 6425.5,
+  "x": 6426,
   "y": 7246,
   "schalter": "lehmfurt_trittsteine"
  }

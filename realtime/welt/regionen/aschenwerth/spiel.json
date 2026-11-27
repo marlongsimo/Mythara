@@ -90,6 +90,23 @@
    }
   },
   {
+   "id": "federmutter_abstieg",
+   "art": "eingang",
+   "x": 98,
+   "y": 136.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Zwischen den Spiralsteinen klafft ein Spalt im Torf. Darunter: Federn, Kälte, ein Rascheln.",
+    "tat": "federmutter_kammer",
+    "knopf": "Hinabsteigen",
+    "ziel": [
+     11536,
+     9625.5
+    ]
+   }
+  },
+  {
    "id": "steinkreis_2",
    "art": "lesen",
    "x": 44,

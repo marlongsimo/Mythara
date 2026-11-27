@@ -1,11 +1,12 @@
 """Mythara Fabrik – Beute und Questgegenstände (Phase 4) in Blender bauen (glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   <blender-python> fabrik/beute.py -- <art> <ziel.glb>
-  art: karrenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge | sichel | stock | staken
+  art: karrenbrief | rabenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge | sichel | stock | staken | federn | chitin | giftdruese | seelenlicht | quellstein | lindenspan
 
 karrenbrief: zusammengerollter Frachtbrief mit Schnur und rotem Siegel · schluesselbund: Eisenring mit drei Bartschlüsseln ·
 silberleuchter: dreiarmiger Silberleuchter mit Kerzen · apfel: roter Apfel mit Stiel und Blatt ·
 rotes_banner: rotes Tuch mit schwarzem Zeichen an Querstange und Stab · apfelkorb: Weidenkorb voller Äpfel mit Henkel (für Gisbert Ast, wird in der Hand getragen).
+rabenbrief (#128): Karrenbrief mit schwarzem Rabensiegel · federn, chitin, giftdruese (#119, Rohstoffe) · seelenlicht, quellstein, lindenspan (fehlende Rucksackbilder).
 """
 import math, os, random, sys
 import bpy
@@ -45,13 +46,16 @@ def apfel(ort, r, m_haut):
     o.location = ort; rohr((ort[0], ort[1], ort[2] + r * 0.6), (ort[0] + r * 0.08, ort[1], ort[2] + r * 1.05), r * 0.06, mat("stiel", (90, 60, 30)), 6)
     return o
 
-if ART == "karrenbrief":
+if ART in ("karrenbrief", "rabenbrief"):
     PAP = mat("papier", (225, 205, 160), 0.9)
     o = rohr((-0.11, 0, 0.025), (0.11, 0, 0.025), 0.025, PAP, 24); bpy.ops.object.mode_set(mode="OBJECT")
     for v in o.data.vertices: v.co.z += 0.0                                                      # Rolle
     wuerfel((0.0, -0.06, 0.003), (0.2, 0.08, 0.003), PAP, (0, 0, 0.06), 0.4)                 # ausgerollter Rand, der vorn auf dem Boden liegt
     for x in (-0.05, 0.05): ring((x, 0, 0.025), 0.027, 0.0025, mat("schnur", (150, 110, 60), 0.9), (0, math.radians(90), 0))
-    bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.018, depth=0.008, location=(0.0, -0.022, 0.035), rotation=(math.radians(70), 0, 0)); o = glatt(bpy.context.object); o.data.materials.append(mat("siegel", (165, 25, 25), 0.4))
+    bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.018, depth=0.008, location=(0.0, -0.022, 0.035), rotation=(math.radians(70), 0, 0)); o = glatt(bpy.context.object); o.data.materials.append(mat("siegel", (165, 25, 25), 0.4) if ART == "karrenbrief" else mat("siegel_schwarz", (24, 22, 26), 0.35))
+    if ART == "rabenbrief":                                                                       # Rabe im schwarzen Wachs (wie das Siegel der Wrackkiste, Phase 10)
+        R_ = mat("rabe_rot", (130, 28, 30), 0.4); kugel((0.0, -0.027, 0.039), 0.006, R_, (1, 0.4, 0.7), 8)
+        for sx in (-1, 1): bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=0.003, radius2=0, depth=0.014, location=(sx * 0.006, -0.028, 0.041), rotation=(math.radians(70), 0, sx * 0.9)); bpy.context.object.data.materials.append(R_)
     for i in range(5): wuerfel((-0.06 + i * 0.012, -0.07, 0.0065), (0.006, 0.05 - i * 0.006, 0.0005), mat("tinte", (50, 35, 25)), (0, 0, 0.06), 0.1)
 elif ART == "schluesselbund":
     EIS = mat("eisen", (110, 105, 100), 0.45, 0.8)
@@ -92,8 +96,9 @@ elif ART == "apfelkorb":
     rohr((-0.14, 0, 0.12), (-0.1, 0, 0.27), 0.008, WEIDE); rohr((-0.1, 0, 0.27), (0.1, 0, 0.27), 0.008, WEIDE); rohr((0.1, 0, 0.27), (0.14, 0, 0.12), 0.008, WEIDE)   # Henkel
     for i in range(9):
         a = random.uniform(0, 6.3); r = random.uniform(0.0, 0.08); apfel((r * math.cos(a), r * math.sin(a), 0.115 + random.uniform(0, 0.02)), 0.035, mat("apfelrot" if i % 3 else "apfelgelb", (190, 35, 30) if i % 3 else (205, 170, 50), 0.35))
-elif ART in ("rabenfedern", "federsiegel", "rabenschwinge"):
+elif ART in ("rabenfedern", "federsiegel", "rabenschwinge", "federn"):
     FED = mat("feder", (30, 30, 38), 0.45, 0.2); SCH = mat("schimmer", (60, 45, 95), 0.35, 0.3); KIEL = mat("kiel", (150, 140, 125), 0.5)
+    if ART == "federn": FED = mat("feder_grau", (176, 176, 172), 0.6); SCH = mat("feder_weiss", (236, 236, 230), 0.6)   # Rohstoff Federn (#119): Bündel wie die Rabenfedern, grau-weiß
     def feder(ort, laenge, winkel, breite=0.022, m=FED, z=0.0):
         a = math.radians(winkel); d = Vector((math.cos(a), math.sin(a), 0)); q = Vector((-d.y, d.x, 0)); o0 = Vector(ort) + Vector((0, 0, z)); pts = []
         for k in range(9):
@@ -103,7 +108,7 @@ elif ART in ("rabenfedern", "federsiegel", "rabenschwinge"):
         me = bpy.data.meshes.new("f"); me.from_pydata([tuple(p) for p in pts[1:-1]], [], [tuple(range(len(pts) - 2))]); f = bpy.data.objects.new("f", me); bpy.context.collection.objects.link(f)
         f.data.materials.append(m); f.modifiers.new("d", "SOLIDIFY").thickness = 0.002
         rohr(tuple(o0 - d * 0.012), tuple(o0 + d * laenge * 0.9 + Vector((0, 0, 0.002))), 0.0011, KIEL, 5)
-    if ART == "rabenfedern":
+    if ART in ("rabenfedern", "federn"):
         for k, (w, L, b) in enumerate(((60, 0.2, 0.024), (78, 0.23, 0.027), (95, 0.19, 0.022))): feder((0.0 + 0.012 * k, -0.08, 0.004 * k), L, w, b, SCH if k == 1 else FED)
         ring((0.003, -0.07, 0.01), 0.01, 0.003, mat("schnur", (150, 110, 60), 0.9))
     elif ART == "federsiegel":
@@ -144,6 +149,29 @@ elif ART == "staken":                                                           
     HOLZ = mat("stakenholz", (140, 105, 65), 0.8); EIS = mat("eisen", (90, 88, 86), 0.45, 0.8)
     rohr((0, 0, 0.08), (0, 0, 2.4), 0.018, HOLZ, 10); rohr((0, 0, 0), (0, 0, 0.1), 0.012, EIS, 8, 0.002); rohr((0, 0, 0.08), (0.06, 0, 0.16), 0.007, EIS, 6)
     for z in (1.0, 1.6): rohr((0, 0, z), (0, 0, z + 0.04), 0.021, mat("wicklung", (110, 80, 50), 0.9), 10)
+elif ART == "chitin":                                                                           # Rohstoff Chitin (#119): drei gewölbte, gerippte Panzerplatten in den Farben des Sandkriechers
+    for k, (x, y, a) in enumerate(((-0.03, 0.0, 0.3), (0.03, 0.02, -0.4), (0.0, -0.04, 1.2))):
+        o = kugel((x, y, 0.015 + 0.006 * k), 0.05, mat("chitin", (186, 150, 100), 0.35) if k != 1 else mat("chitin_dunkel", (130, 98, 64), 0.35), (1.1, 0.7, 0.28), 16); o.rotation_euler.z = a
+        for r in range(3): ring((x, y, 0.02 + 0.006 * k + 0.004 * r), 0.03 + 0.008 * r, 0.0025, mat("chitin_rippe", (110, 80, 52), 0.5)).scale = (1.1, 0.7, 0.3)
+elif ART == "giftdruese":                                                                       # Rohstoff Giftdrüse (#119): glänzender Beutel in Glutorange mit grünlichem Gift, Stachelspitze des Glutskorpions
+    kugel((0, 0, 0.035), 0.035, mat("druese", (210, 110, 40), 0.15), (1.3, 1, 0.9), 20); kugel((0.005, -0.012, 0.05), 0.016, mat("gift", (150, 220, 60), 0.1), (1.2, 0.8, 0.6), 12)
+    for k in range(4): rohr((-0.03 + 0.02 * k, 0.025, 0.04), (-0.034 + 0.022 * k, 0.04, 0.05), 0.002, mat("ader", (120, 30, 20), 0.5), 5)
+    bpy.ops.mesh.primitive_cone_add(vertices=8, radius1=0.012, radius2=0, depth=0.05, location=(0.065, 0, 0.03), rotation=(0, math.radians(100), 0)); glatt(bpy.context.object).data.materials.append(mat("stachel", (34, 16, 14), 0.4))
+    kugel((0.09, 0, 0.026), 0.004, mat("gifttropfen", (150, 220, 60), 0.1), (1, 1, 1.3), 8)
+elif ART == "seelenlicht":                                                                      # Seelenlicht als Gegenstand: warmes, leuchtendes Licht mit Lichthülle und Funken (wie die Seelenlichter der Welt)
+    kugel((0, 0, 0.05), 0.022, mat("licht_kern", (255, 240, 200), 0.2), n=16); kugel((0, 0, 0.05), 0.038, mat("licht_huelle", (255, 200, 120), 0.3), n=16)
+    for k in range(5): a = k * 1.26; kugel((0.06 * math.cos(a), 0.06 * math.sin(a), 0.05 + 0.02 * math.sin(2 * a)), 0.005, mat("funke", (255, 230, 160), 0.3), n=8)
+    for m_ in bpy.data.materials:
+        if m_.name in ("licht_kern", "licht_huelle", "funke"):
+            b = m_.node_tree.nodes["Principled BSDF"]; b.inputs["Emission Color"].default_value = b.inputs["Base Color"].default_value; b.inputs["Emission Strength"].default_value = 3.0 if m_.name != "licht_huelle" else 1.2
+elif ART == "quellstein":                                                                       # Questgegenstand: flacher, rund geschliffener Bachstein, feucht glänzend
+    o = kugel((0, 0, 0.018), 0.05, mat("quellstein", (150, 160, 158), 0.2), (1.25, 0.9, 0.36), 24)
+    for v in o.data.vertices: v.co.x += 0.002 * math.sin(v.co.y * 90)
+    kugel((0.02, -0.01, 0.034), 0.01, mat("ader_weiss", (230, 228, 220), 0.3), (2.0, 0.3, 0.15), 10).rotation_euler.z = 0.5
+elif ART == "lindenspan":                                                                       # Questgegenstand: heller Holzspan der alten Linde mit einem Tropfen Honig
+    o = wuerfel((0, 0, 0.008), (0.16, 0.035, 0.012), mat("lindenholz", (222, 196, 150), 0.7), (0, 0, 0.2), 0.3)
+    for v in o.data.vertices: v.co.z += 0.004 * math.sin(v.co.x * 40) * (v.co.z > 0.008); v.co.y *= (1 - 0.6 * max(0, v.co.x / 0.08))
+    rohr((-0.07, 0.0, 0.012), (0.06, 0.004, 0.012), 0.0015, mat("maserung", (170, 136, 90), 0.8), 4); kugel((0.01, -0.008, 0.016), 0.008, mat("honig", (230, 160, 30), 0.1), (1, 1, 0.6), 10)
 elif ART == "splitterkern":
     KRIST = mat("kristall", (90, 150, 235), 0.1); KERN = mat("kern", (200, 170, 255), 0.05)
     for m_ in (KRIST, KERN):

@@ -3,14 +3,14 @@
  * Kurz antippen: hingehen und reden (Gespräch mit „Nein danke“ / „Laden ansehen“). Lange drücken / Rechtsklick: „Sprechen“, dann „Laden ansehen“.
  */
 import { LADEN_LISTE, Laden, LADEN_ZEICHEN } from "../../../shared/laeden";
-import { lokalesGespraech } from "../dialog";
+import { lokalesGespraech, dialogOffen, gespraechMit } from "../dialog";
 import { ladenZeigen } from "../laden";
 import { Npc3D } from "./npc3d";
 import { schildAn } from "./mitspieler";
 import { type Welt3D, figurWeit } from "./motor";
 
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number } }
-interface Haendler { l: Laden; npc: Npc3D; nm: HTMLElement; /** nur zeichnen, Antippen läuft über die Weltdaten (Handwerker) */ nurBild?: boolean }
+interface Haendler { l: Laden; npc: Npc3D; nm: HTMLElement; /** nur zeichnen, Antippen läuft über die Weltdaten (Handwerker) */ nurBild?: boolean; /** wendet sich gerade dem Helden zu (#100) */ zugewandt?: boolean }
 const vorname = (l: Laden) => l.haendler.split(" ")[0];
 /** Gespräch mit dem Händler: Gruß, dann „Nein danke“ oder „Laden ansehen“ */
 export function haendlerReden(l: Laden): void {
@@ -30,6 +30,8 @@ export class HaendlerWelt {
   schritt(dt: number): void { const M = this.u.motor, o = this.u.ort;
     for (const h of this.alle) { const sichtbar = Math.hypot(h.l.x - o.x, h.l.y - o.y) < figurWeit(); /* #103 */ h.npc.gruppe.visible = sichtbar;
       if (sichtbar) { h.npc.gruppe.position.set(h.l.x, M.hoehe(h.l.x, h.l.y), h.l.y); h.npc.schritt(dt); }
+      if (sichtbar) { const im = dialogOffen() && gespraechMit() === "lokal:" + h.l.haendler; /* #100: im Gespräch zum Helden drehen, danach zurück */
+        if (im) { h.npc.blick(o.x - h.l.x, o.y - h.l.y); h.zugewandt = true; } else if (h.zugewandt) { h.zugewandt = false; h.npc.blick(h.l.blick[0], h.l.blick[1]); } }
       h.nm.hidden = !sichtbar || !schildAn(h.nm, M, h.l.x, M.hoehe(h.l.x, h.l.y) + 2.35, h.l.y); } }
   /** Ladensymbole auf der Minikarte (ins Kartenbild gezeichnet wie das Quest-!: Held in der Mitte, felder = Breite, g = Drehung der Kamera) */
   karteMarken(c: HTMLCanvasElement, felder: number, o: { x: number; y: number }, g: number): void { const x = c.getContext("2d"); if (!x) return; const n = c.width, k = n / felder, rand = n / 2 / 1.5, gr = Math.max(13, n * 0.075);

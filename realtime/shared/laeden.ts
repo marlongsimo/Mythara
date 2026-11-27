@@ -4,8 +4,9 @@
  * die Theke liegt 0–0,7 Felder nördlich davon). Der Händler steht südlich hinter der Theke und schaut nach Norden auf den Marktplatz, der Kunde davor. Bezahlt wird mit Splittern. Preise und Werte sind vorläufig (Balancing folgt).
  */
 import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende";
+import TROEDLER_STANDORTE from "../welt/troedler_standorte.json";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme";
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}`;
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
   gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string }
@@ -54,17 +55,32 @@ export const LAEDEN: Record<LadenId, Laden> = {
   traenke: { id: "traenke", name: "Schluck auf!", spruch: "Tränke für jedes Wehwehchen.", haendler: "Mira Kräuterlieb", modell: "npc.kraeuterfrau", x: 6456, y: 6441, blick: [0, -1], vor: [6456.5, 6438.5],
     gruss: "Ach, du siehst blass aus, Kindchen. Ein Schlückchen gefällig?", tschuess: "Komm wieder, bevor's wehtut. Hinterher ist's teurer.", waren: [{ g: "kleiner_heiltrank", preis: 35 }, { g: "heiltrank", preis: 150 }] },
 };
+/* Trödler (#88): je Standplatz der Welt (realtime/welt/troedler_standorte.json) ein Händler, der alles Handelbare zu 50 % des Grundwerts ankauft und nichts verkauft.
+   Entscheidung des Nutzers: kein Trödler im Kreuzwald und im Osthof, der erste steht im Rabenmoor. Figuren npc.troedler (Karren) / npc.troedlerin (Bauchladen) folgen mit dem Figuren-Zweig. */
+for (const t of (TROEDLER_STANDORTE as { standorte: { id: string; x: number; y: number; ort: string; variante: string }[] }).standorte) {
+  const frau = t.variante === "bauchladen";
+  LAEDEN[t.id as LadenId] = { id: t.id as LadenId, name: frau ? "Bauchladen" : "Trödelkarren", spruch: "Ich nehm alles – fast alles.", haendler: frau ? "Die Trödlerin" : "Der Trödler",
+    modell: frau ? "npcfrau3d" : "npcmann3d", x: t.x, y: t.y, blick: [0, 1], vor: [t.x, t.y + 1.2], troedler: true, waren: [],
+    gruss: frau ? "Na, was schleppst du da mit dir rum? Zeig her, ich mach dir einen Preis." : "Alles hat seinen Preis. Die Hälfte davon zahl ich dir.",
+    tschuess: frau ? "Komm wieder, wenn der Rucksack drückt." : "Gute Wege. Und bring mir, was du nicht brauchst." }; }
 export const LADEN_LISTE = Object.values(LAEDEN);
 /** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */
 export const ladenOffen = (L: Laden, stand: (id: string) => string): boolean => !L.wenn || stand(L.wenn.quest) === L.wenn.phase;
 /** Symbol je Laden (Minikarte und Karte) */
-export const LADEN_ZEICHEN: Record<LadenId, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯" };
+export const LADEN_ZEICHEN: Record<string, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯" };
+for (const L of LADEN_LISTE) if (L.troedler) LADEN_ZEICHEN[L.id] = "🪙"; /* Trödler (#88) */
 /* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */
 /** Ein Händler zahlt für seine eigenen Waren so viel von seinem Preis; der Trödler so viel vom Grundwert */
 export const ANKAUF_ANTEIL = 0.8, TROEDLER_ANTEIL = 0.5;
 /** Grundwert eines Gegenstands: der höchste Ladenpreis, sonst GegenstandDef.wert (sonst keiner – dann kauft auch der Trödler nicht) */
 export function grundwert(g: string): number | null { let p = 0; for (const L of Object.values(LAEDEN)) for (const w of L.waren) if (w.g === g) p = Math.max(p, w.preis);
-  if (p > 0) return p; const G = GEGENSTAENDE[g]; return G && G.wert && G.wert > 0 ? G.wert : null; }
+  if (p > 0) return p; const G = GEGENSTAENDE[g]; return G && G.wert && G.wert > 0 ? G.wert : G ? standardWert(G) : null; }
+/** Trödler (#88): Grundwert nach Seltenheit für alles ohne Ladenpreis und ohne eigenen wert – Rohstoffe, Fische, Essen, Werkzeug, Ausrüstung (×4), Abfall 1.
+ *  Questgegenstände, Zierde, Sammelstücke, Währung und Splitterbinden-Dinge haben keinen – die kauft niemand. */
+const WERT_JE_STUFE: Record<string, number> = { anfaenger: 2, gewoehnlich: 5, selten: 25, episch: 120, legendaer: 500, mythisch: 2000, set: 300 };
+const OHNE_WERT = new Set(["Questgegenstand", "Zierde", "Sammelstück", "Währung", "Splitterbinden"]);
+function standardWert(G: { art: string; seltenheit: string; platz?: string }): number | null {
+  if (OHNE_WERT.has(G.art)) return null; if (G.art === "Abfall") return 1; const w = WERT_JE_STUFE[G.seltenheit]; return w ? w * (G.platz ? 4 : 1) : null; }
 /** Was dieser Händler für ein Stück zahlt (Splitter, mindestens 1) – null: kauft er nicht (nicht geführt, kein Grundwert, nicht handelbar: Quest, gebunden, geladen „(s)“, Splitter selbst) */
 export function ankaufPreis(L: Laden, g: string, d?: Daten): number | null { if (g === WAEHRUNG || !handelbar(g, d)) return null;
   if (L.troedler) { const w = grundwert(g); return w === null ? null : Math.max(1, Math.floor(w * TROEDLER_ANTEIL)); }

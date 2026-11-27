@@ -12,7 +12,7 @@ if q.endswith(".blend"): bpy.ops.wm.open_mainfile(filepath=os.path.abspath(q))
 else: bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.import_scene.gltf(filepath=os.path.abspath(q))
 sc = bpy.context.scene
 for o in list(bpy.data.objects):
-    if o.type in ("CAMERA", "LIGHT"): bpy.data.objects.remove(o)
+    if o.type in ("CAMERA", "LIGHT") or o.name.startswith("Icosphere"): bpy.data.objects.remove(o)   # Icosphere: Knochenform aus dem Figuren-Export (Teile), nicht mitrahmen
 if opt.get("matt") == "1":
     for im in bpy.data.images:
         w, h = im.size

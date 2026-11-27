@@ -130,6 +130,29 @@
    }
   },
   {
+   "id": "faehrtenlager",
+   "art": "lesen",
+   "x": 176,
+   "y": 85.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Fährtenlager. Jäger aus Graufurt trocknen hier Felle und lesen die Spuren der Wölfe.",
+    "station": "feuer"
+   }
+  },
+  {
+   "id": "distelhof",
+   "art": "lesen",
+   "x": 128,
+   "y": 214.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Distelhof. Mehr Disteln als Korn – aber die Bäuerin gibt nicht auf."
+   }
+  },
+  {
    "id": "wegweiser_weidenhain_sued_lesen",
    "x": 16,
    "y": 11.2,
