@@ -84,6 +84,7 @@ Zuletzt aktualisiert: 26.11.2026.
 ## Für später (Ideen, noch nicht geplant)
 
 - **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
+- **Besondere Quest-Belohnungen für Fernkampf und Magie** (Wunsch 27.11.): bisher überwiegen Nahkampf-Belohnungen (Waldsäbel, Klinge des Grauen Hauptmanns). Künftige Quest-Blöcke sollen Belohnungen gleichmäßig auf **Nah, Fern und Magie** verteilen (eigene Bögen/Armbrüste, Stäbe, Köcher/Fokus …). Grundsatz für alle neuen Blöcke; vorhandene Entwürfe bei Gelegenheit prüfen.
 - **Feste Live-Zeiten** (3:00 und 16:00 Uhr deutscher Zeit, 15-Minuten-Countdown im Spiel, Bugfixes jederzeit) – Vorlage in #96 (geschlossen, „für später“).
 - Kutschennetz zwischen den Großstädten · Handelskontor (`doku/konzepte/handelskontor.md`) · Splitterinsel
 
