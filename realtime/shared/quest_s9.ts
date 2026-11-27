@@ -87,6 +87,7 @@ export const QUEST_S9: QuestDef = {
       ],
     }])),
   },
+  glueckwunsch: "Die Post ist angekommen, und das Küstenhaus vergisst keinen Boten.",
   belohnungText: "Belohnung: Geschick 300 XP, 100 Splitter · unterwegs: ein Brot, ein kleiner Heiltrank, ein gebratener Barsch, ein Eichenstamm, ein Seelenlicht, ein Kupferbarren",
   belohnung: { xp: { geschick: 300 }, splitter: 100 },
   punkte: 1,

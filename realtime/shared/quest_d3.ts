@@ -59,6 +59,7 @@ export const QUEST_D3: QuestDef = {
     },
   },
   schalter: { alma_pastete: FERTIG },
+  glueckwunsch: "Zu viel Salz. Aber gut. Die kommt auf die Karte.",
   belohnungText: "Belohnung: Fischen- und Kochen-XP, 150 Splitter · danach: Alma verkauft Welspastete",
   belohnung: { berufe: { fischen: 1000, kochen: 1000 }, splitter: 150 },
   punkte: 1,

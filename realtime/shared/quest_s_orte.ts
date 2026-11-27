@@ -27,7 +27,7 @@ export const LEHMFURT = { schmied: [6469, 7244] as Feld, bruch: [6500, 7240] as 
 
 /* ───────── Figuren des Südens (Modelle aus #127; Tamme und Odila noch mit vorhandenen Modellen) ───────── */
 export const RIKE: QuestFigur = { id: "rike", name: "Rike Heck", modell: "npc.baeuerin", x: HECKENHOF.baeuerin[0], y: HECKENHOF.baeuerin[1], blick: [0, 1] };
-export const TAMME: QuestFigur = { id: "tamme", name: "Tamme", modell: "npc.alter_bauer", x: HECKENHOF.schaefer[0], y: HECKENHOF.schaefer[1], blick: [0, 1] };
+export const TAMME: QuestFigur = { id: "tamme", name: "Tamme", modell: "npc.hirte1", x: HECKENHOF.schaefer[0], y: HECKENHOF.schaefer[1], blick: [0, 1] };
 export const IMME: QuestFigur = { id: "imme", name: "Imme Sommer", modell: "npc.imkerin", x: SUMMWEIDE.imkerin[0], y: SUMMWEIDE.imkerin[1], blick: [0, 1] };
 export const EBBA: QuestFigur = { id: "ebba", name: "Ebba Ried", modell: "npc.schilffischerin", x: SCHILFSEE.fischerin[0], y: SCHILFSEE.fischerin[1], blick: [-1, 0] };
 export const BODO: QuestFigur = { id: "bodo", name: "Bodo Span", modell: "npc.saegemueller", x: ERLENGRUND.saegemueller[0], y: ERLENGRUND.saegemueller[1], blick: [0, 1] };

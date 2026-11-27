@@ -71,6 +71,7 @@ export const QUEST_S1: QuestDef = {
       ],
     },
   },
+  glueckwunsch: "Der Kerl winkt, die Knechte sind satt. Die Saat kommt. Danke.",
   belohnungText: "Belohnung: Handwerk 300, Kochen 200 XP, 2 Brot, 60 Splitter",
   belohnung: { berufe: { handwerk: 300, kochen: 200 }, splitter: 60, gegenstaende: [{ g: "brot", n: 2 }] },
   punkte: 1,

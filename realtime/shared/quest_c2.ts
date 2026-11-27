@@ -3,7 +3,8 @@
  * Grundlage: doku/quests/3-raben-trilogie.pdf (Seite 5–6), doku/konzepte/phase-6.md (zwei Steinkreise, Abstieg durch die Gruft).
  * Mutter Hedda gibt Moorglöckchen-Wachs, mit der Rabenkapuze greifen die Novizen nicht an. An beiden Steinkreisen lauschen (im Moor und auf Aschenwerth),
  * drei Federsiegel von Akoluthen, mit Hedda die Silben zusammensetzen (Dialog-Rätsel), die vier Spiralsteine auf Aschenwerth in der richtigen Reihenfolge
- * berühren (Mond, Welle, Feder, Auge; falsch = nur ein Misston), Federmutter Ravena steigt auf, zurück zu Hedda.
+ * berühren (Mond, Welle, Feder, Auge; falsch = nur ein Misston), unter dem Steinkreis das Nest der Federmutter Ravena, zurück zu Hedda.
+ * Boss-Regel (#116): In der Quest kämpfst du allein gegen eine schwächere Fassung (Schalter federmutter_kammer), danach die stärkere öffentlich oder als eigene Instanz (federmutter_danach).
  * Lohn: Rabenbeinschützer, Fernkampf 800, Magie 600, Defense 800 XP, 1 Questpunkt. Schalter gruft_offen (Abstieg in den Rabengrund).
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 6 (Gesang mit Zeitfenster, Verkleidung, Akoluth-Beute, Federmutter, Zufalls-Reihenfolge je Spieler)
@@ -15,7 +16,9 @@ import { C1 } from "./quest_c1";
 export const C2 = "aschenwerth_gesang_der_spiralsteine";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 /** Hedda vor ihrer Hütte (rabenmoor 17,4 | 21,4), Steinkreis im Moor (rabenmoor 86 | 19,6), Steinkreis auf Aschenwerth (98 | 142,4), Gruft (44 | 134,6) */
-const HEDDA: [number, number] = [6289.4, 6677.4], KREIS_MOOR: [number, number] = [6358, 6675.6], KREIS_INSEL: [number, number] = [6242, 6734.4], GRUFT: [number, number] = [6188, 6726.6];
+const HEDDA: [number, number] = [6289.4, 6677.4], KREIS_MOOR: [number, number] = [6358, 6675.6], KREIS_INSEL: [number, number] = [6242, 6734.4];
+/** Einstieg ins Nest im Steinkreis von Aschenwerth (federmutter_abstieg), Ravena im Nest (Region federmutter_kammer, shared/bosse.ts) */
+const ABSTIEG: [number, number] = [6242, 6728.4], NEST: [number, number] = [11536.5, 9611.5];
 /** Die vier Spiralsteine um den Kreis auf Aschenwerth (Vorschlag, die Welt prüft) */
 const STEINE = { mond: [6239.5, 6731.5], welle: [6244.5, 6731.5], feder: [6244.5, 6737.5], auge: [6239.5, 6737.5] } as const;
 const NAME = { mond: "Spiralstein mit dem Mond", welle: "Spiralstein mit der Welle", feder: "Spiralstein mit der Feder", auge: "Spiralstein mit dem Auge" } as const;
@@ -58,8 +61,10 @@ export const QUEST_C2: QuestDef = {
       log: "Berühr die Spiralsteine am Kreis auf Aschenwerth in der Reihenfolge, die ihr gefunden habt ({n:steine})." },
     { id: "auge", text: "Die Spiralsteine in der richtigen Reihenfolge berühren", ereignis: { art: "objekt", id: "c2_auge" }, nach: ["feder"], gruppe: "steine", wo: [STEINE.auge[0], STEINE.auge[1]],
       log: "Berühr die Spiralsteine am Kreis auf Aschenwerth in der Reihenfolge, die ihr gefunden habt ({n:steine})." },
-    { id: "ravena", text: "Federmutter Ravena besiegen", ereignis: { art: "erlegen", typ: "federmutter" }, nach: ["auge"], wo: GRUFT,
-      log: "Aus der Gruft steigt Federmutter Ravena. Sie wechselt zwischen Stab, Bogen und Speer – schau auf ihre Waffe." },
+    { id: "abstieg", text: "Unter den Steinkreis hinabsteigen", ereignis: { art: "betreten", region: "federmutter_kammer" }, nach: ["auge"], wo: ABSTIEG,
+      log: "Mitten im Steinkreis von Aschenwerth hat sich der Boden geöffnet. Steig hinab ins Nest – du gehst allein." },
+    { id: "ravena", text: "Federmutter Ravena besiegen", ereignis: { art: "erlegen", typ: "federmutter" }, nach: ["abstieg"], wo: NEST,
+      log: "Im Nest unter dem Steinkreis hebt Federmutter Ravena den Kopf. Sie wechselt zwischen Stab, Bogen und Speer – schau auf ihre Waffe." },
   ],
   objekte: [
     { id: "c2_kreis_moor", name: "Steinkreis im Moor", x: KREIS_MOOR[0], y: KREIS_MOOR[1], modell: "stelle", tat: "untersuchen", tatText: "Lauschen", weit: 4,
@@ -74,7 +79,7 @@ export const QUEST_C2: QuestDef = {
       { wenn: { ...SILBEN_FERTIG, offen: ["mond"] }, text: MISSTON }, { wenn: { offen: ["silben"] }, text: "Ein Stein mit einer Welle. Ohne das Lied weißt du nicht, was er will." }]),
     stein("feder", "Die Feder auf dem Stein glüht auf, und irgendwo unter dir knackt etwas ({n:steine}).", [
       { wenn: { ...SILBEN_FERTIG, offen: ["welle"] }, text: MISSTON }, { wenn: { offen: ["silben"] }, text: "Ein Stein mit einer Feder. Ohne das Lied weißt du nicht, was er will." }]),
-    stein("auge", "Das Auge öffnet sich – so sieht es jedenfalls aus. Der ganze Kreis singt jetzt, ohne Priester. Drüben an der Gruft bricht der Stein auf.", [
+    stein("auge", "Das Auge öffnet sich – so sieht es jedenfalls aus. Der ganze Kreis singt jetzt, ohne Priester. In der Mitte bricht der Boden auf, und von unten raschelt es. Federn.", [
       { wenn: { ...SILBEN_FERTIG, offen: ["feder"] }, text: MISSTON }, { wenn: { offen: ["silben"] }, text: "Ein Stein mit einem Auge. Ohne das Lied weißt du nicht, was er will." }]),
   ],
   /* Hedda: alt, spöttisch, sagt „Kind“, weiß mehr, als sie zugibt. Hinter dem Spott Angst um Liske. Je Abschnitt eine eigene Begrüßung. */
@@ -114,7 +119,9 @@ export const QUEST_C2: QuestDef = {
   },
   /* Federsiegel: in C2 von jedem Akoluthen garantiert, solange noch welche fehlen (Rolle Spiel: chance 100) */
   beute: { c2_federsiegel: { phase: ["laeuft"], offen: ["siegel"] } },
-  schalter: { gruft_offen: [FERTIG, { erledigt: ["auge"] }] },
+  /* Nest der Federmutter (shared/bosse.ts): in der Quest allein und schwächer, danach öffentlich oder eigene Instanz. Die Gruft öffnet sich nach dem Kreis (Abstieg in den Rabengrund, C3). */
+  schalter: { gruft_offen: [FERTIG, { erledigt: ["auge"] }], federmutter_kammer: { phase: ["laeuft"], erledigt: ["auge"], offen: ["ravena"] }, federmutter_danach: FERTIG },
+  glueckwunsch: "Der Gesang ist still. Gut gemacht, Kind. Das sag ich nicht oft.",
   belohnungText: "Belohnung: die Rabenbeinschützer, Fernkampf 800, Magie 600, Defense 800 XP · danach: der Abstieg durch die Gruft in den Rabengrund",
   belohnung: { xp: { fernkampf: 800, magie: 600, defense: 800 }, gegenstaende: [{ g: "rabenbeinschuetzer" }] },
   punkte: 1,

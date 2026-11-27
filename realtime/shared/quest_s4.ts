@@ -86,6 +86,7 @@ export const QUEST_S4: QuestDef = {
     { wenn: { offen: ["tebbe"] }, text: "Wie man Eisenbänder um ein Rad legt, weiß Tebbe in Weidenhain. Frag ihn zuerst." },
     { wenn: { erledigt: ["baender"] }, text: "Zwei Eisenbänder hast du schon." }] } },
   schalter: { saegemuehle_frei: FERTIG },
+  glueckwunsch: "HÖRST DU SIE? SIE SINGT! Die Werkbank gehört dir, wann du willst!",
   belohnungText: "Belohnung: Holzfällerei 400, Schmieden 300 XP, 2 Eichenstämme, 70 Splitter · danach: die Werkbank in der Sägemühle",
   belohnung: { berufe: { holzfaellerei: 400, schmieden: 300 }, splitter: 70, gegenstaende: [{ g: "stamm_eiche", n: 2 }] },
   punkte: 1,

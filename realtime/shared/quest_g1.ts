@@ -84,6 +84,7 @@ export const QUEST_G1: QuestDef = {
       ],
     },
   },
+  glueckwunsch: "Der Frachtbrief! Das Küstenhaus vergisst keine Schulden. Und keine Gefallen.",
   belohnungText: "Belohnung: Stärke 2.000, Fernkampf 2.000, Defense 1.500 XP, 400 Splitter · danach: Wegstein-Ziel Kielmund",
   belohnung: { xp: { staerke: 2000, fernkampf: 2000, defense: 1500 }, splitter: 400 },
   punkte: 2,
