@@ -36,7 +36,7 @@ Jeder Midgame-Boss hat **einen** seltenen, begehrten Drop: Ring oder Amulett mit
 | **Rissgrube** (Hochlande) | 75 | Minispiel, allein oder 2–4 | Uralt-Teile (`rissgrube.md`) |
 | **Unikat-Bosse** (Frostkrone) | 80 | 3 Bosse, je einer pro Stil-Schwäche, allein oder 2–4 | Unikate |
 | **„Die Passwacht hält“** | 70–80 | Punkte-Minispiel | Teile mit Stilboni gegen Punkte |
-| **Raid „Sturm auf die Wachtfeste“** | 85–90 | Gruppe 4–5 | Teile der Stufe 90 |
+| **Raid „Sturm auf die Wachtfeste“** | 85–90 | **fest 4 Spieler**, 3 Schwierigkeitsgrade | Teile der Stufe 90 |
 
 ## 3. Raid „Sturm auf die Wachtfeste“
 
@@ -47,7 +47,8 @@ Heute halten sie die **Gefallenen**: Wächter, die der Riss verdorben hat. Die G
 ### Eckdaten
 | Punkt | Vorschlag |
 |---|---|
-| Gruppe | **4–5 Spieler** |
+| Gruppe | **fest 4 Spieler** (entschieden 27.11.) |
+| Schwierigkeit | **einfach / mittel / schwierig**, vor dem Start wählbar (entschieden 27.11.) |
 | Stufe | Einstieg ab 85, Ziel 90 |
 | Dauer | etwa 30–45 min |
 | Ort | **Heerlager** vor der Feste (Bank, Feldküche, Werkbank, Kessel), Feste als eigene Instanz |
@@ -72,15 +73,27 @@ Zwischen den Abschnitten liegt eine **Rast**: Essen und Tränke aus der Feldküc
 
 So zählen die Berufe auch im Endgame.
 
+### Schwierigkeitsgrade (entschieden 27.11.)
+Die Gruppe wählt vor dem Start **einfach**, **mittel** oder **schwierig**. Je höher der Grad, desto mehr Leben und Schaden haben die Gegner und desto mehr Großangriffe kommen, mit weniger Vorwarnzeit.
+**Die Punkte zählen in jedem Grad gleich.** Wer schwierig wählt und schlecht spielt, bekommt trotzdem wenig Punkte. Gut gespielt bringt aber ein höherer Grad eine **bessere Chance auf guten Loot**.
+
+| Grad | Boss-Stufen (Richtwert) | Faktor auf die Loot-Chance |
+|---|---|---|
+| einfach | ca. 250–300 | ×0,5 (Vorschlag) |
+| mittel | ca. 300–400 | ×1 |
+| schwierig | ca. 400–500 | ×2 (Vorschlag) |
+
+Chance auf ein Teil der Stufe 90 = Grundchance × (Punkte ÷ 100) × Faktor des Grades.
+
 ### Belohnung
-- **Kriegsbeute-Punkte** je Spieler: Schaden, Aufgaben, Wiederaufrichten.
+- **Kriegsbeute-Punkte** je Spieler (0–100): Schaden, Aufgaben, Wiederaufrichten, keine Tode.
 - Jeder würfelt **für sich** (Kanon: Beute bekommt jeder für sich). Mehr Punkte heißt bessere Chance auf ein **Teil der Stufe 90**.
 - Grundbeute immer: Splitter, hochstufige Rohstoffe, Tränke.
 - Welche Teile es gibt, legt **der Nutzer** fest.
 
 ## Offen
 - Mechaniken je Midgame-Boss (Tabelle oben): passt die Verteilung?
-- Raid: kleinere Gruppen erlauben (z. B. 3 mit Warnung)? Harte Fassung für Wiederholer?
+- Raid: Faktoren der Grade, Grundchance; gibt es auf einfach überhaupt Teile der Stufe 90?
 - Namen: Wachtfeste, Gefallene, Heerlager, Torhauptmann, Schwingenmarschall, Waffenmeister, Rissprediger, Letzter Kommandant.
 - Freischalt-Quest-Kette.
 - Unikat-Bosse der Frostkrone: Namen und Steckbriefe.
