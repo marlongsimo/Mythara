@@ -1,0 +1,16 @@
+{
+ "id": "ockermutter_bau",
+ "name": "Der Bau der Ockermutter",
+ "untertitel": "Unter der Ockerkanzel (Instanz)",
+ "ursprung": [
+  374,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 12,
+ "ebene": "untergrund"
+}

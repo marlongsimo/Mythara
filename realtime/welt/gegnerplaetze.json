@@ -36558,16 +36558,16 @@
    "id": "gp_fl_216_225_2432",
    "region": "fl_216_225",
    "land": "Die Ockerlande",
-   "x": 7172.5,
-   "y": 7496.5,
+   "x": 7169.5,
+   "y": 7498.5,
    "gegner": [
-    "karawanenraeuber"
+    "splitterreiher"
    ],
-   "modell": "bandit_schlaeger",
+   "modell": "splitterreiher",
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "vorhanden (bandit_schlaeger)"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2433",
@@ -47355,7 +47355,22 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_225_3152",
+   "id": "gp_fl_216_225_3152",
+   "region": "fl_216_225",
+   "land": "Die Ockerlande",
+   "x": 7190.5,
+   "y": 7486.5,
+   "gegner": [
+    "splitterreiher"
+   ],
+   "modell": "splitterreiher",
+   "anzahl": 1,
+   "stufe": 50,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_fl_246_225_3153",
    "region": "fl_246_225",
    "land": "Die Ockerlande",
    "x": 7955.5,
@@ -47370,7 +47385,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_225_3153",
+   "id": "gp_fl_216_225_3154",
    "region": "fl_216_225",
    "land": "Die Ockerlande",
    "x": 6932.5,
@@ -47385,7 +47400,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_225_3154",
+   "id": "gp_fl_201_225_3155",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6734.5,
@@ -47400,7 +47415,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_225_3155",
+   "id": "gp_fl_201_225_3156",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6734.5,
@@ -47415,7 +47430,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_201_225_3156",
+   "id": "gp_fl_201_225_3157",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6734.5,
@@ -47430,7 +47445,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3157",
+   "id": "gp_fl_231_225_3158",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7814.5,
@@ -47445,7 +47460,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3158",
+   "id": "gp_fl_231_225_3159",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7835.5,
@@ -47460,7 +47475,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_239_3159",
+   "id": "gp_fl_201_239_3160",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
    "x": 6696.5,
@@ -47475,7 +47490,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_239_3160",
+   "id": "gp_fl_231_239_3161",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7627.5,
@@ -47490,7 +47505,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_239_3161",
+   "id": "gp_fl_216_239_3162",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7188.5,
@@ -47505,7 +47520,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_239_3162",
+   "id": "gp_fl_231_239_3163",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7786.5,
@@ -47520,7 +47535,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_239_3163",
+   "id": "gp_fl_231_239_3164",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7551.5,
@@ -47535,7 +47550,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_239_3164",
+   "id": "gp_fl_231_239_3165",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7635.5,
@@ -47550,7 +47565,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_239_3165",
+   "id": "gp_fl_201_239_3166",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
    "x": 6884.5,
@@ -47565,7 +47580,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_239_3166",
+   "id": "gp_fl_201_239_3167",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
    "x": 6882.5,
@@ -47580,7 +47595,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_239_3167",
+   "id": "gp_fl_201_239_3168",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
    "x": 6879.5,
@@ -47595,7 +47610,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_239_3168",
+   "id": "gp_fl_201_239_3169",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
    "x": 6872.5,
@@ -47610,7 +47625,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3169",
+   "id": "gp_fl_216_239_3170",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 6991.5,
@@ -47625,7 +47640,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3170",
+   "id": "gp_fl_216_239_3171",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 6989.5,
@@ -47640,7 +47655,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_239_3171",
+   "id": "gp_fl_216_239_3172",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7007.5,
@@ -47655,7 +47670,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3172",
+   "id": "gp_fl_216_239_3173",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7170.5,
@@ -47670,7 +47685,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_239_3173",
+   "id": "gp_fl_231_239_3174",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7454.5,
@@ -47685,7 +47700,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_216_239_3174",
+   "id": "gp_fl_216_239_3175",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7154.5,
@@ -47700,7 +47715,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3175",
+   "id": "gp_fl_216_239_3176",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7333.5,
@@ -47715,7 +47730,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_239_3176",
+   "id": "gp_fl_216_239_3177",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7328.5,
@@ -47730,7 +47745,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3177",
+   "id": "gp_fl_216_239_3178",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7188.5,
@@ -47745,7 +47760,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_239_3178",
+   "id": "gp_fl_216_239_3179",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7315.5,
@@ -47779,8 +47794,8 @@
    "gegner": 250
   },
   "fl_216_225": {
-   "plaetze": 157,
-   "gegner": 229
+   "plaetze": 158,
+   "gegner": 230
   },
   "fl_231_225": {
    "plaetze": 152,
@@ -53500,7 +53515,7 @@
   },
   {
    "grund": "Questorte/Lesestellen (r 6), Bedienstellen (r 8), Trödler (r 6)",
-   "anzahl": 393
+   "anzahl": 397
   },
   {
    "grund": "Wasser, Fels und Gebirge (nicht begehbar), Inselchen unter 400 Feldern, Untergrund (Dungeons mit eigenen Gegnern)"

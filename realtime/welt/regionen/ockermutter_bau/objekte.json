@@ -1,0 +1,8 @@
+[
+ {"id":"ockermutter_leiter","objekt":"hoehle_leiter_01","x":16.5,"y":29.5},
+ {"id":"ockermutter_feuerkorb_1","objekt":"moor_feuerkorb_01","x":14.5,"y":25.5},
+ {"id":"ockermutter_feuerkorb_2","objekt":"moor_feuerkorb_01","x":17.5,"y":25.5},
+ {"id":"ockermutter_lager","objekt":"hoehle_lager_01","x":16,"y":5.2},
+ {"id":"ockermutter_spuren_1","objekt":"welt_spuren_01","x":12,"y":18},
+ {"id":"ockermutter_spuren_2","objekt":"welt_spuren_01","x":20.5,"y":11}
+]

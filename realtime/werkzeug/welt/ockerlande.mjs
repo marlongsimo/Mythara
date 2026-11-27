@@ -241,6 +241,40 @@ const kraut = (id, art, x, y) => { for (let r = 2; r < 9; r++) for (let a = 0; a
       { id: "ockerhoehle_halle", art: "lesen", x: 16, y: 16.6, radius: 1.6, abgleich: "keiner", daten: { text: "Eine Halle im Inneren des Tafelbergs. Die Wände glänzen schwarz und blau – Ureisen und Splittereisen." } }] }, null, 1) + "\n");
   kraut("tafelrast_eisenhut_1", "eisenhut", cx + 10, cy - 8); }
 
+/* ───── Block I: Bau der Ockermutter unter der Ockerkanzel (Instanz) – Eingang an der Ostflanke (zu Dornhag hin), runde Kampfhöhle mit Platz für Sprung und Rudel,
+   dazu die Spuren der gerissenen Herde von Dornhag bis zum Eingang ───── */
+const OM_U = [374, 300], om = {};
+{ const T = TAFEL["Ockerkanzel"], [mx, my] = T.mitte, [rx, ry] = T.r, dh = orte.dornhag, a = Math.atan2(dh[1] - my, dh[0] - mx);
+  let s = 1.0, ex = 0, ey = 0; for (; s < 1.6; s += 0.02) { ex = Math.round((mx + Math.cos(a) * rx * s) * 2) / 2; ey = Math.round((my + Math.sin(a) * ry * s) * 2) / 2; if (jetzt(ex, ey) !== "F" && jetzt(ex, ey + 1) !== "F" && jetzt(ex, ey - 1.5) === "F" || s > 1.3) break; }
+  male(ex - 3, ey - 1.5, ex + 3, ey + 3, (x, y) => (jetzt(x, y) === "F" && y < ey ? null : "g")); bau("hoehle_tuer_01", ex, ey - 0.4, { id: "ockermutter_eingang" });
+  const ZIEL = [OM_U[0] * 32 + 16, OM_U[1] * 32 + 27];
+  lies("ockermutter_eingang", ex, ey + 1.2, "Ein Schlund im Fuß der Ockerkanzel. Der Lehm davor ist zertrampelt, es riecht nach Aas. Von drinnen kommt ein Lachen, das kein Mensch lacht.", { tat: "ockermutter_hoehle", knopf: "Hineingehen", ziel: ZIEL });
+  /* Spuren der gerissenen Herde: vom Westrand Dornhags bis vor den Eingang, leicht geschlängelt; drei Stellen mit Resten */
+  const start = [dh[0] - 21, dh[1] + 2], ziel = [ex + 0.5, ey + 3.5], L = Math.hypot(ziel[0] - start[0], ziel[1] - start[1]), nx = -(ziel[1] - start[1]) / L, ny = (ziel[0] - start[0]) / L, spur = [];
+  for (let t = 0, i = 0; t <= L; t += 8) { const q = 3.5 * Math.sin(t / 23) + 1.5 * Math.sin(t / 7.3); let x = start[0] + (ziel[0] - start[0]) * t / L + nx * q, y = start[1] + (ziel[1] - start[1]) * t / L + ny * q;
+    if (nass(jetzt(x, y)) || jetzt(x, y) === "F" || koerper.some((r) => x > r[0] - 0.8 && x < r[2] + 0.8 && y > r[1] - 0.8 && y < r[3] + 0.8)) continue;
+    spur.push([+x.toFixed(1), +y.toFixed(1)]); ding("welt_spuren_01", x, y, { id: "ockermutter_spur_" + ++i, s: 0.9 }); }
+  const RESTE = [[0.12, "Die Dornenhecke ist hier niedergedrückt, Wolle hängt in den Dornen. Die Herde ist nicht hinausgelaufen – sie wurde hinausgetrieben."],
+    [0.5, "Ein Rind, oder was davon übrig ist. Die Bisse sind groß wie ein Brotlaib, und um die Reste herum Spuren von einem Dutzend Hyänen."],
+    [0.85, "Schleifspuren im Lehm, alle in eine Richtung: zum Fuß der Ockerkanzel. Was hier getötet wurde, wurde nicht hier gefressen."]];
+  om.reste = RESTE.map(([f, text], i) => { const p = spur[Math.min(spur.length - 1, Math.round(f * (spur.length - 1)))]; lies("ockermutter_reste_" + (i + 1), p[0] + 0.8, p[1] + 0.6, text); return { id: "ockermutter_reste_" + (i + 1), x: +(p[0] + 0.8).toFixed(2), y: +(p[1] + 0.6).toFixed(2) }; });
+  /* Kampfhöhle (Untergrund, 1 Chunk): runder Kessel Ø ~24 Felder aus Lehm, glatt (kein Hindernis – Platz für den Sprung), sechs Nischen am Rand, aus denen das Rudel kommt, Gang nach Süden */
+  const zw = (x, y) => 0.6 * Math.sin(x / 2.1 + y / 2.9) + 0.4 * Math.sin(y / 1.6 - x / 2.7), M = [16, 14], R = 11.5;
+  const NISCHEN = [180, -145, -35, 0, 35, 145].map((g, i) => { const w = g * Math.PI / 180; return [+(M[0] + Math.cos(w) * (R + 1.6)).toFixed(1), +(M[1] + Math.sin(w) * (R + 1.6)).toFixed(1)]; });
+  const G = Array.from({ length: 32 }, (_, y) => Array.from({ length: 32 }, (_, x) => { const px = x + 0.5, py = y + 0.5, d = Math.hypot(px - M[0], py - M[1]) + 0.35 * zw(x, y);
+    if (d < R) return zw(x * 0.7, y * 0.7) > 0.55 ? "L" : "l"; if (NISCHEN.some(([nx2, ny2]) => Math.hypot(px - nx2, py - ny2) < 2.4)) return "g"; if (Math.abs(px - 16) < 1.9 && y > 22 && y < 31) return "g"; return "F"; }));
+  const dir = join(WELT, "regionen", "ockermutter_bau"); if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "region.json"), JSON.stringify({ id: "ockermutter_bau", name: "Der Bau der Ockermutter", untertitel: "Unter der Ockerkanzel (Instanz)", ursprung: OM_U, chunks: [1, 1], biom: "hoehle", stufe: 12, ebene: "untergrund" }, null, 1) + "\n");
+  writeFileSync(join(dir, "gelaende.txt"), G.map((r) => r.join("")).join("\n") + "\n");
+  writeFileSync(join(dir, "objekte.json"), "[\n" + [{ id: "ockermutter_leiter", objekt: "hoehle_leiter_01", x: 16, y: 29.4 }, { id: "ockermutter_feuerkorb_1", objekt: "moor_feuerkorb_01", x: 14.3, y: 25 }, { id: "ockermutter_feuerkorb_2", objekt: "moor_feuerkorb_01", x: 17.7, y: 25 },
+    { id: "ockermutter_lager", objekt: "hoehle_lager_01", x: 16, y: 5.2 }, { id: "ockermutter_spuren_1", objekt: "welt_spuren_01", x: 12, y: 18 }, { id: "ockermutter_spuren_2", objekt: "welt_spuren_01", x: 20.5, y: 11 }].map((o) => " " + JSON.stringify(o)).join(",\n") + "\n]\n");
+  writeFileSync(join(dir, "spiel.json"), JSON.stringify({ start: [[16, 27]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] },
+    interaktionen: [{ id: "ockermutter_hinaus", art: "eingang", x: 16, y: 30.2, radius: 2, abgleich: "keiner", daten: { text: "Hinaus in die Ockerlande.", tat: "ockermutter_hinaus", knopf: "Hinaus", ziel: [ex, ey + 2.2] } },
+      { id: "ockermutter_kessel", art: "lesen", x: 16, y: 23.4, radius: 1.6, abgleich: "keiner", daten: { text: "Ein runder Kessel unter dem Tafelberg, der Boden festgetreten und glatt. In den Nischen ringsum glimmen Augen." } }] }, null, 1) + "\n");
+  const W0 = [OM_U[0] * 32, OM_U[1] * 32];
+  Object.assign(om, { region: "ockermutter_bau", ursprung: OM_U, feld: [W0[0], W0[1], W0[0] + 31, W0[1] + 31], eingang: "ockermutter_eingang", eingang_xy: [ex, ey], ziel: ZIEL, hinaus: "ockermutter_hinaus",
+    boss: [W0[0] + 16, W0[1] + 9], mitte: [W0[0] + M[0], W0[1] + M[1]], radius: R, nischen: NISCHEN.map(([x, y]) => [W0[0] + x, W0[1] + y]), spur_von: start, spur_bis: ziel, spuren: spur.length }); }
+
 /* ───── Fische und Kräuter an den übrigen Wasserlöchern ───── */
 for (const [i, [x, y]] of PLAN.wasserloecher.entries()) { if (Math.hypot(x - DH[0], y - DH[1]) < 30) continue;
   uferplatz("fischplatz_wasserloch_" + (i + 1), i % 2 ? "wels" : "moorhecht", i % 2 ? 45 : 20, x, y, "Ein Wasserloch in der Lehmsteppe. Erstaunlich, was hier im trüben Wasser schwimmt.");
@@ -254,6 +288,6 @@ const hoehenListe = [...hoehen].filter(([, h]) => Math.abs(h) > 0.02).map(([k, h
 writeFileSync(join(WELT, "festland", "plan_ockerlande.json"), JSON.stringify({ hinweis: "Erzeugt von werkzeug/welt/ockerlande.mjs (#172): Ockerlande – Lehmsteppe, Ockerstrom, Tafelberge, Trockenflüsse, Wasserlöcher, Akazien. Weltfelder.", gelaende: patches, hoehen: hoehenListe, eben, objekte, interaktionen, sperren, freigeben }) + "\n");
 for (const [k, g] of urs) if (!alt.has(k)) alt.set(k, g);
 writeFileSync(GRUNDDATEI, JSON.stringify({ hinweis: "ockerlande.mjs: ursprüngliches Gelände unter den eigenen Flächen (für wiederholte Läufe)", felder: Object.fromEntries(alt) }) + "\n");
-writeFileSync(join(WELT, "ockerlande_orte.json"), JSON.stringify({ hinweis: "Phase 12 Ockerlande (Welt #172): Gelände (Strom, Tafelberge, Trockenflüsse, Wasserlöcher, Haine), Rotlehm, Brunnenkreis, Wege, Rastplätze; Dornhag und Tafelrast folgen. Weltfelder.", land: LAND, strom: STROM, furt: [STROM[3][0], FURT_Y], tafelberge: TAFEL, trockenfluesse: PLAN.trockenfluesse, wasserloecher: PLAN.wasserloecher, akazienhaine: PLAN.akazienhaine, orte, namen, npc, banken, laeden, stationen, fischplaetze: fische, kraeuter, adern, hoehle: { region: "ockerhoehle", ursprung: HOEHLE_U, eingang: "ockerhoehle_eingang" }, rastplaetze: rast, wege: [...wege, { punkte: PLAN.karawanenstrasse, breite: 2.6 }] }, null, 1) + "\n");
+writeFileSync(join(WELT, "ockerlande_orte.json"), JSON.stringify({ hinweis: "Phase 12 Ockerlande (Welt #172): Gelände (Strom, Tafelberge, Trockenflüsse, Wasserlöcher, Haine), Rotlehm, Brunnenkreis, Wege, Rastplätze; Dornhag und Tafelrast folgen. Weltfelder.", land: LAND, strom: STROM, furt: [STROM[3][0], FURT_Y], tafelberge: TAFEL, trockenfluesse: PLAN.trockenfluesse, wasserloecher: PLAN.wasserloecher, akazienhaine: PLAN.akazienhaine, orte, namen, npc, banken, laeden, stationen, fischplaetze: fische, kraeuter, adern, hoehle: { region: "ockerhoehle", ursprung: HOEHLE_U, eingang: "ockerhoehle_eingang" }, ockermutter: om, rastplaetze: rast, wege: [...wege, { punkte: PLAN.karawanenstrasse, breite: 2.6 }] }, null, 1) + "\n");
 const zaehl = {}; for (const c of feld.values()) zaehl[c] = (zaehl[c] || 0) + 1;
 console.log(`Ockerlande: ${feld.size} Geländefelder ${JSON.stringify(zaehl)}, ${hoehenListe.length} Höhen, ${objekte.length} Objekte`);
