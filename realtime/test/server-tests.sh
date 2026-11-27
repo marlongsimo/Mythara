@@ -82,6 +82,7 @@ TESTS=(
   boss-quest-machbar
   hueter
   zunft
+  bank-orte
   bank-platzhalter
   festland-kampf
   inhalt-sueden

@@ -25,7 +25,7 @@ check(L.every((l) => l.waren.every((w) => GEGENSTAENDE[w.g] && !GEGENSTAENDE[w.g
 check(["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter"].every((id) => LAEDEN[id].waren.length && LADEN_ZEICHEN[id]) && LAEDEN.troedler_steinhag.troedler, "Wirt, Schmied, zwei Marktstände mit Kartensymbol, ein Trödler");
 check(L.filter((l) => l.nurReden).every((l) => (l.zeilen || []).length >= 1 && l.gruss && l.tschuess), "die übrigen reden nur – jeder mit Gruß, Abschied und eigenen Zeilen");
 check(L.every((l) => modell(l.modell)), `Modelle aus dem Bestand und von Figuren (${[...new Set(L.map((l) => l.modell))].join(", ")})`);
-{ const B = BANKIERS.find((b) => b.id === "steinhag_bank"); check(B && B.bank === "Bank von Steinhag" && nahAnBank("waldmark", 6969, 5881.5) && modell(B.modell), "die Bank von Steinhag"); }
+{ const B = BANKIERS.find((b) => b.id === "steinhag_bank"); check(B && B.bank === "Bank von Steinhag" && nahAnBank("waldmark", 6967.6, 5876.6) && modell(B.modell), "die Bank von Steinhag"); }
 
 console.log("\nStationen");
 { const S = WERKSTAETTEN.filter((w) => /_(steinhag|alm|passwacht|bergwerk|einsiedelei)$/.test(w.id)), naechstes = (W) => { for (let r = 1; r <= 3; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const x = Math.floor(W.x) + dx, y = Math.floor(W.y) + dy; if (frei(x, y)) return [x + 0.5, y + 0.5]; } return null; };
