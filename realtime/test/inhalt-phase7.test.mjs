@@ -8,10 +8,11 @@ import { build } from "esbuild";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 const datei = join(tmpdir(), `riftmere-inhalt7-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { startAusruestung, GEGENSTAENDE, VERBRAUCH } from "./shared/gegenstaende"; export { TUEREN, INSTANZEN } from "./shared/bosse"; export { tuerenZu } from "./shared/boss"; export { FISCHE, FANGGRUENDE } from "./shared/fischen"; export { rezept } from "./shared/handwerk"; export { WEGSTEIN_ZIELE } from "./shared/wegstein"; export { FAEHREN } from "./shared/faehre"; export { faehreAnfrage } from "./server/src/faehre"; export { ENTWUERFE } from "./shared/quest_entwuerfe";',
+await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { startAusruestung, GEGENSTAENDE, VERBRAUCH } from "./shared/gegenstaende"; export { TUEREN, INSTANZEN } from "./shared/bosse"; export { tuerenZu } from "./shared/boss"; export { FISCHE, FANGGRUENDE } from "./shared/fischen"; export { rezept, WERKSTAETTEN } from "./shared/handwerk"; export { WEGSTEIN_ZIELE } from "./shared/wegstein"; export { FAEHREN } from "./shared/faehre"; export { faehreAnfrage } from "./server/src/faehre"; export { ENTWUERFE } from "./shared/quest_entwuerfe"; export { LAEDEN } from "./shared/laeden"; export { QUESTS } from "./shared/quests";',
   resolveDir: new URL("..", import.meta.url).pathname, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
 const M = await import(datei);
-const { Sim, MONSTER, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, startAusruestung, GEGENSTAENDE, VERBRAUCH, TUEREN, INSTANZEN, tuerenZu, FISCHE, FANGGRUENDE, rezept, WEGSTEIN_ZIELE, FAEHREN, faehreAnfrage, ENTWUERFE } = M;
+const { Sim, MONSTER, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, startAusruestung, GEGENSTAENDE, VERBRAUCH, TUEREN, INSTANZEN, tuerenZu, FISCHE, FANGGRUENDE, rezept, WEGSTEIN_ZIELE, FAEHREN, faehreAnfrage, ENTWUERFE, QUESTS } = M;
+const WERKSTAETTEN_D3 = () => M.WERKSTAETTEN.filter((w) => /_zur_furt$/.test(w.id));
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
 const lauf = (s, sek) => { const ev = []; for (let i = 0; i < sek * 20; i++) { s.schritt(); ev.push(...s.zustand().ev); } return ev; };
 const NEU = ["schlickkrebs", "splitterreiher", "turmwaechter", "gruenlicht"];
@@ -24,10 +25,15 @@ check(D.every((g) => GEGENSTAENDE[g]) && VERBRAUCH.welspastete && VERBRAUCH.fisc
 const K = rezept("kettenglied"), W = rezept("welspastete");
 check(K && K.station === "amboss" && K.level === 45 && K.quest === "graufurt_die_faehrkette" && W && W.station === "herd" && W.level === 45, "Rezepte: Kettenglied (Amboss, Schmieden 45, Quest D1), Welspastete (Herd, Kochen 45)");
 check(FISCHE.wels && FISCHE.wels.level === 45 && FANGGRUENDE.some((g) => g.art === "wels" && g.region === "graufurt"), "Graufurter Wels (Fischen 45) im Fährhafen");
-{ const d = ENTWUERFE.filter((e) => /graufurt|ostufer/.test(e.q.id)), fehlt = [];
+{ /* D1–D3: im Spiel oder noch Entwurf */ const d = [...ENTWUERFE, ...QUESTS.map((q) => ({ q }))].filter((e) => /graufurt|ostufer/.test(e.q.id)), fehlt = [];
   for (const e of d) for (const S of e.q.schritte) { const E = S.ereignis; if (E.art === "herstellen" && !rezept(E.rezept)) fehlt.push(E.rezept); if (E.art === "erlegen" && !MONSTER[E.typ]) fehlt.push(E.typ); }
   for (const e of d) for (const O of e.q.objekte || []) for (const G of [...(O.geben || []), ...(O.nehmen || [])]) if (!GEGENSTAENDE[G.g]) fehlt.push(G.g);
   check(d.length === 3 && !fehlt.length, `D1–D3: alle Rezepte, Gegner und Gegenstände sind da (${fehlt.join(", ") || "nichts fehlt"})`); }
+
+console.log("\nD3: Herd in der Taverne „Zur Furt“, Almas Laden");
+{ const { LAEDEN } = M, A = LAEDEN.graufurt_alma, H = WERKSTAETTEN_D3();
+  check(H.length === 2 && H.every((w) => !w.schalter), "Herd und Kessel in der Taverne „Zur Furt“, offen");
+  check(A && A.questFigur === "alma" && A.wenn.quest === "graufurt_wels_im_trueben" && A.waren.some((w) => w.g === "welspastete"), "Alma verkauft Welspastete nach D3"); }
 
 console.log("\nLager");
 setzeKarte(KARTEN.welt, FEIN);

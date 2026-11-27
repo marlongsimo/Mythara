@@ -5,7 +5,7 @@
  * QUER: Das Pfannenblech braucht Schwarzeisen (Burgfels Grauwacht, Phase 8) – Handwerk aus dem Norden für den Süden.
  * Lohn: Schmieden 3.000, Kochen 2.000 XP, 500 Splitter, 2 Questpunkte; Salz als Rohstoff (Kochen 65), die Siederei verkauft Salz (Schalter ruwen_salz).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 9 (Salzpfanne, Glutskorpion, Rezept pfannenblech, Gegenstand salz). Liste: doku/quests/f-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9/10, 9c0d16bd und e7f482af). Liste: doku/quests/f-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { F1 } from "./quest_f1";

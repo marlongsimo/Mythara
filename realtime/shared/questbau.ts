@@ -109,7 +109,11 @@ export interface Folge {
   /** Gegenstände geben (vor dem Abschluss: Werkzeug, Ersatz – für den Lohn gibt es belohnung) */ geben?: Geben[];
   /** Gegenstände nehmen (fehlt einer, geht die Antwort nicht) */ nehmen?: { g: string; n?: number }[];
   /** wenn geben nichts zu geben hatte: diese Zeilen statt zeilen */ nichtsZuGeben?: Text[];
+  /** Figur wird Gegner (E3, Tjark): an ihrer Stelle erscheint dieser Gegner (config.ts) und greift den Spieler an; er kehrt nach dem Kampf nicht wieder.
+   *  Die Figur tritt im Browser so lange beiseite (ANGRIFF_FIGUR_MS). Sein Tod meldet „erlegen“ wie jeder Gegner */ angriff?: string;
 }
+/** So lange (ms) ist die Figur fort, nachdem sie zum Gegner wurde (Folge.angriff) */
+export const ANGRIFF_FIGUR_MS = 120000;
 export interface Geben { g: string; /** Text in „(Du bekommst: …)“ */ name: string; /** nur, wenn der Spieler ihn (oder Gleichwertiges) nicht besitzt */ fehlt?: boolean; /** Regex: gleichwertige Gegenstände zählen als vorhanden */ gleich?: string; /** nur, wenn verloren (nirgends mehr) */ verloren?: boolean }
 
 export interface Option { id: string; text: string; /** sichtbar nur, wenn */ wenn?: Bed; /** die erste passende Variante gilt */ folge: { wenn?: Bed; f: Folge }[] }
@@ -121,7 +125,9 @@ export interface Sperre { wenn: Bed; text: string }
 /** Voraussetzung (Questlog: grün / rot) */
 export interface Voraussetzung { text: string; wenn: Bed }
 /** Lohn beim Abschluss – alles in einer Buchung, genau einmal (Kampf-XP über rpg_held_quest_abschluss, danach Splitter und Gegenstände) */
-export interface Belohnung { xp?: Partial<Record<"geschick" | "staerke" | "fernkampf" | "magie" | "lp" | "defense", number>>; /** Berufe-XP (shared/berufe.ts) */ berufe?: Record<string, number>; splitter?: number; gegenstaende?: { g: string; n?: number }[]; /** Ladungen (inventar.ladungen, shared/splitterbinden.ts) */ ladungen?: Record<string, number> }
+export interface Belohnung { xp?: Partial<Record<"geschick" | "staerke" | "fernkampf" | "magie" | "lp" | "defense", number>>; /** Berufe-XP (shared/berufe.ts) */ berufe?: Record<string, number>; splitter?: number; gegenstaende?: { g: string; n?: number }[]; /** Ladungen (inventar.ladungen, shared/splitterbinden.ts) */ ladungen?: Record<string, number>;
+  /** #146: Belohnung zur Auswahl – der Spieler wählt im Abschlussfenster genau einen dieser Gegenstände (Server prüft beim Abholen).
+   *  Regel des Nutzers (Kanon): nur Gegenstände, die man auch anders bekommt (Beute, Laden, Herstellen) – geprüft in shared/belohnungswahl.ts */ wahl?: { g: string; n?: number }[] }
 
 export interface QuestDef {
   id: string; titel: string; ort: string;
@@ -211,11 +217,12 @@ export function gilt(q: QuestDef, s: string, b: Bed | undefined, k: Kontext = OH
   return true; }
 
 /* ───────── Abschlussfenster (#77): was es als Lohn gibt ───────── */
-export type LohnZeile = { art: "xp"; k: string; n: number } | { art: "beruf"; k: string; n: number } | { art: "splitter"; n: number } | { art: "gegenstand"; g: string; n: number } | { art: "ladungen"; g: string; n: number } | { art: "punkte"; n: number };
-/** Die Belohnung einer Quest als Liste fürs Fenster (Reihenfolge: XP, Berufe, Splitter, Gegenstände, Ladungen, Questpunkte) */
+export type LohnZeile = { art: "xp"; k: string; n: number } | { art: "beruf"; k: string; n: number } | { art: "splitter"; n: number } | { art: "gegenstand"; g: string; n: number } | { art: "ladungen"; g: string; n: number } | { art: "punkte"; n: number } | { art: "wahl"; optionen: { g: string; n: number }[] };
+/** Die Belohnung einer Quest als Liste fürs Fenster (Reihenfolge: XP, Berufe, Splitter, Gegenstände, Auswahl (#146), Ladungen, Questpunkte) */
 export function lohnListe(q: QuestDef): LohnZeile[] { const B = q.belohnung || {}, aus: LohnZeile[] = [];
   for (const [k, n] of Object.entries(B.xp || {})) if (n) aus.push({ art: "xp", k, n }); for (const [k, n] of Object.entries(B.berufe || {})) if (n) aus.push({ art: "beruf", k, n });
   if (B.splitter) aus.push({ art: "splitter", n: B.splitter }); for (const G of B.gegenstaende || []) aus.push({ art: "gegenstand", g: G.g, n: G.n || 1 });
+  if (B.wahl && B.wahl.length) aus.push({ art: "wahl", optionen: B.wahl.map((W) => ({ g: W.g, n: W.n || 1 })) });
   for (const [g, n] of Object.entries(B.ladungen || {})) if (n) aus.push({ art: "ladungen", g, n }); if (q.punkte) aus.push({ art: "punkte", n: Math.min(10, q.punkte) }); return aus; }
 
 /* ───────── Texte ───────── */

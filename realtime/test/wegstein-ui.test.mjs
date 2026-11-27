@@ -80,11 +80,12 @@ try {
   check(ziele.some((t) => /Linde/.test(t)) && !ziele.some((t) => /Windmühle/.test(t)) && /5 Ladungen/.test(kopf), "Zielliste: nur die Linde (A3 nicht fertig), 5 Ladungen (" + ziele.join(" · ") + ")");
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "wegstein-ziele.png" });
   await anna.click('.ez-aktionen button:has-text("Linde")');
-  const da = await anna.waitForFunction(() => { const W = window.EZW.welt3d; return W.hier === "weidenhain" && Math.hypot(W.ort.x - 6452.5, W.ort.y - 6684.5) < 2.5 && !W.gesperrt; }, null, { timeout: 60000, polling: 250 }).then(() => true, () => false);
+  const da = await anna.waitForFunction(() => { const W = window.EZW.welt3d; return W.hier === "weidenhain" && Math.hypot(W.ort.x - 6452.5, W.ort.y - 6684.5) < 2.5 && !W.gesperrt; }, null, { timeout: 120000, polling: 500 } /* unter Last kommt die Antwort des Servers erst nach 15 s, der Sprung nach 25 s (#145) */).then(() => true, () => false);
   const o = await anna.evaluate(() => ({ gesperrt: window.EZW.welt3d.gesperrt, x: window.EZW.welt3d.ort.x, y: window.EZW.welt3d.ort.y, hier: window.EZW.welt3d.hier, lad: (JSON.parse(localStorage.getItem("ez_inventar") || "{}").ladungen || {}).wegstein }));
   check(da && o.lad === 4 && Math.hypot(o.x - 6452.5, o.y - 6684.5) < 3, `Anna ist an der Linde (gesperrt=${o.gesperrt} ${o.x.toFixed(1)}, ${o.y.toFixed(1)}, ${o.hier}), 4 Ladungen übrig (${o.lad})`);
   { const fd = await figurDa(anna); check(fd.ok, "Wegstein: Annas eigene Figur ist an der Linde wieder sichtbar (" + fd.grund + ")"); }
   await anna.waitForTimeout(4000); void (JSON.stringify(await anna.evaluate(() => { const W = window.EZW.welt3d; return { gesperrt: W.gesperrt, holt: [...W.daten.values()].filter((d) => d === "holt").length, blende: W.blende && W.blende.className }; })));
+  await ben.waitForFunction(() => { const K = window.EZK; return K && K.z && K.z.w.some((e) => { if (e[1] !== 1 || e[0] === K.ichId) return false; const n = K.namen.get(e[0]); return n && n.name === "Anna" && Math.hypot(K.zone.x0 + e[4] - 6452.5, K.zone.y0 + e[5] - 6684.5) < 3; }); }, null, { timeout: 40000, polling: 500 }).catch(() => {}); /* Ben sieht Anna unter Last etwas später (#145) */
   const sieht = await ben.evaluate(() => { const W = window.EZW.welt3d, K = window.EZK, l = W.mit && W.mit.figuren ? [...W.mit.figuren.values()].map((f) => f.d.n + "@" + Math.round(f.d.wx) + "," + Math.round(f.d.wy)) : [];
     if (K && K.z) for (const e of K.z.w) if (e[1] === 1 && e[0] !== K.ichId) { const n = K.namen.get(e[0]); if (n) l.push(n.name + "@" + (K.zone.x0 + e[4]).toFixed(0) + "," + (K.zone.y0 + e[5]).toFixed(0)); }
     return l; });
@@ -100,10 +101,10 @@ try {
   check(Math.hypot(h.x - 6448, h.y - 6437.5) < 3 && h.hier === "waldmark", `Heim-Teleport: Anna steht am Startpunkt der Waldmark und bleibt dort (${h.x.toFixed(1)}, ${h.y.toFixed(1)}, ${h.hier})`);
   /* Freunde-Teleport: zu Ben an die Linde – auch hier setzt der Server die Stelle */
   const bo = await ben.evaluate(() => ({ x: window.EZW.welt3d.ort.x, y: window.EZW.welt3d.ort.y }));
-  let tp = false; for (let i = 0; i < 3 && !tp; i++) { await anna.click('button[aria-label="Freunde"]').catch(() => {}); tp = await anna.waitForSelector('[data-tp="Ben"]', { timeout: 15000 }).then(() => true, () => false); if (!tp) { await anna.keyboard.press("Escape"); await anna.waitForTimeout(1500); } }
+  let tp = false; for (let i = 0; i < 3 && !tp; i++) { await anna.click('button[aria-label="Freunde"]').catch(() => {}); tp = await anna.waitForSelector('[data-tp="Ben"]', { timeout: 40000 }).then(() => true, () => false); if (!tp) { await anna.keyboard.press("Escape"); await anna.waitForTimeout(1500); } }
   check(tp, "Freunde: „Teleport zu Ben“ angeboten");
   if (tp) { await anna.evaluate(() => [...document.querySelectorAll('[data-tp="Ben"]')].find((b) => b.offsetParent).click()); /* die Liste zeichnet sich laufend neu: direkt am Knopf auslösen */
-    const da2 = await anna.waitForFunction(([x, y]) => { const W = window.EZW.welt3d; return W.hier === "weidenhain" && Math.hypot(W.ort.x - x, W.ort.y - y) < 3 && !W.gesperrt; }, [bo.x, bo.y], { timeout: 60000, polling: 250 }).then(() => true, () => false);
+    const da2 = await anna.waitForFunction(([x, y]) => { const W = window.EZW.welt3d; return W.hier === "weidenhain" && Math.hypot(W.ort.x - x, W.ort.y - y) < 3 && !W.gesperrt; }, [bo.x, bo.y], { timeout: 120000, polling: 500 } /* unter Last kommt die Antwort des Servers erst nach 15 s, der Sprung nach 25 s (#145) */).then(() => true, () => false);
     await anna.waitForTimeout(8000); const f = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, y: window.EZW.welt3d.ort.y, hier: window.EZW.welt3d.hier }));
     { const fd = await figurDa(anna); check(fd.ok, "Freunde-Teleport: Annas eigene Figur ist bei Ben sichtbar (" + fd.grund + ")"); }
     check(da2 && Math.hypot(f.x - bo.x, f.y - bo.y) < 3, `Freunde-Teleport: Anna bei Ben (${bo.x.toFixed(1)}, ${bo.y.toFixed(1)}) und bleibt dort (${f.x.toFixed(1)}, ${f.y.toFixed(1)}, ${f.hier})`); }
@@ -111,7 +112,7 @@ try {
   if (tp) for (const [von, an, text] of [[anna, ben, "Hallo Ben an der Linde"], [ben, anna, "Hallo Anna"]]) {
     await an.evaluate((t) => { window.__blase = false; new MutationObserver(() => { if ([...document.querySelectorAll(".ez-blase3d")].some((b) => b.textContent === t)) window.__blase = true; }).observe(document.body, { childList: true, subtree: true }); }, text);
     await von.evaluate(() => document.activeElement && document.activeElement.blur()); await von.fill("#ez-chat input", text); await von.press("#ez-chat input", "Enter");
-    const da = await an.waitForFunction(() => window.__blase, null, { timeout: 15000 }).then(() => true, () => false);
+    const da = await an.waitForFunction(() => window.__blase, null, { timeout: 40000 }).then(() => true, () => false);
     const imChat = await an.evaluate((t) => JSON.stringify(window.EZW.chat ? window.EZW.chat().slice(-3).map((n) => n.text) : []).includes(t), text);
     check(da, `Sprechblase „${text}“ über dem anderen Helden (Chatbox: ${imChat})`); }
   check(fehlerSeite.length === 0, "Keine Seitenfehler " + fehlerSeite.join(" | "));

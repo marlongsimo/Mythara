@@ -1,0 +1,12 @@
+{
+  "id": "gegner.hochlandbaer",
+  "name": "Hochlandbär",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "stufe": 54,
+  "gebiet": "Hochlande",
+  "grundform": "Vierbeiner Bär",
+  "status": "v001: Meshy-Modell des Nutzers (27.11.2026, quelle/meshy.glb), fabrik/rig_vierbeiner.py hoehe=1.6 bein=0.42 hals=1 schwanz=1; Bewegungen angriff, gehen, laufen, ruhe, tod, treffer – img/figuren-echt3d/hochlandbaer3d.glb (+ .mobil.glb)",
+  "vorlage": "Grundform „Vierbeiner Bär“: für spätere Gegner dieser Form quelle/meshy.glb umfärben (fabrik/textur_ton.py) oder mit fabrik/rig_vierbeiner.py neu riggen",
+  "herkunft": "Meshy (Nutzer)"
+}

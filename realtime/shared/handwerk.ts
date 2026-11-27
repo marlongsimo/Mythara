@@ -175,6 +175,8 @@ dazu({ id: "wegstein_laden", station: "bindestein", ergebnis: "ladung:wegstein",
 for (const [sel, W] of Object.entries(WAFFE_LADEN)) {
   dazu({ id: `waffe_laden_${sel}`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 2 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
   dazu({ id: `waffe_laden_${sel}_licht`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" }); }
+/* #151: Waffen der Stufe 70 (GegenstandDef.passiv) – 1 Splitter je Ladung, Splitterbinden 70; nur für sie (fuer „stufe70“), die übrigen Lade-Rezepte nehmen sie nicht */
+dazu({ id: "waffe_laden_stufe70", station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: "stufe70", level: 70, zutaten: [{ g: ["splitter"], n: 1 }], xp: 15, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
 /* Entladen: nur am Bindestein, die Splitter verfallen */
 /* Phase 6 (#17, #18): Federsiegel herstellen (zweiter Weg zum Thronsaal) und den Splitterkern in den Wegstein setzen (200 Ladungen, einmal) */
 dazu({ id: "federsiegel", station: "bindestein", ergebnis: "federsiegel", level: 30, zutaten: [{ g: ["rabenfedern"], n: 25 }, { g: ["splitter"], n: 50 }], xp: 120, ticks: 6, stufe: 2, gruppe: "Siegel" });
@@ -222,6 +224,43 @@ dazu({ id: "aalsuppe", station: "kessel", ergebnis: "aalsuppe", level: 50, zutat
 dazu({ id: "glutwels_salzkruste", station: "herd", ergebnis: "glutwels_salzkruste", level: 65, zutaten: [{ g: ["fisch_glutwels_roh"], n: 1 }, { g: ["salz"], n: 2 }], xp: 260, ticks: 6, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_glutwels_verbrannt" });
 /* Phase 7 (#40): D3 Welspastete am Herd (Kochen 45), D1 Kettenglieder am Amboss (Schmieden 45, Quest-Rezept: 1 Splittereisenbarren → 1 Glied) */
 dazu({ id: "welspastete", station: "herd", ergebnis: "welspastete", level: 45, zutaten: [{ g: ["fisch_wels_roh"], n: 1 }, { g: ["mehl"], n: 1 }], xp: 160, ticks: 6, stufe: 0, gruppe: "Pastete", verbrannt: "fisch_wels_verbrannt" });
+/* #141: Haferstedt und Netzbucht (Welt #140, 6a116f04) – Stationen an denselben Stellen der Baupläne wie in der Waldmark (welt/bedienstellen.json):
+   Schmiede (dorf_schmiede_01) Esse und Amboss, Taverne (dorf_taverne_01) Herd und Kessel, Bäckerei (dorf_baeckerei_01) Backofen, der Brunnen am Markt; Netzbucht Feuer und Räucherhütte */
+WERKSTAETTEN.push({ id: "esse_haferstedt", station: "esse", x: 6201.4, y: 6992.8, ort: "fl_186_211" }, { id: "amboss_haferstedt", station: "amboss", x: 6204.4, y: 6992.6, ort: "fl_186_211" },
+  { id: "herd_haferstedt", station: "herd", x: 6209.2, y: 6967, ort: "fl_186_211" }, { id: "kessel_haferstedt", station: "kessel", x: 6211.5, y: 6967, ort: "fl_186_211" },
+  { id: "backofen_haferstedt", station: "backofen", x: 6236.8, y: 6975.4, ort: "fl_186_211" }, { id: "brunnen_haferstedt", station: "brunnen", x: 6215, y: 6977.35, ort: "fl_186_211" },
+  { id: "feuer_netzbucht", station: "feuer", x: 6147, y: 6933.25, ort: "fl_186_211" }, { id: "raeucherhuette_netzbucht", station: "raeucherhuette", x: 6132, y: 6932, ort: "fl_186_211" });
+/* Phase 11: Stationen der Hochlande, wo die Welt sie gebaut hat – Steinhag: Esse und Amboss (Schmiede, Bauplan wie in der Waldmark), Werkbank, Herd und Kessel (Taverne),
+   Bindestein und Brunnen; Hohe Alm: Kessel der Käserei, Herd und Brunnen; Bergwerk: Esse, Amboss und Feuer; Feuer an der Passwacht; Kessel an der Einsiedelei
+   (Welt d344565a, hochlande_orte.json → stationen) */
+WERKSTAETTEN.push({ id: "esse_steinhag", station: "esse", x: 7002.4, y: 5913.8, ort: "fl_216_183" }, { id: "amboss_steinhag", station: "amboss", x: 7005.4, y: 5913.6, ort: "fl_216_183" },
+  { id: "werkbank_steinhag", station: "werkbank", x: 7011, y: 5915.5, ort: "fl_216_183" }, { id: "herd_steinhag", station: "herd", x: 7008.2, y: 5874, ort: "fl_216_183" },
+  { id: "kessel_steinhag", station: "kessel", x: 7010.5, y: 5874, ort: "fl_216_183" }, { id: "bindestein_steinhag", station: "bindestein", x: 6996.5, y: 5889.5, ort: "fl_216_183" },
+  { id: "brunnen_steinhag", station: "brunnen", x: 6990, y: 5888.35, ort: "fl_216_183" }, { id: "kessel_alm", station: "kessel", x: 7198, y: 6002, ort: "fl_216_183" },
+  { id: "brunnen_alm", station: "brunnen", x: 7191, y: 6005.35, ort: "fl_216_183" }, { id: "feuer_passwacht", station: "feuer", x: 6959, y: 5614.6, ort: "fl_216_169" },
+  { id: "feuer_bergwerk", station: "feuer", x: 7126.5, y: 5810.5, ort: "fl_216_169" }, { id: "esse_bergwerk", station: "esse", x: 7142.5, y: 5824, ort: "fl_216_169" },
+  { id: "amboss_bergwerk", station: "amboss", x: 7140, y: 5824, ort: "fl_216_169" }, { id: "herd_alm", station: "herd", x: 7178, y: 6007.4, ort: "fl_216_183" },
+  { id: "kessel_einsiedelei", station: "kessel", x: 7336, y: 5669.4, ort: "fl_216_169" });
+/* Phase 10, G-Quests (#118): G2 Lampenöl im Kessel am Wärterhaus des Leuchtturms und die Splitterglut am Bindestein; G4 das Fischernetz an der Werkbank */
+WERKSTAETTEN.push({ id: "kessel_leuchtturm", station: "kessel", x: 6190, y: 7039.5, ort: "fl_186_211" });
+dazu({ id: "lampenoel", station: "kessel", ergebnis: "lampenoel", level: 1, zutaten: [{ g: ["fisch_hering_roh"], n: 5 }], xp: 60, ticks: 5, stufe: 0, gruppe: "Das Leuchtfeuer", quest: "kueste_das_leuchtfeuer" });
+dazu({ id: "splitterglut", station: "bindestein", ergebnis: "splitterglut", level: 20, zutaten: [{ g: ["seelenlicht"], n: 1 }, { g: ["splitter"], n: 5 }], xp: 80, ticks: 3, stufe: 0, gruppe: "Das Leuchtfeuer", quest: "kueste_das_leuchtfeuer" });
+dazu({ id: "fischernetz", station: "werkbank", ergebnis: "fischernetz", level: 20, zutaten: [{ g: ["garn"], n: 4 }], xp: 90, ticks: 5, stufe: 0, gruppe: "Netze für die Möwenbucht", quest: "kueste_netze_fuer_die_moewenbucht" });
+/* Phase 9, F-Quests (#118): Glutbrunn – Esse und Amboss in der Schmiede (dorf_schmiede_01 wie in der Waldmark), der Herd daneben (Welt: glutbrunn_herd, für F4),
+   die Werkbank (glutbrunn_werkbank); F2: das Pfannenblech für Ruwens Siedepfanne (Amboss, Schmieden 50, nur in der Quest) */
+WERKSTAETTEN.push({ id: "esse_glutbrunn", station: "esse", x: 7114.4, y: 6947.8, ort: "fl_216_211" }, { id: "amboss_glutbrunn", station: "amboss", x: 7117.4, y: 6947.6, ort: "fl_216_211" },
+  { id: "herd_glutbrunn", station: "herd", x: 7121, y: 6946, ort: "fl_216_211" }, { id: "werkbank_glutbrunn", station: "werkbank", x: 7123, y: 6953, ort: "fl_216_211" });
+dazu({ id: "pfannenblech", station: "amboss", ergebnis: "pfannenblech", level: 50, zutaten: [{ g: ["barren_splittereisen"], n: 2 }], xp: 180, ticks: 5, stufe: 0, gruppe: "Ruwens Siederei", quest: "glutsande_salz_und_feuer" });
+/* Phase 8, E-Quests (#118): Glocke von Grauwacht (E2, Quest-Rezepte), Hammeleintopf („Mettes Schafe“); Herd und Kessel der Abteiküche ab Stadtstufe „abtei“ (E1) */
+WERKSTAETTEN.push({ id: "herd_abtei", station: "herd", x: 6684.5, y: 5783.5, ort: "fl_201_169", schalter: "grauwacht_abtei", gesperrt: "Die Küche der Abtei ist kalt. Hier kocht erst wieder jemand, wenn die Schwestern zurück sind." },
+  { id: "kessel_abtei", station: "kessel", x: 6678, y: 5784, ort: "fl_201_169", schalter: "grauwacht_abtei", gesperrt: "Die Küche der Abtei ist kalt. Hier kocht erst wieder jemand, wenn die Schwestern zurück sind." });
+dazu({ id: "glockenbronze", station: "esse", ergebnis: "barren_glockenbronze", level: 45, zutaten: [{ g: ["erz_kupfer"], n: 4 }, { g: ["erz_splittereisen"], n: 1 }], xp: 120, ticks: 4, stufe: 0, gruppe: "Die Glocke von Grauwacht", quest: "grauwacht_die_glocke" });
+/* #156: gegossen wird am Herd der Abtei, es zählt aber zum Schmieden (E2 setzt Schmieden 45 voraus, nicht Kochen) */
+dazu({ id: "glocke", station: "herd", ergebnis: "glocke_neu", level: 45, zutaten: [{ g: ["barren_glockenbronze"], n: 4 }], xp: 300, ticks: 8, stufe: 0, gruppe: "Die Glocke von Grauwacht", quest: "grauwacht_die_glocke", beruf: "schmieden" });
+dazu({ id: "kloeppel", station: "hand", ergebnis: "kloeppel", level: 1, zutaten: [{ g: ["stamm_kernbaum"], n: 1 }], xp: 80, ticks: 4, stufe: 0, gruppe: "Die Glocke von Grauwacht", quest: "grauwacht_die_glocke" });
+dazu({ id: "hammeleintopf", station: "herd", ergebnis: "hammeleintopf", level: 30, zutaten: [{ g: ["hammelfleisch"], n: 1 }, { g: ["ringelblume"], n: 1 } /* #156: Querverbindung 8 – Ringelblume aus den Obstwiesen */, { g: ["krug_wasser"], n: 1 }], xp: 110, ticks: 6, stufe: 0, gruppe: "Eintopf", verbrannt: "suppe_verbrannt" });
+/* D3 „Wels im Trüben“: Herd und Kessel in der Taverne „Zur Furt“ in Graufurt (dorf_taverne_01 wie in der Waldmark), offen für alle */
+WERKSTAETTEN.push({ id: "herd_zur_furt", station: "herd", x: 6698.2, y: 6536, ort: "graufurt" }, { id: "kessel_zur_furt", station: "kessel", x: 6700.5, y: 6536, ort: "graufurt" });
 /* C1 „Schwarze Federn“: Brückenplanken aus Moorweide an Harms Werkbank in Rabenmoor (Handwerk 25, nur während der Quest) */
 WERKSTAETTEN.push({ id: "werkbank_rabenmoor", station: "werkbank", x: 6309.5, y: 6703.5, ort: "rabenmoor" });
 dazu({ id: "brueckenplanke", station: "werkbank", ergebnis: "brueckenplanke", level: 25, zutaten: [{ g: ["stamm_moorweide"], n: 1 }], xp: 60, ticks: 4, stufe: 0, gruppe: "Auftrag des Schulzen", quest: "rabenmoor_schwarze_federn" });

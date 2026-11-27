@@ -160,6 +160,7 @@ export function regionFehler(roh: unknown, gelaende: GelaendeBibliothek, objekte
       L.zahl(p.x, wo + ".x", -4, B + 4); L.zahl(p.y, wo + ".y", -4, H + 8);
       if (p.s !== undefined) L.zahl(p.s, wo + ".s", 0.3, 3);
       if (p.spiegeln !== undefined) L.wenn(typeof p.spiegeln !== "boolean", wo + ".spiegeln", "wahr oder falsch erwartet");
+      if (p.dreh !== undefined) L.wenn(![0, 90, 180, 270].includes(p.dreh as number), wo + ".dreh", "0, 90, 180 oder 270 erwartet"); /* #148 */
       if (p.spiegeln === true && def && def.ebenen) L.wenn(true, wo + ".spiegeln", "räumliche Gebäude dürfen nicht gespiegelt werden");
       if (p.zustand !== undefined) L.wenn(!def || !def.zustaende || !(String(p.zustand) in def.zustaende), wo + ".zustand", `Zustand „${String(p.zustand)}“ kennt das Objekt nicht`);
       if (p.kollision !== undefined) kollisionPruefen(L, p.kollision, wo + ".kollision");

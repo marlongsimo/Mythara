@@ -14,7 +14,7 @@ import { questGeladen, rede, questVerfolgt, questStandB, questDing, verfolgteQue
 import { faehreBei, FAEHRE_NAH } from "../../../shared/faehre";
 import { QUESTS as QUESTS_B, questDef, schalterAn } from "../../../shared/quests";
 import { Folger } from "../../../shared/folgen";
-import { zeichenAlle, ziel as zielB, objektLage, gilt, frei, lage, figurDa, figurFolgt, type QuestObjekt, type QuestFigur, type QuestDeko, type QuestDef, type Schranke } from "../../../shared/questbau";
+import { zeichenAlle, ziel as zielB, objektLage, gilt, frei, lage, figurDa, figurFolgt, type QuestObjekt, type QuestFigur, type QuestDeko, type QuestDef, type Schranke, ANGRIFF_FIGUR_MS } from "../../../shared/questbau";
 import { STATIONEN } from "../../../shared/handwerk";
 import { gltfLader } from "./gltf";
 import { TUEREN, INSTANZEN } from "../../../shared/bosse";
@@ -34,6 +34,9 @@ const ORTE: Record<string, [number, number]> = { esse: [STATIONEN.esse.x, STATIO
 const SCHRANKEN: { q: QuestDef; s: Schranke }[] = QUESTS_B.flatMap((q) => (q.schranken || []).map((s) => ({ q, s })));
 const offenFuer = (q: QuestDef, id: string): boolean => frei(q, questStandB(q.id), id) !== false;
 
+/** Folge.angriff (E3): Figuren, die gerade Gegner sind – bis wann (performance.now) sie beiseite treten */
+const FORT = new Map<string, number>();
+addEventListener("ez-dialog", (e) => { const m = (e as CustomEvent).detail as { angriff?: string }; if (m && m.angriff) FORT.set(m.angriff, performance.now() + ANGRIFF_FIGUR_MS); });
 export class QuestWelt {
   private figuren: Figur[] = []; private staemme: THREE.Group[] = [];
   constructor(private u: QuestUmgebung) {
@@ -72,7 +75,7 @@ export class QuestWelt {
   private wo(f: Figur): { x: number; y: number } | null { if (!this.da(f)) return null; if (!f.n.wandert) return { x: f.x, y: f.y };
     const w = this.u.motor.wandererMit(f.n.wandert); return w ? { x: w.x, y: w.z } : null; }
   /** Ist die Figur für diesen Spieler da (QuestFigur.sichtbar, #49)? Vor dem Laden der Stände: nur Figuren ohne Bedingung */
-  private da(f: Figur): boolean { if (!f.n.sichtbar && !f.n.ausbau && !f.n.ausbau_bis) return true; const q = questDef(f.q);
+  private da(f: Figur): boolean { if ((FORT.get(f.n.id) || 0) > performance.now()) return false; /* Folge.angriff: gerade Gegner */ if (!f.n.sichtbar && !f.n.ausbau && !f.n.ausbau_bis) return true; const q = questDef(f.q);
     if (!questGeladen()) return !f.n.sichtbar && Boolean(q) && figurDa(q!, f.n, "", { hat: () => false, verloren: () => false }); /* vor dem Laden: die erste Stadtstufe */
     return Boolean(q && figurDa(q, f.n, questStandB(q.id), { hat: (g) => inventar().rucksack.includes(g), verloren: () => false, quest: (id) => { const d = questDef(id); return d ? lage(d, questStandB(id)).phase : "neu"; }, schalter: (s) => schalterAn((id) => questStandB(id), s) })); }
   /** Befreite folgen (QuestFigur.folgt, #49): hinter dem Spieler her (shared/folgen.ts); hört es auf, steht die Figur wieder an ihrer Stelle */

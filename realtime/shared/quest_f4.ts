@@ -3,7 +3,7 @@
  * Grundlage: doku/konzepte/phase-9.md. Fischerin Nalia am Strom bei Glutbrunn: zwei Glutwelse fangen (Fischen 65), einen mit Salzkruste kochen (Kochen 65, Salz aus F2).
  * Lohn: Fischen 5.000, Kochen 5.000 XP, 300 Splitter, 1 Questpunkt; danach ist das Rezept „Glutwels mit Salzkruste“ am Herd frei.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 9 (Strom, Nalia, Glutwels, Rezept glutwels_salzkruste, Salz). Liste: doku/quests/f-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9/10, 9c0d16bd und e7f482af). Liste: doku/quests/f-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { F2 } from "./quest_f2";

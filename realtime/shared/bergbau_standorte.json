@@ -158,6 +158,1625 @@
      "region": "nordwald"
     }
    ]
+  },
+  {
+   "name": "Kupfersenke am Heckenhof",
+   "ort": "heckenhof",
+   "x": 6511.6,
+   "y": 6807.8,
+   "r": 5,
+   "adern": [
+    {
+     "id": "kupfersenke_am_heckenhof_kupfer_1",
+     "art": "kupfer",
+     "x": 6513.5,
+     "y": 6808.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "kupfersenke_am_heckenhof_kupfer_2",
+     "art": "kupfer",
+     "x": 6509.5,
+     "y": 6809.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "kupfersenke_am_heckenhof_kupfer_3",
+     "art": "kupfer",
+     "x": 6511.5,
+     "y": 6805.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Senke an der Summweide",
+   "ort": "summweide",
+   "x": 6399.8,
+   "y": 6895.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_an_der_summweide_kupfer_1",
+     "art": "kupfer",
+     "x": 6402.5,
+     "y": 6896.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_an_der_summweide_kupfer_2",
+     "art": "kupfer",
+     "x": 6397.5,
+     "y": 6897.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_an_der_summweide_eisen_3",
+     "art": "eisen",
+     "x": 6399.5,
+     "y": 6893.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Senke am Halben Weg",
+   "ort": "halber_weg",
+   "x": 6488.7,
+   "y": 7003.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_am_halben_weg_kupfer_1",
+     "art": "kupfer",
+     "x": 6491.5,
+     "y": 7004.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "senke_am_halben_weg_kupfer_2",
+     "art": "kupfer",
+     "x": 6487.5,
+     "y": 7006.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "senke_am_halben_weg_eisen_3",
+     "art": "eisen",
+     "x": 6486.5,
+     "y": 7002.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "senke_am_halben_weg_eisen_4",
+     "art": "eisen",
+     "x": 6489.5,
+     "y": 7001.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Senke am Erlengrund",
+   "ort": "erlengrund",
+   "x": 6404.3,
+   "y": 6983.4,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_am_erlengrund_kupfer_1",
+     "art": "kupfer",
+     "x": 6406.5,
+     "y": 6984.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_am_erlengrund_kupfer_2",
+     "art": "kupfer",
+     "x": 6402.5,
+     "y": 6984.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_am_erlengrund_eisen_3",
+     "art": "eisen",
+     "x": 6403.5,
+     "y": 6980.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Senke am Kreuzstein",
+   "ort": "kreuzstein",
+   "x": 6477.9,
+   "y": 7082.1,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_am_kreuzstein_eisen_1",
+     "art": "eisen",
+     "x": 6480.5,
+     "y": 7083.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "senke_am_kreuzstein_eisen_2",
+     "art": "eisen",
+     "x": 6475.5,
+     "y": 7083.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "senke_am_kreuzstein_kupfer_3",
+     "art": "kupfer",
+     "x": 6477.5,
+     "y": 7079.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Senke am Schilfsee",
+   "ort": "schilfsee",
+   "x": 6441.2,
+   "y": 7172.3,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_am_schilfsee_eisen_1",
+     "art": "eisen",
+     "x": 6443.5,
+     "y": 7173.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "senke_am_schilfsee_eisen_2",
+     "art": "eisen",
+     "x": 6439.5,
+     "y": 7173.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "senke_am_schilfsee_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6440.5,
+     "y": 7169.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Steinbruch von Lehmfurt",
+   "ort": "lehmfurt",
+   "x": 6502.7,
+   "y": 7231.1,
+   "r": 11,
+   "adern": [
+    {
+     "id": "lehmfurt_kupfer_1",
+     "art": "kupfer",
+     "x": 6494.5,
+     "y": 7230.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "lehmfurt_kupfer_2",
+     "art": "kupfer",
+     "x": 6498.5,
+     "y": 7229.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "lehmfurt_eisen_1",
+     "art": "eisen",
+     "x": 6503.5,
+     "y": 7229.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "lehmfurt_eisen_2",
+     "art": "eisen",
+     "x": 6507.5,
+     "y": 7231.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "lehmfurt_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 6509.5,
+     "y": 7234.5,
+     "region": "fl_201_225"
+    }
+   ]
+  },
+  {
+   "name": "Tiefe Senke bei Lehmfurt",
+   "ort": "lehmfurt",
+   "x": 6476.9,
+   "y": 7232.3,
+   "r": 5,
+   "adern": [
+    {
+     "id": "tiefe_senke_bei_lehmfurt_eisen_1",
+     "art": "eisen",
+     "x": 6479.5,
+     "y": 7233.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "tiefe_senke_bei_lehmfurt_schwarzeisen_2",
+     "art": "schwarzeisen",
+     "x": 6475.5,
+     "y": 7234.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "tiefe_senke_bei_lehmfurt_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6474.5,
+     "y": 7231.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "tiefe_senke_bei_lehmfurt_sterneisen_4",
+     "art": "sterneisen",
+     "x": 6477.5,
+     "y": 7229.5,
+     "region": "fl_201_225"
+    }
+   ]
+  },
+  {
+   "name": "Lehmgrube bei Lehmfurt",
+   "ort": "lehmfurt",
+   "x": 6464.3,
+   "y": 7259.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "lehmgrube_bei_lehmfurt_kupfer_1",
+     "art": "kupfer",
+     "x": 6466.5,
+     "y": 7260.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "lehmgrube_bei_lehmfurt_kupfer_2",
+     "art": "kupfer",
+     "x": 6463.5,
+     "y": 7262.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "lehmgrube_bei_lehmfurt_eisen_3",
+     "art": "eisen",
+     "x": 6461.5,
+     "y": 7258.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "lehmgrube_bei_lehmfurt_eisen_4",
+     "art": "eisen",
+     "x": 6465.5,
+     "y": 7257.5,
+     "region": "fl_201_225"
+    }
+   ]
+  },
+  {
+   "name": "Eisensenke am Distelhof",
+   "ort": "distelhof",
+   "x": 6575.7,
+   "y": 6962.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "eisensenke_am_distelhof_eisen_1",
+     "art": "eisen",
+     "x": 6578.5,
+     "y": 6963.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "eisensenke_am_distelhof_eisen_2",
+     "art": "eisen",
+     "x": 6573.5,
+     "y": 6964.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "eisensenke_am_distelhof_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6575.5,
+     "y": 6960.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Senke am Fährtenlager",
+   "ort": "faehrtenlager",
+   "x": 6609.9,
+   "y": 6818.1,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_am_fahrtenlager_eisen_1",
+     "art": "eisen",
+     "x": 6612.5,
+     "y": 6819.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "senke_am_fahrtenlager_eisen_2",
+     "art": "eisen",
+     "x": 6607.5,
+     "y": 6819.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "senke_am_fahrtenlager_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6609.5,
+     "y": 6815.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Senke am Lämmerhang",
+   "ort": "laemmerhang",
+   "x": 6287.2,
+   "y": 7080.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_am_lammerhang_kupfer_1",
+     "art": "kupfer",
+     "x": 6289.5,
+     "y": 7081.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_am_lammerhang_kupfer_2",
+     "art": "kupfer",
+     "x": 6285.5,
+     "y": 7082.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_am_lammerhang_eisen_3",
+     "art": "eisen",
+     "x": 6286.5,
+     "y": 7078.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Senke bei Kielmund",
+   "ort": "kielmund",
+   "x": 6395.1,
+   "y": 7336.1,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_bei_kielmund_eisen_1",
+     "art": "eisen",
+     "x": 6397.5,
+     "y": 7337.5,
+     "region": "fl_186_225"
+    },
+    {
+     "id": "senke_bei_kielmund_schwarzeisen_2",
+     "art": "schwarzeisen",
+     "x": 6393.5,
+     "y": 7337.5,
+     "region": "fl_186_225"
+    },
+    {
+     "id": "senke_bei_kielmund_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6394.5,
+     "y": 7333.5,
+     "region": "fl_186_225"
+    }
+   ]
+  },
+  {
+   "name": "Senke an der Möwenbucht",
+   "ort": "moewenbucht",
+   "x": 6199.3,
+   "y": 7166.4,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_an_der_mowenbucht_kupfer_1",
+     "art": "kupfer",
+     "x": 6201.5,
+     "y": 7167.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_an_der_mowenbucht_eisen_2",
+     "art": "eisen",
+     "x": 6197.5,
+     "y": 7167.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_an_der_mowenbucht_eisen_3",
+     "art": "eisen",
+     "x": 6199.5,
+     "y": 7163.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Klippenadern am Leuchtturm",
+   "ort": "leuchtturm",
+   "x": 6186.9,
+   "y": 7022.3,
+   "r": 5,
+   "adern": [
+    {
+     "id": "klippenadern_am_leuchtturm_kupfer_1",
+     "art": "kupfer",
+     "x": 6189.5,
+     "y": 7023.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "klippenadern_am_leuchtturm_kupfer_2",
+     "art": "kupfer",
+     "x": 6185.5,
+     "y": 7024.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "klippenadern_am_leuchtturm_eisen_3",
+     "art": "eisen",
+     "x": 6184.5,
+     "y": 7021.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "klippenadern_am_leuchtturm_eisen_4",
+     "art": "eisen",
+     "x": 6187.5,
+     "y": 7019.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Senke bei Haferstedt",
+   "ort": "haferstedt",
+   "x": 6185.9,
+   "y": 6947,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_bei_haferstedt_kupfer_1",
+     "art": "kupfer",
+     "x": 6188.5,
+     "y": 6948.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_bei_haferstedt_eisen_2",
+     "art": "eisen",
+     "x": 6184.5,
+     "y": 6949.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_bei_haferstedt_eisen_3",
+     "art": "eisen",
+     "x": 6183.5,
+     "y": 6945.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_bei_haferstedt_schwarzeisen_4",
+     "art": "schwarzeisen",
+     "x": 6186.5,
+     "y": 6944.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Senke an der Netzbucht",
+   "ort": "netzbucht",
+   "x": 6131.5,
+   "y": 6919.3,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_an_der_netzbucht_kupfer_1",
+     "art": "kupfer",
+     "x": 6133.5,
+     "y": 6920.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_an_der_netzbucht_kupfer_2",
+     "art": "kupfer",
+     "x": 6129.5,
+     "y": 6920.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "senke_an_der_netzbucht_eisen_3",
+     "art": "eisen",
+     "x": 6131.5,
+     "y": 6916.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Ureisen in den Tafelbergen 1",
+   "ort": "tempel",
+   "x": 7088.5,
+   "y": 6674.5,
+   "r": 4,
+   "adern": [
+    {
+     "id": "ureisen_glut_1",
+     "art": "ureisen",
+     "x": 7088.5,
+     "y": 6674.5,
+     "region": "fl_216_198"
+    }
+   ]
+  },
+  {
+   "name": "Ureisen in den Tafelbergen 2",
+   "ort": "tempel",
+   "x": 7134.5,
+   "y": 6679,
+   "r": 9,
+   "adern": [
+    {
+     "id": "ureisen_glut_2",
+     "art": "ureisen",
+     "x": 7133.5,
+     "y": 6672.5,
+     "region": "fl_216_198"
+    },
+    {
+     "id": "ureisen_glut_3",
+     "art": "ureisen",
+     "x": 7135.5,
+     "y": 6685.5,
+     "region": "fl_216_198"
+    }
+   ]
+  },
+  {
+   "name": "Felsen bei Sandquell",
+   "ort": "sandquell",
+   "x": 7403.5,
+   "y": 6707.4,
+   "r": 5,
+   "adern": [
+    {
+     "id": "felsen_bei_sandquell_sterneisen_1",
+     "art": "sterneisen",
+     "x": 7405.5,
+     "y": 6708.5,
+     "region": "fl_231_198"
+    },
+    {
+     "id": "felsen_bei_sandquell_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7402.5,
+     "y": 6709.5,
+     "region": "fl_231_198"
+    },
+    {
+     "id": "felsen_bei_sandquell_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7401.5,
+     "y": 6706.5,
+     "region": "fl_231_198"
+    },
+    {
+     "id": "felsen_bei_sandquell_splittereisen_4",
+     "art": "splittereisen",
+     "x": 7404.5,
+     "y": 6704.5,
+     "region": "fl_231_198"
+    }
+   ]
+  },
+  {
+   "name": "Senke über Glutbrunn",
+   "ort": "glutbrunn",
+   "x": 7194,
+   "y": 6919.3,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_uber_glutbrunn_sterneisen_1",
+     "art": "sterneisen",
+     "x": 7196.5,
+     "y": 6920.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "senke_uber_glutbrunn_splittereisen_2",
+     "art": "splittereisen",
+     "x": 7191.5,
+     "y": 6920.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "senke_uber_glutbrunn_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7193.5,
+     "y": 6916.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Felsen an der Salzpfanne",
+   "ort": "salzpfanne",
+   "x": 7351.3,
+   "y": 6627,
+   "r": 5,
+   "adern": [
+    {
+     "id": "felsen_an_der_salzpfanne_splittereisen_1",
+     "art": "splittereisen",
+     "x": 7353.5,
+     "y": 6628.5,
+     "region": "fl_216_198"
+    },
+    {
+     "id": "felsen_an_der_salzpfanne_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7349.5,
+     "y": 6628.5,
+     "region": "fl_216_198"
+    },
+    {
+     "id": "felsen_an_der_salzpfanne_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7350.5,
+     "y": 6624.5,
+     "region": "fl_216_198"
+    }
+   ]
+  },
+  {
+   "name": "Felsen am Nordstrand",
+   "ort": "nordstrand",
+   "x": 7451.9,
+   "y": 6484.1,
+   "r": 5,
+   "adern": [
+    {
+     "id": "felsen_am_nordstrand_sterneisen_1",
+     "art": "sterneisen",
+     "x": 7454.5,
+     "y": 6485.5,
+     "region": "fl_231_198"
+    },
+    {
+     "id": "felsen_am_nordstrand_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7449.5,
+     "y": 6485.5,
+     "region": "fl_231_198"
+    },
+    {
+     "id": "felsen_am_nordstrand_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7451.5,
+     "y": 6481.5,
+     "region": "fl_231_198"
+    }
+   ]
+  },
+  {
+   "name": "Sterneisen-Brocken im Gehölz",
+   "ort": "faehrtenlager",
+   "x": 6653.1,
+   "y": 6825.2,
+   "r": 3,
+   "adern": [
+    {
+     "id": "sterneisen_brocken_im_geholz_sterneisen_1",
+     "art": "sterneisen",
+     "x": 6653.5,
+     "y": 6825.5,
+     "region": "fl_201_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Splitterfels am Lämmerhang",
+   "ort": "laemmerhang",
+   "x": 6337.1,
+   "y": 7087.2,
+   "r": 3,
+   "adern": [
+    {
+     "id": "splitterfels_am_lammerhang_splittereisen_1",
+     "art": "splittereisen",
+     "x": 6337.5,
+     "y": 7087.5,
+     "region": "fl_186_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Schwarzeisen an der Bucht",
+   "ort": "netzbucht",
+   "x": 6193.1,
+   "y": 6920.8,
+   "r": 3,
+   "adern": [
+    {
+     "id": "schwarzeisen_an_der_bucht_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 6193.5,
+     "y": 6920.5,
+     "region": "fl_186_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Erzadern im Erzberg-Bergwerk 1",
+   "ort": "bergwerk",
+   "x": 11630.8,
+   "y": 9632.8,
+   "r": 23,
+   "adern": [
+    {
+     "id": "bergwerk_sterneisen_1",
+     "art": "sterneisen",
+     "x": 11630.5,
+     "y": 9644.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_sterneisen_2",
+     "art": "sterneisen",
+     "x": 11628.5,
+     "y": 9642.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_sterneisen_3",
+     "art": "sterneisen",
+     "x": 11634.5,
+     "y": 9644.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_splittereisen_1",
+     "art": "splittereisen",
+     "x": 11622.5,
+     "y": 9626.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_splittereisen_2",
+     "art": "splittereisen",
+     "x": 11626.5,
+     "y": 9622.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_splittereisen_3",
+     "art": "splittereisen",
+     "x": 11642.5,
+     "y": 9616.5,
+     "region": "hochlande_bergwerk"
+    }
+   ]
+  },
+  {
+   "name": "Erzadern im Erzberg-Bergwerk 2",
+   "ort": "bergwerk",
+   "x": 11671.2,
+   "y": 9612.5,
+   "r": 7,
+   "adern": [
+    {
+     "id": "bergwerk_ureisen_1",
+     "art": "ureisen",
+     "x": 11668.5,
+     "y": 9608.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_ureisen_2",
+     "art": "ureisen",
+     "x": 11674.5,
+     "y": 9612.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_ureisen_3",
+     "art": "ureisen",
+     "x": 11670.5,
+     "y": 9616.5,
+     "region": "hochlande_bergwerk"
+    }
+   ]
+  },
+  {
+   "name": "Geröllhang am Erzberg",
+   "ort": "erzberg",
+   "x": 7173.8,
+   "y": 5780.4,
+   "r": 5,
+   "adern": [
+    {
+     "id": "gerollhang_am_erzberg_sterneisen_1",
+     "art": "sterneisen",
+     "x": 7176.5,
+     "y": 5781.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "gerollhang_am_erzberg_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7172.5,
+     "y": 5782.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "gerollhang_am_erzberg_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7171.5,
+     "y": 5779.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "gerollhang_am_erzberg_splittereisen_4",
+     "art": "splittereisen",
+     "x": 7174.5,
+     "y": 5778.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Erzgrat am Hochpass",
+   "ort": "hochpass",
+   "x": 6981.6,
+   "y": 5604.2,
+   "r": 5,
+   "adern": [
+    {
+     "id": "erzgrat_am_hochpass_sterneisen_1",
+     "art": "sterneisen",
+     "x": 6984.5,
+     "y": 5605.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "erzgrat_am_hochpass_splittereisen_2",
+     "art": "splittereisen",
+     "x": 6979.5,
+     "y": 5605.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "erzgrat_am_hochpass_splittereisen_3",
+     "art": "splittereisen",
+     "x": 6981.5,
+     "y": 5601.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Steinbruch von Steinhag",
+   "ort": "steinhag",
+   "x": 6928,
+   "y": 5891.5,
+   "r": 5,
+   "adern": [
+    {
+     "id": "steinbruch_von_steinhag_sterneisen_1",
+     "art": "sterneisen",
+     "x": 6930.5,
+     "y": 5892.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "steinbruch_von_steinhag_sterneisen_2",
+     "art": "sterneisen",
+     "x": 6925.5,
+     "y": 5893.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "steinbruch_von_steinhag_splittereisen_3",
+     "art": "splittereisen",
+     "x": 6927.5,
+     "y": 5888.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Felsen an der Hohen Alm",
+   "ort": "alm",
+   "x": 7203.3,
+   "y": 5977.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "felsen_an_der_hohen_alm_sterneisen_1",
+     "art": "sterneisen",
+     "x": 7205.5,
+     "y": 5978.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "felsen_an_der_hohen_alm_splittereisen_2",
+     "art": "splittereisen",
+     "x": 7201.5,
+     "y": 5979.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "felsen_an_der_hohen_alm_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7202.5,
+     "y": 5975.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern in den Nordklippen",
+   "ort": "nordklippen",
+   "x": 7276.3,
+   "y": 5302.8,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_in_den_nordklippen_sterneisen_1",
+     "art": "sterneisen",
+     "x": 7278.5,
+     "y": 5303.5,
+     "region": "fl_216_155"
+    },
+    {
+     "id": "adern_in_den_nordklippen_splittereisen_2",
+     "art": "splittereisen",
+     "x": 7274.5,
+     "y": 5304.5,
+     "region": "fl_216_155"
+    },
+    {
+     "id": "adern_in_den_nordklippen_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7275.5,
+     "y": 5300.5,
+     "region": "fl_216_155"
+    }
+   ]
+  },
+  {
+   "name": "Kupfer und Eisen bei Steinhag",
+   "ort": "steinhag",
+   "x": 6983.2,
+   "y": 5953.6,
+   "r": 5,
+   "adern": [
+    {
+     "id": "kupfer_und_eisen_bei_steinhag_kupfer_1",
+     "art": "kupfer",
+     "x": 6985.5,
+     "y": 5954.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "kupfer_und_eisen_bei_steinhag_kupfer_2",
+     "art": "kupfer",
+     "x": 6982.5,
+     "y": 5956.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "kupfer_und_eisen_bei_steinhag_eisen_3",
+     "art": "eisen",
+     "x": 6980.5,
+     "y": 5952.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "kupfer_und_eisen_bei_steinhag_eisen_4",
+     "art": "eisen",
+     "x": 6984.5,
+     "y": 5951.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Schwarzeisen am Stadtrand",
+   "ort": "steinhag",
+   "x": 7040.1,
+   "y": 5928.5,
+   "r": 5,
+   "adern": [
+    {
+     "id": "schwarzeisen_am_stadtrand_eisen_1",
+     "art": "eisen",
+     "x": 7042.5,
+     "y": 5929.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "schwarzeisen_am_stadtrand_schwarzeisen_2",
+     "art": "schwarzeisen",
+     "x": 7038.5,
+     "y": 5930.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "schwarzeisen_am_stadtrand_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7039.5,
+     "y": 5925.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Halde am Stollen",
+   "ort": "bergwerk",
+   "x": 7112.4,
+   "y": 5804.5,
+   "r": 5,
+   "adern": [
+    {
+     "id": "halde_am_stollen_kupfer_1",
+     "art": "kupfer",
+     "x": 7114.5,
+     "y": 5805.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "halde_am_stollen_eisen_2",
+     "art": "eisen",
+     "x": 7111.5,
+     "y": 5806.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "halde_am_stollen_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7109.5,
+     "y": 5803.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "halde_am_stollen_schwarzeisen_4",
+     "art": "schwarzeisen",
+     "x": 7113.5,
+     "y": 5802.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Splitterfels über dem Steinhagsee",
+   "ort": "steinhag",
+   "x": 7065.2,
+   "y": 5839.1,
+   "r": 3,
+   "adern": [
+    {
+     "id": "splitterfels_uber_dem_steinhagsee_splittereisen_1",
+     "art": "splittereisen",
+     "x": 7065.5,
+     "y": 5839.5,
+     "region": "fl_216_169"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Felsen hinter dem Hochpass",
+   "ort": "hinterpass",
+   "x": 6937.7,
+   "y": 5520.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "felsen_hinter_dem_hochpass_sterneisen_1",
+     "art": "sterneisen",
+     "x": 6940.5,
+     "y": 5521.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "felsen_hinter_dem_hochpass_splittereisen_2",
+     "art": "splittereisen",
+     "x": 6935.5,
+     "y": 5522.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "felsen_hinter_dem_hochpass_splittereisen_3",
+     "art": "splittereisen",
+     "x": 6937.5,
+     "y": 5518.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 2)",
+   "ort": "hlweg_2",
+   "x": 7047.8,
+   "y": 5914,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_2_eisen_1",
+     "art": "eisen",
+     "x": 7050.5,
+     "y": 5914.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_2_eisen_2",
+     "art": "eisen",
+     "x": 7045.5,
+     "y": 5915.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_2_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7047.5,
+     "y": 5911.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 4)",
+   "ort": "hlweg_4",
+   "x": 6951.7,
+   "y": 5840.3,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_4_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 6954.5,
+     "y": 5841.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_4_sterneisen_2",
+     "art": "sterneisen",
+     "x": 6949.5,
+     "y": 5841.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_4_sterneisen_3",
+     "art": "sterneisen",
+     "x": 6951.5,
+     "y": 5837.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 6)",
+   "ort": "hlweg_6",
+   "x": 6786.5,
+   "y": 5730.5,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_6_eisen_1",
+     "art": "eisen",
+     "x": 6788.5,
+     "y": 5731.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_6_eisen_2",
+     "art": "eisen",
+     "x": 6784.5,
+     "y": 5732.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_6_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6786.5,
+     "y": 5727.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 8)",
+   "ort": "hlweg_8",
+   "x": 6890.7,
+   "y": 5822.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_8_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 6893.5,
+     "y": 5823.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_8_sterneisen_2",
+     "art": "sterneisen",
+     "x": 6888.5,
+     "y": 5824.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_8_sterneisen_3",
+     "art": "sterneisen",
+     "x": 6890.5,
+     "y": 5820.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 10)",
+   "ort": "hlweg_10",
+   "x": 7075.7,
+   "y": 5876.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_10_eisen_1",
+     "art": "eisen",
+     "x": 7078.5,
+     "y": 5877.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_10_eisen_2",
+     "art": "eisen",
+     "x": 7073.5,
+     "y": 5878.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_10_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7075.5,
+     "y": 5874.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 12)",
+   "ort": "hlweg_12",
+   "x": 7031.7,
+   "y": 5947.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_12_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 7034.5,
+     "y": 5948.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_12_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7029.5,
+     "y": 5949.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_12_sterneisen_3",
+     "art": "sterneisen",
+     "x": 7031.5,
+     "y": 5945.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 14)",
+   "ort": "hlweg_14",
+   "x": 7115.7,
+   "y": 5976.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_14_eisen_1",
+     "art": "eisen",
+     "x": 7118.5,
+     "y": 5977.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_14_eisen_2",
+     "art": "eisen",
+     "x": 7113.5,
+     "y": 5978.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_14_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7115.5,
+     "y": 5974.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 16)",
+   "ort": "hlweg_16",
+   "x": 6951.7,
+   "y": 5806.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_16_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 6954.5,
+     "y": 5807.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_16_sterneisen_2",
+     "art": "sterneisen",
+     "x": 6949.5,
+     "y": 5808.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_16_sterneisen_3",
+     "art": "sterneisen",
+     "x": 6951.5,
+     "y": 5804.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 18)",
+   "ort": "hlweg_18",
+   "x": 6971.7,
+   "y": 5707.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_18_eisen_1",
+     "art": "eisen",
+     "x": 6974.5,
+     "y": 5708.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_18_eisen_2",
+     "art": "eisen",
+     "x": 6969.5,
+     "y": 5709.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_18_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6971.5,
+     "y": 5705.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 20)",
+   "ort": "hlweg_20",
+   "x": 6961.7,
+   "y": 5556.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_20_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 6964.5,
+     "y": 5557.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_20_sterneisen_2",
+     "art": "sterneisen",
+     "x": 6959.5,
+     "y": 5558.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_20_sterneisen_3",
+     "art": "sterneisen",
+     "x": 6961.5,
+     "y": 5554.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 22)",
+   "ort": "hlweg_22",
+   "x": 7238.7,
+   "y": 5756.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_22_eisen_1",
+     "art": "eisen",
+     "x": 7241.5,
+     "y": 5757.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_22_eisen_2",
+     "art": "eisen",
+     "x": 7236.5,
+     "y": 5758.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_22_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7238.5,
+     "y": 5754.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 24)",
+   "ort": "hlweg_24",
+   "x": 7230.7,
+   "y": 5718.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_24_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 7233.5,
+     "y": 5719.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_24_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7228.5,
+     "y": 5720.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_24_sterneisen_3",
+     "art": "sterneisen",
+     "x": 7230.5,
+     "y": 5716.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 26)",
+   "ort": "hlweg_26",
+   "x": 7257.7,
+   "y": 5597.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_26_eisen_1",
+     "art": "eisen",
+     "x": 7260.5,
+     "y": 5598.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_26_eisen_2",
+     "art": "eisen",
+     "x": 7255.5,
+     "y": 5599.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_26_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7257.5,
+     "y": 5595.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 28)",
+   "ort": "hlweg_28",
+   "x": 7275.7,
+   "y": 5497.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_28_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 7278.5,
+     "y": 5498.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_28_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7273.5,
+     "y": 5499.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_am_weg_hochlande_28_sterneisen_3",
+     "art": "sterneisen",
+     "x": 7275.5,
+     "y": 5495.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Hochlande 30)",
+   "ort": "hlweg_30",
+   "x": 7297.7,
+   "y": 5377.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_30_eisen_1",
+     "art": "eisen",
+     "x": 7300.5,
+     "y": 5378.5,
+     "region": "fl_216_155"
+    },
+    {
+     "id": "adern_am_weg_hochlande_30_eisen_2",
+     "art": "eisen",
+     "x": 7295.5,
+     "y": 5379.5,
+     "region": "fl_216_155"
+    },
+    {
+     "id": "adern_am_weg_hochlande_30_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7297.5,
+     "y": 5375.5,
+     "region": "fl_216_155"
+    }
+   ]
   }
  ]
 }

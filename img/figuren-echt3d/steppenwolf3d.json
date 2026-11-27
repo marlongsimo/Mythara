@@ -1,0 +1,41 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  }
+ },
+ "aktionen": {
+  "angriff": {
+   "bilder": 21,
+   "rate": 24,
+   "schleife": false
+  },
+  "gehen": {
+   "bilder": 33,
+   "rate": 24,
+   "schleife": true
+  },
+  "laufen": {
+   "bilder": 17,
+   "rate": 24,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 49,
+   "rate": 24,
+   "schleife": true
+  },
+  "tod": {
+   "bilder": 31,
+   "rate": 24,
+   "schleife": false
+  },
+  "treffer": {
+   "bilder": 11,
+   "rate": 24,
+   "schleife": false
+  }
+ }
+}

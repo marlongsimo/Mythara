@@ -2,7 +2,7 @@
  * Riftmere – Nebenquest „Der Kräuterhof“ (Phase 10), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-10.md. Zweite Kräuterkunde-Quest: Kräuterbäuerin Frieda Saat im Küstenwald will Ringelblumen und Moorglöckchen züchten.
  * QUER: Ringelblumensamen von Mira Kräuterlieb (Waldmark), Moorglöckchen-Ableger von Mutter Hedda (Rabenmoor). Beide Beete anlegen, aus der ersten Ernte zwei Heiltränke brauen.
- * Lohn: Kräuterkunde 2.500 XP, 300 Splitter, 1 Questpunkt; Schalter kraeuterhof_beete (für spätere Krautstellen am Hof, Systeme – bis dahin verspricht der Lohntext nichts).
+ * Lohn: Kräuterkunde 2.500 XP, 300 Splitter, 1 Questpunkt; danach wachsen auf dem Kräuterhof Ringelblume und Moorglöckchen (Schalter kraeuterhof_beete, Krautstellen ffb6891f).
  *
  * Im Spiel (shared/quests.ts) seit 27.11. (Kräuterkunde #133, Gegenstände 45601e5b).
  */
@@ -98,7 +98,7 @@ export const QUEST_KRAEUTERHOF: QuestDef = {
   },
   schalter: { kraeuterhof_beete: FERTIG },
   glueckwunsch: "Die Beete blühen, der Kessel dampft. Der Kräuterhof lebt wieder.",
-  belohnungText: "Belohnung: Kräuterkunde 2.500 XP, 300 Splitter",
+  belohnungText: "Belohnung: Kräuterkunde 2.500 XP, 300 Splitter · danach: auf dem Kräuterhof wachsen Ringelblume und Moorglöckchen",
   belohnung: { berufe: { kraeuterkunde: 2500 }, splitter: 300 },
   punkte: 1,
 };

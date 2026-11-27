@@ -1,8 +1,8 @@
 {
  "start": [
   [
-   240.0,
-   224.0
+   240,
+   224
   ]
  ],
  "figuren": [],
@@ -17,6 +17,55 @@
     "x1": 476,
     "y1": 48.5,
     "schalter": "lehmfurt_trittsteine"
+   },
+   {
+    "art": "rechteck",
+    "x0": 472,
+    "y0": 76,
+    "x1": 473,
+    "y1": 77
+   },
+   {
+    "art": "rechteck",
+    "x0": 467,
+    "y0": 76,
+    "x1": 468,
+    "y1": 77
+   },
+   {
+    "art": "rechteck",
+    "x0": 468,
+    "y0": 71,
+    "x1": 469,
+    "y1": 72
+   },
+   {
+    "art": "rechteck",
+    "x0": 472,
+    "y0": 72,
+    "x1": 473,
+    "y1": 73
+   },
+   {
+    "art": "rechteck",
+    "x0": 445,
+    "y0": 137,
+    "x1": 446,
+    "y1": 138
+   },
+   {
+    "art": "rechteck",
+    "x0": 441,
+    "y0": 137,
+    "x1": 442,
+    "y1": 138
+   },
+   {
+    "art": "rechteck",
+    "x0": 442,
+    "y0": 133,
+    "x1": 443,
+    "y1": 134
    }
   ],
   "freigeben": [
@@ -206,6 +255,14 @@
     "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
     "station": "feuer"
    }
+  }
+ ],
+ "senken": [
+  {
+   "x": 443.1,
+   "y": 136.1,
+   "r": 5,
+   "tiefe": 1.1
   }
  ]
 }

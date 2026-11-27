@@ -312,6 +312,7 @@ export const anschluss3D = {
   /** Folgen (#54): wo steht dieser Spieler gerade (Weltfelder)? Erst die Mitspieler der Welt, sonst die Helden des Kampfgebiets – null: nicht hier */
   spielerOrt: (name: string): { x: number; y: number } | null => { const a = mit && mit.ortVon ? mit.ortVon(name) : null; if (a) return a; const k = kampf as unknown as { bereit?: boolean; heldOrt?: (n: string) => { x: number; y: number } | null } | null; return k && k.bereit && k.heldOrt ? k.heldOrt(name) : null; },
   /** #67, für Prüfungen: welche Arbeit der Held mit diesem Namen im Kampfgebiet gerade zeigt */
+  /** #139: hat die Kampfwelt die erste Lage vom Server (null: kein Kampf verbunden) */ kampfBereit: (): boolean | null => (kampf ? kampf.bereit : null),
   kampfArbeitZeigt: (name: string): string => { const k = kampf as unknown as { arbeitZeigt?: (n: string) => string } | null; return k && k.arbeitZeigt ? k.arbeitZeigt(name) : ""; },
   spielerKarteZeigen: (s: WeltKern, d: Fremder): void => { tafel(s, (zu) => spielerKarte(d, zu)); },
   /** Versetzen (Untergrund): der Kampf der alten Stelle endet */

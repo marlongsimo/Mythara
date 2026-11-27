@@ -1,0 +1,145 @@
+{
+ "start": [
+  [
+   48,
+   57
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 46,
+    "y0": 44,
+    "x1": 47,
+    "y1": 45
+   },
+   {
+    "art": "rechteck",
+    "x0": 44,
+    "y0": 42,
+    "x1": 45,
+    "y1": 43
+   },
+   {
+    "art": "rechteck",
+    "x0": 50,
+    "y0": 44,
+    "x1": 51,
+    "y1": 45
+   },
+   {
+    "art": "rechteck",
+    "x0": 38,
+    "y0": 26,
+    "x1": 39,
+    "y1": 27
+   },
+   {
+    "art": "rechteck",
+    "x0": 42,
+    "y0": 22,
+    "x1": 43,
+    "y1": 23
+   },
+   {
+    "art": "rechteck",
+    "x0": 58,
+    "y0": 16,
+    "x1": 59,
+    "y1": 17
+   },
+   {
+    "art": "rechteck",
+    "x0": 84,
+    "y0": 8,
+    "x1": 85,
+    "y1": 9
+   },
+   {
+    "art": "rechteck",
+    "x0": 90,
+    "y0": 12,
+    "x1": 91,
+    "y1": 13
+   },
+   {
+    "art": "rechteck",
+    "x0": 86,
+    "y0": 16,
+    "x1": 87,
+    "y1": 17
+   }
+  ],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "bergwerk_hinaus",
+   "art": "eingang",
+   "x": 48,
+   "y": 61.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinaus ans Tageslicht.",
+    "tat": "bergwerk_hinaus",
+    "knopf": "Hinaus",
+    "ziel": [
+     7128,
+     5810.4
+    ]
+   }
+  },
+  {
+   "id": "bergwerk_vorraum",
+   "art": "lesen",
+   "x": 48,
+   "y": 54.6,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Füllort: Loren, Kisten, eine Tafel mit den Schichten. Die letzte Zeile ist durchgestrichen."
+   }
+  },
+  {
+   "id": "bergwerk_trollhalle",
+   "art": "lesen",
+   "x": 27,
+   "y": 23.5,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Halle, aus dem Fels geschlagen – zu groß für Menschenhände. Am Boden Knochen und abgenagte Grubenhölzer."
+   }
+  },
+  {
+   "id": "bergwerk_urkammer",
+   "art": "lesen",
+   "x": 83,
+   "y": 17.5,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Urkammer. Das Gestein glänzt schwarz und schwer – Ureisen."
+   }
+  }
+ ],
+ "senken": [
+  {
+   "x": 46.8,
+   "y": 32.8,
+   "r": 23,
+   "tiefe": 1.1
+  },
+  {
+   "x": 87.2,
+   "y": 12.5,
+   "r": 7,
+   "tiefe": 1.1
+  }
+ ]
+}

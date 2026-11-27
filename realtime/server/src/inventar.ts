@@ -224,7 +224,9 @@ export function trankWirkungWeg(sb: Sb, nutzer: string): Wirkung[] { const e = j
 export function waffeLadung(nutzer: string): { g: string; n: number } | null { const e = je.get(nutzer); const g = e && e.inv.angelegt.waffe; if (!e || !g) return null; return { g, n: (e.inv.angelegtD && e.inv.angelegtD.waffe && e.inv.angelegtD.waffe.ladungen) || 0 }; }
 /** n Ladungen dazu (höchstens WAFFE_LADUNG_MAX). Zurück: wie viele wirklich dazukamen */
 export function waffeLadenDazu(sb: Sb, nutzer: string, n: number): number { const e = je.get(nutzer); if (!e || !e.inv.angelegt.waffe || !(n > 0)) return 0;
-  const D = e.inv.angelegtD || (e.inv.angelegtD = {}), d = D.waffe || (D.waffe = {}), vorher = d.ladungen || 0, neu = Math.min(WAFFE_LADUNG_MAX, vorher + Math.floor(n)); d.ladungen = neu; geaendert(sb, nutzer, e); return neu - vorher; }
+  const D = e.inv.angelegtD || (e.inv.angelegtD = {}), d = D.waffe || (D.waffe = {}), vorher = d.ladungen || 0, neu = Math.min(WAFFE_LADUNG_MAX, vorher + Math.floor(n)); d.ladungen = neu;
+  { const G = GEGENSTAENDE[e.inv.angelegt.waffe]; if (G && G.passiv && neu > vorher) d.gebunden = true; } /* #151: Laden bindet die Waffe der Stufe 70 – auch leer bleibt sie gebunden */
+  geaendert(sb, nutzer, e); return neu - vorher; }
 /** Entladen (nur am Bindestein): die Ladungen verfallen. Zurück: wie viele es waren */
 export function waffeEntladen(sb: Sb, nutzer: string): number { const e = je.get(nutzer), d = e && e.inv.angelegtD && e.inv.angelegtD.waffe; if (!e || !d || !d.ladungen) return 0;
   const n = d.ladungen; delete d.ladungen; if (!Object.keys(d).length) delete e.inv.angelegtD!.waffe; if (e.inv.angelegtD && !Object.keys(e.inv.angelegtD).length) delete e.inv.angelegtD; geaendert(sb, nutzer, e); return n; }

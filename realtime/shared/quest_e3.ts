@@ -6,9 +6,9 @@
  *
  * QUER: Tjark ist ein Vetter von Raban, der Wache an der Straßensperre (Quest 1) – wer das weiß, kommt leichter an ihn heran (Gespräch).
  * Die Wahl: Der Schritt „tjark“ ist erledigt, wenn Tjark fällt (erlegen) ODER wenn man ihn überredet (Antwort erledigt ihn, er gibt „Tjarks Eid“).
- * Dass die Burg nach dem Überreden schneller besetzt ist, braucht eine Wahl im Queststand (Baukasten) – bis dahin gilt grauwacht_burg für beide Wege.
+ * Auf „Ergib dich“ wird Tjark zum Gegner (Folge.angriff, a34079ee); sein Tod erledigt den Schritt. grauwacht_burg gilt für beide Wege.
  *
- * Stellen aus der Welt (#50, shared/quest_e_orte.ts). ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Spiel: Deserteure mit Fliehen, Tjark als Gegner auf Ansage, Wigand). Liste: doku/quests/e-bausteine.md.
+ * Stellen aus der Welt (#50, shared/quest_e_orte.ts). Im Spiel (shared/quests.ts) seit 27.11. (a34079ee). Liste: doku/quests/e-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { E2 } from "./quest_e2";
@@ -83,7 +83,7 @@ export const QUEST_E3: QuestDef = {
         { id: "glocke", text: "Die Glocke läutet wieder. Die Wacht ruft.", folge: [{ f: { erledige: ["tjark"], geben: [{ g: "tjarks_eid", name: "Tjarks Eid" }],
           zeilen: ["Tjark schweigt. Hinter ihm sind die Gespräche am Feuer verstummt.", "Wir haben sie gehört. Gestern. Zur vollen Stunde. Bolko hat geheult wie ein Kind.",
             "…Gut. Hier. Mein Eid, aufgeschrieben, mit meinem Namen. Bring ihn Wigand. Wenn er uns noch will."] } }] },
-        { id: "kampf", text: "Ihr seid Fahnenflüchtige. Ergib dich.", folge: [{ f: { zeilen: ["Ergeben? Wem? Einer Glocke?", "Zieh."] } }] },
+        { id: "kampf", text: "Ihr seid Fahnenflüchtige. Ergib dich.", folge: [{ f: { angriff: "tjark", zeilen: ["Ergeben? Wem? Einer Glocke?", "Zieh."] } }] },
         { id: "tschuess", text: "Gehen.", folge: [{ f: { zeilen: ["Geh mit Gott. Oder ohne."] } }] },
       ],
     },

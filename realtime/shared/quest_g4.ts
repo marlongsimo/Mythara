@@ -4,7 +4,7 @@
  * Ein Fischernetz aus Garn knüpfen (Werkbank, Handwerk 20, Quest-Rezept), fünf Heringe fangen, drei in der Räucherhütte räuchern.
  * Lohn: Fischen 1.500, Kochen 1.500, Handwerk 800 XP, 250 Splitter, 1 Questpunkt; die Räucherhütte ist frei (Schalter raeucherhuette_frei – während der Quest und danach).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Möwenbucht, Räucherhütte als Kochstation, Hering, Rezepte fischernetz und raeucherhering). Liste: doku/quests/g-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9/10, 9c0d16bd und e7f482af). Liste: doku/quests/g-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { G1 } from "./quest_g1";
@@ -28,7 +28,7 @@ export const QUEST_G4: QuestDef = {
   ],
   schritte: [
     { id: "netz", text: "Ein Fischernetz knüpfen", ereignis: { art: "herstellen", rezept: "fischernetz" }, wo: "werkbank",
-      log: "Knüpf an einer Werkbank aus sechs Garn ein Fischernetz (Handwerk 20)." },
+      log: "Knüpf an einer Werkbank aus vier Garn ein Fischernetz (Handwerk 20)." },
     { id: "netz_geben", text: "Bente das Netz bringen", ereignis: { art: "antwort" }, nach: ["netz"], bei: "bente",
       log: "Bring Bente Möller das neue Netz." },
     { id: "heringe", text: "Fünf Heringe fangen", ereignis: { art: "sammeln", ziel: "hering" }, anzahl: 5, nach: ["netz_geben"], wo: MOEWENBUCHT.steg,
@@ -49,10 +49,10 @@ export const QUEST_G4: QuestDef = {
         { wenn: { ...LAEUFT, erledigt: ["netz_geben"] }, zeilen: ["Das Netz hält. Jetzt fischen – am Steg, da beißen die Heringe."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["netz"], hat: "fischernetz" }, zeilen: ["Ist das …? Ein Netz! Gib her!"], antworten: ["netz_geben", "tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["netz"] }, zeilen: ["Du hast ein Netz geknüpft, sagst du? Dann bring es her. Ohne Netz kein Fisch."], antworten: ["tschuess"] },
-        { zeilen: ["Sechs Garn, eine Werkbank, ruhige Finger. In Kielmund gibt's eine Werkbank."], antworten: ["tschuess"] },
+        { zeilen: ["Vier Garn, eine Werkbank, ruhige Finger. Hier an der Küste hat keiner eine – geh nach Rabenmoor oder in den Osthof."], antworten: ["tschuess"] },
       ],
       optionen: [
-        { id: "annehmen", text: "Ich knüpfe dir ein Netz. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Sechs Garn. Werkbank in Kielmund. Und dann zeig ich dir, wie man Heringe räuchert. Das kann hier jeder, aber keiner wie ich."] } }] },
+        { id: "annehmen", text: "Ich knüpfe dir ein Netz. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Vier Garn. Eine Werkbank – die nächsten stehen in Rabenmoor und im Osthof. Und dann zeig ich dir, wie man Heringe räuchert. Das kann hier jeder, aber keiner wie ich."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Dann flick ich weiter. Mit den Zähnen."] } }] },
         { id: "netz_geben", text: "Das Netz übergeben.", wenn: { hat: "fischernetz" }, folge: [{ f: { erledige: ["netz_geben"], nehmen: [{ g: "fischernetz" }], zeilen: ["Bente zieht am Netz, mit aller Kraft. Es hält. Sie lacht laut.", "Jetzt fischen wir. Du auch."] } }] },
         { id: "abgeben", text: "Die Räucherheringe geben.", wenn: { anzahl: { g: "raeucherhering", min: 3 } }, folge: [{ f: { abschluss: true, nehmen: [{ g: "raeucherhering", n: 3 }],

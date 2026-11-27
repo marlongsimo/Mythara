@@ -1,0 +1,12 @@
+{
+  "id": "gegner.hochlandwidder",
+  "name": "Hochlandwidder",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "stufe": 52,
+  "gebiet": "Hochlande",
+  "grundform": "Vierbeiner Huftier (mit Hörnern)",
+  "status": "v001: Meshy-Modell des Nutzers (27.11.2026, quelle/meshy.glb), fabrik/rig_vierbeiner.py hoehe=1.35 bein=0.5 hals=1 schwanz=1; Bewegungen angriff, gehen, laufen, ruhe, tod, treffer – img/figuren-echt3d/hochlandwidder3d.glb (+ .mobil.glb)",
+  "vorlage": "Grundform „Vierbeiner Huftier (mit Hörnern)“: für spätere Gegner dieser Form quelle/meshy.glb umfärben (fabrik/textur_ton.py) oder mit fabrik/rig_vierbeiner.py neu riggen",
+  "herkunft": "Meshy (Nutzer)"
+}

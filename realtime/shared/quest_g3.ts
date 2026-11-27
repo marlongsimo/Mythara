@@ -5,7 +5,7 @@
  * QUER: Bertold Krähe (Rabenmoor) und Merit Stahl (Graufurt) müssen den Fund sehen, bevor Kranich die Wahrheit hört.
  * Lohn: Stärke 3.000, Geschick 3.000, Defense 3.000 XP, 800 Splitter, 2 Questpunkte. Schalter wrackkapitaen_kajuete (Instanz, solange die Quest läuft; danach die stärkere Fassung öffentlich oder als eigene Instanz).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Wrack, Klippenhöhlen und Kajüte wrack_kajuete als Instanz aus #82, Strandräuber, Wrackkapitän). Liste: doku/quests/g-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9/10, 9c0d16bd und e7f482af). Liste: doku/quests/g-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { G1 } from "./quest_g1";
@@ -68,7 +68,7 @@ export const QUEST_G3: QuestDef = {
         { wenn: NEU, zeilen: ["Gute Geschäfte."], antworten: ["tschuess"] },
         { wenn: FERTIG, zeilen: ["Splitter für Raben. Unter meiner Flagge. Ich prüfe jetzt jede Kiste selbst."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Sie sind zurück. Und Ihr Gesicht sagt mir, dass ich die Wahrheit nicht mögen werde."], antworten: ["bericht"] },
-        { wenn: { ...LAEUFT, erledigt: ["kiste"] }, zeilen: ["Eine Kiste mit einem Raben? Ich kenne das Zeichen nicht. Zeigen Sie ihn denen, die es kennen."], antworten: ["hilfe", "tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["kiste"] }, zeilen: ["Eine Kiste mit einem Raben? Ich kenne das Zeichen nicht. Zeigen Sie sie denen, die es kennen."], antworten: ["hilfe", "tschuess"] },
         { zeilen: ["Das Wrack, südlich vom Hafen. Seien Sie vorsichtig."], antworten: ["hilfe", "tschuess"] },
       ],
       optionen: [
@@ -103,7 +103,8 @@ export const QUEST_G3: QuestDef = {
       ],
     },
   },
-  schalter: { wrackkapitaen_kajuete: LAEUFT },
+  /* Boss-Regel (#116): in der Quest allein und schwächer, danach öffentlich oder eigene Instanz */
+  schalter: { wrackkapitaen_kajuete: LAEUFT, wrackkapitaen_danach: FERTIG },
   glueckwunsch: "Jetzt weiß ich, was meine Schiffe fuhren. Das Küstenhaus schuldet Ihnen die Wahrheit – und mehr.",
   belohnungText: "Belohnung: Stärke 3.000, Geschick 3.000, Defense 3.000 XP, 800 Splitter",
   belohnung: { xp: { staerke: 3000, geschick: 3000, defense: 3000 }, splitter: 800 },

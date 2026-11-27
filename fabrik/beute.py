@@ -1,7 +1,7 @@
 """Mythara Fabrik – Beute und Questgegenstände (Phase 4) in Blender bauen (glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   <blender-python> fabrik/beute.py -- <art> <ziel.glb>
-  art: karrenbrief | rabenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge | sichel | stock | staken | federn | chitin | giftdruese | seelenlicht | quellstein | lindenspan
+  art: karrenbrief | rabenbrief | kords_brief | tjarks_eid | othmars_brief | lampenoel | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge | sichel | stock | staken | federn | chitin | giftdruese | seelenlicht | quellstein | lindenspan
 
 karrenbrief: zusammengerollter Frachtbrief mit Schnur und rotem Siegel · schluesselbund: Eisenring mit drei Bartschlüsseln ·
 silberleuchter: dreiarmiger Silberleuchter mit Kerzen · apfel: roter Apfel mit Stiel und Blatt ·
@@ -46,13 +46,16 @@ def apfel(ort, r, m_haut):
     o.location = ort; rohr((ort[0], ort[1], ort[2] + r * 0.6), (ort[0] + r * 0.08, ort[1], ort[2] + r * 1.05), r * 0.06, mat("stiel", (90, 60, 30)), 6)
     return o
 
-if ART in ("karrenbrief", "rabenbrief"):
+if ART in ("karrenbrief", "rabenbrief", "kords_brief", "tjarks_eid"):
     PAP = mat("papier", (225, 205, 160), 0.9)
     o = rohr((-0.11, 0, 0.025), (0.11, 0, 0.025), 0.025, PAP, 24); bpy.ops.object.mode_set(mode="OBJECT")
     for v in o.data.vertices: v.co.z += 0.0                                                      # Rolle
     wuerfel((0.0, -0.06, 0.003), (0.2, 0.08, 0.003), PAP, (0, 0, 0.06), 0.4)                 # ausgerollter Rand, der vorn auf dem Boden liegt
     for x in (-0.05, 0.05): ring((x, 0, 0.025), 0.027, 0.0025, mat("schnur", (150, 110, 60), 0.9), (0, math.radians(90), 0))
-    bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.018, depth=0.008, location=(0.0, -0.022, 0.035), rotation=(math.radians(70), 0, 0)); o = glatt(bpy.context.object); o.data.materials.append(mat("siegel", (165, 25, 25), 0.4) if ART == "karrenbrief" else mat("siegel_schwarz", (24, 22, 26), 0.35))
+    bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.018, depth=0.008, location=(0.0, -0.022, 0.035), rotation=(math.radians(70), 0, 0)); o = glatt(bpy.context.object); o.data.materials.append({"karrenbrief": mat("siegel", (165, 25, 25), 0.4), "rabenbrief": mat("siegel_schwarz", (24, 22, 26), 0.35), "kords_brief": mat("siegel_schiefer", (77, 93, 110), 0.4), "tjarks_eid": mat("siegel_grau", (150, 150, 156), 0.3, 0.5)}[ART])
+    if ART == "tjarks_eid":                                                                       # Eid der Wacht: rotes Band um die Rolle, Siegel mit Turm
+        for x in (-0.03, 0.03): ring((x, 0, 0.025), 0.028, 0.004, mat("band_rot", (150, 30, 30), 0.6), (0, math.radians(90), 0))
+        wuerfel((0.0, -0.028, 0.041), (0.008, 0.002, 0.012), mat("turm", (90, 92, 100), 0.4, 0.6), (math.radians(70), 0, 0), 0.1)
     if ART == "rabenbrief":                                                                       # Rabe im schwarzen Wachs (wie das Siegel der Wrackkiste, Phase 10)
         R_ = mat("rabe_rot", (130, 28, 30), 0.4); kugel((0.0, -0.027, 0.039), 0.006, R_, (1, 0.4, 0.7), 8)
         for sx in (-1, 1): bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=0.003, radius2=0, depth=0.014, location=(sx * 0.006, -0.028, 0.041), rotation=(math.radians(70), 0, sx * 0.9)); bpy.context.object.data.materials.append(R_)
@@ -172,6 +175,17 @@ elif ART == "lindenspan":                                                       
     o = wuerfel((0, 0, 0.008), (0.16, 0.035, 0.012), mat("lindenholz", (222, 196, 150), 0.7), (0, 0, 0.2), 0.3)
     for v in o.data.vertices: v.co.z += 0.004 * math.sin(v.co.x * 40) * (v.co.z > 0.008); v.co.y *= (1 - 0.6 * max(0, v.co.x / 0.08))
     rohr((-0.07, 0.0, 0.012), (0.06, 0.004, 0.012), 0.0015, mat("maserung", (170, 136, 90), 0.8), 4); kugel((0.01, -0.008, 0.016), 0.008, mat("honig", (230, 160, 30), 0.1), (1, 1, 0.6), 10)
+elif ART == "othmars_brief":                                                                    # gefalteter Brief mit grünem Wachssiegel (Othmar Rehn, Weidenhain → Gunhild)
+    PAP = mat("papier", (225, 205, 160), 0.9)
+    wuerfel((0, 0, 0.004), (0.15, 0.1, 0.006), PAP, (0, 0, 0.1), 0.2)
+    for k, (dx, dy, a) in enumerate(((0, 0.03, 0.0), (0.0, -0.025, 0.0))): wuerfel((dx, dy, 0.009 + 0.001 * k), (0.15, 0.045, 0.002), PAP, (0, 0, 0.1), 0.2)   # Faltlaschen
+    bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.016, depth=0.006, location=(0.0, 0.0, 0.014)); o = glatt(bpy.context.object); o.data.materials.append(mat("siegel_gruen", (40, 100, 50), 0.4))
+    for i in range(4): wuerfel((-0.05 + i * 0.012, 0.042, 0.0115), (0.006, 0.012, 0.0005), mat("tinte", (50, 35, 25)), (0, 0, 0.1), 0.1)
+elif ART == "lampenoel":                                                                         # Fläschchen Lampenöl (aus Seeaal-Tran, G2): bauchiges Glas, goldenes Öl, Korken, Schnur
+    dreh("flasche", [(0, 0), (0.035, 0), (0.042, 0.03), (0.036, 0.065), (0.014, 0.085), (0.014, 0.1), (0, 0.1)], mat("bernsteinglas", (200, 140, 40), 0.12), 20)
+    dreh("oel", [(0, 0.004), (0.033, 0.004), (0.039, 0.03), (0.033, 0.058), (0, 0.058)], mat("oel", (214, 160, 40), 0.1), 20)
+    dreh("korken", [(0, 0.098), (0.013, 0.098), (0.015, 0.118), (0, 0.118)], mat("korken", (190, 150, 100), 0.8), 12)
+    ring((0, 0, 0.09), 0.016, 0.0025, mat("schnur", (150, 110, 60), 0.9))
 elif ART == "splitterkern":
     KRIST = mat("kristall", (90, 150, 235), 0.1); KERN = mat("kern", (200, 170, 255), 0.05)
     for m_ in (KRIST, KERN):

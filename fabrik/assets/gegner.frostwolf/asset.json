@@ -1,0 +1,12 @@
+{
+  "id": "gegner.frostwolf",
+  "name": "Frostwolf",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "stufe": 64,
+  "gebiet": "Frostkrone",
+  "grundform": "Vierbeiner Wolf",
+  "status": "v001: Meshy-Modell des Nutzers (27.11.2026, quelle/meshy.glb), fabrik/rig_vierbeiner.py hoehe=1.1 bein=0.45 hals=1 schwanz=1; Bewegungen angriff, gehen, laufen, ruhe, tod, treffer – img/figuren-echt3d/frostwolf3d.glb (+ .mobil.glb)",
+  "vorlage": "Grundform „Vierbeiner Wolf“: für spätere Gegner dieser Form quelle/meshy.glb umfärben (fabrik/textur_ton.py) oder mit fabrik/rig_vierbeiner.py neu riggen",
+  "herkunft": "Meshy (Nutzer)"
+}

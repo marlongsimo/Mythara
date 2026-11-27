@@ -1,0 +1,61 @@
+{
+ "teile": {
+  "kleidung.frostmantel": {
+   "art": "huelle",
+   "platz": "kutte",
+   "bewegungen": []
+  },
+  "kleidung.kopf.eiskrone": {
+   "art": "starr",
+   "platz": "kopf",
+   "bewegungen": []
+  },
+  "kleidung.umhang": {
+   "art": "starr",
+   "platz": "umhang",
+   "bewegungen": []
+  },
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "waffe.eisstab": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": []
+  }
+ },
+ "aktionen": {
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
+  "nova": {
+   "bilder": 8,
+   "rate": 12,
+   "schleife": false
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  },
+  "tod": {
+   "bilder": 8,
+   "rate": 10,
+   "schleife": false
+  },
+  "treffer": {
+   "bilder": 5,
+   "rate": 12,
+   "schleife": false
+  },
+  "zauber": {
+   "bilder": 8,
+   "rate": 14,
+   "schleife": false
+  }
+ }
+}

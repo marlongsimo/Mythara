@@ -45,7 +45,8 @@ async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promis
 /** Aufheben-Schritte, deren Gegenstand der Spieler schon bei sich hat (z. B. das Pergament oder Bruchstücke schon früher gefunden): gleich erledigt, alle Stücke zählen */
 function nachziehen(nutzer: string, q: QB.QuestDef, s: string): string { let n = s;
   for (const S of q.schritte) if (S.ereignis.art === "aufheben" && QB.moeglich(q, n, S.id) && besitzt(nutzer).includes(S.ereignis.g)) {
-    const g = S.ereignis.g, mal = Math.max(1, Math.min(anzahlVon(nutzer, g) || 1, (S.anzahl || 1) - QB.zaehler(q, n, S.id))); for (let i = 0; i < mal; i++) n = QB.ereignis(q, n, { art: "aufheben", g }); }
+    const g = S.ereignis.g, mal = Math.min(anzahlVon(nutzer, g) || 1, S.anzahl || 1) - QB.zaehler(q, n, S.id); /* #158: bis zur Zahl der Stücke, die da sind – nicht bei jedem Aufruf eins mehr (setzen ruft nachziehen nach jedem Ereignis, ein Siegel zählte so dreifach) */
+    for (let i = 0; i < mal; i++) n = QB.ereignis(q, n, { art: "aufheben", g }); }
   return n; }
 
 /** Weltzustand je Spieler (QuestDef.schalter): Mühle dreht, Kapelle offen, Zielscheiben frei … */
@@ -73,7 +74,11 @@ async function buchen(sb: Sb, nutzer: string, q: QB.QuestDef): Promise<boolean |
 
 /* ───────── Gespräche ───────── */
 const offen = new Map<string, { q: string; npc: string }>();
-export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: boolean; fehler?: string; /** Kampf-XP (der Browser trägt sie nach) */ belohnung?: NonNullable<QB.Belohnung["xp"]>; splitter?: number; /** ein Teil des Lohns liegt am Boden */ amBoden?: boolean; /** Questpunkte für diesen Abschluss */ punkte?: number; /** #77: abgeschlossen, der Lohn dieser Quest wartet aufs Abholen */ abholen?: string }
+/* ───────── Folge.angriff (E3): die Figur wird Gegner – die Kampfwelt (index.ts) holt die Wünsche ab und setzt den Gegner (Sim.angreifer) ───────── */
+const angriffe = new Map<string, { art: string; x: number; y: number }[]>();
+/** Wartende Angriffe dieses Spielers (Weltfelder) – danach leer */
+export function angriffeHolen(nutzer: string): { art: string; x: number; y: number }[] { const L = angriffe.get(nutzer); if (!L) return []; angriffe.delete(nutzer); return L; }
+export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: boolean; fehler?: string; /** Kampf-XP (der Browser trägt sie nach) */ belohnung?: NonNullable<QB.Belohnung["xp"]>; splitter?: number; /** ein Teil des Lohns liegt am Boden */ amBoden?: boolean; /** Questpunkte für diesen Abschluss */ punkte?: number; /** #77: abgeschlossen, der Lohn dieser Quest wartet aufs Abholen */ abholen?: string; /** Folge.angriff: diese Figur ist jetzt ein Gegner (der Browser lässt sie beiseite treten) */ angriff?: string }
 /** Gehört die Figur zu einer Quest des Baukastens? */
 export const figurDa = (id: string): boolean => QUESTS.some((q) => q.figuren.some((f) => f.id === id));
 export function motorReden(sb: Sb, nutzer: string, id: string, wx: number | undefined, wy: number | undefined): MotorAntwort {
@@ -112,7 +117,11 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
     const F0 = q.figuren.find((x) => x.id === o.npc)!, bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y; let boden = 0;
     nehmen(); neu = geben(sb, nutzer, (f.geben || []).filter((G) => !G.verloren), k, lohnGeber(sb, nutzer, bx, by, (n) => { boden += n; })).neu; /* was die Figur im Gespräch gibt (Waffe nach Wahl), gleich */
     await setzen(sb, nutzer, q, QB.ABHOLBEREIT); if (boden) aus.amBoden = true; aus.abholen = q.id; }
-  else { const r = geben(sb, nutzer, f.geben || [], k); if (r.fehler) return { fehler: r.fehler }; neu = r.neu;
+  else { /* #144: was die Figur mitten in der Quest gibt und nicht mehr in den Rucksack passt, liegt am Boden neben dem Spieler (nur für ihn, nach den Boden-Regeln) – sonst wäre der Schritt erledigt, der Gegenstand weg und die Quest hinge */
+    const F0 = q.figuren.find((x) => x.id === o.npc)!, bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y; let boden = 0;
+    const rein = (g: string, n: number): number => { const k0 = aufnehmen(sb, nutzer, g, n); if (k0 < n && bodenDazu(weltRegionBei(bx, by), bx, by, g, n - k0, nutzer, QUESTLOHN)) boden += n - k0; return n; };
+    const r = geben(sb, nutzer, f.geben || [], k, rein); if (r.fehler) return { fehler: r.fehler }; neu = r.neu; if (boden) aus.amBoden = true;
+    if (f.angriff) { const F1 = q.figuren.find((x) => x.id === o.npc)!; angriffe.set(nutzer, [...(angriffe.get(nutzer) || []), { art: f.angriff, x: F1.x, y: F1.y }]); aus.angriff = F1.id; }
     const n = QB.nachFolge(q, s, f); if (n !== s) await setzen(sb, nutzer, q, n); }
   let zeilen = QB.folgeZeilen(q, o.npc, qStand(nutzer, q.id), f.geben && f.geben.length && !neu.length && f.nichtsZuGeben ? f.nichtsZuGeben : f.zeilen);
   const F = q.figuren.find((x) => x.id === o.npc)!; if (neu.length) zeilen = [...zeilen, { wer: F.name, text: `(Du bekommst: ${neu.join(", ")}.)` }];
@@ -124,12 +133,14 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
 /** Lohn in den Rucksack – gebunden (Entscheidung zu #65, außer Splittern); was nicht passt, liegt am Boden unter dem Spieler, nur für ihn (beimBoden: wie viele) */
 function lohnGeber(sb: Sb, nutzer: string, bx: number, by: number, beimBoden: (n: number) => void): (g: string, n: number) => number {
   return (g, n) => { const d = g === "splitter" ? undefined : { gebunden: true }, k = aufnehmen(sb, nutzer, g, n, true, d); if (k < n && bodenDazu(weltRegionBei(bx, by), bx, by, g, n - k, nutzer, QUESTLOHN, Date.now(), d)) beimBoden(n - k); return n; }; }
-export interface MotorAbgeholt { fehler?: string; /** gebucht für diese Quest */ abgeholt?: string; /** war schon gebucht (nichts doppelt) */ schon?: boolean; belohnung?: NonNullable<QB.Belohnung["xp"]>; berufe?: Record<string, number>; splitter?: number; gegenstaende?: string[]; punkte?: number; gesamtPunkte?: number; /** so viele Gegenstände liegen am Boden (Rucksack voll) */ amBoden?: number }
+export interface MotorAbgeholt { fehler?: string; /** gebucht für diese Quest */ abgeholt?: string; /** war schon gebucht (nichts doppelt) */ schon?: boolean; belohnung?: NonNullable<QB.Belohnung["xp"]>; berufe?: Record<string, number>; splitter?: number; gegenstaende?: string[]; punkte?: number; gesamtPunkte?: number; /** so viele Gegenstände liegen am Boden (Rucksack voll) */ amBoden?: number; /** #146: die gewählte Belohnung; wahlFehlt: ohne gültige Wahl nichts gebucht */ gewaehlt?: string; wahlFehlt?: boolean }
 const holt = new Set<string>();
 /** Den Lohn einer abgeschlossenen Quest abholen: bucht genau einmal (rpg_held_quest_abschluss_v2); doppeltes „Okay“ bucht nichts doppelt. wo: Stelle des Spielers */
-export async function motorAbholen(sb: Sb, nutzer: string, id: string, wo?: { x?: number; y?: number }): Promise<MotorAbgeholt> {
+export async function motorAbholen(sb: Sb, nutzer: string, id: string, wo?: { x?: number; y?: number }, wahl?: unknown): Promise<MotorAbgeholt> {
   const q = questDef(String(id || "")); if (!q) return { fehler: "Diese Quest gibt es nicht." };
   const s = qStand(nutzer, q.id); if (!QB.abholbereit(s)) return s === "fertig" ? { abgeholt: q.id, schon: true } : { fehler: "Da gibt es nichts abzuholen." };
+  const W = (q.belohnung || {}).wahl, gewaehlt = W && W.length ? W.find((x) => x.g === String(wahl || "")) : undefined; /* #146: Belohnung zur Auswahl – genau eine der angebotenen */
+  if (W && W.length && !gewaehlt) return { fehler: "Wähle zuerst eine Belohnung.", wahlFehlt: true };
   const key = nutzer + "|" + q.id; if (holt.has(key)) return { fehler: "Einen Moment …" }; holt.add(key);
   try { const ok = await buchen(sb, nutzer, q); if (ok === null) return { fehler: "Der Lohn konnte nicht gebucht werden. Versuch es gleich noch einmal." };
     let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, "fertig"); gemeldet(nutzer);
@@ -137,7 +148,8 @@ export async function motorAbholen(sb: Sb, nutzer: string, id: string, wo?: { x?
     const B = q.belohnung || {}, X = B.xp || {}, F0 = q.figuren.find((x) => x.id === (q.abgabe || q.geber)) || q.figuren[0], bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y;
     let boden = 0; const lohn = lohnGeber(sb, nutzer, bx, by, (n) => { boden += n; }), aus: MotorAbgeholt = { abgeholt: q.id, gegenstaende: [] };
     if (B.splitter) aus.splitter = lohn("splitter", B.splitter);
-    for (const G of B.gegenstaende || []) { lohn(G.g, G.n || 1); aus.gegenstaende!.push(GEGENSTAENDE[G.g] ? GEGENSTAENDE[G.g].name : G.g); }
+    for (const G of [...(B.gegenstaende || []), ...(gewaehlt ? [gewaehlt] : [])]) { lohn(G.g, G.n || 1); aus.gegenstaende!.push(GEGENSTAENDE[G.g] ? GEGENSTAENDE[G.g].name : G.g); }
+    if (gewaehlt) aus.gewaehlt = gewaehlt.g;
     if (Object.values(X).some((v) => v)) { aus.belohnung = X; try { xpGutschrift(nutzer, X); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } }
     for (const [b, n] of Object.entries(B.berufe || {})) if (n > 0) berufXpDazu(sb, nutzer, b, Math.min(QB.LOHN_JE_SKILL, n)); /* dieselbe Grenze wie in der Datenbank (Migration 051) */
     if (B.berufe) aus.berufe = { ...B.berufe };

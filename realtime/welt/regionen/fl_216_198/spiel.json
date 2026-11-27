@@ -1,8 +1,8 @@
 {
  "start": [
   [
-   240.0,
-   208.0
+   240,
+   208
   ]
  ],
  "figuren": [],
@@ -10,6 +10,48 @@
  "ausgaenge": [],
  "kollision": {
   "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 470,
+    "y0": 366,
+    "x1": 471,
+    "y1": 367
+   },
+   {
+    "art": "rechteck",
+    "x0": 464,
+    "y0": 364,
+    "x1": 465,
+    "y1": 365
+   },
+   {
+    "art": "rechteck",
+    "x0": 469,
+    "y0": 361,
+    "x1": 470,
+    "y1": 362
+   },
+   {
+    "art": "rechteck",
+    "x0": 399,
+    "y0": 293,
+    "x1": 400,
+    "y1": 294
+   },
+   {
+    "art": "rechteck",
+    "x0": 393,
+    "y0": 291,
+    "x1": 394,
+    "y1": 292
+   },
+   {
+    "art": "rechteck",
+    "x0": 398,
+    "y0": 287,
+    "x1": 399,
+    "y1": 288
+   },
    {
     "art": "rechteck",
     "x0": 176,
@@ -30,11 +72,43 @@
     "y0": 349,
     "x1": 224,
     "y1": 350
+   },
+   {
+    "art": "rechteck",
+    "x0": 441,
+    "y0": 292,
+    "x1": 442,
+    "y1": 293
+   },
+   {
+    "art": "rechteck",
+    "x0": 437,
+    "y0": 292,
+    "x1": 438,
+    "y1": 293
+   },
+   {
+    "art": "rechteck",
+    "x0": 438,
+    "y0": 288,
+    "x1": 439,
+    "y1": 289
    }
   ],
   "freigeben": []
  },
  "interaktionen": [
+  {
+   "id": "bl_sandquell",
+   "art": "lesen",
+   "x": 473,
+   "y": 409.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Sandquell. Eine Quelle mitten in den Dünen – hier tränken die Karawannen zwischen Glutbrunn, der Salzpfanne und dem Nordstrand ihre Tiere."
+   }
+  },
   {
    "id": "ende_des_grases",
    "art": "lesen",
@@ -110,6 +184,26 @@
    },
    "art": "lesen",
    "abgleich": "keiner"
+  }
+ ],
+ "senken": [
+  {
+   "x": 176.5,
+   "y": 338.5,
+   "r": 4,
+   "tiefe": 1.1
+  },
+  {
+   "x": 222.5,
+   "y": 343,
+   "r": 9,
+   "tiefe": 1.1
+  },
+  {
+   "x": 439.3,
+   "y": 291,
+   "r": 5,
+   "tiefe": 1.1
   }
  ]
 }

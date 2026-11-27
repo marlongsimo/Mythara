@@ -47,8 +47,8 @@ check(HEILSTELLEN.some((h) => h.id === "kreuzstein" && h.schalter === "kreuzstei
 check(LAEDEN.imme && LAEDEN.imme.wenn.quest === "summweide_der_verschwundene_stock" && LAEDEN.imme.waren.every((w) => GEGENSTAENDE[w.g]), "Immes Laden öffnet nach S2");
 
 console.log("\nReisende auf der Südstraße");
-{ const R = REISENDE.find((r) => r.id === "haendler_sued"), a = reiseStelle(R, 0), b = reiseStelle(R, 120), c = REISENDE.map((r) => reiseStelle(r, 5000));
-  check(REISENDE.length === 3 && REISENDE.every((r) => r.datei.startsWith("npc.")), "ein Händler und zwei Wanderer");
+{ const SUED = REISENDE.filter((r) => /_sued$/.test(r.id)) /* die Bergleute der Hochlande (Phase 11) gehen woanders */, R = REISENDE.find((r) => r.id === "haendler_sued"), a = reiseStelle(R, 0), b = reiseStelle(R, 120), c = SUED.map((r) => reiseStelle(r, 5000));
+  check(SUED.length === 3 && SUED.every((r) => r.datei.startsWith("npc.")), "ein Händler und zwei Wanderer");
   check(c.every((p) => p.y >= 6760 && p.y <= 7290 && Math.abs(p.x - 6460) < 20), "immer auf der Straße zwischen Weidenhain und Kielmund");
   check(Math.hypot(a.x - b.x, a.y - b.y) > 0 || a.steht, "sie bewegen sich mit der Uhr (oder halten)");
   let halt = 0; for (let t = 0; t < 4000; t += 5) { const p = reiseStelle(R, t); if (p.steht && Math.abs(p.y - 7008) < 1) halt++; } check(halt * 5 >= 200, `der Händler steht lange am Halben Weg (${halt * 5} s je Runde)`); }

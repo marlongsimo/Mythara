@@ -1,11 +1,11 @@
 /*
  * Riftmere – Quest G1 „Die Südstraße“ (Phase 10), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-10.md. QUER: Othmar Rehn (Weidenhain) schickte Getreide nach Kielmund, der letzte Wagen kam nie an.
- * Zwei Spuren auf der Südstraße, vier Strandräuber, der umgestürzte Wagen (Frachtbrief), in Kielmund Kaufherr Jasper Kranich vom Küstenhaus.
+ * Zwei Spuren auf der Südstraße, vier Wegelagerer aus dem Lager an der Südstraße (Knüppel und Schleuder, Süden #120), der umgestürzte Wagen (Frachtbrief), in Kielmund Kaufherr Jasper Kranich vom Küstenhaus.
  * Lohn: Stärke 2.000, Fernkampf 2.000, Defense 1.500 XP, 400 Splitter, 2 Questpunkte; Wegstein-Ziel Kielmund (die Kutsche ist gestrichen, Nutzer 26.11.).
  * Der Weg ist offen (offene Welt) – die Quest belohnt mit der Abkürzung.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Strandräuber, Wegstein-Ziel Kielmund). Stellen aus der Welt (#82). Stellen: shared/quest_g_orte.ts. Liste: doku/quests/g-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9/10, 9c0d16bd und e7f482af). Stellen aus der Welt (#82). Stellen: shared/quest_g_orte.ts. Liste: doku/quests/g-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { OTHMAR, SUEDSTRASSE, KIELMUND } from "./quest_g_orte";
@@ -34,11 +34,11 @@ export const QUEST_G1: QuestDef = {
   schritte: [
     ...SPUREN.map((id, i) => ({ id, text: "Den Spuren auf der Südstraße folgen", ereignis: { art: "objekt" as const, id: "g1_" + id }, gruppe: "spuren", wo: i === 0 ? SUEDSTRASSE.spur_1 : SUEDSTRASSE.spur_2,
       log: "Folg der Südstraße von Weidenhain nach Süden und such nach Spuren des Getreidewagens ({n:spuren})." })),
-    { id: "raeuber_saebel", text: "Zwei Strandräuber mit Säbel besiegen", ereignis: { art: "erlegen", typ: "strandraeuber_saebel" }, anzahl: 2, nach: SPUREN, wo: SUEDSTRASSE.raeuber, gruppe: "raeuber",
-      log: "Am umgestürzten Wagen lagern Strandräuber, mit Säbeln und Armbrüsten. Besieg vier ({n:raeuber})." },
-    { id: "raeuber_armbrust", text: "Zwei Strandräuber mit Armbrust besiegen", ereignis: { art: "erlegen", typ: "strandraeuber_armbrust" }, anzahl: 2, nach: SPUREN, wo: SUEDSTRASSE.raeuber, gruppe: "raeuber",
-      log: "Am umgestürzten Wagen lagern Strandräuber, mit Säbeln und Armbrüsten. Besieg vier ({n:raeuber})." },
-    { id: "wagen", text: "Den Wagen durchsuchen", ereignis: { art: "objekt", id: "g1_wagen" }, nach: ["raeuber_saebel", "raeuber_armbrust"], wo: SUEDSTRASSE.wagen,
+    { id: "raeuber_knueppel", text: "Zwei Wegelagerer mit Knüppel besiegen", ereignis: { art: "erlegen", typ: "wegelagerer_knueppel" }, anzahl: 2, nach: SPUREN, wo: SUEDSTRASSE.raeuber, gruppe: "raeuber",
+      log: "Neben der Südstraße, ein Stück vor dem Wagen, liegt ein Lager der Wegelagerer – mit Knüppeln und Schleudern. Besieg vier ({n:raeuber})." },
+    { id: "raeuber_schleuder", text: "Zwei Wegelagerer mit Schleuder besiegen", ereignis: { art: "erlegen", typ: "wegelagerer_schleuder" }, anzahl: 2, nach: SPUREN, wo: SUEDSTRASSE.raeuber, gruppe: "raeuber",
+      log: "Neben der Südstraße, ein Stück vor dem Wagen, liegt ein Lager der Wegelagerer – mit Knüppeln und Schleudern. Besieg vier ({n:raeuber})." },
+    { id: "wagen", text: "Den Wagen durchsuchen", ereignis: { art: "objekt", id: "g1_wagen" }, nach: ["raeuber_knueppel", "raeuber_schleuder"], wo: SUEDSTRASSE.wagen,
       log: "Durchsuch den umgestürzten Getreidewagen. Der Kutscher hatte einen Frachtbrief." },
   ],
   objekte: [
@@ -46,7 +46,7 @@ export const QUEST_G1: QuestDef = {
       text: "Tiefe Radspuren, schwer beladen. Hier hat jemand gebremst – und dann ging es im Galopp weiter ({n:spuren}).", schon: "Die Spur eines schweren Wagens.",
       sonst: [{ wenn: NEU, text: "Radspuren im Schlamm der Südstraße." }, { wenn: FERTIG, text: "Radspuren im Schlamm der Südstraße." }] },
     { id: "g1_spur_2", name: "Verstreutes Korn", x: SUEDSTRASSE.spur_2[0], y: SUEDSTRASSE.spur_2[1], modell: "stelle", tat: "untersuchen", weit: 2.5,
-      text: "Korn, über den Weg verstreut, und ein Hufeisen. Weiter vorn riecht es nach Rauch und Salz ({n:spuren}).", schon: "Verstreutes Korn. Die Vögel sind schon dran.",
+      text: "Korn, über den Weg verstreut, und ein Hufeisen. Weiter vorn riecht es nach Rauch – ein Lagerfeuer neben der Straße ({n:spuren}).", schon: "Verstreutes Korn. Die Vögel sind schon dran.",
       sonst: [{ wenn: NEU, text: "Ein paar Körner auf dem Weg." }, { wenn: FERTIG, text: "Die Vögel haben das Korn gefressen." }] },
     { id: "g1_wagen", name: "Umgestürzter Wagen", x: SUEDSTRASSE.wagen[0], y: SUEDSTRASSE.wagen[1], modell: "stelle", tat: "untersuchen", tatText: "Den Wagen durchsuchen", weit: 3, geben: [{ g: "frachtbrief" }],
       text: "Die Säcke sind aufgeschlitzt, das Korn ist fort. Unter dem Kutschbock, in einer Lederhülle: der Frachtbrief. „Sechzig Sack, Weidenhain an Küstenhaus Kranich.“",

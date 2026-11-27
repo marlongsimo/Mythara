@@ -35,5 +35,6 @@ for (let y = 1; y < H; y += 3) for (let x = 1; x < B; x += 3) { const k = y * B 
 check(!zuweit.length, `von ${geprueft} geprüften Feldern (jedes 3.) ist der nächste Gegnerplatz höchstens ${D.reichweite + 1} Felder entfernt`, zuweit);
 const aufWeg = D.plaetze.filter((p) => WEG[(Math.floor(p.y) - Y0) * B + Math.floor(p.x) - X0]); check(aufWeg.length <= D.plaetze.length * 0.01, `Gegnerplätze nicht auf Wegen (${aufWeg.length} von ${D.plaetze.length})`, aufWeg.map((p) => p.id));
 const inOrt = D.plaetze.filter((p) => p.quelle !== "Süden #120" && ausgenommen(p.x, p.y));   /* die Plätze aus #120 liegen absichtlich am Ortsrand (Felder, Ufer, Steinbruch) */ check(!inOrt.length, "kein Gegnerplatz in Städten, Dörfern, Orten, an Questorten oder Bedienstellen", inOrt.map((p) => p.id));
-check(D.fehlend.length > 0 && D.fehlend.every((f) => f.gegner && f.stufe && f.gelaende), `${D.fehlend.length} fehlende Modelle mit Stufe und Gelände gelistet`);
+{ const fehltPlatz = new Set(D.plaetze.filter((p) => p.quelle === "fehlt").flatMap((p) => p.gegner)), gelistet = new Set(D.fehlend.map((f) => f.gegner));   /* seit fab2fde5 haben alle neuen Gegner Werte – die Liste darf leer sein */
+  check(D.fehlend.every((f) => f.gegner && f.stufe && f.gelaende) && [...fehltPlatz].every((g) => gelistet.has(g)), `${D.fehlend.length} fehlende Modelle mit Stufe und Gelände gelistet (jeder Platz ohne Modell steht in der Liste)`); }
 console.log(ok ? "\nGegnerdichte: alles in Ordnung" : "\nGegnerdichte: FEHLER"); process.exit(ok ? 0 : 1);

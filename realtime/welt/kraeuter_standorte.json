@@ -233,48 +233,6 @@
    "region": "weidenhain"
   },
   {
-   "id": "sueden_wegerich_1",
-   "art": "wegerich",
-   "x": 6406.5,
-   "y": 6894.5,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "sueden_ringelblume_1",
-   "art": "ringelblume",
-   "x": 6410.5,
-   "y": 6914.5,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "sueden_wegerich_2",
-   "art": "wegerich",
-   "x": 6412.5,
-   "y": 6894.5,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "sueden_ringelblume_2",
-   "art": "ringelblume",
-   "x": 6416.5,
-   "y": 6914.5,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "sueden_wegerich_3",
-   "art": "wegerich",
-   "x": 6418.5,
-   "y": 6894.5,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "sueden_ringelblume_3",
-   "art": "ringelblume",
-   "x": 6422.5,
-   "y": 6914.5,
-   "region": "fl_186_211"
-  },
-  {
    "id": "kraeuterhof_ringelblume_1",
    "art": "ringelblume",
    "x": 6411.5,
@@ -329,6 +287,174 @@
    "x": 6411.5,
    "y": 7069.5,
    "region": "fl_186_211"
+  },
+  {
+   "id": "hochlande_eisenhut_1",
+   "art": "eisenhut",
+   "x": 7019.5,
+   "y": 5566.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_2",
+   "art": "nebelkraut",
+   "x": 7101.5,
+   "y": 5799.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_eisenhut_3",
+   "art": "eisenhut",
+   "x": 7155.5,
+   "y": 5772.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_4",
+   "art": "nebelkraut",
+   "x": 7037.5,
+   "y": 5513.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_eisenhut_5",
+   "art": "eisenhut",
+   "x": 7113.5,
+   "y": 5789.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_6",
+   "art": "nebelkraut",
+   "x": 7032.5,
+   "y": 5523.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_eisenhut_7",
+   "art": "eisenhut",
+   "x": 6875.5,
+   "y": 5728.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_8",
+   "art": "nebelkraut",
+   "x": 6915.5,
+   "y": 5628.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_eisenhut_9",
+   "art": "eisenhut",
+   "x": 6868.5,
+   "y": 5678.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_10",
+   "art": "nebelkraut",
+   "x": 6885.5,
+   "y": 5725.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "hochlande_wegerich_11",
+   "art": "wegerich",
+   "x": 7170.5,
+   "y": 5988.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_wegerich_12",
+   "art": "wegerich",
+   "x": 7174.5,
+   "y": 5986.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_ringelblume_13",
+   "art": "ringelblume",
+   "x": 7208.5,
+   "y": 5988.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_ringelblume_14",
+   "art": "ringelblume",
+   "x": 7212.5,
+   "y": 5991.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_wegerich_15",
+   "art": "wegerich",
+   "x": 7214.5,
+   "y": 6004.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_moorgloeckchen_16",
+   "art": "moorgloeckchen",
+   "x": 7343.5,
+   "y": 5669.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_ringelblume_17",
+   "art": "ringelblume",
+   "x": 7346.5,
+   "y": 5669.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_moorgloeckchen_18",
+   "art": "moorgloeckchen",
+   "x": 7345.5,
+   "y": 5671.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "sueden_wegerich_1",
+   "art": "wegerich",
+   "x": 6406.5,
+   "y": 6894.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6410.5,
+   "y": 6914.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_wegerich_2",
+   "art": "wegerich",
+   "x": 6412.5,
+   "y": 6894.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_ringelblume_2",
+   "art": "ringelblume",
+   "x": 6416.5,
+   "y": 6914.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_wegerich_3",
+   "art": "wegerich",
+   "x": 6418.5,
+   "y": 6894.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_ringelblume_3",
+   "art": "ringelblume",
+   "x": 6422.5,
+   "y": 6914.5,
+   "region": "fl_186_211"
   }
  ],
  "kessel": [
@@ -357,10 +483,10 @@
   {
    "id": "kessel_kraeuterhof",
    "ort": "vor dem Kräuterhaus am Kräuterhof (Objekt kraeuterhof_kessel)",
-   "x": 6422.0,
-   "y": 7062.0,
+   "x": 6422,
+   "y": 7062,
    "stehen": [
-    6422.0,
+    6422,
     7063.4
    ],
    "region": "fl_186_211"

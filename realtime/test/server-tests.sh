@@ -42,6 +42,10 @@ TESTS=(
   welt-federmutter
   welt-gegnerdichte
   welt-troedler
+  welt-beleben
+  welt-sammelstellen
+  welt-streifgebiete
+  welt-hochlande
   phase5
   phase8-10
   abholen
@@ -55,6 +59,11 @@ TESTS=(
   welt-waldmark
   waldweg
   welt-bau
+  welt-dreh
+  speer
+  waffen70
+  hochlande-leben
+  tiere
   welt-daten
   welt-grenzen
   welt-raster
@@ -70,12 +79,34 @@ TESTS=(
   inhalt-phase9
   inhalt-phase10
   bosse-116
+  boss-quest-machbar
   bank-platzhalter
   festland-kampf
   inhalt-sueden
   kraeuterkunde
   gegnerlast
   gegner-vorbereitet
+  streifgebiete
+  belohnung-wahl
+  bergwerk-welt
+  # Durchspiel-Tests C–G (Quests bf7b907a, fe4714a0). Noch rot und deshalb erst später aufnehmen: f-welt (#155, Karawanenräuber am Kanal)
+  c1-welt
+  c2-welt
+  c2b-welt
+  c3-welt
+  d-welt
+  e-welt
+  e2-welt
+  e3-welt
+  e4-welt
+  f3-welt
+  g12-welt
+  g3-welt
+  g3b-welt
+  g4-welt
+  c3b-welt
+  e4b-welt
+  f3b-welt
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

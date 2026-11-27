@@ -442,6 +442,96 @@
    "art": "Ort",
    "x": 6840,
    "y": 6518
+  },
+  {
+   "name": "Haferstedt",
+   "art": "Dorf",
+   "x": 6215,
+   "y": 6980
+  },
+  {
+   "name": "Netzbucht",
+   "art": "Ort",
+   "x": 6146,
+   "y": 6930
+  },
+  {
+   "name": "Sandquell",
+   "art": "Dorf",
+   "x": 7384,
+   "y": 6740
+  },
+  {
+   "name": "Nordstrand",
+   "art": "Ort",
+   "x": 7450,
+   "y": 6500
+  },
+  {
+   "name": "Die Hochlande",
+   "art": "Landschaft",
+   "x": 7240,
+   "y": 5860
+  },
+  {
+   "name": "Steinhag",
+   "art": "Stadt",
+   "x": 6990,
+   "y": 5892
+  },
+  {
+   "name": "Hohe Alm",
+   "art": "Gehöft",
+   "x": 7190,
+   "y": 6000
+  },
+  {
+   "name": "Erzberg-Bergwerk",
+   "art": "Ort",
+   "x": 7128,
+   "y": 5808
+  },
+  {
+   "name": "Passwacht",
+   "art": "Ort",
+   "x": 6962,
+   "y": 5608
+  },
+  {
+   "name": "Einsiedelei",
+   "art": "Ort",
+   "x": 7340,
+   "y": 5664
+  },
+  {
+   "name": "Die Furt",
+   "art": "Wegmarke",
+   "x": 6800,
+   "y": 5761
+  },
+  {
+   "name": "Grauhorn",
+   "art": "Landschaft",
+   "x": 6990,
+   "y": 5570
+  },
+  {
+   "name": "Steinhagsee",
+   "art": "Landschaft",
+   "x": 6990,
+   "y": 5846
+  },
+  {
+   "name": "Spiegelsee",
+   "art": "Landschaft",
+   "x": 7322,
+   "y": 5650
+  },
+  {
+   "name": "Die Nordklippen",
+   "art": "Landschaft",
+   "x": 7290,
+   "y": 5300
   }
  ]
 }

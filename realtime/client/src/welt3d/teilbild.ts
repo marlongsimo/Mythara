@@ -25,7 +25,7 @@ export function teilBildUrl(g: string, id: string): Promise<string> {
     const mitte = box.getCenter(new THREE.Vector3()), gr = box.getSize(new THREE.Vector3()), r = Math.max(gr.x, gr.y) * 0.58 || 0.5;
     szene.add(new THREE.HemisphereLight(0xfff1dc, 0x3a2e22, 1.8)); const sonne = new THREE.DirectionalLight(0xffe2b8, 2.2); sonne.position.set(-1.5, 3, 4); szene.add(sonne);
     const kamera = new THREE.OrthographicCamera(-r, r, r, -r, 0.01, 50); const waffe = /^(waffe|schild)\./.test(id); kamera.position.set(mitte.x + (waffe ? 0 : r * 0.6), mitte.y + r * 0.15, mitte.z + 4); kamera.lookAt(mitte);
-    zeichner.render(szene, kamera); return zeichner.domElement.toDataURL("image/png"); }).catch((e) => { console.warn("Teilbild:", id, e); return ""; });
+    zeichner.render(szene, kamera); return zeichner.domElement.toDataURL("image/png"); }).catch((e) => { console.warn("Teilbild:", id, e); if (bilder.get(k) === p) bilder.delete(k); return ""; }); /* #166: Fehlschlag nicht merken – beim nächsten Öffnen neu versuchen */
   bilder.set(k, p); return p; }
 /** In eine Leinwand zeichnen (eingepasst, mittig) */
 export async function teilBild(ziel: HTMLCanvasElement, g: string, id: string): Promise<boolean> {

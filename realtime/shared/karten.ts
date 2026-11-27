@@ -26,7 +26,7 @@ function weltZeilen(): string[] { if (weltZeilenFertig) return weltZeilenFertig;
   weltZeilenFertig = r.map((z) => { let t = ""; for (let i = 0; i < z.length; i += 4096) t += String.fromCharCode(...Array.from(z.subarray(i, i + 4096), (v) => (v ? 46 : 84))); return t; }); return weltZeilenFertig; }
 /** Lager aller Gebiete in der einen Kampfwelt (Positionen in halben Weltfeldern wie in weltzonen.ts, setzeKarte rechnet mit FEIN um) */
 const WELT_LAGER: Lager[] = (() => { let g = 0; return WELTKAMPF.flatMap((z) => { const dx = (z.x0 - WELT_X0) / 2, dy = (z.y0 - WELT_Y0) / 2, basis = g; g += z.lager.length + 1;
-  return z.lager.map((l) => ({ ...l, x: l.x + dx, y: l.y + dy, gruppe: basis + l.gruppe, aggro: z.aggro, leine: z.leine, wandern: z.wandern, stufe: z.stufe })); }); })();
+  return z.lager.map((l) => ({ ...l, x: l.x + dx, y: l.y + dy, ...(l.streif ? { streif: [l.streif[0] + dx, l.streif[1] + dy, l.streif[2] + dx, l.streif[3] + dy] } : {}) /* #143 */, gruppe: basis + l.gruppe, aggro: z.aggro, leine: z.leine, wandern: z.wandern, stufe: z.stufe })); }); })();
 const WELT_MEHRKAMPF = WELTKAMPF.flatMap((z) => z.mehrkampf.map(([a, b, c, d]) => [a + z.x0 - WELT_X0, b + z.y0 - WELT_Y0, c + z.x0 - WELT_X0, d + z.y0 - WELT_Y0]));
 /** Eine Schleuse: Solange sie offen ist, kriechen alle `takt` Sekunden Gegner aus dem Wasser (an den Quellen, höchstens `max` zugleich).
  *  Schließen: drei Sekunden ungestört am Hebel stehen. Erst wenn sie zu ist, kann der Kampf gewonnen werden. */

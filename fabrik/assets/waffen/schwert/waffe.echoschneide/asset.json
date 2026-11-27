@@ -1,0 +1,10 @@
+{
+  "id": "waffe.echoschneide",
+  "name": "Echoschneide",
+  "kategorie": "waffe",
+  "stufe": 70,
+  "art": "Einhandschwert",
+  "aktuell": "v001",
+  "status": "v001: Meshy-Modell des Nutzers (27.11.2026, quelle/meshy.glb), ausgerichtet mit fabrik/waffe_ausrichten.py; Teil waffe.echoschneide an basemann3d/basefrau3d (Griff wie Eidschwert), Rucksackbild img/objekte3d/ausruestung/stufe70/echoschneide.webp – Werte und Fähigkeiten folgen (Nutzer)",
+  "herkunft": "Meshy (Nutzer)"
+}

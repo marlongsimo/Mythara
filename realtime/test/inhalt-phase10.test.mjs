@@ -9,7 +9,7 @@ import { build } from "esbuild";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 const datei = join(tmpdir(), `riftmere-inhalt10-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { startAusruestung, GEGENSTAENDE, VERBRAUCH } from "./shared/gegenstaende"; export { BOSSE, INSTANZEN } from "./shared/bosse"; export { FISCHE, FANGGRUENDE } from "./shared/fischen"; export { rezept, WERKSTAETTEN } from "./shared/handwerk"; export { WIRKUNGEN } from "./shared/wirkungen";',
+await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { startAusruestung, GEGENSTAENDE, VERBRAUCH } from "./shared/gegenstaende"; export { BOSSE, INSTANZEN } from "./shared/bosse"; export { FISCHE, FANGGRUENDE } from "./shared/fischen"; export { rezept, WERKSTAETTEN } from "./shared/handwerk"; export { WIRKUNGEN } from "./shared/wirkungen"; export { LAEDEN, LADEN_ZEICHEN, grundwert } from "./shared/laeden";',
   resolveDir: new URL("..", import.meta.url).pathname, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
 const { Sim, MONSTER, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, startAusruestung, GEGENSTAENDE, VERBRAUCH, BOSSE, INSTANZEN, FISCHE, FANGGRUENDE, rezept, WERKSTAETTEN, WIRKUNGEN } = await import(datei);
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
@@ -37,6 +37,23 @@ setzeKarte(KARTEN.welt_nordwald, FEIN);
   const b = s["neu"](false, "wrackkapitaen", 1, { x: 61.5, y: 60.5 }, true, 7); b.lp = b.max = MONSTER.wrackkapitaen.lp; b.zielId = h.id; b.wach = true; b.streifT = 1e9;
   lauf(s, 1); b.lp = Math.floor(b.max * 0.55); lauf(s, 0.3); check(s.wesen.filter((w) => w.helfer === b.id && w.typ === "strandraeuber_saebel").length === 2, "unter 60 %: er ruft zwei Strandräuber");
   b.lp = Math.floor(b.max * 0.25); const ev = lauf(s, 6); check(ev.some((e) => e.a === "ansage" && e.name === "Geisterflut"), "unter 30 %: Geisterflut durch die Kajüte (Deckung)"); }
+
+console.log("\nG-Quests (#118): Frachtbrief, Lampenöl, Splitterglut, Fischernetz");
+check(["frachtbrief", "lampenoel", "splitterglut", "fischernetz"].every((g) => GEGENSTAENDE[g] && GEGENSTAENDE[g].untauschbar && (GEGENSTAENDE[g].bild || GEGENSTAENDE[g].symbol)), "vier Questgegenstände");
+{ const L = rezept("lampenoel"), S = rezept("splitterglut"), N = rezept("fischernetz");
+  check(L.station === "kessel" && L.zutaten[0].g[0] === "fisch_hering_roh" && L.zutaten[0].n === 5 && WERKSTAETTEN.some((w) => w.id === "kessel_leuchtturm") && S.station === "bindestein" && S.level === 20 && L.quest === S.quest && S.quest === "kueste_das_leuchtfeuer",
+    "G2: Lampenöl aus fünf Heringen im Kessel am Leuchtturm, Splitterglut am Bindestein (Splitterbinden 20)");
+  check(N.station === "werkbank" && N.level === 20 && N.zutaten[0].g[0] === "garn" && N.quest === "kueste_netze_fuer_die_moewenbucht", "G4: Fischernetz an der Werkbank (Handwerk 20, 4 Garn)"); }
+
+console.log("\n#141: Haferstedt, Netzbucht, Sandquell");
+{ const { LAEDEN, LADEN_ZEICHEN } = await import(datei), ORTE = { haferstedt: [6215, 6980], netzbucht: [6146, 6930], sandquell: [7384, 6740] };
+  const L = Object.values(LAEDEN).filter((l) => /^(haferstedt|netzbucht|sandquell)_|^troedler_(haferstedt|sandquell)$/.test(l.id));
+  check(L.length === 14 && L.every((l) => { const o = ORTE[l.id.replace("troedler_", "").split("_")[0]]; return o && Math.hypot(l.x - o[0], l.y - o[1]) < 50; }), `14 Bewohner in den drei Orten (${L.length})`);
+  check(L.every((l) => l.waren.every((w) => GEGENSTAENDE[w.g] && !GEGENSTAENDE[w.g].untauschbar && w.preis > 0)), "alle Waren gibt es schon, nichts Gebundenes");
+  check(L.filter((l) => l.nurReden).every((l) => !l.waren.length && !LADEN_ZEICHEN[l.id] && (l.zeilen || []).length >= 2) && L.filter((l) => !l.nurReden && !l.troedler).every((l) => l.waren.length && LADEN_ZEICHEN[l.id]), "Marktvogt und Quellwächterin reden nur, die Läden haben Waren und ein Kartensymbol");
+  check(L.filter((l) => l.troedler).length === 2 && L.every((l) => l.gruss && l.tschuess && l.modell.startsWith("npc.")), "zwei Trödler (Haferstedt, Sandquell) · jeder grüßt, Modelle aus dem Bestand");
+  const ST = ["esse_haferstedt", "amboss_haferstedt", "herd_haferstedt", "kessel_haferstedt", "backofen_haferstedt", "brunnen_haferstedt", "feuer_netzbucht", "raeucherhuette_netzbucht"].map((id) => WERKSTAETTEN.find((w) => w.id === id));
+  check(ST.every((w) => w && !w.schalter), "Stationen: Esse, Amboss, Herd, Kessel, Backofen, Brunnen in Haferstedt, Feuer und Räucherhütte in Netzbucht – ohne Schalter"); }
 
 console.log(f ? `\nInhalte Phase 10: ${f} FEHLER` : "\nInhalte Phase 10: alles in Ordnung");
 process.exit(f ? 1 : 0);

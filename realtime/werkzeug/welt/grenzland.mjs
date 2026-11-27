@@ -96,6 +96,8 @@ const PUNKTE = [["Kreuzweg", "Kreuzung", 6506, 6508], ["Heidrast", "Dorf", 6596,
   ["Kielmund", "Stadt", 6426, 7314], ["Möwenbucht", "Dorf", 6214, 7160], ["Leuchtturm", "Ort", 6176, 7036], ["Kräuterhof", "Ort", 6418, 7064], ["Mangroven", "Landschaft", 6508, 7590],
   ["Gehöft", "Ort", ...KLEIN.gehoeft], ["Mühle am Bach", "Ort", ...KLEIN.muehle], ["Köhlerhütte", "Ort", ...KLEIN.koehler], ["Schrein", "Ort", ...KLEIN.schrein], ["Alte Wachruine", "Ruine", ...KLEIN.ruine],
   ["Die Fahlen Weiten", "Landschaft", 6450, 5700], ["Die Glutsande", "Landschaft", 7200, 6750], ["Die Smaragdküste", "Landschaft", 6330, 7150], ["Die Furtklamm", "Ort", 6684, 6443], ["Heckenhof", "Gehöft", 6490, 6812], ["Summweide", "Ort", 6418, 6904], ["Schilfsee", "Ort", 6450, 7188], ["Erlengrund", "Dorf", 6392, 7004], ["Lehmfurt", "Dorf", 6466, 7244], ["Wegkapelle am Kreuzstein", "Ort", 6476, 7098], ["Halber Weg", "Wegmarke", 6474, 7010], ["Fährtenlager", "Ort", 6608, 6834], ["Lämmerhang", "Ort", 6292, 7096], ["Distelhof", "Gehöft", 6560, 6966], ["Der Turm mit dem grünen Licht", "Ort", 6840, 6518]];
+/* Welt beleben (#140): Haferstedt, Netzbucht, Sandquell, Nordstrand aus welt/beleben_orte.json (beleben.mjs) */
+for (const f of ["beleben_orte.json", "hochlande_orte.json"]) if (existsSync(join(WELT, f))) PUNKTE.push(...JSON.parse(readFileSync(join(WELT, f), "utf8")).namen);   /* #140, Hochlande #147 */
 
 /* ───── schreiben ───── */
 const keys = [...feld.keys()].map((k) => k.split(",").map(Number)), X0 = Math.min(...keys.map((k) => k[0])), Y0 = Math.min(...keys.map((k) => k[1])), X1 = Math.max(...keys.map((k) => k[0])), Y1 = Math.max(...keys.map((k) => k[1]));

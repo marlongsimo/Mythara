@@ -235,6 +235,7 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   rabenpriester_novize: { datei: "rabenpriester_novize3d", angriff: "zauber_stab", ersatz: "gegner.bandit.v003" },
   rabenpriester_akoluth: { datei: "rabenpriester_akoluth3d", angriff: "bogen", ersatz: "gegner.bandit.v003" },
   rabenpriester_akoluth_speer: { datei: "rabenpriester_akoluth3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  kerkermeister: { datei: "rabenpriester_akoluth3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" }, /* C3: vorerst das Akoluth-Modell */
   federmutter: { datei: "rabenpriester_federmutter3d", angriff: "zauber_stab", stile: ["zauber_stab", "bogen", "stich2h"], ersatz: "gegner.bandit.v003" },
   oberster_rabenpriester: { datei: "oberster_rabenpriester3d", angriff: "doppelhieb", ersatz: "gegner.bandit.v003", mass: 2.6 },
   /* Phase 7 (#40): Graufurt, Ostufer, Turm (Figuren #37) */
@@ -290,5 +291,7 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   frostwolf: { datei: "frostwolf3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   eisgolem: { datei: "eisgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 },
   drakling: { datei: "drakling3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 } /* Bodengegner (Figuren 7cd8342fd) */ }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
+/** #139: die Modelldatei einer Gegnerart (für das Vorladen beim Einloggen) – oder undefined */
+export const gegnerModell = (typ: string): string | undefined => (GEGNER3D[typ] ? GEGNER3D[typ].datei : undefined);
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }

@@ -1,0 +1,152 @@
+{
+ "hinweis": "Streifgebiete (#143), erzeugt von werkzeug/welt/streifgebiete.py, gelesen von werkzeug/weltzonen.py (Systeme, 25ac9794). KEIN Rudel: jedes Tier streift einzeln. Je Gebiet: id, gegner (Name aus config.ts), anzahl (Tiere), rechteck [x0, y0, x1, y1] in Weltfeldern einschließlich, ganz in region; zur Auskunft: name, stufe, land, mitte, modell, meiden (Orte/Questorte/Sammelstellen in der Fläche, Kreise).",
+ "gebiete": [
+  {
+   "id": "streifgebiet_heidewolf_weiten",
+   "name": "Heidewölfe in den Fahlen Weiten",
+   "gegner": "heidewolf",
+   "anzahl": 7,
+   "stufe": 32,
+   "land": "Die Fahlen Weiten",
+   "region": "fl_186_183",
+   "mitte": [
+    6352.5,
+    6020.5
+   ],
+   "rechteck": [
+    6292,
+    5960,
+    6411,
+    6079
+   ],
+   "meiden": [],
+   "modell": "vorhanden"
+  },
+  {
+   "id": "streifgebiet_steppenwolf_hochlande",
+   "name": "Steppenwölfe der Hochlande",
+   "gegner": "steppenwolf",
+   "anzahl": 7,
+   "stufe": 46,
+   "land": "Die Hochlande",
+   "region": "fl_216_169",
+   "mitte": [
+    7192.5,
+    5476.5
+   ],
+   "rechteck": [
+    7132,
+    5416,
+    7251,
+    5535
+   ],
+   "meiden": [],
+   "modell": "vorhanden"
+  },
+  {
+   "id": "streifgebiet_steppenwolf_glutsande",
+   "name": "Steppenwölfe in den Glutsande",
+   "gegner": "steppenwolf",
+   "anzahl": 7,
+   "stufe": 46,
+   "land": "Die Glutsande",
+   "region": "fl_201_225",
+   "mitte": [
+    6492.5,
+    7442.5
+   ],
+   "rechteck": [
+    6432,
+    7382,
+    6551,
+    7501
+   ],
+   "meiden": [],
+   "modell": "vorhanden"
+  },
+  {
+   "id": "streifgebiet_ockerhyaene_glutsande",
+   "name": "Hyänen in den Dünen",
+   "gegner": "ockerhyaene",
+   "anzahl": 7,
+   "stufe": 50,
+   "land": "Die Glutsande",
+   "region": "fl_216_198",
+   "mitte": [
+    7132.5,
+    6598.5
+   ],
+   "rechteck": [
+    7072,
+    6538,
+    7191,
+    6657
+   ],
+   "meiden": [],
+   "modell": "vorhanden"
+  },
+  {
+   "id": "streifgebiet_ockerhyaene_ockerlande",
+   "name": "Hyänen der Ockerlande",
+   "gegner": "ockerhyaene",
+   "anzahl": 7,
+   "stufe": 50,
+   "land": "Die Ockerlande",
+   "region": "fl_216_225",
+   "mitte": [
+    7132.5,
+    7442.5
+   ],
+   "rechteck": [
+    7072,
+    7382,
+    7191,
+    7501
+   ],
+   "meiden": [],
+   "modell": "vorhanden"
+  },
+  {
+   "id": "streifgebiet_hochlandbaer_hochlande",
+   "name": "Bären der Hochlande",
+   "gegner": "hochlandbaer",
+   "anzahl": 5,
+   "stufe": 54,
+   "land": "Die Hochlande",
+   "region": "fl_216_183",
+   "mitte": [
+    7072.5,
+    6054.5
+   ],
+   "rechteck": [
+    7012,
+    5994,
+    7131,
+    6113
+   ],
+   "meiden": [],
+   "modell": "vorhanden"
+  },
+  {
+   "id": "streifgebiet_frostwolf_frostkrone",
+   "name": "Frostwölfe der Frostkrone",
+   "gegner": "frostwolf",
+   "anzahl": 7,
+   "stufe": 64,
+   "land": "Die Frostkrone",
+   "region": "fl_201_155",
+   "mitte": [
+    6592.5,
+    5306.5
+   ],
+   "rechteck": [
+    6532,
+    5246,
+    6651,
+    5365
+   ],
+   "meiden": [],
+   "modell": "vorhanden"
+  }
+ ]
+}
