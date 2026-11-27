@@ -65,7 +65,7 @@ export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_G3, wartet: "Phase 10: Wrack, Klippenhöhlen mit Instanz, Wrackkapitän" },
   { q: QUEST_G4, wartet: "Phase 10: Möwenbucht, Räucherhütte, Rezepte fischernetz und raeucherhering" },
   { q: QUEST_KRAEUTERHOF, wartet: "Phase 10: Kräuterhof mit Kessel; Kräuterkunde (5c)" },
-  { q: QUEST_S1, wartet: "Süden (#124): Heckenhof (#120), Rike (#121), Gegner kraehenschwarm" },
+  { q: QUEST_S1, wartet: "Süden (#124): Heckenhof (#120), Rike (#121), Gegner kraehenschwarm und feldhase, Rezept hasenbraten" },
   { q: QUEST_S2, wartet: "Süden (#124): Summweide (#120), Imme (#121), Ringelblume (Kräuterkunde 5c), Imme als Händlerin" },
   { q: QUEST_S3, wartet: "Süden (#124): Schilfsee und Reusenkate (#120), Ebba (#121), seltener Fang alter_hecht, Trophäe" },
   { q: QUEST_S4, wartet: "Süden (#124): Erlengrund mit Sägemühle (#120), Bodo (#121), Rezept eisenbaender auch für S4, Werkbank mit Schalter" },

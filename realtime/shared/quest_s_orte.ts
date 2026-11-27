@@ -1,28 +1,29 @@
 /*
  * Riftmere – Stellen für die kurzen Quests im Süden (Block S, doku/konzepte/sueden.md, Issue #124).
- * VORLÄUFIG: Die Orte baut die Welt erst (#120). Bis dahin Platzhalter entlang der Südstraße zwischen Weidenhain (y ≈ 6690) und Kielmund (y ≈ 7300),
- * die Südstraße liegt bei x ≈ 6440 (siehe quest_g_orte.ts). Kommen die Kennungen aus #120, werden nur diese Zahlen getauscht.
+ * Stellen aus der Welt (#120, Commit 669537df auf claude/mythara-world-pipeline-z4ynx5): welt/sueden_orte.json und welt/festland/plan_sueden.json.
+ * NPC-Plätze der Welt: baeuerin_heckenhof (Rike), schaefer_heckenhof (Tamme), imkerin_summweide (Imme), fischerin_schilfsee (Ebba), saegemueller (Bodo), schmied_lehmfurt (Kuno).
+ * Vorschläge der Rolle Quests, weil die Welt sie nicht nennt: Odila an der Kapelle, die Stellen des Summens und des Bienenstocks, die Schafe, die Spuren zur Waldsenke, die Vogelscheuche.
  * Figuren, die schon in anderen Quests stehen, kommen mit genau deren Name, Stelle und Modell (Regel „Figur in mehreren Quests“).
  */
 import type { QuestFigur } from "./questbau";
 type Feld = [number, number];
 
-/** Heckenhof – Gehöft gleich südlich von Weidenhain: Felder, Pferch (S1, S6) */
-export const HECKENHOF = { baeuerin: [6452.5, 6760.5] as Feld, feld: [6460.5, 6766.5] as Feld, scheuche: [6462.5, 6770.5] as Feld,
-  schaefer: [6440.5, 6772.5] as Feld, pferch: [6436.5, 6778.5] as Feld,
-  schafe: [[6420.5, 6790.5], [6470.5, 6795.5], [6455.5, 6806.5], [6430.5, 6801.5], [6480.5, 6781.5]] as Feld[] };
-/** Summweide – Imkerei auf der Blumenwiese (S2) */
-export const SUMMWEIDE = { imkerin: [6500.5, 6825.5] as Feld, summen: [[6510.5, 6830.5], [6520.5, 6840.5], [6530.5, 6836.5]] as Feld[], stock: [6536.5, 6848.5] as Feld, wiese: [6505.5, 6832.5] as Feld };
-/** Schilfsee mit Reusenkate (S3) */
-export const SCHILFSEE = { fischerin: [6395.5, 6880.5] as Feld, steg: [6390.5, 6884.5] as Feld, wand: [6397.5, 6878.5] as Feld };
-/** Erlengrund – Sägemühle, Wald, Waldsenke (S4, S8) */
-export const ERLENGRUND = { saegemueller: [6490.5, 6950.5] as Feld, rad: [6494.5, 6954.5] as Feld, wald: [6500.5, 6965.5] as Feld,
-  spuren: [[6510.5, 6975.5], [6520.5, 6985.5], [6530.5, 6990.5]] as Feld[], senke: [6540.5, 7000.5] as Feld, wand: [6488.5, 6948.5] as Feld };
-/** Wegkapelle am Kreuzstein (S7) */
-export const KREUZSTEIN = { pilgerin: [6444.5, 6990.5] as Feld, stein: [6446.5, 6993.5] as Feld, lichter: [6452.5, 6998.5] as Feld };
-/** Lehmfurt – Schmiede, Steinbruch, Furt über den Kiel (S5) */
-export const LEHMFURT = { schmied: [6440.5, 7120.5] as Feld, bruch: [6452.5, 7114.5] as Feld,
-  steine: [[6430.5, 7130.5], [6432.5, 7131.5], [6434.5, 7132.5], [6436.5, 7133.5], [6438.5, 7134.5]] as Feld[] };
+/** Heckenhof (Welt: orte.heckenhof 6490 | 6812) – Bäuerin vor dem Haus, Hanf- und Flachsfeld südlich des Zauns, Pferch östlich (Zaun 6499–6509 × 6816–6825, Gatter im Westen) (S1, S6) */
+export const HECKENHOF = { baeuerin: [6491, 6813] as Feld, feld: [6479, 6820] as Feld, scheuche: [6488.5, 6820.5] as Feld,
+  schaefer: [6504, 6815] as Feld, pferch: [6497.5, 6820.5] as Feld,
+  schafe: [[6520.5, 6830.5], [6468.5, 6838.5], [6514.5, 6802.5], [6462.5, 6808.5], [6528.5, 6814.5]] as Feld[] };
+/** Summweide (orte.summweide 6418 | 6904) – Imkerin, Bienenstöcke 6408–6421 × 6911 (einer fehlt), Ringelblumen 6410–6422 × 6914,5 (S2) */
+export const SUMMWEIDE = { imkerin: [6419, 6907] as Feld, summen: [[6425.5, 6917.5], [6431.5, 6921.5], [6437.5, 6925.5]] as Feld[], stock: [6441.5, 6927.5] as Feld, wiese: [6416.5, 6914.5] as Feld };
+/** Schilfsee mit Reusenkate (orte.schilfsee 6450 | 7188) – Fischerin, Steg (begehbar 6440–6448 × 7186,7–7189,3), Reusenkate 6435 | 7184 (S3) */
+export const SCHILFSEE = { fischerin: [6437, 7187] as Feld, steg: [6446.5, 7188] as Feld, wand: [6434.5, 7186.5] as Feld };
+/** Erlengrund (orte.erlengrund 6392 | 7004) – Sägemüller, Wasserrad 6383,4 | 7005,5, Eichen 6376–6385 × 6990–7015, Waldsenke 6342 | 6968 (S4, S8) */
+export const ERLENGRUND = { saegemueller: [6393, 7005] as Feld, rad: [6385, 7006] as Feld, wald: [6380.5, 6992.5] as Feld,
+  spuren: [[6372.5, 6990.5], [6360.5, 6982.5], [6350.5, 6974.5]] as Feld[], senke: [6342, 6970.4] as Feld, wand: [6390, 7002.6] as Feld };
+/** Wegkapelle am Kreuzstein (orte.kreuzstein 6476 | 7098) – Kapelle 6477 | 7097, Menhir 6473,5 | 7097,5, Wiesenlichter rundum (S7) */
+export const KREUZSTEIN = { pilgerin: [6475.5, 7100.5] as Feld, stein: [6477, 7099.2] as Feld, lichter: [6476.4, 7097] as Feld };
+/** Lehmfurt (orte.lehmfurt 6466 | 7244) – Schmied, Steinbruch 6500 | 7240, Furt über die Kiel (Sperre 6422–6430 × 7244,5–7248,5 bis lehmfurt_trittsteine): die Steine setzt man vom Ostufer aus (S5) */
+export const LEHMFURT = { schmied: [6469, 7244] as Feld, bruch: [6500, 7240] as Feld,
+  steine: [[6431, 7244.8], [6431, 7245.6], [6431, 7246.4], [6431, 7247.2], [6431, 7248]] as Feld[] };
 
 /* ───────── Figuren des Südens (Modelle vorläufig, bis #121) ───────── */
 export const RIKE: QuestFigur = { id: "rike", name: "Rike Heck", modell: "npcfrau3d", x: HECKENHOF.baeuerin[0], y: HECKENHOF.baeuerin[1], blick: [0, 1] };
