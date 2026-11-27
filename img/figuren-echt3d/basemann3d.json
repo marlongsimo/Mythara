@@ -715,6 +715,31 @@
     "dolchwurf"
    ],
    "datei": "basemann3d.teile/schild.glutstein.glb"
+  },
+  "ruestung.umhang.rotmantel": {
+   "art": "starr",
+   "platz": "umhang",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.umhang.rotmantel.glb"
+  },
+  "ruestung.umhang.wacht_grau": {
+   "art": "starr",
+   "platz": "umhang",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.umhang.wacht_grau.glb"
+  },
+  "waffe.rabenfokus": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab",
+    "stich"
+   ],
+   "datei": "basemann3d.teile/waffe.rabenfokus.glb"
   }
  },
  "aktionen": {
