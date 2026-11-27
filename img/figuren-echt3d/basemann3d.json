@@ -740,6 +740,12 @@
     "stich"
    ],
    "datei": "basemann3d.teile/waffe.rabenfokus.glb"
+  },
+  "kopf.helm.fellhaube": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.fellhaube.glb"
   }
  },
  "aktionen": {
