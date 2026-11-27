@@ -692,6 +692,18 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
     GEGENSTAENDE[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", bild: A10 + `fisch_${f}_gebraten.webp`, trank: `fisch_${f}_gebraten`, text: `Knusprig gebraten. Heilt ${heil} Lebenspunkte.` };
     GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${n}`, art: "Abfall", seltenheit: "anfaenger", bild: A10 + `fisch_${f}_verbrannt.webp`, text: "Kohle mit Gräten." };
     VERBRAUCH[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: heil, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ["Stapelbar", "nein"]], text: "Knusprig gebraten." }; }
+  /* #176 Zunft-Fische und ihre Gerichte: Heilung fest + Anteil des Höchstlebens (18 + 3 %, 20 + 4 %, 22 + 5 %) */
+  const F176: [string, string, string, string, string, number, number, Seltenheit, string][] = [
+    ["silberbarsch", "Silberbarsch", "fisch_silberbarsch_gebraten", "Gebratener Silberbarsch", "Glänzt wie eine neue Münze. Beißt nur am Steg der Fischerzunft.", 18, 0.03, "episch", "Am Feuer gebraten, mit Meersalz."],
+    ["sturmhecht", "Sturmhecht", "sturmhecht_kraeuterkruste", "Sturmhecht in Kräuterkruste", "Ein Hecht, der bei Sturm an die Oberfläche kommt. Zäh und kräftig.", 20, 0.04, "episch", "Am Herd in einer Kruste aus Wegerich gegart."],
+    ["tiefseeaal", "Tiefseeaal", "tiefseeaal_suppe", "Tiefseeaal-Suppe", "Ein Aal aus der Tiefe vor Kielmund, schwarz wie die See bei Nacht.", 22, 0.05, "legendaer", "Die Suppe der Zunftfischer, im Kessel gezogen."]];
+  /* Bilder und Modelle von Figuren (#176, claude/tender-heisenberg-bruby2): rohe Fische in skilling/angeln, Gerichte in skilling/kochen; verbrannt wie Klippenbarsch bzw. Seeaal */
+  const KO = "img/objekte3d/skilling/kochen/", AN = "img/objekte3d/skilling/angeln/";
+  for (const [f, n, gid, gname, t, fest, anteil, selt, gt] of F176) { const heil = `${fest} Lebenspunkte und ${Math.round(anteil * 100)} % des Höchstlebens`, datei = gid.replace(/^fisch_/, "");
+    GEGENSTAENDE[`fisch_${f}_roh`] = { id: `fisch_${f}_roh`, name: `${n} (roh)`, art: "Rohstoff", seltenheit: "selten", bild: A10 + `fisch_${f}_roh.webp`, modell3d: AN + `fisch_${f}_roh.glb`, text: `${t}` };
+    GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${n}`, art: "Abfall", seltenheit: "anfaenger", bild: A10 + (f === "silberbarsch" ? "fisch_klippenbarsch_verbrannt.webp" : "fisch_seeaal_verbrannt.webp"), text: "Kohle mit Gräten." };
+    GEGENSTAENDE[gid] = { id: gid, name: gname, art: "Essen", seltenheit: selt, bild: KO + "symbole/" + datei + ".webp", modell3d: KO + datei + ".glb", trank: gid, text: `${gt} Heilt ${heil}.` };
+    VERBRAUCH[gid] = { id: gid, name: gname, art: "Essen", seltenheit: selt, heilt: { fest, anteil }, stapelbar: false, modell: "", werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ["Stapelbar", "nein"]], text: gt }; }
   GEGENSTAENDE.raeucherhering = { id: "raeucherhering", name: "Räucherhering", art: "Essen", seltenheit: "gewoehnlich", bild: K10 + "raeucherhering.webp", modell3d: "img/objekte3d/kueste/raeucherhering.glb", trank: "raeucherhering",
     text: "Goldbraun aus der Räucherhütte der Möwenbucht, hält wochenlang. Heilt 8 Lebenspunkte; 20 Minuten lang erholt sich die Ausdauer 15 % schneller." };
   GEGENSTAENDE.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", bild: K10 + "barsch_salzkruste.webp", modell3d: "img/objekte3d/kueste/barsch_salzkruste.glb", trank: "barsch_salzkruste",
@@ -735,6 +747,10 @@ GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /*
   const KR: [string, string, number, string][] = [["wegerich", "Wegerich", 2, "Breite Blätter vom Wegrand. Die Grundlage jedes Heiltranks."], ["ringelblume", "Ringelblume", 4, "Orange Blüten aus den Obstwiesen. Heilt Wunden, sagt Mira."],
     ["moorgloeckchen", "Moorglöckchen", 8, "Kleine blaue Glocken aus dem Rabenmoor. Wer daran riecht, atmet freier."], ["eisenhut", "Eisenhut", 12, "Dunkle Blüten vom Friedhof im Nordwald. Giftig – nur gebraut zu gebrauchen."],
     ["nebelkraut", "Nebelkraut", 18, "Ein graues Kraut aus den Nebelfeldern des Rabenmoors. Es riecht nach Regen."], ["lindenbluete", "Lindenblüte", 30, "Eine Blüte der alten Linde in Weidenhain. Sie wächst nur langsam nach."]];
+  /* #176: Zunft-Kräuter (nur im Kräutergarten der Heilkundigen) */
+  KR.push(["mondsalbei", "Mondsalbei", 45, "Silbrige Blätter, die nachts schimmern. Wächst nur im Kräutergarten der Heilkundigen."],
+    ["glutwurz", "Glutwurz", 65, "Eine rote Wurzel, warm in der Hand. Wer sie kaut, spürt Feuer in den Armen."],
+    ["splitterlilie", "Splitterlilie", 90, "Eine Lilie, die blau leuchtet wie ein Splitter. Die Heilkundigen hüten sie wie einen Schatz."]);
   for (const [id, name, wert, text] of KR) GEGENSTAENDE[id] = { id, name, art: "Kraut", seltenheit: "anfaenger", bild: KS + id + ".webp", wert, text };
   /* Questgegenstände um die Kräuter: Miras Rezeptbuch (quest_mira.ts) und der Kräuterhof (quest_kraeuterhof.ts) */
   GEGENSTAENDE.rezeptheft = { id: "rezeptheft", name: "Miras Rezeptheft", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
@@ -758,7 +774,13 @@ GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /*
     ["nebelschleier_schwach", "Nebelschleier (schwach)", "gewoehnlich", 0, "nebelschleier_schwach", {}, "Gegner bemerken dich ein Viertel später (5 Minuten)"],
     ["nebelschleier_stark", "Nebelschleier (stark)", "selten", 0, "nebelschleier_stark", {}, "Gegner bemerken dich erst halb so weit (5 Minuten) · Nebenwirkung: Fernkampf −3"],
     ["lindentau_schwach", "Lindentau (schwach)", "selten", 15, undefined, {}, "heilt 15"],
-    ["lindentau_stark", "Lindentau (stark)", "episch", 20, undefined, { nebenAuf: true }, "heilt 20 und hebt Nebenwirkungen auf"]];
+    ["lindentau_stark", "Lindentau (stark)", "episch", 20, undefined, { nebenAuf: true }, "heilt 20 und hebt Nebenwirkungen auf"],
+    /* #176: Zunft-Tränke (Kräuterkunde 70–90) */
+    ["mondsalbei_elixier", "Mondsalbei-Elixier", "episch", 25, undefined, {}, "heilt 25"],
+    ["staerketrank_stark", "Trank der Stärke (stark)", "episch", 0, "staerketrank_stark", {}, "Stärke +7 für 5 Minuten"],
+    ["glutwurz_feuertrank", "Glutwurz-Feuertrank", "episch", 0, "glutwurz_feuertrank", {}, "Fernkampf +7 für 5 Minuten"],
+    ["splittersicht", "Splittersicht", "episch", 0, "splittersicht", {}, "Magieschaden +5 % für 5 Minuten"],
+    ["splitterlilien_trank", "Splitterlilien-Trank", "legendaer", 30, undefined, { nebenAuf: true }, "heilt 30 und hebt alle Nebenwirkungen auf"]];
   for (const [id, name, selt, heil, wirkung, mehr, w] of T) {
     GEGENSTAENDE[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, bild: TS + id + ".webp", modell3d: TM + id + ".glb", trank: id, text: `${w}.` };
     VERBRAUCH[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, heilt: { fest: heil, anteil: 0 }, ...(wirkung ? { wirkung } : {}), ...mehr, flaeschchen: true, stapelbar: false, modell: TM + id + ".glb",

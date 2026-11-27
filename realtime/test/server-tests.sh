@@ -82,6 +82,7 @@ TESTS=(
   bosse-116
   boss-quest-machbar
   hueter
+  zunft-rohstoffe
   zunft
   bank-orte
   steinhag-stadt

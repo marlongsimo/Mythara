@@ -106,7 +106,7 @@ export const maxHitMagie = (level: number, stilbonus: number, magieStaerke: numb
 /** Die Kampfwerte eines Helden aus seinen Skill-XP, der angelegten Ausrüstung und dem Angriffsstil (Index in STILE der Kampfart, 1 = Standard) */
 /** wirk: Skill-Level aus Wirkungen (shared/wirkungen.ts, z. B. Fischsuppe Defense +2) – zählt im Kampf, nicht für Heldenlevel oder Anforderungen */
 /** extra.geladen: die angelegte Waffe hat Ladungen (Phase 5b) */
-export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>, stil = 1, wirk: Partial<Record<Skill, number>> = {}, extra: { geladen?: boolean; bemerken?: number } = {}): Kampfwerte {
+export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>, stil = 1, wirk: Partial<Record<Skill, number>> = {}, extra: { geladen?: boolean; bemerken?: number; /** #176: % Magieschaden aus Tränken */ magieSchaden?: number } = {}): Kampfwerte {
   const hl = heldenlevel(x), lv = Object.fromEntries(SKILLS.map((k) => [k, levelAus(x[k] || 0, k) + (wirk[k] || 0)])) as Record<Skill, number>;
   const W = angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].waffe ? GEGENSTAENDE[angelegt.waffe].waffe! : FAEUSTE;
   const s = stilIndex(stil, W.art), S = STILE[W.art][s], p = (k: Skill) => S.plus[k] || 0;
@@ -121,6 +121,7 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   /* #160: Set-Boni (alle Teile eines Satzes angelegt): Stärke, Fernkampf-Stärke, % Magieschaden */
   const sets = aktiveSets(Object.values(angelegt));
   for (const S0 of sets) if (S0.bonus) { for (const k of ["geschick", "staerke", "fernAngriff", "fernStaerke", "genau", "magieStaerke"] as const) aus[k] += S0.bonus[k] || 0; magieSchaden += S0.bonus.magieSchaden || 0; }
+  magieSchaden += extra.magieSchaden || 0; /* #176: Splittersicht */
   /* OSRS: Verteidigungswurf = effektives Defense-Level × (Bonus + 64); gegen Magie zählt 70 % Magie-Level und 30 % effektive Defense */
   const effDef = lv.defense + p("defense") + 8;
   const abwehr: Record<Art, number> = { nah: wurfWert(effDef, ab.nah), fern: wurfWert(effDef, ab.fern), magie: wurfWert(Math.floor(0.7 * lv.magie) + Math.floor(0.3 * effDef), ab.magie) };

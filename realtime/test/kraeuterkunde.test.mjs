@@ -34,7 +34,7 @@ KR.krautEinrichten({ sb, senden: (_s, m) => NACHR.push(m), alle: () => [] }); wu
 
 console.log("\nBrauen am Kessel");
 const BR = REZEPTE.filter((r) => r.beruf === "kraeuterkunde");
-check(BR.length === 12 && BR.every((r) => r.station === "kessel" && r.zutaten.some((z) => z.g.includes("leeres_flaeschchen")) && r.verbrannt === "trueber_sud"), "zwölf feste Rezepte am Kessel, jedes mit leerem Fläschchen, Fehlschlag Trüber Sud");
+check(BR.length === 17 /* zwölf + fünf Zunft-Tränke (#176) */ && BR.every((r) => r.station === "kessel" && r.zutaten.some((z) => z.g.includes("leeres_flaeschchen")) && r.verbrannt === "trueber_sud"), "zwölf feste Rezepte am Kessel (dazu fünf Zunft-Tränke, #176), jedes mit leerem Fläschchen, Fehlschlag Trüber Sud");
 check(rezeptBeruf(rezept("brauen_heiltrank")) === "kraeuterkunde" && rezeptBeruf(rezept("fischsuppe")) === "kochen", "Brauen zählt zur Kräuterkunde, die Fischsuppe im selben Kessel zum Kochen");
 check(KESSEL.every((k) => WERKSTAETTEN.some((w) => w.id === k.id && w.station === "kessel")), "Kessel im Kräuterhaus der Waldmark und bei Hedda");
 const L = (id) => rezept("brauen_" + id).level;

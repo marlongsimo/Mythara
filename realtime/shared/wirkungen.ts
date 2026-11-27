@@ -8,7 +8,7 @@ import type { Skill } from "./kampfwerte";
 
 export type WirkArt = "essen" | "trank";
 /** Was eine Wirkung verändert: Skill-Level (+n, wie ein Trank in anderen Spielen) oder die Erholung der Ausdauer (Anteil, 0.25 = 25 % schneller) */
-export type WirkWert = Skill | "ausdauer" | "bemerken"; /* bemerken (#133, Nebelschleier): Anteil der Weite, auf die Gegner einen bemerken (0,75 = ein Viertel später) */
+export type WirkWert = Skill | "ausdauer" | "bemerken" | "magieSchaden"; /* magieSchaden (#176, Splittersicht): Prozentpunkte auf den Max Hit der Magie */ /* bemerken (#133, Nebelschleier): Anteil der Weite, auf die Gegner einen bemerken (0,75 = ein Viertel später) */
 export interface Wirkung { id: string; art: WirkArt; werte: Partial<Record<WirkWert, number>>; bis: number }
 export interface WirkDef { id: string; art: WirkArt; werte: Partial<Record<WirkWert, number>>; ms: number; name: string; /** kurz, für Symbol und Rucksack */ text: string; symbol: string }
 
@@ -27,6 +27,10 @@ export const WIRKUNGEN: Record<string, WirkDef> = {
   /* Süden (#126): Braten und Gulasch */
   wildschweinbraten: { id: "wildschweinbraten", art: "essen", werte: { staerke: 1 }, ms: 5 * 60_000, name: "Wildschweinbraten", text: "Stärke +1", symbol: B + "kochen_klein.webp" },
   wolfsgulasch: { id: "wolfsgulasch", art: "essen", werte: { defense: 2 }, ms: 5 * 60_000, name: "Wolfsgulasch", text: "Defense +2", symbol: B + "kochen_klein.webp" },
+  /* #176 Zunft-Tränke (Kräuterkunde 75–85, 5 Minuten) */
+  staerketrank_stark: { id: "staerketrank_stark", art: "trank", werte: { staerke: 7 }, ms: 5 * 60_000, name: "Trank der Stärke (stark)", text: "Stärke +7", symbol: "img/objekte3d/kraeuterkunde/symbole/staerketrank_stark.webp" },
+  glutwurz_feuertrank: { id: "glutwurz_feuertrank", art: "trank", werte: { fernkampf: 7 }, ms: 5 * 60_000, name: "Glutwurz-Feuertrank", text: "Fernkampf +7", symbol: "img/objekte3d/kraeuterkunde/symbole/glutwurz_feuertrank.webp" },
+  splittersicht: { id: "splittersicht", art: "trank", werte: { magieSchaden: 5 }, ms: 5 * 60_000, name: "Splittersicht", text: "Magieschaden +5 %", symbol: "img/objekte3d/kraeuterkunde/symbole/splittersicht.webp" },
   bauerneintopf: { id: "bauerneintopf", art: "essen", werte: { ausdauer: 0.25 }, ms: 10 * 60_000, name: "Bauerneintopf", text: "Ausdauer erholt sich 25 % schneller", symbol: B + "kochen_klein.webp" },
 };
 const SKILL_WERTE: Skill[] = ["geschick", "staerke", "fernkampf", "magie", "lp", "defense"];
@@ -42,6 +46,8 @@ export function wirkungDazu(w: Wirkung[] | undefined, id: string, jetzt = Date.n
 /** Skill-Plus aller laufenden Wirkungen (für shared/kampfwerte.ts) */
 export function skillPlus(w: Wirkung[] | undefined, jetzt = Date.now()): Partial<Record<Skill, number>> {
   const p: Partial<Record<Skill, number>> = {}; for (const x of wirkungenAktiv(w, jetzt)) for (const k of SKILL_WERTE) if (x.werte[k]) p[k] = (p[k] || 0) + x.werte[k]!; return p; }
+/** #176: Prozentpunkte Magieschaden aller laufenden Wirkungen (Splittersicht) */
+export const magieSchadenPlus = (w: Wirkung[] | undefined, jetzt = Date.now()): number => wirkungenAktiv(w, jetzt).reduce((s, x) => s + (x.werte.magieSchaden || 0), 0);
 /** Faktor auf die Erholung der Ausdauer (1 = normal) */
 export const ausdauerMal = (w: Wirkung[] | undefined, jetzt = Date.now()): number => 1 + wirkungenAktiv(w, jetzt).reduce((s, x) => s + (x.werte.ausdauer || 0), 0);
 /** Gespeicherte Wirkungen prüfen (nur bekannte, mit Werten aus der Liste, höchstens eine je Art) */
