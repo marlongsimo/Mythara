@@ -3,11 +3,11 @@
  * Kai spielt alle drei ganz (Lohn mit „abholen“), danach: Fähre frei, Wappentür offen, Wegstein-Ziel am Turm, Alma verkauft Welspastete. Lea (ohne Voraussetzungen) als Gegenprobe.
  * Ports: Supabase localhost:8811, Spielserver localhost:8812.   Aufruf (im Ordner realtime, nach node build.mjs): node test/d-welt.test.mjs
  */
-import { starte, starkerHeld, roh, QUESTS, QB } from "./questwelt.mjs";
+import { starte, starkerHeld, roh, LEGENDAER, QUESTS, QB } from "./questwelt.mjs";
 const D1 = QUESTS.find((q) => q.id === "graufurt_die_faehrkette"), D2 = QUESTS.find((q) => q.id === "ostufer_das_gruene_licht"), D3 = QUESTS.find((q) => q.id === "graufurt_wels_im_trueben");
 const kai = starkerHeld({ fertig: ["nordwald_das_wappen_mit_dem_turm"], berufe: { bergbau: 50, schmieden: 50, fischen: 50, kochen: 50 },
   rucksack: ["hammer", "spitzhacke_legendaer", "angelrute", "wappenabrieb", { g: "wurm", n: 40 }, ...Array(3).fill("stamm_tanne"), ...Array(8).fill("barren_splittereisen"), { g: "mehl", n: 3 }] });
-kai.inventar.angelegt.waffe = "eidschwert_episch"; /* mit dem Anfänger-Ritterschwert heilt das Grünlicht den Turmwächter schneller, als man trifft */
+kai.inventar.angelegt = { ...LEGENDAER }; /* Ausrüstung in passender Stufe: mit dem Trainingsschwert heilt das Grünlicht den Turmwächter schneller, als man trifft */
 const W = await starte({ sb: 8811, srv: 8812, helden: { kai, lea: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: [{ g: "splitter", n: 20 }], v: 2 } } } });
 /* Ports für parallel.mjs: localhost:8811, localhost:8812 */
 const { check, schlaf, anzahl, sprich, objekt, stand, erl, fertig, kampfBis, sammeln, herstellen, fischen, sende, warte } = W;
@@ -37,8 +37,10 @@ try {
     if (zw() < 2) await kampfBis(k, 10928.5, 9614.5, ["turmwaechter"], () => zw() >= 2, 180000);
     check(erl(k, D2, "waechter"), `Zwei Turmwächter auf Ebene 1 und 2 (Zähler ${zw()})`); }
   await objekt(k, D2, "d2_buch"); check(erl(k, D2, "buch"), "Das Wächterbuch gelesen");
-  { await W.stelle(k, 10990, 9617.2); const z = await W.kampf("kai", 10990, 9617.2); await schlaf(1500);
-    if (z) { await W.kaempfen(z, ["gruenlicht", "turmwaechter"], () => erl(k, D2, "gruenlicht"), 240000); await schlaf(800); z.ws.close(); await schlaf(2500); } }
+  { /* in Runden (wie f-welt): hängt ein Ziel oder die Verbindung (CI mit mehreren Läufen zugleich), neu verbinden – höchstens 330 s */
+    const t0 = Date.now(); for (let runde = 0; runde < 4 && !erl(k, D2, "gruenlicht") && Date.now() - t0 < 330000; runde++) {
+      await W.stelle(k, 10990, 9617.2); const z = await W.kampf("kai", 10990, 9617.2); await schlaf(1500); if (!z) continue;
+      await W.kaempfen(z, ["gruenlicht", "turmwaechter"], () => erl(k, D2, "gruenlicht"), Math.min(120000, 330000 - (Date.now() - t0))); await schlaf(800); z.ws.close(); await schlaf(2500); } }
   check(erl(k, D2, "gruenlicht"), "Das Grünlicht auf dem Dach besiegt");
   await objekt(k, D2, "d2_feuer"); check(erl(k, D2, "kern") && anzahl(k, "splitterkern_gruen") === 1, "Den Splitterkern aus dem Signalfeuer genommen");
   check(await sprich(k, D2, "ysolde", "sprechen") && erl(k, D2, "ysolde"), "Mit Ysolde gesprochen");
