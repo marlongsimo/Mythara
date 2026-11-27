@@ -35,6 +35,7 @@ import type Phaser from "phaser";
 import { serverZusatz } from "../gruppe";
 import { WeltKampf, WeltSzene, tastenFuellen, karteRahmen } from "./kampf";
 import { WELTZONEN } from "../../../shared/karten";
+import ORTSNAMEN from "../../../welt/ortsnamen.json"; /* Ortsnamen der Weltkarte (#90, Worldbuilding) */
 import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
 
@@ -210,7 +211,7 @@ function regionBetreten(s: WeltKern, id: string, ux: number, uy: number, b: numb
 function karteZeigen(s: WeltKern) {
   const idx = (s as unknown as { index?: { chunkFelder: number; regionen: Record<string, { region: { id: string; name: string; ursprung: number[]; chunks: number[] } }> } }).index; if (!idx) return;
   uebersicht({ daten: WELT.daten, stand: WELT.stand, chunkFelder: idx.chunkFelder || 32, symbolNamen: { ...SPIEL_SYMBOL_NAMEN, ...((idx as unknown as { kartensymbole?: Record<string, string> }).kartensymbole || {}) }, symbolBild: WELT.bild + "img/karte/symbole/", regionen: Object.values(idx.regionen).map((r) => ({ ...r.region, symbole: [...((r as unknown as { symbole?: { s: string; x: number; y: number }[] }).symbole || []), ...SPIEL_SYMBOLE.filter((q) => q.region === r.region.id)] })).filter((R) => !WELT.gesperrteRegionen.includes(R.id) && !(R as { ebene?: string }).ebene),
-    ich: () => (s.ort ? { x: s.ort.x, y: s.ort.y } : null), hier: () => s.hier });
+    ich: () => (s.ort ? { x: s.ort.x, y: s.ort.y } : null), hier: () => s.hier, namen: ORTSNAMEN });
 }
 
 /** Menüs, runde Karte mit Knöpfen, Tasten und die Knöpfe oben – für die 2D- und die 3D-Welt */

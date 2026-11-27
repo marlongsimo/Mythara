@@ -442,6 +442,30 @@
    "art": "Ort",
    "x": 6840,
    "y": 6518
+  },
+  {
+   "name": "Haferstedt",
+   "art": "Dorf",
+   "x": 6215,
+   "y": 6980
+  },
+  {
+   "name": "Netzbucht",
+   "art": "Ort",
+   "x": 6146,
+   "y": 6930
+  },
+  {
+   "name": "Sandquell",
+   "art": "Dorf",
+   "x": 7384,
+   "y": 6740
+  },
+  {
+   "name": "Nordstrand",
+   "art": "Ort",
+   "x": 7450,
+   "y": 6500
   }
  ]
 }

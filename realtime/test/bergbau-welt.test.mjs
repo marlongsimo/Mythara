@@ -38,7 +38,9 @@ const TA = "tok_anna_" + "x".repeat(30), TB = "tok_ben__" + "x".repeat(30);
 const bei = async (s, b, d = 1.2) => { sende(s, { t: "pos", x: 0, y: 0, wx: b.x + d, wy: b.y }); await schlaf(150); };
 const nein = async (s, id, t = "berg") => { s[t] = []; sende(s, { t, tat: "start", id }); return (await warte(s, (m) => m.t === t && (m.tat === "nein" || m.tat === "start"))) || {}; };
 try {
-  check(ST.length === 17 && ST.filter((b) => b.art === "kupfer").length === 3 && ST.filter((b) => b.art === "eisen").length === 8 && ST.filter((b) => b.art === "schwarzeisen").length === 6, `17 Erzadern: 3 Kupfer, 8 Eisen, 6 Schwarzeisen (${ST.length})`);
+  /* die Sammelstellen der Welt (#142) zählen extra – ALT sind die Stellen von vorher */
+  const NEU_IDS = new Set(JSON.parse(readFileSync("welt/sammelstellen.json", "utf8")).senken.flatMap((g) => g.adern.map((p) => p.id))), ALT = ST.filter((b) => !NEU_IDS.has(b.id));
+  check(ALT.length === 17 && ALT.filter((b) => b.art === "kupfer").length === 3 && ALT.filter((b) => b.art === "eisen").length === 8 && ALT.filter((b) => b.art === "schwarzeisen").length === 6, `17 Erzadern: 3 Kupfer, 8 Eisen, 6 Schwarzeisen (${ALT.length}, dazu ${ST.length - ALT.length} Sammelstellen aus welt/sammelstellen.json, #142)`);
   await starten({ BERG_FALL: "0", BERG_KERN: "1" });
   const anna = await spieler(TA, KUPFER.region), ben = await spieler(TB, KUPFER.region); await warte(anna, (m) => m.t === "inventar"); await warte(ben, (m) => m.t === "inventar");
   check(Array.isArray(anna.adern) && anna.adern.length === 0, "Beim Anmelden: Stand der Adern (alle voll)");

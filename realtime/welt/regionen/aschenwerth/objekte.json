@@ -1,7 +1,6 @@
 [
  {"id":"erle_tot_204","objekt":"stil_erle_tot_01","x":14.5,"y":8.5,"s":0.92},
  {"id":"erle_tot_218","objekt":"stil_erle_tot_02","x":92.5,"y":9.5,"s":1},
- {"id":"erle_tot_211","objekt":"stil_erle_tot_01","x":66.5,"y":11.5,"s":0.85,"spiegeln":true},
  {"id":"erle_tot_205","objekt":"stil_erle_tot_01","x":24.5,"y":16.5,"s":0.83},
  {"id":"erle_tot_190","objekt":"stil_erle_tot_01","x":92.5,"y":16.5,"s":1.1,"spiegeln":true},
  {"id":"erle_tot_199","objekt":"stil_erle_tot_02","x":84.5,"y":17.5,"s":1.07,"spiegeln":true},
@@ -19,7 +18,6 @@
  {"id":"erle_tot_194","objekt":"stil_erle_tot_02","x":85.5,"y":25.5,"s":1.03,"spiegeln":true},
  {"id":"erle_tot_209","objekt":"stil_erle_tot_02","x":61.5,"y":25.5,"s":0.91,"spiegeln":true},
  {"id":"erle_tot_217","objekt":"stil_erle_tot_01","x":77.5,"y":26.5,"s":0.95},
- {"id":"erle_tot_191","objekt":"stil_erle_tot_01","x":28.5,"y":26.5,"s":0.82},
  {"id":"schilf_97","objekt":"stil_schilf_01","x":21.93,"y":26.74},
  {"id":"schilf_107","objekt":"stil_schilf_01","x":102.18,"y":27.13,"spiegeln":true},
  {"id":"erle_tot_182","objekt":"stil_erle_tot_01","x":44.5,"y":27.5,"s":0.97},

@@ -47,6 +47,13 @@ ausnahmen = [a for a in ausnahmen if a['grund'] != 'Stadt Graufurt'] + [{'x': 66
 for n, r in regionen.items():
     for i in r['spiel'].get('interaktionen', []): ausnahmen.append({'x': r['x0'] + X0 + i['x'], 'y': r['y0'] + Y0 + i['y'], 'r': 6, 'grund': f"Questort/Lesestelle {i['id']}"})
 for s in json.load(open(os.path.join(W, 'bedienstellen.json'), encoding='utf8'))['stationen']: ausnahmen.append({'x': s['x'], 'y': s['y'], 'r': 8, 'grund': f"Bedienstelle {s['id']}"})
+# Sammelstellen (#142): Baumgruppen und Senken frei von Gegnern
+_sm = os.path.join(W, 'sammelstellen.json')
+if os.path.exists(_sm):
+    _S = json.load(open(_sm, encoding='utf8'))
+    for _l in _S['lichtungen'] + _S['senken']:
+        _p = _l.get('baeume') or _l.get('adern'); _mx = _l.get('x', sum(q['x'] for q in _p) / len(_p)); _my = _l.get('y', sum(q['y'] for q in _p) / len(_p))
+        ausnahmen.append({'x': _mx, 'y': _my, 'r': max(8, max(math.hypot(q['x'] - _mx, q['y'] - _my) for q in _p) + 6), 'grund': f"Sammelstelle {_l['name']}"})
 for s in json.load(open(os.path.join(W, 'troedler_standorte.json'), encoding='utf8'))['standorte']: ausnahmen.append({'x': s['x'], 'y': s['y'], 'r': 6, 'grund': f"Trödler {s['id']}"})
 AUS = np.zeros((H, B), bool); yy, xx = np.mgrid[0:H, 0:B]
 for a in ausnahmen:
@@ -148,12 +155,14 @@ for runde in range(12):
         neu_pkt.append((px, py))
 
 # ───── Gegner zuweisen ─────
+# Gegner mit Werten in shared/config.ts (MONSTER) gelten als vorhanden – so werden neu gebaute Gegner (z. B. Steppenwolf, fab2fde5) ohne Handarbeit erkannt
+IN_CONFIG = set(re.findall(r'^\s{2}(\w+): \{ name:', open(os.path.join(RT, 'shared', 'config.ts'), encoding='utf8').read(), re.M))
 fehlend, je_region = {}, {}
 for k, (x, y) in enumerate(neu_pkt):
     n = REG[y, x] or '?'; land, (lo, hi) = land_von(n, x, y) if n != '?' else ('?', (5, 20)); gel = gelaende_von(x, y)
     g = waehle(gel, lo, hi, k); anzahl = 3 if k % 6 == 0 else 2 if k % 3 == 0 else 1
     modell = UMBENANNT[g][0] if g in UMBENANNT else g
-    quelle = 'vorhanden' if g in VORHANDEN else ('vorhanden (' + UMBENANNT[g][0] + ')') if g in UMBENANNT else 'fehlt' if NEU[g][2].startswith('neu') else 'vorhanden (Figuren)'   # Figuren hat die Gegner der Konzepte gebaut (Zweig claude/tender-heisenberg-bruby2, Leitstelle 27.11.)
+    quelle = 'vorhanden' if g in VORHANDEN else ('vorhanden (' + UMBENANNT[g][0] + ')') if g in UMBENANNT else 'vorhanden (Systeme)' if g in IN_CONFIG and NEU[g][2].startswith('neu') else 'fehlt' if NEU[g][2].startswith('neu') else 'vorhanden (Figuren)'   # Figuren hat die Gegner der Konzepte gebaut (Zweig claude/tender-heisenberg-bruby2, Leitstelle 27.11.)
     if quelle == 'fehlt': f = fehlend.setdefault(g, {'gegner': g, 'stufe': NEU[g][0], 'gelaende': NEU[g][1], 'herkunft': NEU[g][2], 'plaetze': 0}); f['plaetze'] += 1
     plaetze.append({'id': f'gp_{n}_{k + 1}', 'region': n, 'land': land, 'x': int(x + X0) + 0.5, 'y': int(y + Y0) + 0.5, 'gegner': [g], 'modell': modell, 'anzahl': anzahl, 'stufe': stufe_von(g), 'gelaende': gel, 'quelle': quelle})
     e = je_region.setdefault(n, {'plaetze': 0, 'gegner': 0}); e['plaetze'] += 1; e['gegner'] += anzahl

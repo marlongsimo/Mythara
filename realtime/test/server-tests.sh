@@ -42,6 +42,9 @@ TESTS=(
   welt-federmutter
   welt-gegnerdichte
   welt-troedler
+  welt-beleben
+  welt-sammelstellen
+  welt-streifgebiete
   phase5
   phase8-10
   abholen

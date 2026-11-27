@@ -46,7 +46,7 @@ function zeichnen(): void {
   if (zeigtWahl()) { d.className = "wahl"; d.innerHTML = `<div class="kasten"><b class="titel">Wähle eine Antwort</b><div class="antworten">${wahl!.map((a, i) => `<button type="button" data-a="${esc(a.id)}"><i>${i + 1}.</i> ${esc(a.text)}</button>`).join("")}</div></div>${x}`; d.hidden = false; lage(); return; }
   const z = schlange[0]; if (!z) { schliessen(); return; }
   const ich = z.wer === "Du"; d.className = ich ? "ich" : "npc";
-  d.innerHTML = `<div class="kasten"><span class="rahmen"><img class="bild" alt=""></span><div class="mitte"><b class="name">${esc(ich ? "Du" : z.wer)}</b><p class="text">${esc(z.text)}</p><span class="weiter">${wartet ? "…" : "Klicke hier, um fortzufahren"}</span></div></div>${x}`;
+  d.innerHTML = `<div class="kasten"><span class="rahmen"><img class="bild" alt=""></span><div class="mitte"><b class="name">${esc(ich ? "Du" : z.wer)}</b><p class="text">${esc(z.text)}</p><span class="weiter">${wartet ? "…" : "Weiter"}</span></div></div>${x}`;
   d.hidden = false; lage(); const img = d.querySelector(".bild") as HTMLImageElement, wer = z.wer, zeile = z;
   void bildnisFuer(wer, npcJetzt).then((u) => { if (u && schlange[0] === zeile && img.isConnected) img.src = u; }); }
 /** Eine Nachricht des Servers aufnehmen: Aussagen hinten an die Schlange, danach die Antworten (oder Ende) */

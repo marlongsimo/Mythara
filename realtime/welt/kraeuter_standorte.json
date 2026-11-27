@@ -233,48 +233,6 @@
    "region": "weidenhain"
   },
   {
-   "id": "sueden_wegerich_1",
-   "art": "wegerich",
-   "x": 6406.5,
-   "y": 6894.5,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "sueden_ringelblume_1",
-   "art": "ringelblume",
-   "x": 6410.5,
-   "y": 6914.5,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "sueden_wegerich_2",
-   "art": "wegerich",
-   "x": 6412.5,
-   "y": 6894.5,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "sueden_ringelblume_2",
-   "art": "ringelblume",
-   "x": 6416.5,
-   "y": 6914.5,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "sueden_wegerich_3",
-   "art": "wegerich",
-   "x": 6418.5,
-   "y": 6894.5,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "sueden_ringelblume_3",
-   "art": "ringelblume",
-   "x": 6422.5,
-   "y": 6914.5,
-   "region": "fl_186_211"
-  },
-  {
    "id": "kraeuterhof_ringelblume_1",
    "art": "ringelblume",
    "x": 6411.5,
@@ -329,6 +287,48 @@
    "x": 6411.5,
    "y": 7069.5,
    "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_wegerich_1",
+   "art": "wegerich",
+   "x": 6406.5,
+   "y": 6894.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6410.5,
+   "y": 6914.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_wegerich_2",
+   "art": "wegerich",
+   "x": 6412.5,
+   "y": 6894.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_ringelblume_2",
+   "art": "ringelblume",
+   "x": 6416.5,
+   "y": 6914.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_wegerich_3",
+   "art": "wegerich",
+   "x": 6418.5,
+   "y": 6894.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_ringelblume_3",
+   "art": "ringelblume",
+   "x": 6422.5,
+   "y": 6914.5,
+   "region": "fl_186_211"
   }
  ],
  "kessel": [
@@ -357,10 +357,10 @@
   {
    "id": "kessel_kraeuterhof",
    "ort": "vor dem Kräuterhaus am Kräuterhof (Objekt kraeuterhof_kessel)",
-   "x": 6422.0,
-   "y": 7062.0,
+   "x": 6422,
+   "y": 7062,
    "stehen": [
-    6422.0,
+    6422,
     7063.4
    ],
    "region": "fl_186_211"
