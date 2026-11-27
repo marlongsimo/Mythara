@@ -36,8 +36,10 @@ export const QUEST_F1: QuestDef = {
   schritte: [
     { id: "gras", text: "Das Ende des Grases erreichen", ereignis: { art: "objekt", id: "f1_grasende" }, wo: GRASENDE,
       log: "Setz mit der Fähre ans Ostufer über und geh durch den Pass im Südosten, bis das Gras aufhört – zur Wegmarke „Ende des Grases“." },
-    { id: "raeuber", text: "Drei Karawanenräuber am Kanal besiegen", ereignis: { art: "erlegen", typ: "karawanenraeuber" }, anzahl: 3, nach: ["gras"], wo: KANAL,
-      log: "Am ausgetrockneten Kanal lauern Karawanenräuber. Besieg drei ({n:raeuber}) – sie fliehen, wenn es eng wird." },
+    { id: "raeuber_saebel", text: "Zwei Karawanenräuber mit Säbel besiegen", ereignis: { art: "erlegen", typ: "karawanenraeuber_saebel" }, anzahl: 2, nach: ["gras"], wo: KANAL, gruppe: "raeuber",
+      log: "Am ausgetrockneten Kanal lauern Karawanenräuber. Besieg drei ({n:raeuber}) – zwei mit Säbel, einen mit Bogen. Sie fliehen, wenn es eng wird." },
+    { id: "raeuber_bogen", text: "Einen Karawanenräuber mit Bogen besiegen", ereignis: { art: "erlegen", typ: "karawanenraeuber_bogen" }, nach: ["gras"], wo: KANAL, gruppe: "raeuber",
+      log: "Am ausgetrockneten Kanal lauern Karawanenräuber. Besieg drei ({n:raeuber}) – zwei mit Säbel, einen mit Bogen. Sie fliehen, wenn es eng wird." },
   ],
   objekte: [
     { id: "f1_grasende", name: "Wegmarke „Ende des Grases“", x: GRASENDE[0], y: GRASENDE[1], modell: "stelle", tat: "untersuchen", tatText: "Die Wegmarke lesen", weit: 3,
@@ -52,7 +54,7 @@ export const QUEST_F1: QuestDef = {
           antworten: ["annehmen", "brief_wer", "spaeter"] },
         { wenn: NEU, zeilen: ["Übersetzen? Steig ein."], antworten: ["tschuess"] },
         { wenn: FERTIG, zeilen: ["Zwanzig Jahre, sagt sie? …Hm. Dann war ich jung. Und sie auch."], antworten: ["tschuess"] },
-        { wenn: { ...LAEUFT, erledigt: ["raeuber"] }, zeilen: ["Du bist noch hier? Glutbrunn ist am Strom. Lauf."], antworten: ["hilfe", "tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["raeuber_saebel", "raeuber_bogen"] }, zeilen: ["Du bist noch hier? Glutbrunn ist am Strom. Lauf."], antworten: ["hilfe", "tschuess"] },
         { zeilen: ["Der Brief. Nach Glutbrunn. Hast du ihn noch?"], antworten: ["hilfe", "brief_neu", "tschuess"] },
       ],
       optionen: [

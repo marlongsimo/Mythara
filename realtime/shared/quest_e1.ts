@@ -7,7 +7,7 @@
  * Lohn: Holzfällerei 800, Stärke 800, Defense 800 XP, 300 Splitter, 2 Questpunkte. Schalter dornenwall_offen (Abkürzung offen, je Spieler), grauwacht_abtei (Stadtstufe „abtei“: die Abtei ist bewohnt, Markt);
  * Wegstein-Ziel Heidrast.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Welt: Fahle Weiten, Heidrast, Abtei; Figuren: Mette, Gunhild; Gegner heidewolf_rudelfuehrer).
+ * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Welt: Fahle Weiten, Heidrast, Abtei; Figuren: Mette, Gunhild; Gegner rudelfuehrer).
  * Stellen aus der Welt (#50, shared/quest_e_orte.ts). Liste: doku/quests/e-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
@@ -46,7 +46,7 @@ export const QUEST_E1: QuestDef = {
       log: "Merit sagt, Othmar Rehn in Weidenhain kannte die Äbtissin von Grauwacht. Hol dir bei ihm einen Brief für sie." },
     { id: "mette", text: "In Heidrast nach dem Weg fragen", ereignis: { art: "antwort" }, bei: "mette",
       log: "Im Norden liegen die Fahlen Weiten. Frag in Heidrast, der Hirtensiedlung, nach dem Weg nach Grauwacht." },
-    { id: "rudel", text: "Den Rudelführer der Heidewölfe besiegen", ereignis: { art: "erlegen", typ: "heidewolf_rudelfuehrer" }, nach: ["mette"], wo: RUDEL,
+    { id: "rudel", text: "Den Rudelführer der Heidewölfe besiegen", ereignis: { art: "erlegen", typ: "rudelfuehrer" }, nach: ["mette"], wo: RUDEL,
       log: "Ein Wolfsrudel liegt zwischen Heidrast und Grauwacht. Besieg den Rudelführer – er kommt nicht allein." },
   ],
   objekte: RANKEN.map((id, i) => ({ id: "e1_" + id, name: "Dornenranke", x: DORNEN[i][0], y: DORNEN[i][1], modell: "stelle", tat: "benutzen" as const, tatText: "Die Ranke roden", weit: 2.5,

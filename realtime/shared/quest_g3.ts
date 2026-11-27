@@ -36,9 +36,11 @@ export const QUEST_G3: QuestDef = {
     { text: "Heldenlevel 35", wenn: { heldenlevel: 35 } },
   ],
   schritte: [
-    { id: "raeuber", text: "Die Strandräuber im Wrack besiegen", ereignis: { art: "erlegen", typ: "strandraeuber" }, anzahl: 4, wo: WRACK.raeuber,
+    { id: "raeuber_saebel", text: "Zwei Strandräuber mit Säbel im Wrack besiegen", ereignis: { art: "erlegen", typ: "strandraeuber_saebel" }, anzahl: 2, wo: WRACK.raeuber, gruppe: "raeuber",
       log: "Vertreib die Strandräuber aus dem Wrack am Strand ({n:raeuber})." },
-    { id: "kiste", text: "Die Kiste im Wrack öffnen", ereignis: { art: "objekt", id: "g3_kiste" }, nach: ["raeuber"], wo: WRACK.kiste,
+    { id: "raeuber_armbrust", text: "Zwei Strandräuber mit Armbrust im Wrack besiegen", ereignis: { art: "erlegen", typ: "strandraeuber_armbrust" }, anzahl: 2, wo: WRACK.raeuber, gruppe: "raeuber",
+      log: "Vertreib die Strandräuber aus dem Wrack am Strand ({n:raeuber})." },
+    { id: "kiste", text: "Die Kiste im Wrack öffnen", ereignis: { art: "objekt", id: "g3_kiste" }, nach: ["raeuber_saebel", "raeuber_armbrust"], wo: WRACK.kiste,
       log: "Öffne die Kiste im Bauch des Wracks." },
     { id: "bertold", text: "Bertold Krähe den Fund zeigen", ereignis: { art: "antwort" }, nach: ["kiste"], bei: "bertold", gruppe: "zeugen",
       log: "Zeig die Kiste mit dem Rabensiegel Bertold Krähe im Rabenmoor und Merit Stahl in Graufurt ({n:zeugen})." },

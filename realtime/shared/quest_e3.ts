@@ -37,7 +37,7 @@ export const QUEST_E3: QuestDef = {
   schritte: [
     { id: "lager", text: "Das Lager am Grenzposten auskundschaften", ereignis: { art: "objekt", id: "e3_lager" }, wo: GRENZPOSTEN.lager,
       log: "Kundschafte das Lager der Deserteure am alten Grenzposten aus, westlich der Heide." },
-    { id: "tjark", text: "Tjark Sölde stellen", ereignis: { art: "erlegen", typ: "tjark_soelde" }, nach: ["lager"], bei: "tjark", wo: GRENZPOSTEN.tjark,
+    { id: "tjark", text: "Tjark Sölde stellen", ereignis: { art: "erlegen", typ: "tjark" }, nach: ["lager"], bei: "tjark", wo: GRENZPOSTEN.tjark,
       log: "Stell Tjark Sölde, den Anführer der Deserteure. Überrede ihn, zurückzukehren – oder besieg ihn." },
   ],
   objekte: [

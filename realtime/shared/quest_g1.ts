@@ -34,9 +34,11 @@ export const QUEST_G1: QuestDef = {
   schritte: [
     ...SPUREN.map((id, i) => ({ id, text: "Den Spuren auf der Südstraße folgen", ereignis: { art: "objekt" as const, id: "g1_" + id }, gruppe: "spuren", wo: i === 0 ? SUEDSTRASSE.spur_1 : SUEDSTRASSE.spur_2,
       log: "Folg der Südstraße von Weidenhain nach Süden und such nach Spuren des Getreidewagens ({n:spuren})." })),
-    { id: "raeuber", text: "Vier Strandräuber besiegen", ereignis: { art: "erlegen", typ: "strandraeuber" }, anzahl: 4, nach: SPUREN, wo: SUEDSTRASSE.raeuber,
-      log: "Am umgestürzten Wagen lagern Strandräuber. Besieg vier ({n:raeuber})." },
-    { id: "wagen", text: "Den Wagen durchsuchen", ereignis: { art: "objekt", id: "g1_wagen" }, nach: ["raeuber"], wo: SUEDSTRASSE.wagen,
+    { id: "raeuber_saebel", text: "Zwei Strandräuber mit Säbel besiegen", ereignis: { art: "erlegen", typ: "strandraeuber_saebel" }, anzahl: 2, nach: SPUREN, wo: SUEDSTRASSE.raeuber, gruppe: "raeuber",
+      log: "Am umgestürzten Wagen lagern Strandräuber, mit Säbeln und Armbrüsten. Besieg vier ({n:raeuber})." },
+    { id: "raeuber_armbrust", text: "Zwei Strandräuber mit Armbrust besiegen", ereignis: { art: "erlegen", typ: "strandraeuber_armbrust" }, anzahl: 2, nach: SPUREN, wo: SUEDSTRASSE.raeuber, gruppe: "raeuber",
+      log: "Am umgestürzten Wagen lagern Strandräuber, mit Säbeln und Armbrüsten. Besieg vier ({n:raeuber})." },
+    { id: "wagen", text: "Den Wagen durchsuchen", ereignis: { art: "objekt", id: "g1_wagen" }, nach: ["raeuber_saebel", "raeuber_armbrust"], wo: SUEDSTRASSE.wagen,
       log: "Durchsuch den umgestürzten Getreidewagen. Der Kutscher hatte einen Frachtbrief." },
   ],
   objekte: [
