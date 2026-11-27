@@ -6,6 +6,7 @@
  * ausgeblendet), Türflügel (öffnen sich, wenn der Held nahe ist) und Windmühlenflügel.
  */
 import * as THREE from "three";
+import { drehe } from "../../../shared/welt/bau";
 import { Teile, type Muster } from "./teile";
 import { esse, flammen, amboss } from "./werkstatt";
 
@@ -30,6 +31,11 @@ export type Gebaeude = { gruppe: THREE.Group; daecher: THREE.Object3D[]; raeume:
   tueren: { fluegel: THREE.Object3D; x: number; z: number; zu: number; auf: number }[]; drehen: THREE.Object3D[];
   /** Feuerstellen in Weltkoordinaten (für Schein und Licht) und Flammen, die flackern */ feuer: THREE.Vector3[]; flackern: THREE.Object3D[] };
 
+/** #148: ein gebautes Gebäude um seinen Fußpunkt (X, Z) drehen – dreh in Grad im Uhrzeigersinn von oben (shared/welt/bau.ts drehe); Räume, Türen und Feuer wandern mit */
+export function gebaeudeDrehen(b: Gebaeude, X: number, Z: number, dreh: number): void { if (!dreh) return; b.gruppe.rotation.y = (-dreh * Math.PI) / 180;
+  const um = (x: number, z: number) => drehe(x - X, z - Z, dreh).map((v, i) => v + (i ? Z : X)) as [number, number];
+  b.raeume = b.raeume.map((r) => { const a = um(r.x0, r.z0), c = um(r.x1, r.z1); return { x0: Math.min(a[0], c[0]), x1: Math.max(a[0], c[0]), z0: Math.min(a[1], c[1]), z1: Math.max(a[1], c[1]) }; });
+  for (const t of b.tueren) [t.x, t.z] = um(t.x, t.z); for (const f of b.feuer) [f.x, f.z] = um(f.x, f.z); }
 export function bauen(plan: Bauplan, X: number, Y: number, Z: number): Gebaeude {
   const g = new THREE.Group(); g.position.set(X, Y, Z);
   const mauer = new Teile(), K = plan.koerper, nr = (r?: string | number) => (typeof r === "string" ? Math.max(0, K.findIndex((k) => k.id === r)) : r ?? 0);

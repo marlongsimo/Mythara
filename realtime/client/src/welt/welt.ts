@@ -240,7 +240,7 @@ export class Welt extends Phaser.Scene {
     if (TEST) this.testChunk(st);
   }
   objekt(st: Stueck, p: Platzierung, o: Anzeige, key: string) {
-    const bild = this.add.image(p.x * F, p.y * F, key).setOrigin(p.spiegeln ? 1 - o.anker[0] : o.anker[0], o.anker[1]).setScale(o.massstab * (p.s ?? 1)).setFlipX(Boolean(p.spiegeln));
+    const bild = this.add.image(p.x * F, p.y * F, key).setOrigin(p.spiegeln ? 1 - o.anker[0] : o.anker[0], o.anker[1]).setScale(o.massstab * (p.s ?? 1)).setFlipX(Boolean(p.spiegeln)).setAngle(p.dreh || 0); /* #148: Drehung um den Fußpunkt, im Uhrzeigersinn */
     bild.setDepth(o.tiefe === "boden" ? -5e5 + p.y : o.tiefe === "oben" ? 1e7 + p.y : p.y * F);
     st.dinge.push(bild); if (o.durchscheinend) st.scheinend.push(bild);
     if (o.modell3d) { let h = Math.imul(Math.round(p.x * 16) | 0, 0x9e3779b1) ^ Math.imul(Math.round(p.y * 16) | 0, 0x85ebca77); h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35) >>> 0;

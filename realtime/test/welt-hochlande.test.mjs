@@ -23,7 +23,7 @@ const flut = ([sx, sy], box) => { const s = 2, seen = new Set(), q = [[Math.floo
 
 console.log("\nHochlande – Zugang");
 const fb = IA.get("furtbruecke"); check(fb && !fb.daten.gesperrt && !OBJ.some((o) => o.id === "furtbruecke_sperre"), "Brücke zur Furt ohne Sperre (Wache und Schild, keine Schranke)");
-check(OBJ.filter((o) => /^furtbruecke_\d/.test(o.id)).length === 10 && OBJ.some((o) => o.id === "furtbruecke_schild") && HO.npc.some((n) => n.id === "wache_furtbruecke"), "zehn Brückenbögen über den Grauen Sund, Schild und Wachposten");
+check(OBJ.filter((o) => /^furtbruecke_\d/.test(o.id) && o.objekt === "hochland_steinbruecke_ow").length === 10 && OBJ.some((o) => o.id === "furtbruecke_schild") && HO.npc.some((n) => n.id === "wache_furtbruecke"), "zehn steinerne Brückenbögen (hochland_steinbruecke_ow) über den Grauen Sund, Schild und Wachposten");
 const greifbar = flut([fb.x, fb.y], BOX);
 const pflicht = ["furt", "steinhag", "steinhag_vogthof", "steinhag_bank_tuer", "steinhag_wegstein", "steinhag_bindestein", "steinhag_werkstatt", "bergwerk_eingang", "passwacht", "grauhorn_steinmann", "almhuette", "einsiedelei", "nordklippen", "fischplatz_steinhagsee", "fischplatz_spiegelsee", "wegweiser_furt", "wegweiser_steinhag_west", "wegweiser_steinhag_ost", "wegweiser_erzberg"];
 const fehlt = pflicht.filter((id) => !IA.has(id)), weg = pflicht.filter((id) => IA.has(id) && !greifbar(IA.get(id).x, IA.get(id).y));

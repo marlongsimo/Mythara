@@ -160,6 +160,8 @@ export interface Platzierung {
   /** Zusätzlicher Maßstab (1 = wie in der Bibliothek) */
   s?: number;
   spiegeln?: boolean;
+  /** Drehung um den Fußpunkt in Grad, im Uhrzeigersinn von oben gesehen (#148; ohne Angabe 0). Reihenfolge: spiegeln → Maßstab → drehen */
+  dreh?: 0 | 90 | 180 | 270;
   zustand?: string;
   /** Kollision nur für dieses eine Objekt überschreiben (null = keine) */
   kollision?: Kollision | null;
