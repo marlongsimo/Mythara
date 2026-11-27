@@ -222,6 +222,9 @@ dazu({ id: "aalsuppe", station: "kessel", ergebnis: "aalsuppe", level: 50, zutat
 dazu({ id: "glutwels_salzkruste", station: "herd", ergebnis: "glutwels_salzkruste", level: 65, zutaten: [{ g: ["fisch_glutwels_roh"], n: 1 }, { g: ["salz"], n: 2 }], xp: 260, ticks: 6, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_glutwels_verbrannt" });
 /* Phase 7 (#40): D3 Welspastete am Herd (Kochen 45), D1 Kettenglieder am Amboss (Schmieden 45, Quest-Rezept: 1 Splittereisenbarren → 1 Glied) */
 dazu({ id: "welspastete", station: "herd", ergebnis: "welspastete", level: 45, zutaten: [{ g: ["fisch_wels_roh"], n: 1 }, { g: ["mehl"], n: 1 }], xp: 160, ticks: 6, stufe: 0, gruppe: "Pastete", verbrannt: "fisch_wels_verbrannt" });
+/* C1 „Schwarze Federn“: Brückenplanken aus Moorweide an Harms Werkbank in Rabenmoor (Handwerk 25, nur während der Quest) */
+WERKSTAETTEN.push({ id: "werkbank_rabenmoor", station: "werkbank", x: 6309.5, y: 6703.5, ort: "rabenmoor" });
+dazu({ id: "brueckenplanke", station: "werkbank", ergebnis: "brueckenplanke", level: 25, zutaten: [{ g: ["stamm_moorweide"], n: 1 }], xp: 60, ticks: 4, stufe: 0, gruppe: "Auftrag des Schulzen", quest: "rabenmoor_schwarze_federn" });
 dazu({ id: "kettenglied", station: "amboss", ergebnis: "kettenglied", level: 45, zutaten: [{ g: ["barren_splittereisen"], n: 1 }], xp: 90, ticks: 5, stufe: 0, gruppe: "Auftrag der Wacht", quest: "graufurt_die_faehrkette" });
 dazu({ id: "krug_wasser", station: "brunnen", ergebnis: "krug_wasser", level: 1, zutaten: [{ g: ["krug"], n: 1 }], xp: 0, ticks: 2, stufe: 0, gruppe: "Wasser" });
 dazu({ id: "brot_backen", station: "backofen", ergebnis: "brot", level: 1, zutaten: [{ g: ["mehl"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 25, ticks: 5, stufe: 0, gruppe: "Brot", verbrannt: "brot_verbrannt" });

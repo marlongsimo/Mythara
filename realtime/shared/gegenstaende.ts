@@ -528,7 +528,14 @@ export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math
     anforderung: { skill: "geschick", level: 35 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 30, staerke: 29 }, abwehr: { nah: 0, fern: 0, magie: 12 },
     text: "Eine Klinge, schwarz wie eine Feder, aus dem Hort des Obersten Rabenpriesters. Sie fängt Zauber, als wären sie Wind." };
   GEGENSTAENDE.rabenkueken = { id: "rabenkueken", name: "Rabenküken", art: "Sammelstück", seltenheit: "legendaer", bild: B + "rabenkueken.webp",
-    text: "Ein winziger Rabe mit viel zu großen Augen. Er hat sich dich ausgesucht. (Als Begleiter folgt er dir, sobald es Begleiter gibt.)" }; }
+    text: "Ein winziger Rabe mit viel zu großen Augen. Er hat sich dich ausgesucht. (Als Begleiter folgt er dir, sobald es Begleiter gibt.)" };
+  /* C1 „Schwarze Federn“ (quest_c1.ts), Meilerpech auch für D1 „Die Fährkette“: Questgegenstände, Bilder aus dem Bestand */
+  GEGENSTAENDE.meilerpech = { id: "meilerpech", name: "Meilerpech", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/kohle.webp",
+    text: "Ein Topf schwarzes Pech aus Köhler Ulfs Meiler, noch warm. Es dichtet Fugen, Planken und Ketten – und klebt an allem." };
+  GEGENSTAENDE.novizenkapuze = { id: "novizenkapuze", name: "Novizenkapuze", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: B + "rabenfedern.webp",
+    text: "Eine Kapuze aus schwarzen Federn, sorgfältig vernäht. Innen ist ein Zeichen eingestickt: ein Rabe über einem Kreis aus Steinen." };
+  GEGENSTAENDE.brueckenplanke = { id: "brueckenplanke", name: "Brückenplanke", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 8, bild: "img/objekte3d/skilling/erzeugnisse/stamm_moorweide.webp",
+    text: "Eine dicke Planke aus Moorweide, an Harms Werkbank geschnitten. Für die alte Brücke nach Aschenwerth." }; }
 
 /* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
 /** Ist das eine Platzhalter-Beute („@<seltenheit>[:<Art>]“)? */
