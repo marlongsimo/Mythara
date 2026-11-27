@@ -107,23 +107,23 @@ INSTANZEN.push({ id: "thronsaal", name: "Der Thronsaal", feld: [10752, 9600, 107
    Grumhold (Trollhalle im Bergwerk, Region hochlande_bergwerk): Stampf-Ring aus Geröll (Ring um ihn, ausweichen nach innen oder außen), Felsbrocken (Schattenkreis am Ziel);
    bei halbem Leben zwei Felsbrocken-Wächter, die ihn heilen, bis man sie zerschlägt. */
 BOSSE.grumhold = { typ: "grumhold", phasen: [
-  { ab: 1, ansagen: [{ name: "Stampf-Ring", alle: 3, felder: "ring", weite: 2, vorlauf: 3, schaden: [12, 20] }, { name: "Felsbrocken", sek: 8, felder: "ziel", weite: 1, vorlauf: 3, schaden: [14, 22] }] },
+  { ab: 1, ansagen: [{ name: "Stampf-Ring", bewegung: "stampfen", alle: 3, felder: "ring", weite: 2, vorlauf: 3, schaden: [12, 20] }, { name: "Felsbrocken", bewegung: "werfen", sek: 8, felder: "ziel", weite: 1, vorlauf: 3, schaden: [14, 22] }] },
   { ab: 0.5, text: "Grumhold brüllt – der Fels der Halle antwortet!", ruf: { art: "felsbrocken_waechter", n: 2, weite: 5, text: "Zwei Felsbrocken lösen sich aus der Wand!" },
-    ansagen: [{ name: "Stampf-Ring", alle: 3, felder: "ring", weite: 3, vorlauf: 3, schaden: [12, 20] }, { name: "Felsbrocken", sek: 6, felder: "ziel", weite: 1, vorlauf: 3, schaden: [14, 22] }] } ] };
+    ansagen: [{ name: "Stampf-Ring", bewegung: "stampfen", alle: 3, felder: "ring", weite: 3, vorlauf: 3, schaden: [12, 20] }, { name: "Felsbrocken", bewegung: "werfen", sek: 6, felder: "ziel", weite: 1, vorlauf: 3, schaden: [14, 22] }] } ] };
 /* Die Sturmschwinge (Horst auf dem Grauhorn): kreist für Nahkampf unerreichbar (flug), stößt herab (Schattenkreis am Ziel) und bleibt danach 4 s am Boden –
    dann trifft sie auch der Nahkampf. Am Boden schlagen ihre Flügel Sturmböen, die alle um sie herum wegschieben. Ab 40 % stößt sie öfter herab. */
 BOSSE.sturmschwinge = { typ: "sturmschwinge", phasen: [
-  { ab: 1, flug: true, ansagen: [{ name: "Sturzflug", sek: 7, felder: "ziel", weite: 1, vorlauf: 3, schaden: [16, 24], landen: 4 }, { name: "Sturmböe", alle: 2, felder: "rundum", weite: 2, vorlauf: 2, schaden: [4, 8], wirkung: { schieben: 3 } }] },
+  { ab: 1, flug: true, ansagen: [{ name: "Sturzflug", bewegung: "sturzflug", sek: 7, felder: "ziel", weite: 1, vorlauf: 3, schaden: [16, 24], landen: 4 }, { name: "Sturmböe", alle: 2, felder: "rundum", weite: 2, vorlauf: 2, schaden: [4, 8], wirkung: { schieben: 3 } }] },
   { ab: 0.4, text: "Die Sturmschwinge schreit – der Wind dreht!", flug: true,
-    ansagen: [{ name: "Sturzflug", sek: 5, felder: "ziel", weite: 1, vorlauf: 3, schaden: [16, 24], landen: 4 }, { name: "Sturmböe", alle: 2, felder: "rundum", weite: 3, vorlauf: 2, schaden: [4, 8], wirkung: { schieben: 3 } }] } ] };
+    ansagen: [{ name: "Sturzflug", bewegung: "sturzflug", sek: 5, felder: "ziel", weite: 1, vorlauf: 3, schaden: [16, 24], landen: 4 }, { name: "Sturmböe", alle: 2, felder: "rundum", weite: 3, vorlauf: 2, schaden: [4, 8], wirkung: { schieben: 3 } }] } ] };
 /* Die Frostwitwe (Eishöhle am Hochpass): Eisfelder am Ziel verlangsamen – wer noch langsam ist, wenn das nächste trifft, erstarrt kurz; Frostnova rund um sie (angezeigt);
    ab 60 % zwei Eissplitter-Wächter. */
 BOSSE.frostwitwe = { typ: "frostwitwe", phasen: [
-  { ab: 1, ansagen: [{ name: "Eisfeld", sek: 5, felder: "ziel", weite: 1, vorlauf: 2, schaden: [6, 10], art: "magie", wirkung: { langsam: [0.5, 4], erstarren: 2 } },
-    { name: "Frostnova", alle: 5, felder: "rundum", weite: 3, vorlauf: 3, schaden: [14, 22], art: "magie" }] },
+  { ab: 1, ansagen: [{ name: "Eisfeld", bewegung: "zauber", sek: 5, felder: "ziel", weite: 1, vorlauf: 2, schaden: [6, 10], art: "magie", wirkung: { langsam: [0.5, 4], erstarren: 2 } },
+    { name: "Frostnova", bewegung: "nova", alle: 5, felder: "rundum", weite: 3, vorlauf: 3, schaden: [14, 22], art: "magie" }] },
   { ab: 0.6, text: "Die Frostwitwe haucht – das Eis erwacht!", ruf: { art: "eissplitter_waechter", n: 2, weite: 3, text: "Eissplitter wachsen aus dem Boden!" },
-    ansagen: [{ name: "Eisfeld", sek: 4, felder: "ziel", weite: 1, vorlauf: 2, schaden: [6, 10], art: "magie", wirkung: { langsam: [0.5, 4], erstarren: 2 } },
-      { name: "Frostnova", alle: 4, felder: "rundum", weite: 3, vorlauf: 3, schaden: [14, 22], art: "magie" }] } ] };
+    ansagen: [{ name: "Eisfeld", bewegung: "zauber", sek: 4, felder: "ziel", weite: 1, vorlauf: 2, schaden: [6, 10], art: "magie", wirkung: { langsam: [0.5, 4], erstarren: 2 } },
+      { name: "Frostnova", bewegung: "nova", alle: 4, felder: "rundum", weite: 3, vorlauf: 3, schaden: [14, 22], art: "magie" }] } ] };
 /* Die Räume: die Trollhalle steht (Welt d344565a, Bergwerk); Horst und Eishöhle baut Welt noch (Issue an rolle:welt) – bis dahin nur die Bossdaten.
    Schalter je Hüter: <hüter>_<raum> solange H4 läuft und er noch steht, <hüter>_danach nach H4. */
 export const HUETER: { typ: string; instanz: string; schalter: string; danach: string; ort: string }[] = [
