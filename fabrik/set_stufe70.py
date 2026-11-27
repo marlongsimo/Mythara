@@ -6,7 +6,7 @@ von hier stammt nur noch schild.turm.steinvogt – laut Nutzer ohne Turmschild i
 
 Teil = ans Skelett gebundene Teil-Datei aus img/figuren-echt3d/<figur>.teile/ (Skelett und Bindung bleiben, Grundfigur unverändert).
 Farben (Textur, über Farbton/Sättigung/Helligkeit wie fabrik/set_wacht.py):
-  steinvogt     – Nahkampf, passend zu Grumhold: Metall → verwitterter Fels (grau-ocker), dunkle Stellen moosig grün, Messing → alte Bronze
+  steinvogt     – Nahkampf (heute „Löwenwacht“, Ebenen heißen weiter *.steinvogt), passend zu Grumhold: Metall → verwitterter Fels (grau-ocker), dunkle Stellen moosig grün, Messing → alte Bronze
   sturmfeder    – Fernkampf: alles ins Sturmgrau-Blau entsättigt, helle Federn heller, dunkles Leder schiefergrau
   frostschleier – Magie: Stoff → Eisblau, helle Säume → frostweiß-silbern, schwaches blaues Leuchten an den hellsten Stellen
 strecken=h,b: Teil in seiner Höhe (z) und Breite um den eigenen Mittelpunkt strecken (Turmschild aus dem Sternenschild).
