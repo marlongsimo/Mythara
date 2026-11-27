@@ -535,7 +535,14 @@ export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math
   GEGENSTAENDE.novizenkapuze = { id: "novizenkapuze", name: "Novizenkapuze", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: B + "rabenfedern.webp",
     text: "Eine Kapuze aus schwarzen Federn, sorgfältig vernäht. Innen ist ein Zeichen eingestickt: ein Rabe über einem Kreis aus Steinen." };
   GEGENSTAENDE.brueckenplanke = { id: "brueckenplanke", name: "Brückenplanke", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 8, bild: "img/objekte3d/skilling/erzeugnisse/stamm_moorweide.webp",
-    text: "Eine dicke Planke aus Moorweide, an Harms Werkbank geschnitten. Für die alte Brücke nach Aschenwerth." }; }
+    text: "Eine dicke Planke aus Moorweide, an Harms Werkbank geschnitten. Für die alte Brücke nach Aschenwerth." };
+  /* C3 „Der Oberste Rabenpriester“: Schlüssel des Kerkermeisters, Heddas Moorwasser – erst an der Linde geweiht trübt es das Splitterbecken */
+  GEGENSTAENDE.kerkerschluessel = { id: "kerkerschluessel", name: "Kerkerschlüssel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: B + "schluesselbund.webp",
+    text: "Ein schwerer Ring mit vier rostigen Schlüsseln, einer für jeden Käfig im Kerker des Rabengrunds." };
+  GEGENSTAENDE.moorwasser = { id: "moorwasser", name: "Moorwasser", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/kraeuterkunde/symbole/trueber_sud.webp",
+    text: "Eine Phiole braunes Wasser aus Heddas Moor. Es riecht nach Torf. Hedda sagt, es muss erst an der Linde geweiht werden." };
+  GEGENSTAENDE.moorwasser_geweiht = { id: "moorwasser_geweiht", name: "Geweihtes Moorwasser", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/kraeuterkunde/symbole/lindentau_stark.webp",
+    text: "Das Moorwasser ist klar geworden und leuchtet schwach grün, wie das Licht unter der Linde. Es trübt das Splitterbecken." }; }
 
 /* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
 /** Ist das eine Platzhalter-Beute („@<seltenheit>[:<Art>]“)? */

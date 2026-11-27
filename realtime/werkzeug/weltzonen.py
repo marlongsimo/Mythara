@@ -79,7 +79,7 @@ BESONDERS = {
                    "lager": [("moorrabe", 10592, 9643), ("moorrabe", 10590, 9641), ("moorrabe", 10592, 9641),
                              ("rabenpriester_akoluth", 10600, 9631), ("rabenpriester_akoluth_speer", 10598, 9629),
                              ("moorrabe", 10622, 9672), ("moorrabe", 10624, 9672), ("moorrabe", 10616, 9674),
-                             ("rabenpriester_akoluth_speer", 10640, 9625), ("rabenpriester_akoluth", 10638, 9623), ("rabenpriester_akoluth_speer", 10645, 9612)]},
+                             ("rabenpriester_akoluth_speer", 10640, 9625), ("rabenpriester_akoluth", 10638, 9623), ("kerkermeister", 10645, 9612)]},  # C3: der Kerkermeister im Kerker trägt den Schlüssel
     # Banditen-Hauptquartier unter der Hütte in der Westmark: neun Dolch-Banditen in sechs Räumen, die Halle ist Mehrkampf; Gegner bleiben in ihren Räumen
     # Phase 4: die Quelle stellt Dolch-Banditen auf – hier bekommen sie ihre Rolle: Wachstube Schläger + Armbrust, Schlafsaal Schläger + Späher, Beutelager Schläger, Halle gemischt
     "unterschlupf": {"karte": "unterschlupf", "stufe": 4, "aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": US["mehrkampf"],
