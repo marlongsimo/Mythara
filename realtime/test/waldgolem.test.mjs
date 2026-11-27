@@ -11,7 +11,7 @@ check(g.abwehr.fern > g.abwehr.nah && g.abwehr.magie < g.abwehr.nah, `Holz: schw
 const K = KARTEN.welt_nordwald; setzeKarte(K, FEIN);
 const X15 = { ...NULL_XP, geschick: xpFuer(13), staerke: xpFuer(14), defense: xpFuer(12), fernkampf: xpFuer(15), magie: xpFuer(15), lp: xpFuer(14) - xpFuer(10) };
 check(heldenlevel(X15) === 15 && heldenlevel(NULL_XP) === 3, "Testhelden: Heldenlevel 15 und 3");
-{ const s = Sim.welt(5, undefined, true), golems = s.wesen.filter((w) => !w.held && w.typ === "waldgolem"); check(golems.length === 5, `In der Feste stehen ${golems.length} Waldgolems`); }
+{ const s = Sim.welt(5, undefined, true), golems = s.wesen.filter((w) => !w.held && !w.gp && w.typ === "waldgolem"); check(golems.length === 5, `In der Feste stehen ${golems.length} Waldgolems`); }
 /* Aggro: ein Held unter Level 15 wird angegriffen, einer mit Level 15 nicht */
 for (const [x, lv, soll] of [[NULL_XP, 3, true], [X15, 15, false]]) {
   const s = Sim.welt(7, undefined, true), w = s.wesen.find((e) => !e.held && e.typ === "waldgolem"); for (const o of s.wesen.filter((e) => !e.held && e !== w)) { o.x = o.heim.x = 2; o.y = o.heim.y = 2; o.streifT = 1e9; }

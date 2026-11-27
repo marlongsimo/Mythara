@@ -4,7 +4,7 @@
  * Drei Krähenschwärme vertreiben, ein Hanftuch weben (Werkbank), die Vogelscheuche aus Hanftuch und Hanf aufstellen, für die Knechte einen Hasenbraten braten (Kochen 5,
  * Hasenfleisch vom Feldhasen – Fleisch ist erlaubt, Nutzer 27.11.). Sonst nur Vorhandenes: Hanf, Garn und Hanftuch gibt es schon. Lohn: Handwerk 300 XP, 2 Brot, 60 Splitter, 1 Questpunkt.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf den Heckenhof (Welt #120), Rike (Figuren #121), Gegner kraehenschwarm und feldhase, Rezept hasenbraten. Liste: doku/quests/s-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Einbau Süden #126, Anschlüsse #134). Stellen aus der Welt (#120). Liste: doku/quests/s-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { HECKENHOF, RIKE } from "./quest_s_orte";
@@ -71,6 +71,7 @@ export const QUEST_S1: QuestDef = {
       ],
     },
   },
+  glueckwunsch: "Der Kerl winkt, die Knechte sind satt. Die Saat kommt. Danke.",
   belohnungText: "Belohnung: Handwerk 300, Kochen 200 XP, 2 Brot, 60 Splitter",
   belohnung: { berufe: { handwerk: 300, kochen: 200 }, splitter: 60, gegenstaende: [{ g: "brot", n: 2 }] },
   punkte: 1,

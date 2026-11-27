@@ -75,6 +75,7 @@ export const QUEST_SCHILF: QuestDef = {
       ],
     },
   },
+  glueckwunsch: "Mhm. Du angelst jetzt. Allein. Und der Dicke unter der Wurzel gehört trotzdem mir.",
   belohnungText: "Belohnung: Fischen- und Kochen-XP, 20 Würmer · Lambert gibt dir seine alte Angelrute, wenn du keine hast",
   belohnung: { berufe: { fischen: 250, kochen: 120 }, gegenstaende: [{ g: "wurm", n: 20 }] },
   punkte: 1,

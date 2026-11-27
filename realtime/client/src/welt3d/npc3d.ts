@@ -9,6 +9,7 @@
  */
 import { RUHE_TEMPO } from "./held3d";
 import { reiseStelle, type Reise } from "../../../shared/reisende";
+import { gltfLader } from "./gltf";
 import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { vorlage } from "./held3d";
@@ -59,9 +60,14 @@ export class Npc3D {
 /** Reisende auf der Südstraße (#126, shared/reisende.ts): die Stelle kommt aus der Uhr, die Figur geht nur, solange sie nah ist (motor.ts) */
 export class ReisenderFigur {
   readonly npc: Npc3D; x = 0; z = 0;
-  constructor(private u: Umgebung, readonly r: Reise) { this.npc = new Npc3D(r.datei); this.schritt(0); }
+  private karren: THREE.Group | null = null; private kdx = 0; private kdy = 1;
+  constructor(private u: Umgebung, readonly r: Reise) { this.npc = new Npc3D(r.datei);
+    if (r.karren) { const g = new THREE.Group(); this.karren = g; this.npc.gruppe.add(g); gltfLader().loadAsync("../" + r.karren).then((m) => { m.scene.traverse((o) => { (o as THREE.Mesh).castShadow = true; }); g.add(m.scene); }).catch((e) => console.warn("Karren:", e)); }
+    this.schritt(0); }
   schritt(dt: number) { const p = reiseStelle(this.r, Date.now() / 1000); this.x = p.x; this.z = p.y;
-    this.npc.gruppe.position.set(p.x, this.u.hoehe(p.x, p.y), p.y); if (!p.steht) this.npc.blick(p.dx, p.dy); this.npc.spiele(p.steht ? "ruhe" : "gehen"); this.npc.schritt(dt); }
+    this.npc.gruppe.position.set(p.x, this.u.hoehe(p.x, p.y), p.y); if (!p.steht) this.npc.blick(p.dx, p.dy); this.npc.spiele(p.steht ? "ruhe" : "gehen"); this.npc.schritt(dt);
+    if (this.karren) { if (!p.steht) { const l = Math.hypot(p.dx, p.dy) || 1; this.kdx = p.dx / l; this.kdy = p.dy / l; } /* der Karren rollt 1,8 Felder hinter dem Händler, die Deichsel zu ihm */
+      const kx = p.x - this.kdx * 1.8, kz = p.y - this.kdy * 1.8; this.karren.position.set(kx - p.x, this.u.hoehe(kx, kz) - this.u.hoehe(p.x, p.y), kz - p.y); this.karren.rotation.y = Math.atan2(this.kdx, this.kdy); } }
 }
 
 /** Ein Bewohner, der in seinem Haus umhergeht, stehen bleibt und ab und zu vor die Tür tritt */

@@ -105,6 +105,7 @@ export const QUEST_B1: QuestDef = {
     ] },
   },
   schalter: { bindestein_linde: FERTIG },
+  glueckwunsch: "Die Linde vergisst keinen, der ihr etwas gegeben hat. Sie ruft dich, wenn du sie rufst.",
   belohnungText: "Belohnung: der Wegstein mit 10 Ladungen, 400 Magie-XP, Splitterbinden-XP · danach: der Bindestein an der Linde und das Wegstein-Ziel Weidenhain",
   belohnung: { xp: { magie: 400 }, berufe: { splitterbinden: 20 }, ladungen: { wegstein: 10 } },
   punkte: 1,

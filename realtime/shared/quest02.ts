@@ -118,6 +118,7 @@ export const QUEST2: QuestDef = {
       optionen: [{ id: ENDE, text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Pass auf die Steine auf!"] } }] }],
     },
   },
+  glueckwunsch: "Der Rain ist ruhig, der Zaun hält. Mehr wollte ich nicht. Danke.",
   belohnungText: "Belohnung: 20 Splitter",
   belohnung: { splitter: 20 },
   /* #81: wer den Rain befriedet hat, den greifen die Mooshocker danach an (MonsterDef.aggressivNach in shared/config.ts) */

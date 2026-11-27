@@ -47,11 +47,16 @@ export const SPRUENGE: Record<string, { schalter: string; zu: string }> = {
 };
 
 /* Süden (#126, S5 „Die Furt“): die Trittsteine durch die Kiel bei Lehmfurt – gehbar mit dem Schalter lehmfurt_trittsteine (Sperre der Welt, plan_sueden.json) */
-TUEREN.push({ id: "lehmfurt_furt", feld: [6422, 7244, 6430, 7248], schalter: "lehmfurt_trittsteine", zu: "Die Kiel ist hier zu tief. Mit ein paar Trittsteinen käme man trocken hinüber." });
+TUEREN.push({ id: "lehmfurt_furt", feld: [6425, 7244.5, 6428, 7248.5], schalter: "lehmfurt_trittsteine", /* genau die Sperre der Welt (plan_sueden.json) – die Ufer bleiben frei */ zu: "Die Kiel ist hier zu tief. Mit ein paar Trittsteinen käme man trocken hinüber." });
 
 /* Phase 7 (#40, D2): die Wappentür des Turms am Ostufer – offen mit dem Schalter wappentuer_offen (D2 setzt ihn ab dem Schritt „tuer“) */
 TUEREN.push({ id: "turm_wappentuer", feld: [6840, 6519, 6840, 6519], schalter: "wappentuer_offen", eingang: "turm_wappentuer",
   zu: "Die Tür trägt ein Wappen – ein Turm über drei Wellen. Sie ist verschlossen. Vielleicht weiß jemand in Graufurt, wer hier hineindarf." });
+
+/* ───────── Federmutter (#116/#132): ihr Nest unter dem Steinkreis von Aschenwerth (Region federmutter_kammer, Weltfelder 11520…11551 × 9600…9631) ─────────
+   Einstieg federmutter_abstieg im Steinkreis (6242|6728.4). Vor der Quest leer, in der Quest allein und schwächer (Schalter federmutter_kammer), danach öffentlich oder eigene Instanz (federmutter_danach) */
+INSTANZEN.push({ id: "federmutter_kammer", name: "Das Nest der Federmutter", feld: [11520, 9600, 11551, 9631], schalter: "federmutter_kammer", danach: "federmutter_danach",
+  gegner: [{ art: "federmutter", x: 11536.5, y: 9611.5 }], text: "Federn liegen knöcheltief. Über dem Nest hebt Ravena den Kopf." });
 
 /* ───────── Phase 10 (#92, G3): der Wrackkapitän in seiner Kajüte (Region wrack_kajuete, Weltfelder 11488…11519 × 9600…9631) ─────────
    Geist eines Kapitäns: Säbelwirbel rundum, ruft unter 60 % zwei Strandräuber, unter 30 % schwappt Geisterwasser durch die Kajüte (Deckung hinter Kisten). Instanz je Spieler (Schalter aus G3). */

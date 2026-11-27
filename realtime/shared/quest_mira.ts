@@ -33,7 +33,7 @@ export const QUEST_MIRA: QuestDef = {
   schritte: [
     { id: "wegerich", text: "Fünf Wegerich sammeln", ereignis: { art: "sammeln", ziel: "wegerich" }, anzahl: 5, wo: WEGERICH,
       log: "Sammel vor der Waldmark fünf Wegerich – mit einer Sichel ({n:wegerich})." },
-    { id: "trank", text: "Einen Kleinen Heiltrank brauen", ereignis: { art: "herstellen", rezept: "kleiner_heiltrank" }, nach: ["wegerich"], wo: KESSEL,
+    { id: "trank", text: "Einen Kleinen Heiltrank brauen", ereignis: { art: "herstellen", rezept: "brauen_kleiner_heiltrank" }, nach: ["wegerich"], wo: KESSEL,
       log: "Brau am Kessel im Kräuterhaus der Waldmark einen Kleinen Heiltrank – Wegerich und ein leeres Fläschchen." },
     { id: "hedda", text: "Mutter Hedda in Rabenmoor um das Heft bitten", ereignis: { art: "antwort" }, nach: ["trank"], bei: "hedda",
       log: "Geh nach Rabenmoor zu Mutter Hedda auf ihre Insel und bitte sie um Miras Rezeptheft." },
@@ -85,6 +85,7 @@ export const QUEST_MIRA: QuestDef = {
     },
   },
   schalter: { mira_ankauf: FERTIG },
+  glueckwunsch: "Mein Heft! Mit allen Flecken! Du bist ein Schatz, weißt du das?",
   belohnungText: "Belohnung: Kräuterkunde-XP, 3 Heiltränke, 80 Splitter · danach: Mira kauft deine Tränke an (halber Ladenpreis)",
   belohnung: { berufe: { kraeuterkunde: 400 }, splitter: 80, gegenstaende: [{ g: "heiltrank", n: 3 }] },
   punkte: 1,

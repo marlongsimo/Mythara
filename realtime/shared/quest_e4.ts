@@ -72,6 +72,7 @@ export const QUEST_E4: QuestDef = {
   /* Die Klinge: garantiert vom Grauen Hauptmann in der Quest-Instanz (Rolle Spiel: chance 100) */
   beute: { e4_klinge: { erledigt: ["hauptmann"], offen: ["klinge"] } },
   schalter: { hauptmann_gruft: LAEUFT },
+  glueckwunsch: "Er ruht. Trag seine Klinge gut. Er hätte nichts anderes gewollt.",
   belohnungText: "Belohnung: die Klinge des Grauen Hauptmanns (seltenes Langschwert), Stärke 1.000, Defense 1.000, LP 500 XP, 600 Splitter",
   belohnung: { xp: { staerke: 1000, defense: 1000, lp: 500 }, splitter: 600, gegenstaende: [{ g: "klinge_hauptmann" }] },
   punkte: 3,

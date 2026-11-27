@@ -83,6 +83,7 @@ export const QUEST_F3: QuestDef = {
     },
   },
   schalter: { sandmutter_kammer: LAEUFT, ureisen_tafelberge: FERTIG },
+  glueckwunsch: "Die Sandmutter schläft für immer. Der Tempel spricht wieder. Danke, Fremder.",
   belohnungText: "Belohnung: Magie 5.000, Defense 5.000 XP, 1.500 Splitter · danach: Ureisen in den Tafelbergen; in der Kammer liegt ein Stück der Karte des Boten",
   belohnung: { xp: { magie: 5000, defense: 5000 }, splitter: 1500 },
   punkte: 3,

@@ -70,6 +70,7 @@ export const QUEST_A1: QuestDef = {
     wachbogen: [{ wenn: { phase: ["neu", "fertig"] }, text: "Den Wachbogen bespannst du nur im Auftrag von Gesa Brandt." }, { wenn: { erledigt: ["bespannen"] }, text: "Beide Wachbögen haben schon eine Sehne." }],
   } },
   schalter: { zielscheibe_frei: FERTIG },
+  glueckwunsch: "Der Bogen hält. Natürlich hält er. Du hast ihn ja selbst gebaut.",
   belohnungText: "Belohnung: dein eigener Wachbogen, 300 Fernkampf-XP, 40 Splitter · danach: die Zielscheiben am Südtor (Training bis Fernkampf 10)",
   belohnung: { xp: { fernkampf: 300 }, splitter: 40 },
   punkte: 1,

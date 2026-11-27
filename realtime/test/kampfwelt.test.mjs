@@ -18,10 +18,10 @@ const typen = {}; for (const w of gegner()) typen[w.typ] = (typen[w.typ] || 0) +
 check(gegner().length === KARTEN.welt.lager.length && gegner().length >= 30, `Alle Lager in einer Simulation: ${gegner().length} Gegner (${Object.entries(typen).map(([t, n]) => n + " " + t).join(", ")})`);
 const welt = (w) => ({ x: WELTZONE.x0 + w.x, y: WELTZONE.y0 + w.y });
 const imGebiet = (w, r) => weltRegionBei(welt(w).x, welt(w).y) === r;
-check(gegner().filter((w) => w.typ === "bandit_dolch" && imGebiet(w, "waldweg")).length === 4, "Vier Dolch-Banditen auf der Lichtung im Kreuzwald");
+check(gegner().filter((w) => w.typ === "bandit_dolch" && imGebiet(w, "waldweg")).length >= 4, "Mindestens vier Dolch-Banditen im Kreuzwald (die Lichtung, dazu Gegnerplätze #130)");
 check(gegner().filter((w) => w.typ === "kuh").every((w) => imGebiet(w, "osthof")), "Die Kühe stehen im Osthof");
-check(gegner().filter((w) => w.typ === "waldgolem").every((w) => imGebiet(w, "nordwald") && w.lagerAggro === 4 && w.lagerLeine === 10), "Waldgolems im Nordwald mit Aggro 4 und Leine 10 (Werte ihres Gebiets)");
-check(gegner().filter((w) => w.typ === "mooshocker").every((w) => w.lagerAggro === 0 && w.lagerLeine === 8 && w.lagerWandern === 2), "Mooshocker im Osthof: passiv (Aggro 0), Leine 8, Streifen 2");
+check(gegner().filter((w) => w.typ === "waldgolem" && imGebiet(w, "nordwald")).length >= 1 && gegner().filter((w) => w.typ === "waldgolem" && imGebiet(w, "nordwald")).every((w) => w.lagerAggro === 4 && w.lagerLeine === 10), "Waldgolems im Nordwald mit Aggro 4 und Leine 10 (Werte ihres Gebiets)");
+check(gegner().filter((w) => w.typ === "mooshocker" && imGebiet(w, "osthof")).every((w) => w.lagerAggro === 0 && w.lagerLeine === 8 && w.lagerWandern === 2), "Mooshocker im Osthof: passiv (Aggro 0), Leine 8, Streifen 2");
 check(gegner().filter((w) => imGebiet(w, "unterschlupf")).every((w) => w.lagerStufe === 4), "Banditen im Unterschlupf mit Stufe 4 (Splitter wie bisher)");
 check(new Set(gegner().map((w) => w.gruppe)).size === gegner().length, "Jedes Lager hat eine eigene Gruppe (keine Verwechslung über Gebiete hinweg)");
 { const M = KARTEN.welt.mehrkampf; const u = gegner().filter((w) => imGebiet(w, "unterschlupf")).map(welt);
