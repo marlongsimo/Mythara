@@ -1,11 +1,11 @@
 /*
  * Riftmere – Quest H3 „Tiefer als erlaubt“ (Phase 11, Hochlande), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-11.md (Block H, #161). Steiger Wendel am Erzberg: Drei Bergleute haben tiefer gegraben, als die Vögte erlaubten.
- * Dann gab der Stollen nach. Unten im Bergwerk (Unterwelt hochlande_bergwerk) drei morsche Stempel durch neue Grubenstempel ersetzen (Handwerk 40, Werkbank),
+ * Dann gab der Stollen nach. Unten im Bergwerk (Unterwelt hochlande_bergwerk) drei morsche Stempel durch neue Grubenstempel ersetzen (Handwerk 45, Werkbank),
  * das Geröll vor dem tiefen Stollen wegräumen (Bergbau 50), die drei Verschütteten mit Heiltränken versorgen; an der Bruchstelle eine Erzprobe, die leuchtet.
  * QUER: Mutter Hedda im Rabenmoor erkennt Splitterlicht in der Probe – das, was unten geweckt wurde (Haken für H4 und später die Rissgrube).
  * Lohn: Bergbau 3.000, Handwerk 2.000 XP, 600 Splitter, 2 Questpunkte; Schalter urkammer_offen (die Tür zur Urkammer mit dem Ureisen, shared/bosse.ts TUEREN).
- * Bausteine (Systeme 8f50070c, shared/hochlande.ts): Grubenholz (Rezept an der Werkbank, Handwerk 40, 1 Kernbaumstamm → 2), Erzprobe mit Splitterlicht.
+ * Bausteine (Systeme 8f50070c, shared/hochlande.ts): Grubenstempel (Rezept an der Werkbank, Handwerk 45, 1 Kernbaumstamm), leuchtende Erzprobe.
  */
 import type { QuestDef, Bed, QuestFigur, Option, Rede } from "./questbau";
 import { WENDEL, HEDDA, BERGWERK } from "./quest_h_orte";
@@ -26,7 +26,7 @@ const VERSORGT: Record<string, string[]> = {
   marthe: ["Marthe schiebt die Flasche erst weg, dann trinkt sie doch. „Danke. Mein Bein ist nicht gebrochen. Glaub ich.“", "„Die große Halle am Eingang, wo die Knochen lagen … da atmet etwas. Ich hab's gehört, als der Stollen kam.“"],
   pit: ["Pit ist noch jung. Er zittert, als er trinkt. „Ich hab Licht gesehen. Grünes. In der Wand.“"],
 };
-const HILFE = ["Drei Stempel im Stollen sind morsch. Mach Grubenholz an der Werkbank – aus Kernbaum, sonst bricht's wieder. Handwerk 40 brauchst du dafür.",
+const HILFE = ["Drei Stempel im Stollen sind morsch. Mach neue Stempel an der Werkbank – aus Kernbaum, sonst bricht's wieder. Handwerk 45 brauchst du dafür.",
   "Dann das Geröll vor dem tiefen Stollen. Mit der Hacke, und mit Verstand. Bergbau 50.", "Und nimm Heiltränke mit. Drei. Sie sind seit zwei Tagen da unten."];
 
 export const QUEST_H3: QuestDef = {
@@ -40,11 +40,11 @@ export const QUEST_H3: QuestDef = {
   voraussetzungen: [
     { text: "„Über den Pass“ abgeschlossen", wenn: { quest: { id: H1, phase: ["fertig"] } } },
     { text: "Bergbau 50", wenn: { skill: { k: "bergbau", min: 50 } } },
-    { text: "Handwerk 40", wenn: { skill: { k: "handwerk", min: 40 } } },
+    { text: "Handwerk 45", wenn: { skill: { k: "handwerk", min: 45 } } },
   ],
   schritte: [
     ...STEMPEL.map((id, i) => ({ id, text: "Morsche Stempel im Stollen ersetzen", ereignis: { art: "objekt" as const, id: "h3_" + id }, gruppe: "stempel", wo: BERGWERK.stempel[i],
-      log: "Ersetz im Bergwerk drei morsche Stempel durch Grubenholz ({n:stempel}). Grubenholz machst du an der Werkbank aus Kernbaum (Handwerk 40, ein Stamm gibt zwei)." })),
+      log: "Ersetz im Bergwerk drei morsche Stempel durch neue Grubenstempel ({n:stempel}). Grubenstempel machst du an der Werkbank aus Kernbaum (Handwerk 45)." })),
     { id: "geroell", text: "Das Geröll vor dem tiefen Stollen wegräumen", ereignis: { art: "objekt", id: "h3_geroell" }, nach: STEMPEL, wo: BERGWERK.geroell,
       log: "Die Decke hält. Räum jetzt das Geröll vor dem tiefen Stollen weg (Bergbau 50) – dahinter sind die Verschütteten." },
     ...LEUTE.map((id, i) => ({ id, text: "Die Verschütteten mit Heiltränken versorgen", ereignis: { art: "antwort" as const }, nach: ["geroell"], bei: id, gruppe: "leute", wo: BERGWERK.verschuettet[i],
@@ -56,9 +56,9 @@ export const QUEST_H3: QuestDef = {
   ],
   objekte: [
     ...STEMPEL.map((id, i) => ({ id: "h3_" + id, name: "Morscher Stempel", x: BERGWERK.stempel[i][0], y: BERGWERK.stempel[i][1], modell: "stelle", tat: "benutzen" as const, tatText: "Den Stempel ersetzen", weit: 2.5,
-      braucht: { wenn: { hat: "grubenholz" }, text: "Der Stempel knackt, wenn du ihn ansiehst. Ohne frisches Grubenholz fasst du ihn besser nicht an." },
-      nehmen: [{ g: "grubenholz" }],
-      text: "Du keilst das Grubenholz unter die Kappe und schlägst den alten heraus. Staub rieselt. Dann ist es still ({n:stempel}).",
+      braucht: { wenn: { hat: "grubenstempel" }, text: "Der Stempel knackt, wenn du ihn ansiehst. Ohne einen neuen Grubenstempel fasst du ihn besser nicht an." },
+      nehmen: [{ g: "grubenstempel" }],
+      text: "Du keilst den neuen Stempel unter die Kappe und schlägst den alten heraus. Staub rieselt. Dann ist es still ({n:stempel}).",
       schon: "Der neue Stempel trägt.", sonst: [{ wenn: NEU, text: "Ein Stempel, grau und weich wie Brot. Er trägt noch. Fragt sich, wie lange." }, { wenn: FERTIG, text: "Der neue Stempel trägt." }] })),
     { id: "h3_geroell", name: "Geröll vor dem tiefen Stollen", x: BERGWERK.geroell[0], y: BERGWERK.geroell[1], modell: "stelle", tat: "benutzen", tatText: "Das Geröll wegräumen", weit: 3,
       braucht: { wenn: { skill: { k: "bergbau", min: 50 } }, text: "Wer hier falsch hackt, holt den Rest der Decke herunter. Das braucht einen erfahrenen Bergmann (Bergbau 50)." },
@@ -66,7 +66,7 @@ export const QUEST_H3: QuestDef = {
       schon: "Der tiefe Stollen ist frei.", sonst: [{ wenn: NEU, text: "Geröll, bis an die Decke. Dahinter geht es tiefer." }, { wenn: FERTIG, text: "Der tiefe Stollen ist frei." },
         { wenn: { offen: STEMPEL }, text: "Erst die Stempel. Wenn hier die Decke nachgibt, bist du der Nächste, den man ausgräbt." }] },
     { id: "h3_ader", name: "Bruchstelle", x: BERGWERK.ader[0], y: BERGWERK.ader[1], modell: "stelle", tat: "untersuchen", tatText: "Eine Probe nehmen", weit: 2.5,
-      geben: [{ g: "erzprobe_splitterlicht" }],
+      geben: [{ g: "erzprobe_leuchtend" }],
       text: "Das Gestein ist warm. Du schlägst ein Stück heraus; es leuchtet in deiner Hand weiter, grün und still wie ein Glühwurm.",
       schon: "Die Probe hast du.", sonst: [{ wenn: NEU, text: "Grünes Licht im Gestein. Hier hat jemand zu tief gegraben." }, { wenn: FERTIG, text: "Das Leuchten ist schwächer geworden. Oder du hast dich daran gewöhnt." },
         { wenn: { offen: ["geroell"] }, text: "Dahinter liegt Geröll." }] },
@@ -99,7 +99,7 @@ export const QUEST_H3: QuestDef = {
       ],
       optionen: [
         { id: "annehmen", text: "Ich hole sie heraus. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Gut. Hör zu, denn ich sag's nur einmal.",
-          "Drei Stempel im Stollen sind morsch. Ersetz sie, sonst kommt die Decke runter, wenn du am Geröll hackst. Grubenholz machst du an der Werkbank, aus Kernbaum.",
+          "Drei Stempel im Stollen sind morsch. Ersetz sie, sonst kommt die Decke runter, wenn du am Geröll hackst. Grubenstempel machst du an der Werkbank, aus Kernbaum.",
           "Dann das Geröll vor dem tiefen Stollen. Und nimm drei Heiltränke mit. Glück auf. Diesmal mein ich's."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Dann such ich weiter. Zwei Tage. Zwei Tage sind lang im Berg."] } }] },
         { id: "hilfe", text: "Wie war das noch?", folge: [{ f: { weiter: true, zeilen: HILFE } }] },
@@ -111,20 +111,23 @@ export const QUEST_H3: QuestDef = {
     },
     hedda: {
       reden: [
-        { wenn: { ...LAEUFT, erledigt: ["probe"], offen: ["hedda"], hat: "erzprobe_splitterlicht" }, zeilen: ["Kind. Was trägst du da in der Tasche? Es leuchtet durch den Stoff."], antworten: ["probe_zeigen", "tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["probe"], offen: ["hedda"], hat: "erzprobe_leuchtend" }, zeilen: ["Kind. Was trägst du da in der Tasche? Es leuchtet durch den Stoff."], antworten: ["probe_zeigen", "tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["probe"], offen: ["hedda"] }, zeilen: ["Kind. Du riechst nach Stollen. Was willst du?"], antworten: ["probe_erzaehlen", "tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["hedda"] }, zeilen: ["Grabt nicht tiefer, sag ich. Aber sie graben immer tiefer."], antworten: ["tschuess"] },
         { zeilen: ["Kind. Setz dich nicht auf den Kessel."], antworten: ["tschuess"] },
       ],
       optionen: [
-        { id: "probe_zeigen", text: "Eine Erzprobe aus dem Erzberg. Sie leuchtet.", wenn: { hat: "erzprobe_splitterlicht" }, folge: [{ f: { erledige: ["hedda"], nehmen: [{ g: "erzprobe_splitterlicht" }],
+        { id: "probe_zeigen", text: "Eine Erzprobe aus dem Erzberg. Sie leuchtet.", wenn: { hat: "erzprobe_leuchtend" }, folge: [{ f: { erledige: ["hedda"], nehmen: [{ g: "erzprobe_leuchtend" }],
           zeilen: ["Hedda dreht den Stein in der Hand. Sie hält ihn gegen das Licht, dann an ihr Ohr.", "Splitterlicht. Nicht im Stein gewachsen – hineingesickert. Von unten.",
           "Da unten schläft etwas, das Splitterlicht trinkt, Kind. Und jetzt ist es wach. Sag deinem Steiger: Grabt nicht tiefer.", "Den Stein behalte ich. So etwas lässt man nicht in einer Tasche herumliegen."] } }] },
+        { id: "probe_erzaehlen", text: "Ich hatte eine Erzprobe aus dem Erzberg. Sie leuchtete grün – jetzt ist sie fort.", folge: [{ f: { erledige: ["hedda"],
+          zeilen: ["Grün? Und warm? …Kind, das war Splitterlicht. Nicht im Stein gewachsen – hineingesickert. Von unten.", "Da unten schläft etwas, das Splitterlicht trinkt. Und jetzt ist es wach. Sag deinem Steiger: Grabt nicht tiefer."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Geh, Kind."] } }] },
       ],
     },
   },
   sperren: { herstellen: {
-    grubenholz: [{ wenn: NEU, text: "Grubenholz macht man nur für den Stollen. Frag den Steiger am Erzberg." }, { wenn: { ...LAEUFT, erledigt: STEMPEL }, text: "Die Stempel stehen alle." }],
+    grubenstempel: [{ wenn: NEU, text: "Grubenstempel macht man nur für den Stollen. Frag den Steiger am Erzberg." }, { wenn: { ...LAEUFT, erledigt: STEMPEL }, text: "Die Stempel stehen alle." }],
   } },
   /* der eingestürzte Stollen vor der Urkammer: Tür bergwerk_stollen (shared/bosse.ts) und Sperre der Welt – beide Schalter, bis #162 sich auf einen geeinigt hat */
   schalter: { [H_SCHALTER.stollen]: FERTIG, bergwerk_stollen_frei: FERTIG },

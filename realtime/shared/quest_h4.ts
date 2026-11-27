@@ -10,7 +10,7 @@
  * nach der Quest (Schalter *_danach) die starke Fassung, öffentlich oder als eigene Instanz – jeder Hüter droppt seinen Rüstungssatz der Stufe 70 (1 : 75 je Sieg).
  * Lohn: Stärke, Fernkampf, Magie, Defense je 4.000 XP, 2.000 Splitter, 4 Questpunkte.
  * Bausteine (Systeme 8f50070c, shared/hochlande.ts, shared/bosse.ts HUETER): die drei Hüter mit Instanzen und Schaltern. Die Räume für Sturmschwinge und Frostwitwe baut die Welt (#162).
- * Kein Gegenstand: Splitterkern und Runen sind nur Schritte (Hedda und der Einsiedler wissen davon, sobald du sie gefunden hast).
+ * Die Eisrunen schreibt man ab (eisrunen_abschrift, Systeme); den Splitterkern lässt man liegen – Hedda hört davon.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { HILDE, WENDEL, HEDDA, EINSIEDLER, BRUN, GRAUHORN, HOCHPASS, TROLLHALLE } from "./quest_h_orte";
@@ -55,8 +55,8 @@ export const QUEST_H4: QuestDef = {
     { id: "sturmschwinge", text: "Die Sturmschwinge im Horst besiegen", ereignis: { art: "erlegen", typ: "sturmschwinge" }, nach: FEDERN, wo: GRAUHORN.horst,
       log: "Die Federn führen zum Gipfel, in den Horst. Die Sturmschwinge kreist außer Reichweite und stößt herab – achte auf ihren Schatten. Der Wind lenkt Zauber ab; Pfeile treffen sie, und nach dem Sturzflug ist sie kurz am Boden." },
     /* Frostwitwe */
-    { id: "runen", text: "Die Eisrunen am Hochpass lesen", ereignis: { art: "objekt", id: "h4_runen" }, wo: HOCHPASS.runen,
-      log: "Südlich der Passwacht, am Höhlenmund im Eis, sind Runen geritzt. Präg sie dir ein." },
+    { id: "runen", text: "Die Eisrunen am Hochpass abschreiben", ereignis: { art: "objekt", id: "h4_runen" }, wo: HOCHPASS.runen,
+      log: "Südlich der Passwacht, am Höhlenmund im Eis, sind Runen geritzt. Schreib sie ab." },
     { id: "einsiedler", text: "Den Einsiedler am Spiegelsee die Runen deuten lassen", ereignis: { art: "antwort" }, nach: ["runen"], bei: "einsiedler",
       log: "Der Einsiedler am Spiegelsee schreibt die Geschichte der Hochlande auf. Er kann die Eisrunen lesen." },
     { id: "frostwitwe", text: "Die Frostwitwe in der Eishöhle besiegen", ereignis: { art: "erlegen", typ: "frostwitwe" }, nach: ["einsiedler"], wo: HOCHPASS.hoehle,
@@ -69,8 +69,9 @@ export const QUEST_H4: QuestDef = {
     ...FEDERN.map((id, i) => ({ id: "h4_" + id, name: "Sturmfeder", x: GRAUHORN.federn[i][0], y: GRAUHORN.federn[i][1], modell: "stelle", tat: "aufheben" as const, tatText: "Die Feder ansehen", weit: 2.5,
       text: ["Eine Feder, länger als dein Arm. Sie zeigt bergauf.", "Noch eine, im Geröll verkeilt. Der Wind zerrt an ihr.", "Die dritte, auf einem Felsen, als hätte jemand sie dorthin gelegt. Darüber nur noch der Gipfel."][i] + " ({n:federn})",
       schon: "Die Feder hast du gesehen.", sonst: [{ wenn: NEU, text: "Eine große graue Feder. Irgendein Vogel." }, { wenn: FERTIG, text: "Eine Feder der Sturmschwinge, vom Wind verweht." }] })),
-    { id: "h4_runen", name: "Eisrunen", x: HOCHPASS.runen[0], y: HOCHPASS.runen[1], modell: "stelle", tat: "untersuchen", tatText: "Die Runen lesen", weit: 2.5,
-      text: "Zeichen, tief ins blaue Eis geritzt, älter als die Passwacht. Du fährst sie mit dem Finger nach, bis du sie im Kopf hast.", schon: "Die Runen kennst du.",
+    { id: "h4_runen", name: "Eisrunen", x: HOCHPASS.runen[0], y: HOCHPASS.runen[1], modell: "stelle", tat: "untersuchen", tatText: "Die Runen abschreiben", weit: 2.5,
+      geben: [{ g: "eisrunen_abschrift" }],
+      text: "Zeichen, tief ins blaue Eis geritzt, älter als die Passwacht. Du schreibst sie ab, so gut es mit klammen Fingern geht.", schon: "Die Runen hast du abgeschrieben.",
       sonst: [{ wenn: NEU, text: "Kratzer im Eis. Oder Zeichen?" }, { wenn: FERTIG, text: "Die Runen sind noch da. Lesen kannst du sie jetzt." }] },
   ],
   /* Hilde: Bergvögtin, kennt die alten Geschichten, glaubt sie erst jetzt. Wendel: Steiger, will seine Leute nie wieder in die Halle schicken.
@@ -132,15 +133,19 @@ export const QUEST_H4: QuestDef = {
     },
     einsiedler: {
       reden: [
-        { wenn: { ...LAEUFT, erledigt: ["runen"], offen: ["einsiedler"] }, zeilen: ["Du bringst mir Zeichen aus dem Eis? Zeichne sie mir in den Sand. Langsam."], antworten: ["runen_zeigen", "tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["runen"], offen: ["einsiedler"], hat: "eisrunen_abschrift" }, zeilen: ["Du bringst mir Zeichen aus dem Eis? Zeig her. Langsam."], antworten: ["runen_zeigen", "tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["runen"], offen: ["einsiedler"] }, zeilen: ["Zeichen aus dem Eis, sagst du? Und wo ist die Abschrift?"], antworten: ["runen_erzaehlen", "tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["einsiedler"] }, zeilen: ["Wo der Schnee nie schmilzt. Geh nicht ohne Feuer."], antworten: ["tschuess"] },
         { zeilen: ["Ah, ein Wanderer. Setz dich. Der See erzählt dir mehr als ich."], antworten: ["tschuess"] },
       ],
       optionen: [
-        { id: "runen_zeigen", text: "Runen vom Hochpass. (Sie in den Sand zeichnen)", folge: [{ f: { erledige: ["einsiedler"],
-          zeilen: ["Der Einsiedler sieht dir zu, wie du die Zeichen in den Sand ziehst. Seine Lippen bewegen sich.", "„Hier ruht, die den Pass hielt, als die Wacht fiel. Wer sie weckt, friert.“",
+        { id: "runen_zeigen", text: "Runen vom Hochpass.", wenn: { hat: "eisrunen_abschrift" }, folge: [{ f: { erledige: ["einsiedler"], nehmen: [{ g: "eisrunen_abschrift" }],
+          zeilen: ["Der Einsiedler fährt die Zeichen mit dem Finger nach. Seine Lippen bewegen sich.", "„Hier ruht, die den Pass hielt, als die Wacht fiel. Wer sie weckt, friert.“",
           "Die Frostwitwe. Sie war eine Wächterin, vor langer Zeit. Die letzte am Pass. Sie wollte nicht gehen – und das Eis hat sie behalten.",
           "Der Eingang ist der Höhlenmund südlich der Passwacht, wo der Schnee nie schmilzt. Geh nah an sie heran; das Eis fängt alles, was fliegt."] } }] },
+        { id: "runen_erzaehlen", text: "Die Abschrift ist fort. Aber ich weiß die Zeichen noch. (Sie in den Sand zeichnen)", folge: [{ f: { erledige: ["einsiedler"],
+          zeilen: ["Der Einsiedler sieht dir zu, wie du die Zeichen in den Sand ziehst. Zweimal verbessert er dich.", "„Hier ruht, die den Pass hielt, als die Wacht fiel. Wer sie weckt, friert.“",
+          "Die Frostwitwe. Sie war eine Wächterin, vor langer Zeit. Der Eingang ist der Höhlenmund südlich der Passwacht. Geh nah an sie heran; das Eis fängt alles, was fliegt."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Geh mit den Steinen."] } }] },
       ],
     },

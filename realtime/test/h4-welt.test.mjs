@@ -11,7 +11,7 @@
 import { starte, starkerHeld, standNach, MYTHISCH, QUESTS, QB } from "./questwelt.mjs";
 
 const VOR = ["ostufer_das_gruene_licht", "grauwacht_der_weg", "grauwacht_die_glocke", "grauwacht_fahnenflucht", "grauwacht_grab_des_hauptmanns", "hochlande_ueber_den_pass", "hochlande_tiefer_als_erlaubt"];
-const H4_ID = "hochlande_die_hueter", H4Q = QUESTS.find((q) => q.id === H4_ID);
+const H4_ID = "hochlande_hueter_der_hochlande", H4Q = QUESTS.find((q) => q.id === H4_ID);
 /* alle drei Stränge erledigt – der Reihe nach (Antworten und Ereignisse abwechselnd, wie im Spiel) */
 const ant = (st, id) => QB.nachFolge(H4Q, st, { erledige: [id], zeilen: [] }), erg = (st, m) => QB.ereignis(H4Q, st, m);
 let ALLES = ant(standNach(H4Q, []), "weg"); ALLES = erg(erg(ALLES, { art: "erlegen", typ: "grumhold" }), { art: "objekt", id: "h4_kern" }); ALLES = ant(ALLES, "hedda");
@@ -62,7 +62,7 @@ try {
     check(erl(ella, H4, "sturmschwinge") && !an(ella, "sturmschwinge_horst"), `Die Sturmschwinge besiegt, allein, mit dem Bogen (${r.siege} Siege)`);
   }
   async function frostwitwe() {
-    await objekt(cora, H4, "h4_runen"); check(erl(cora, H4, "runen"), "Frostwitwe: die Eisrunen am Höhlenmund gelesen");
+    await objekt(cora, H4, "h4_runen"); check(erl(cora, H4, "runen"), "Frostwitwe: die Eisrunen am Höhlenmund abgeschrieben");
     check(!an(cora, "frostwitwe_hoehle"), "…die Eishöhle bleibt zu, bis der Einsiedler sie gedeutet hat");
     check(await sprich(cora, H4, "einsiedler", "runen_zeigen") && erl(cora, H4, "einsiedler") && an(cora, "frostwitwe_hoehle"), "Der Einsiedler deutet die Runen – die Eishöhle steht offen (frostwitwe_hoehle)");
     await stelle(cora, 6950.5, 5633.5); const r = await boss(cora, "eishoehle_hochpass", 11760.5, 9620.5, "frostwitwe", ["eissplitter_waechter"], "frostwitwe");
