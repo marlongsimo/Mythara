@@ -2,7 +2,7 @@
  * Riftmere – Leistung auf dem Handy messen (Issue #103, Messung aus #91): 3D-Welt im Testbrowser mit Handy-Profil (Pixel 5 quer, Software-Grafik),
  * als Gast in der Waldmark, ohne Spielserver. Misst Bilder/s im Stand und beim Gehen, das längste Bild, die Pixel der Leinwand und was geladen wurde
  * (2D-Bodenbilder, Figuren-Atlanten). Kein Test mit Prüfungen – ein Werkzeug zum Vergleichen.
- * Aufruf (im Ordner realtime, nach node build.mjs): node test/messen-handy.mjs [Zusatz für die Adresse, z. B. "&grafik=scharf"]
+ * Aufruf (im Ordner realtime, nach node build.mjs): node test/messen-handy.mjs [Zusatz für die Adresse, z. B. "&grafik=scharf"] – mit ORT="x,y" an einer anderen Stelle (Sprung)
  */
 import fs from "node:fs"; import path from "node:path"; import { createRequire } from "node:module";
 const require = createRequire(import.meta.url), { chromium, devices } = require("playwright");
@@ -22,6 +22,9 @@ if (process.env.ZWEI_D) { await p.goto("http://localhost:8765/echtzeit/?server=w
   console.log(`2D: Figuren ${mb(/figuren-fabrik/)} MB (davon mobil ${mb(/figuren-fabrik.*\.mobil\./)} MB) · alles ${mb(/./)} MB`); if (fehler.length) console.log("Fehler:", fehler.slice(0, 3).join(" | ")); await br.close(); process.exit(0); }
 await p.goto("http://localhost:8765/echtzeit/?welt3d=1&server=ws://localhost:1" + zusatz);
 await p.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.motor, null, { timeout: 120000 }); await p.waitForTimeout(6000); /* Chunks und Figuren laden */
+/* ORT="x,y" (#167): erst an diese Weltstelle springen (z. B. 6990,5900 = Markt von Steinhag), Chunks und Figuren laden lassen, dann dort messen */
+if (process.env.ORT) { const [x, y] = process.env.ORT.split(",").map(Number); await p.evaluate(([x, y]) => window.EZW.welt3d.springen(x, y), [x, y]); await p.waitForTimeout(15000);
+  console.log("gemessen bei", JSON.stringify(await p.evaluate(() => ({ x: Math.round(window.EZW.welt3d.ort.x), y: Math.round(window.EZW.welt3d.ort.y) })))); }
 const messen = (ms) => p.evaluate((ms) => new Promise((ok) => { const t = []; let a = performance.now(); const s = a; const f = (n) => { t.push(n - a); a = n; if (n - s < ms) requestAnimationFrame(f); else ok(t); }; requestAnimationFrame(f); }), ms);
 const auswerten = (t) => ({ bps: Math.round(10 * t.length / (t.reduce((a, b) => a + b, 0) / 1000)) / 10, max: Math.round(Math.max(...t)) });
 if (process.env.ZEITEN) await p.evaluate(() => { const W = window.EZW.welt3d, M = W.motor; window.__z = {}; const hin = (o, k, n) => { const f = o[k]; if (typeof f !== "function") return; o[k] = function (...a) { const t = performance.now(), r = f.apply(this, a); const d = performance.now() - t; const z = window.__z[n] || (window.__z[n] = { n: 0, sum: 0, max: 0 }); z.n++; z.sum += d; z.max = Math.max(z.max, d); return r; }; };
