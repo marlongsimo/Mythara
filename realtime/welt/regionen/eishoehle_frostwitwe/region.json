@@ -1,0 +1,16 @@
+{
+ "id": "eishoehle_frostwitwe",
+ "name": "Die Eishöhle der Frostwitwe",
+ "untertitel": "Unter dem Hochpass (Instanz)",
+ "ursprung": [
+  368,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 12,
+ "ebene": "untergrund"
+}

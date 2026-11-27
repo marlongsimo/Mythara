@@ -12,6 +12,14 @@
   "sperren": [
    {
     "art": "rechteck",
+    "x0": 77,
+    "y0": 20,
+    "x1": 87,
+    "y1": 23,
+    "schalter": "bergwerk_stollen_frei"
+   },
+   {
+    "art": "rechteck",
     "x0": 46,
     "y0": 44,
     "x1": 47,
@@ -125,6 +133,83 @@
    "abgleich": "keiner",
    "daten": {
     "text": "Die Urkammer. Das Gestein glänzt schwarz und schwer – Ureisen."
+   }
+  },
+  {
+   "id": "eingestuerzter_stollen",
+   "art": "lesen",
+   "x": 80.5,
+   "y": 25.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hier ist der Stollen eingestürzt. Dahinter, gedämpft, ein Klopfen – und ein schwarzer Schimmer im Gestein.",
+    "questobjekt": "eingestuerzter_stollen"
+   }
+  },
+  {
+   "id": "morsches_grubenholz",
+   "art": "lesen",
+   "x": 31.5,
+   "y": 37,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Grubenholz hier ist morsch und knackt. Es muss ersetzt werden, bevor noch mehr einstürzt.",
+    "questobjekt": "morsches_grubenholz"
+   }
+  },
+  {
+   "id": "verletzter_bergmann_1",
+   "art": "lesen",
+   "x": 74,
+   "y": 32,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein verletzter Bergmann lehnt am Fels. „Wasser … und etwas für die Wunde.“",
+    "questobjekt": "verletzter_bergmann_1"
+   }
+  },
+  {
+   "id": "verletzter_bergmann_2",
+   "art": "lesen",
+   "x": 68,
+   "y": 37,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein verletzter Bergmann lehnt am Fels. „Wasser … und etwas für die Wunde.“",
+    "questobjekt": "verletzter_bergmann_2"
+   }
+  },
+  {
+   "id": "verletzter_bergmann_3",
+   "art": "lesen",
+   "x": 61,
+   "y": 41,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein verletzter Bergmann lehnt am Fels. „Wasser … und etwas für die Wunde.“",
+    "questobjekt": "verletzter_bergmann_3"
+   }
+  },
+  {
+   "id": "trollhalle_tor",
+   "art": "eingang",
+   "x": 23,
+   "y": 22.6,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Durchgang in die Trollhalle. Wer Grumhold allein stellen will, geht hier hinein.",
+    "tat": "trollhalle",
+    "knopf": "Hineingehen",
+    "ziel": [
+     11696,
+     9628
+    ]
    }
   }
  ],

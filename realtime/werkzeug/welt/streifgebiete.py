@@ -83,7 +83,7 @@ def bewerte(cx, cy, art, plaetze):
 gebiete = []
 for art, land, name, anzahl in WUNSCH:
     plaetze = [p for p in GP if art in p['gegner'] and p.get('land') == land]
-    if land == 'Süden': plaetze = [dict(p, x=x, y=y) for p in GP if art in p['gegner'] and p['x'] < 6500 and p['y'] > 6800 for x, y in SUEDEN_MITTEN][:len(SUEDEN_MITTEN)]
+    if land == 'Süden': plaetze = [dict(p, x=x, y=y) for p in GP if (art in p['gegner'] or 'graupelz' in p['gegner']) and p['x'] < 6500 and p['y'] > 6800 for x, y in SUEDEN_MITTEN][:len(SUEDEN_MITTEN)]   # die Wölfe des Graupelz (Lager in der Waldsenke)
     if not plaetze: print(f'{name}: keine Plätze'); continue
     best = None
     for p in plaetze:

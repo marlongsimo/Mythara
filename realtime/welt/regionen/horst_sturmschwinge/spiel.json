@@ -1,0 +1,46 @@
+{
+ "start": [
+  [
+   32,
+   54
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "horst_hinab",
+   "art": "eingang",
+   "x": 32,
+   "y": 56.6,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinab zum Steinmann-Pfad.",
+    "tat": "horst_hinab",
+    "knopf": "Hinabsteigen",
+    "ziel": [
+     7026,
+     5551
+    ]
+   }
+  },
+  {
+   "id": "horst_nest_instanz",
+   "art": "lesen",
+   "x": 32,
+   "y": 30,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Nest der Sturmschwinge.",
+    "questobjekt": "horst_nest"
+   }
+  }
+ ]
+}

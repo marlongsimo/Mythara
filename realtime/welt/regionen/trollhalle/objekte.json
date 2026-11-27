@@ -1,0 +1,8 @@
+[
+ {"id":"trollhalle_feuerkorb_1","objekt":"moor_feuerkorb_01","x":9.5,"y":7.5},
+ {"id":"trollhalle_feuerkorb_2","objekt":"moor_feuerkorb_01","x":23.5,"y":7.5},
+ {"id":"trollhalle_feuerkorb_3","objekt":"moor_feuerkorb_01","x":9.5,"y":21.5},
+ {"id":"trollhalle_feuerkorb_4","objekt":"moor_feuerkorb_01","x":23.5,"y":21.5},
+ {"id":"trollhalle_grubenholz_5","objekt":"hochland_grubenholz","x":14.5,"y":26},
+ {"id":"trollhalle_truemmer_6","objekt":"k_truemmer","x":17.5,"y":27.5}
+]

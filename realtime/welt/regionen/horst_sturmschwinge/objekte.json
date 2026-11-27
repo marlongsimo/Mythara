@@ -1,0 +1,7 @@
+[
+ {"id":"horst_federn_1","objekt":"hoehle_federn_01","x":32,"y":28},
+ {"id":"horst_baumstamm_2","objekt":"wald_baumstamm_02","x":29,"y":26.5,"s":0.6,"spiegeln":true},
+ {"id":"horst_baumstamm_3","objekt":"wald_baumstamm_01","x":35,"y":29,"s":0.6},
+ {"id":"horst_steinmann_4","objekt":"hochland_steinmann","x":30.5,"y":52.5},
+ {"id":"horst_gipfelkreuz_5","objekt":"hochland_gipfelkreuz","x":41.5,"y":23.5}
+]

@@ -1,0 +1,16 @@
+{
+ "id": "trollhalle",
+ "name": "Die Trollhalle",
+ "untertitel": "Grumhold (Instanz)",
+ "ursprung": [
+  365,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 12,
+ "ebene": "untergrund"
+}

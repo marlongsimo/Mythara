@@ -278,24 +278,45 @@
    },
    {
     "art": "rechteck",
-    "x0": 72,
-    "y0": 197,
-    "x1": 73,
-    "y1": 198
+    "x0": 54,
+    "y0": 181,
+    "x1": 55,
+    "y1": 182
    },
    {
     "art": "rechteck",
-    "x0": 67,
-    "y0": 197,
-    "x1": 68,
-    "y1": 198
+    "x0": 50,
+    "y0": 181,
+    "x1": 51,
+    "y1": 182
    },
    {
     "art": "rechteck",
-    "x0": 69,
-    "y0": 193,
-    "x1": 70,
-    "y1": 194
+    "x0": 52,
+    "y0": 177,
+    "x1": 53,
+    "y1": 178
+   },
+   {
+    "art": "rechteck",
+    "x0": 354,
+    "y0": 30,
+    "x1": 355,
+    "y1": 31
+   },
+   {
+    "art": "rechteck",
+    "x0": 349,
+    "y0": 30,
+    "x1": 350,
+    "y1": 31
+   },
+   {
+    "art": "rechteck",
+    "x0": 351,
+    "y0": 26,
+    "x1": 352,
+    "y1": 27
    },
    {
     "art": "rechteck",
@@ -668,6 +689,75 @@
     "fisch": "muehlbarsch",
     "stufe": 10
    }
+  },
+  {
+   "id": "horst",
+   "art": "lesen",
+   "x": 118,
+   "y": 133.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Horst der Sturmschwinge auf dem Gipfel des Grauhorns. Federn, so lang wie ein Arm, und Knochen von Steinböcken. Der Wind reißt an deinem Mantel."
+   }
+  },
+  {
+   "id": "horst_aufstieg",
+   "art": "eingang",
+   "x": 116,
+   "y": 140.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Gipfel des Grauhorns. Wer der Sturmschwinge allein begegnen will, geht hier hinauf.",
+    "tat": "horst",
+    "knopf": "Zum Horst",
+    "ziel": [
+     11744,
+     9654
+    ]
+   }
+  },
+  {
+   "id": "eishoehle_eingang",
+   "art": "eingang",
+   "x": 38,
+   "y": 224.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spalt im Grauhorn, aus dem eisige Luft strömt. Drinnen knistert es, als würde jemand flüstern.",
+    "tat": "eishoehle",
+    "knopf": "Hineingehen",
+    "ziel": [
+     11792,
+     9628
+    ]
+   }
+  },
+  {
+   "id": "eisrunen",
+   "art": "lesen",
+   "x": 41,
+   "y": 225.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Runen, ins Eis geritzt. Der Einsiedler vom Spiegelsee könnte sie deuten.",
+    "questobjekt": "eisrunen"
+   }
+  },
+  {
+   "id": "erzwagen_lager",
+   "art": "lesen",
+   "x": 225,
+   "y": 423.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Volle Erzwagen – seit Wochen ist keiner nach Grauwacht gefahren.",
+    "questobjekt": "erzwagen"
+   }
   }
  ],
  "senken": [
@@ -678,8 +768,14 @@
    "tiefe": 1.1
   },
   {
-   "x": 69.6,
-   "y": 196.2,
+   "x": 52.3,
+   "y": 180.1,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 351.7,
+   "y": 29.3,
    "r": 5,
    "tiefe": 1.1
   },
