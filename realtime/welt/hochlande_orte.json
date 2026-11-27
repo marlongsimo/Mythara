@@ -98,6 +98,12 @@
    5846
   ],
   [
+   "Vogtsburg",
+   "Ort",
+   7053,
+   5838
+  ],
+  [
    "Spiegelsee",
    "Landschaft",
    7322,
@@ -298,6 +304,60 @@
    "y": 5380.5
   },
   {
+   "id": "torwache_west",
+   "rolle": "Torwache (Westtor)",
+   "x": 6933,
+   "y": 5898
+  },
+  {
+   "id": "torwache_ost",
+   "rolle": "Torwache (Osttor)",
+   "x": 7077,
+   "y": 5898
+  },
+  {
+   "id": "torwache_nordwest",
+   "rolle": "Torwache (Nordwesttor)",
+   "x": 6940.5,
+   "y": 5823
+  },
+  {
+   "id": "burgvogt",
+   "rolle": "Burgvogt (Vogtsburg)",
+   "x": 7047,
+   "y": 5844
+  },
+  {
+   "id": "burgwache_1",
+   "rolle": "Burgwache",
+   "x": 7050.5,
+   "y": 5856
+  },
+  {
+   "id": "burgwache_2",
+   "rolle": "Burgwache",
+   "x": 7055.5,
+   "y": 5856
+  },
+  {
+   "id": "zunftmeister",
+   "rolle": "Zunftmeisterin der Bergleute",
+   "x": 7060,
+   "y": 5936
+  },
+  {
+   "id": "zunftbankier",
+   "rolle": "Bank (Zunftbank)",
+   "x": 7065,
+   "y": 5916.6
+  },
+  {
+   "id": "stollenwache",
+   "rolle": "Wache am Zunftstollen (ab Stufe 60)",
+   "x": 7063,
+   "y": 5945.5
+  },
+  {
    "id": "verletzter_bergmann_1",
    "rolle": "Verletzter Bergmann (H3)",
    "x": 11656.8,
@@ -326,6 +386,12 @@
    "rolle": "Die Frostwitwe (Hüterin, Eishöhle)",
    "x": 11760,
    "y": 9611
+  },
+  {
+   "id": "stollenmeister",
+   "rolle": "Stollenmeister der Zunft",
+   "x": 11870,
+   "y": 9647
   }
  ],
  "fischplaetze": [
@@ -416,78 +482,89 @@
     7291.5,
     5289.5
    ]
+  },
+  {
+   "id": "fischplatz_steinhagsee_west",
+   "fisch": "muehlbarsch",
+   "stufe": 10,
+   "x": 6956.5,
+   "y": 5848.5,
+   "stehplatz": [
+    6955.5,
+    5848.5
+   ]
   }
  ],
  "kraeuter": [
   {
    "id": "hochlande_eisenhut_1",
    "art": "eisenhut",
-   "x": 7019.5,
-   "y": 5566.5,
-   "region": "fl_216_169"
+   "x": 6894.5,
+   "y": 5650.5,
+   "region": "fl_201_169"
   },
   {
    "id": "hochlande_nebelkraut_2",
    "art": "nebelkraut",
-   "x": 7101.5,
-   "y": 5799.5,
+   "x": 7014.5,
+   "y": 5566.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_3",
    "art": "eisenhut",
-   "x": 7155.5,
-   "y": 5772.5,
+   "x": 7059.5,
+   "y": 5529.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_4",
    "art": "nebelkraut",
-   "x": 7037.5,
-   "y": 5513.5,
+   "x": 7156.5,
+   "y": 5796.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_5",
    "art": "eisenhut",
-   "x": 7113.5,
-   "y": 5789.5,
+   "x": 7139.5,
+   "y": 5767.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_6",
    "art": "nebelkraut",
-   "x": 7032.5,
-   "y": 5523.5,
+   "x": 7020.5,
+   "y": 5520.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_7",
    "art": "eisenhut",
-   "x": 6875.5,
-   "y": 5728.5,
-   "region": "fl_201_169"
+   "x": 7167.5,
+   "y": 5782.5,
+   "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_8",
    "art": "nebelkraut",
-   "x": 6915.5,
-   "y": 5628.5,
-   "region": "fl_216_169"
+   "x": 6866.5,
+   "y": 5688.5,
+   "region": "fl_201_169"
   },
   {
    "id": "hochlande_eisenhut_9",
    "art": "eisenhut",
-   "x": 6868.5,
-   "y": 5678.5,
-   "region": "fl_201_169"
+   "x": 7100.5,
+   "y": 5478.5,
+   "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_10",
    "art": "nebelkraut",
-   "x": 6885.5,
-   "y": 5725.5,
-   "region": "fl_201_169"
+   "x": 6999.5,
+   "y": 5596.5,
+   "region": "fl_216_169"
   },
   {
    "id": "hochlande_wegerich_11",
@@ -649,15 +726,15 @@
    "rolle": "Bergleute auf dem Weg zur Schicht (Reisende nach der Uhr)",
    "punkte": [
     [
-     7040,
+     7082,
      5901
     ],
     [
-     7060,
-     5880
+     7100,
+     5884
     ],
     [
-     7100,
+     7112,
      5850
     ],
     [
@@ -1028,11 +1105,11 @@
      5830
     ],
     [
-     6930,
-     5868
+     6906,
+     5880
     ],
     [
-     6940,
+     6928,
      5901
     ]
    ],
@@ -1042,15 +1119,15 @@
   {
    "punkte": [
     [
-     7040,
+     7082,
      5901
     ],
     [
-     7060,
-     5880
+     7100,
+     5884
     ],
     [
-     7100,
+     7112,
      5850
     ],
     [
@@ -1064,12 +1141,20 @@
   {
    "punkte": [
     [
-     6990,
-     5936
+     7082,
+     5901
     ],
     [
-     7030,
+     7092,
+     5926
+    ],
+    [
+     7100,
      5960
+    ],
+    [
+     7120,
+     5984
     ],
     [
      7100,
@@ -1090,16 +1175,12 @@
   {
    "punkte": [
     [
-     6940,
-     5901
+     6944,
+     5820
     ],
     [
-     6934,
-     5870
-    ],
-    [
-     6936,
-     5810
+     6944,
+     5800
     ],
     [
      6950,
@@ -1176,11 +1257,589 @@
    ],
    "breite": 1.8,
    "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6928,
+     5901
+    ],
+    [
+     7082,
+     5901
+    ]
+   ],
+   "breite": 3,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     6990,
+     5897
+    ],
+    [
+     6990,
+     5946
+    ]
+   ],
+   "breite": 2.6,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     6939,
+     5918
+    ],
+    [
+     7071,
+     5918
+    ]
+   ],
+   "breite": 2.2,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     6939,
+     5937
+    ],
+    [
+     7071,
+     5937
+    ]
+   ],
+   "breite": 2.2,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     6939,
+     5946
+    ],
+    [
+     7071,
+     5946
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     7053,
+     5856
+    ],
+    [
+     7053,
+     5901
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     7044,
+     5901
+    ],
+    [
+     7044,
+     5946
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     6944,
+     5818
+    ],
+    [
+     6944,
+     5946
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     6944,
+     5867
+    ],
+    [
+     7053,
+     5867
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     6996,
+     5829
+    ],
+    [
+     6966,
+     5830
+    ],
+    [
+     6950,
+     5840
+    ],
+    [
+     6946,
+     5854
+    ],
+    [
+     6952,
+     5866
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     7003,
+     5829
+    ],
+    [
+     7022,
+     5831
+    ],
+    [
+     7031,
+     5846
+    ],
+    [
+     7026,
+     5866
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "k"
+  }
+ ],
+ "hauptstadt": {
+  "mauer": [
+   6936,
+   5826,
+   7074,
+   5950
+  ],
+  "tore": {
+   "west": [
+    6936,
+    5901
+   ],
+   "nordwest": [
+    6944,
+    5826
+   ],
+   "ost": [
+    7074,
+    5901
+   ]
+  },
+  "burg": [
+   7034,
+   5827,
+   7073,
+   5857
+  ],
+  "banken": [
+   {
+    "id": "steinhag_bank",
+    "gebaeude": "steinhag_bank",
+    "schalter": [
+     6969,
+     5880
+    ],
+    "vorhanden": true
+   },
+   {
+    "id": "steinhag_zunftbank",
+    "gebaeude": "steinhag_zunftbank",
+    "schalter": [
+     7065,
+     5916.4
+    ],
+    "blick": [
+     0,
+     -1
+    ],
+    "vorhanden": false
+   }
+  ],
+  "stationen": [
+   {
+    "id": "esse_zunft_1",
+    "station": "esse",
+    "x": 7055,
+    "y": 5934.4
+   },
+   {
+    "id": "esse_zunft_2",
+    "station": "esse",
+    "x": 7058.3,
+    "y": 5934.4
+   },
+   {
+    "id": "esse_zunft_3",
+    "station": "esse",
+    "x": 7061.7,
+    "y": 5934.4
+   },
+   {
+    "id": "esse_zunft_4",
+    "station": "esse",
+    "x": 7065,
+    "y": 5934.4
+   },
+   {
+    "id": "amboss_zunft_1",
+    "station": "amboss",
+    "x": 7056.6,
+    "y": 5935.6
+   },
+   {
+    "id": "amboss_zunft_2",
+    "station": "amboss",
+    "x": 7063.4,
+    "y": 5935.6
+   },
+   {
+    "id": "brennofen_zunft",
+    "station": "brennofen (neu, Systeme)",
+    "x": 7049,
+    "y": 5934
+   }
+  ],
+  "laeden": [
+   {
+    "id": "steinhag_zunftstand_1",
+    "art": "Marktstand",
+    "x": 7049,
+    "y": 5906.6,
+    "blick": [
+     0,
+     -1
+    ],
+    "vor": [
+     7049,
+     5903.4
+    ]
+   },
+   {
+    "id": "steinhag_zunftstand_2",
+    "art": "Marktstand",
+    "x": 7057,
+    "y": 5906.6,
+    "blick": [
+     0,
+     -1
+    ],
+    "vor": [
+     7057,
+     5903.4
+    ]
+   },
+   {
+    "id": "steinhag_laden_steinhaus_8",
+    "art": "Ladenhaus",
+    "gebaeude": "hl_steinhaus_8",
+    "x": 7017,
+    "y": 5900.2,
+    "blick": [
+     0,
+     1
+    ]
+   },
+   {
+    "id": "steinhag_laden_haus_holz_7",
+    "art": "Ladenhaus",
+    "gebaeude": "hl_haus_holz_7",
+    "x": 6962,
+    "y": 5900.2,
+    "blick": [
+     0,
+     1
+    ]
+   },
+   {
+    "id": "steinhag_laden_steinhaus_9",
+    "art": "Ladenhaus",
+    "gebaeude": "hl_steinhaus_9",
+    "x": 7026,
+    "y": 5900.2,
+    "blick": [
+     0,
+     1
+    ]
+   },
+   {
+    "id": "steinhag_laden_steinhaus_6",
+    "art": "Ladenhaus",
+    "gebaeude": "hl_steinhaus_6",
+    "x": 6953,
+    "y": 5900.2,
+    "blick": [
+     0,
+     1
+    ]
+   },
+   {
+    "id": "steinhag_laden_steinhaus_5",
+    "art": "Ladenhaus",
+    "gebaeude": "hl_steinhaus_5",
+    "x": 6945,
+    "y": 5900.2,
+    "blick": [
+     0,
+     1
+    ]
+   }
+  ],
+  "viertel": {
+   "Marktviertel": 30,
+   "Burgviertel": 7,
+   "Zunftviertel": 16,
+   "Seeufer": 13,
+   "Unterstadt": 18
+  },
+  "zunftstollen": {
+   "region": "steinhag_zunftstollen",
+   "ursprung": [
+    370,
+    300
+   ],
+   "eingang": "steinhag_zunftstollen_eingang",
+   "ausgang": "zunftstollen_hinaus",
+   "ab_stufe": 60,
+   "adern": 24,
+   "schmelzofen": {
+    "id": "schmelzofen_zunft",
+    "station": "schmelzofen (neu, Systeme)",
+    "x": 11866,
+    "y": 9646.6
+   },
+   "bankkiste": {
+    "id": "zunftstollen_bankkiste",
+    "x": 11878,
+    "y": 9646.4
+   }
+  }
+ },
+ "zunft_adern": [
+  {
+   "id": "zunftstollen_eisen_1",
+   "art": "eisen",
+   "x": 11868.5,
+   "y": 9650.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Halle"
+  },
+  {
+   "id": "zunftstollen_eisen_2",
+   "art": "eisen",
+   "x": 11872.5,
+   "y": 9638.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Halle"
+  },
+  {
+   "id": "zunftstollen_eisen_3",
+   "art": "eisen",
+   "x": 11875.5,
+   "y": 9650.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Halle"
+  },
+  {
+   "id": "zunftstollen_eisen_4",
+   "art": "eisen",
+   "x": 11873.5,
+   "y": 9636.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Nordstollen"
+  },
+  {
+   "id": "zunftstollen_eisen_5",
+   "art": "eisen",
+   "x": 11870.5,
+   "y": 9630.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Nordstollen"
+  },
+  {
+   "id": "zunftstollen_eisen_6",
+   "art": "eisen",
+   "x": 11870.5,
+   "y": 9624.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Nordstollen"
+  },
+  {
+   "id": "zunftstollen_splittereisen_1",
+   "art": "splittereisen",
+   "x": 11867.5,
+   "y": 9619.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Nordstollen"
+  },
+  {
+   "id": "zunftstollen_splittereisen_2",
+   "art": "splittereisen",
+   "x": 11860.5,
+   "y": 9616.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Nordstollen"
+  },
+  {
+   "id": "zunftstollen_splittereisen_3",
+   "art": "splittereisen",
+   "x": 11862.5,
+   "y": 9608.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Nordstollen"
+  },
+  {
+   "id": "zunftstollen_schwarzeisen_1",
+   "art": "schwarzeisen",
+   "x": 11864.5,
+   "y": 9636.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Weststollen"
+  },
+  {
+   "id": "zunftstollen_schwarzeisen_2",
+   "art": "schwarzeisen",
+   "x": 11858.5,
+   "y": 9636.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Weststollen"
+  },
+  {
+   "id": "zunftstollen_schwarzeisen_3",
+   "art": "schwarzeisen",
+   "x": 11855.5,
+   "y": 9631.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Weststollen"
+  },
+  {
+   "id": "zunftstollen_schwarzeisen_4",
+   "art": "schwarzeisen",
+   "x": 11849.5,
+   "y": 9626.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Weststollen"
+  },
+  {
+   "id": "zunftstollen_sterneisen_1",
+   "art": "sterneisen",
+   "x": 11882.5,
+   "y": 9637.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Oststollen"
+  },
+  {
+   "id": "zunftstollen_sterneisen_2",
+   "art": "sterneisen",
+   "x": 11887.5,
+   "y": 9630.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Oststollen"
+  },
+  {
+   "id": "zunftstollen_sterneisen_3",
+   "art": "sterneisen",
+   "x": 11894.5,
+   "y": 9625.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Oststollen"
+  },
+  {
+   "id": "zunftstollen_sterneisen_4",
+   "art": "sterneisen",
+   "x": 11895.5,
+   "y": 9614.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Oststollen"
+  },
+  {
+   "id": "zunftstollen_ureisen_1",
+   "art": "ureisen",
+   "x": 11854.5,
+   "y": 9606.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Urkammer"
+  },
+  {
+   "id": "zunftstollen_ureisen_2",
+   "art": "ureisen",
+   "x": 11858.5,
+   "y": 9603.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Urkammer"
+  },
+  {
+   "id": "zunftstollen_splittereisen_4",
+   "art": "splittereisen",
+   "x": 11861.5,
+   "y": 9606.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Urkammer"
+  },
+  {
+   "id": "zunftstollen_ureisen_3",
+   "art": "ureisen",
+   "x": 11895.5,
+   "y": 9603.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Oststollen"
+  },
+  {
+   "id": "zunftstollen_sterneisen_5",
+   "art": "sterneisen",
+   "x": 11900.5,
+   "y": 9603.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Oststollen"
+  },
+  {
+   "id": "zunftstollen_splittereisen_5",
+   "art": "splittereisen",
+   "x": 11846.5,
+   "y": 9616.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Weststollen"
+  },
+  {
+   "id": "zunftstollen_schwarzeisen_5",
+   "art": "schwarzeisen",
+   "x": 11850.5,
+   "y": 9617.5,
+   "region": "steinhag_zunftstollen",
+   "gruppe": "Weststollen"
   }
  ],
  "zaehlung": {
-  "Nadelbäume": 231,
-  "Einzeltannen": 160,
+  "Nadelbäume": 225,
+  "Einzeltannen": 161,
   "Felsen": 140,
   "Büsche": 180
  }

@@ -99,6 +99,7 @@ const HOEHLE_U = [357, 300], KAPITAEN_U = [359, 300];
   for (const [o, dx, dy, id] of [["moor_kate_01", 6, -6, "moewenbucht_kate_1"], ["weidenhain_kate_01", 14, -2, "moewenbucht_kate_2"], ["moor_kate_02", 10, 8, "moewenbucht_kate_3"], ["dorf_huette_holz_01", 0, 6, "raeucherhuette"]]) ding(o, mx + dx, my + dy, { id });
   ding("dorf_festfeuer_01", mx + 4, my + 9, { id: "raeucherhuette_feuer" }); ding("k_faesser", mx + 2, my + 8); ding("moor_kahn_01", mx - 6, my + 2, { id: "moewenbucht_kahn" });
   lies("raeucherhuette", mx + 0.5, my + 6.6, "Die Räucherhütte. Heringe hängen in Reihen im Rauch – hier wird Räucherhering gemacht.", { station: "raeucherhuette" });
+  ding("k_kiste", mx + 9.5, my - 4.6, { id: "moewenbucht_bankkiste" }); lies("moewenbucht_bankkiste", mx + 9.5, my - 3.2, "Die Bankkiste der Möwenbucht. Eisenbeschlagen, und der Schlüssel hängt beim Fischer – was du einlegst, liegt auf deinem Konto.");
   lies("moewenbucht", mx + 6, my + 1, "Möwenbucht. Netze trocknen zwischen den Katen, und über allem kreischen die Möwen.");
   let sx = mx, sy = my; while (!"~M".includes(zeichen(sx - 1, sy)) && sx > mx - 30) sx--; steg(sx - 1, sy + 1.3, "moewenbucht_steg");
   fischplatz("fischplatz_moewenbucht", "hering", 20, sx + 1.5, sy - 1.5, -1, 0, "Vom Steg aus fängt man Heringe.");

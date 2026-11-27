@@ -1,0 +1,15 @@
+[
+ {"id":"zunftstollen_leiter_1","objekt":"hoehle_leiter_01","x":32.5,"y":59.5},
+ {"id":"zunftstollen_schmelzofen","objekt":"hand_backofen_01","x":26,"y":45,"s":1.4},
+ {"id":"zunftstollen_bankkiste","objekt":"k_kiste","x":38,"y":45},
+ {"id":"zunftstollen_feuerkorb_2","objekt":"moor_feuerkorb_01","x":26.5,"y":51.5},
+ {"id":"zunftstollen_feuerkorb_3","objekt":"moor_feuerkorb_01","x":37.5,"y":51.5},
+ {"id":"zunftstollen_schienen_4","objekt":"hochland_schienen","x":32,"y":55},
+ {"id":"zunftstollen_schienen_5","objekt":"hochland_schienen","x":32,"y":52.5},
+ {"id":"zunftstollen_lore","objekt":"hochland_lore","x":33.5,"y":41.5},
+ {"id":"zunftstollen_grubenholz_6","objekt":"hochland_grubenholz","x":31,"y":34},
+ {"id":"zunftstollen_grubenholz_7","objekt":"hochland_grubenholz","x":19,"y":35.5,"spiegeln":true},
+ {"id":"zunftstollen_grubenholz_8","objekt":"hochland_grubenholz","x":47,"y":32.5},
+ {"id":"zunftstollen_tisch_9","objekt":"hoehle_tisch_01","x":32,"y":44.6},
+ {"id":"zunftstollen_holzstapel_10","objekt":"dorf_holzstapel_01","x":36,"y":53}
+]

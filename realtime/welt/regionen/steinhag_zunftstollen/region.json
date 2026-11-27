@@ -1,0 +1,16 @@
+{
+ "id": "steinhag_zunftstollen",
+ "name": "Der Stollen der Bergmannszunft",
+ "untertitel": "Unter dem Zunftviertel von Steinhag",
+ "ursprung": [
+  370,
+  300
+ ],
+ "chunks": [
+  2,
+  2
+ ],
+ "biom": "hoehle",
+ "stufe": 12,
+ "ebene": "untergrund"
+}

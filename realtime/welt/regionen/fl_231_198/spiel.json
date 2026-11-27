@@ -85,6 +85,17 @@
  },
  "interaktionen": [
   {
+   "id": "bl_sandquell_bank_tuer",
+   "art": "lesen",
+   "x": 14.5,
+   "y": 394.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Sandquell. Kühl hinter dicken Mauern – Karawanen legen hier ihr Salzgeld ein."
+   }
+  },
+  {
    "id": "bl_nordstrand",
    "art": "lesen",
    "x": 59.5,

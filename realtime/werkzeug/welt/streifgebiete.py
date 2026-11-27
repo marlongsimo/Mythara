@@ -38,6 +38,8 @@ for g in on.get('gebiete', []):
 for o in on.get('orte', []):
     if o['art'] in RADIUS: meiden.append((o['x'], o['y'], RADIUS[o['art']], f"{o['art']} {o['name']}"))
 meiden.append((6689, 6515, 48, 'Stadt Graufurt'))
+_hs = lies('hochlande_orte.json').get('hauptstadt')
+if _hs: _m = _hs['mauer']; meiden.append(((_m[0] + _m[2]) / 2, (_m[1] + _m[3]) / 2, math.hypot(_m[2] - _m[0], _m[3] - _m[1]) / 2 + 8, 'Stadt Steinhag (Ringmauer)'))   # #167
 meiden += IA
 S = lies('sammelstellen.json')
 for l in S.get('lichtungen', []) + S.get('senken', []):

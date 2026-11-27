@@ -278,45 +278,24 @@
    },
    {
     "art": "rechteck",
-    "x0": 54,
-    "y0": 181,
-    "x1": 55,
-    "y1": 182
+    "x0": 72,
+    "y0": 197,
+    "x1": 73,
+    "y1": 198
    },
    {
     "art": "rechteck",
-    "x0": 50,
-    "y0": 181,
-    "x1": 51,
-    "y1": 182
+    "x0": 67,
+    "y0": 197,
+    "x1": 68,
+    "y1": 198
    },
    {
     "art": "rechteck",
-    "x0": 52,
-    "y0": 177,
-    "x1": 53,
-    "y1": 178
-   },
-   {
-    "art": "rechteck",
-    "x0": 354,
-    "y0": 30,
-    "x1": 355,
-    "y1": 31
-   },
-   {
-    "art": "rechteck",
-    "x0": 349,
-    "y0": 30,
-    "x1": 350,
-    "y1": 31
-   },
-   {
-    "art": "rechteck",
-    "x0": 351,
-    "y0": 26,
-    "x1": 352,
-    "y1": 27
+    "x0": 69,
+    "y0": 193,
+    "x1": 70,
+    "y1": 194
    },
    {
     "art": "rechteck",
@@ -547,6 +526,17 @@
  },
  "interaktionen": [
   {
+   "id": "bergwerk_bankkiste",
+   "art": "lesen",
+   "x": 206.5,
+   "y": 413.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste an der Kaue. Wer sein Erz nicht bis Steinhag schleppen will, legt es hier ein – es liegt auf demselben Konto."
+   }
+  },
+  {
    "id": "bergwerk_eingang",
    "art": "eingang",
    "x": 216,
@@ -691,6 +681,41 @@
    }
   },
   {
+   "id": "steinhag_tor_nordwest",
+   "art": "lesen",
+   "x": 35.5,
+   "y": 415,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Nordwesttor von Steinhag. Dahinter steigt der Weg zum Hochpass an."
+   }
+  },
+  {
+   "id": "steinhag_vogtsburg",
+   "art": "lesen",
+   "x": 135,
+   "y": 435.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Vogtsburg auf dem Fels über dem See. Im Saal hängen die Wappen der Bergvögte – zwei gekreuzte Hämmer unter einem Berg."
+   }
+  },
+  {
+   "id": "fischplatz_steinhagsee_west",
+   "art": "lesen",
+   "x": 43.5,
+   "y": 440.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Westufer des Steinhagsees ziehen Mühlbarsche durchs Schilf.",
+    "fisch": "muehlbarsch",
+    "stufe": 10
+   }
+  },
+  {
    "id": "horst",
    "art": "lesen",
    "x": 118,
@@ -768,14 +793,8 @@
    "tiefe": 1.1
   },
   {
-   "x": 52.3,
-   "y": 180.1,
-   "r": 5,
-   "tiefe": 1.1
-  },
-  {
-   "x": 351.7,
-   "y": 29.3,
+   "x": 69.6,
+   "y": 196.2,
    "r": 5,
    "tiefe": 1.1
   },
