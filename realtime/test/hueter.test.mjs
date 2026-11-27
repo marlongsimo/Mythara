@@ -92,24 +92,33 @@ console.log("\nDie Frostwitwe");
   h.betaeubt = 0; h.langsamT = 0; b.lp = Math.round(b.max * 0.5); schritte(s, 20 * 6, (i) => { if (i % 20 === 0) s.eingabe({ t: "ziel", id: b.id }, h.id); });
   check(s.wesen.filter((w) => w.typ === "eissplitter_waechter" && w.instanz === b.instanz).length === 2, "ab 60 %: zwei Eissplitter-Wächter"); }
 
-console.log("\nRüstung der Stufe 70");
+console.log("\nRüstung der Stufe 70 (Entscheidung des Nutzers: defensiv schwächer als Mythisch, Angriffsboni in den Teilen, kein Set-Bonus)");
 { const alle = Object.values(RUESTUNG_STUFE70).flat(), V = { steinvogt_helm: "eisenwachthelm_mythisch", steinvogt_platte: "eisenwacht_mythisch", steinvogt_beinschienen: "eisenbeinschienen_mythisch",
     sturmfeder_haube: "jaegerkapuze_mythisch", sturmfeder_wams: "jaegerwams_mythisch", sturmfeder_hose: "jaegerhose_mythisch", frostschleier_kapuze: "magierkapuze_mythisch", frostschleier_robe: "magierrobe_mythisch", frostschleier_rock: "magierrock_mythisch" };
   check(alle.length === 9 && !alle.some((g) => G[g].platz === "nebenhand") && alle.every((g) => G[g] && G[g].platz && G[g].anforderung && G[g].anforderung.skill === "defense" && G[g].anforderung.level === 70 && !G[g].untauschbar),
-    "neun Teile, je drei: Steinvogt-Platte, Sturmfeder, Frostschleier (kein Turmschild), Defense 70, handelbar");
+    "neun Teile, je drei: Löwenwacht, Sturmfeder, Frostschleier (kein Schild), Defense 70, handelbar");
+  check(["Löwenwacht-Helm", "Löwenwacht-Harnisch", "Löwenwacht-Beinschutz"].every((n, i) => G[RUESTUNG_STUFE70.steinvogt[i]].name === n), "der Nahkampf-Satz heißt Löwenwacht (Helm, Harnisch, Beinschutz)");
   const summe = (a) => a.nah + a.fern + Math.max(0, a.magie), q = alle.map((g) => summe(G[g].abwehr) / summe(G[V[g]].abwehr));
-  check(q.every((x) => x >= 1.04 && x <= 1.14), `etwa +8 % Abwehr über Mythisch (${Math.min(...q).toFixed(2)}–${Math.max(...q).toFixed(2)})`);
-  check(SETS.steinvogt.bonus.staerke === 2 && SETS.sturmfeder.bonus.fernStaerke === 2 && SETS.frostschleier.bonus.magieSchaden === 2, "Set-Boni: +2 Stärke · +2 Fernkampf-Stärke · +2 % Magieschaden");
-  const X = L(99), nahOhne = kampfwerte(X, { waffe: "eidschwert_mythisch", kopf: "steinvogt_helm", brust: "steinvogt_platte" }), nahMit = kampfwerte(X, { waffe: "eidschwert_mythisch", kopf: "steinvogt_helm", brust: "steinvogt_platte", beine: "steinvogt_beinschienen" });
-  const nahBeine = kampfwerte(X, { waffe: "eidschwert_mythisch", kopf: "steinvogt_helm", brust: "steinvogt_platte", beine: "eisenbeinschienen_mythisch" });
-  check(nahMit.waffe.schaden[1] >= nahBeine.waffe.schaden[1] && nahMit.waffe.schaden[1] > nahOhne.waffe.schaden[1] - 1, `Steinvogt voll: Max Hit ${nahMit.waffe.schaden[1]} (zwei Teile ${nahOhne.waffe.schaden[1]})`);
-  const mag = (beine) => kampfwerte(X, { waffe: "sternenszepter_mythisch", kopf: "frostschleier_kapuze", brust: "frostschleier_robe", beine }).waffe.schaden[1];
-  const mit = mag("frostschleier_rock"), ohne = mag("magierrock_mythisch");
-  check(mit > ohne, `Frostschleier voll: Magie-Max-Hit ${mit} statt ${ohne} (+2 % Magieschaden)`);
-  const fern = (beine) => kampfwerte(X, { waffe: "mondkurzbogen_mythisch", kopf: "sturmfeder_haube", brust: "sturmfeder_wams", beine }).waffe.schaden[1];
-  check(fern("sturmfeder_hose") >= fern("jaegerhose_mythisch"), `Sturmfeder voll: Fernkampf-Max-Hit ${fern("sturmfeder_hose")} (ohne Satz ${fern("jaegerhose_mythisch")})`);
+  check(q.every((x) => x >= 0.75 && x <= 0.92), `Abwehr etwa 85 % von Mythisch (${Math.min(...q).toFixed(2)}–${Math.max(...q).toFixed(2)})`);
+  const bon = (satz, k) => RUESTUNG_STUFE70[satz].map((g) => (G[g].bonus || {})[k] || 0);
+  check(bon("steinvogt", "staerke").join() === "2,3,3" && bon("sturmfeder", "fernStaerke").join() === "2,3,3" && bon("frostschleier", "magieSchaden").join() === "1,2,2",
+    "Angriffsboni: Löwenwacht +2/+3/+3 Stärke (8), Sturmfeder +2/+3/+3 Fernkampf-Stärke (8), Frostschleier +1/+2/+2 % Magieschaden (5)");
+  check(!["steinvogt", "sturmfeder", "frostschleier"].some((s) => SETS[s]) && Object.values(SETS).every((S) => !S.teile.some((t) => alle.includes(t))), "kein Set-Bonus für die Sätze der Stufe 70");
+  const X = L(99), mag = (beine) => kampfwerte(X, { waffe: "sternenszepter_mythisch", kopf: "frostschleier_kapuze", brust: "frostschleier_robe", beine }).waffe.schaden[1];
+  const voll = mag("frostschleier_rock"), ohneAlles = kampfwerte(X, { waffe: "sternenszepter_mythisch" }).waffe.schaden[1];
+  check(voll > ohneAlles, `Frostschleier: Magie-Max-Hit ${voll} statt ${ohneAlles} (+5 % Magieschaden)`);
+  const nah = (a) => kampfwerte(X, { waffe: "eidschwert_mythisch", ...a }).waffe.schaden[1];
+  check(nah({ kopf: "steinvogt_helm", brust: "steinvogt_platte", beine: "steinvogt_beinschienen" }) > nah({ kopf: "eisenwachthelm_mythisch", brust: "eisenwacht_mythisch", beine: "eisenbeinschienen_mythisch" }),
+    "Löwenwacht: höherer Nahkampf-Max-Hit als die mythische Eisenwacht (+8 Stärke)");
   let aus70 = 0; for (let i = 0; i < 400; i++) { const g = beuteAufloesen("@mythisch", Math.random); if (g && G[g].anforderung && G[g].anforderung.level >= 70) aus70++; }
   check(aus70 === 0, "„@mythisch“ gibt nie Stufe-70-Teile (nur von den Hütern)"); }
+
+console.log("\nGlutsteinschild (Entscheidung des Nutzers): Drop der Sandmutter, nur stark, 1 : 100");
+{ const S = G.glutsteinschild, R = MONSTER.sandmutter.drops.find((d) => d.stark && d.wurf.some((w) => w.g === "glutsteinschild"));
+  check(S && S.platz === "nebenhand" && S.seltenheit === "selten" && S.anforderung.level === 40 && S.abwehr.nah === 34 && S.bonus.geschick === 5 && S.bonus.staerke === 3 && !S.untauschbar && S.ebenen[0] === "schild.glutstein",
+    "seltener Schild, Defense 40, Abwehr 34/34/−1, +5 Geschick, +3 Stärke, handelbar, Ebene schild.glutstein");
+  check(Object.values(G).filter((g) => g.platz === "nebenhand" && g.bonus && (g.bonus.geschick || g.bonus.staerke)).length === 1, "der einzige Schild mit Angriffsboni");
+  check(R && R.wurf.length === 1 && R.wurf[0].chance === 1, "Sandmutter: eigener Wurf nur in der starken Fassung, 1 : 100"); }
 
 console.log("\nBeute: Rüstung nur in der starken Fassung, insgesamt 1 : 75 je Sieg");
 for (const H of HUETER) { const R = MONSTER[H.typ].drops.find((d) => d.stark), satz = { grumhold: "steinvogt", sturmschwinge: "sturmfeder", frostwitwe: "frostschleier" }[H.typ];
