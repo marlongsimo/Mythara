@@ -6,10 +6,11 @@
 import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende";
 import TROEDLER_STANDORTE from "../welt/troedler_standorte.json";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}`;
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}`;
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
-  gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string }
+  gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string;
+  /** #141: ein Bewohner ohne Laden – nur reden (keine Waren, kein Kartensymbol) */ nurReden?: boolean; /** #141: weitere Gesprächszeilen; angesprochen sagt die Figur zufällig eine davon oder den Gruß */ zeilen?: string[] }
 /** Währung */
 export const WAEHRUNG = "splitter";
 /** Vorläufige Preise nach Seltenheit (Splitter) */
@@ -63,11 +64,61 @@ for (const t of (TROEDLER_STANDORTE as { standorte: { id: string; x: number; y: 
     modell: frau ? "npcfrau3d" : "npcmann3d", x: t.x, y: t.y, blick: [0, 1], vor: [t.x, t.y + 1.2], troedler: true, waren: [],
     gruss: frau ? "Na, was schleppst du da mit dir rum? Zeig her, ich mach dir einen Preis." : "Alles hat seinen Preis. Die Hälfte davon zahl ich dir.",
     tschuess: frau ? "Komm wieder, wenn der Rucksack drückt." : "Gute Wege. Und bring mir, was du nicht brauchst." }; }
+/* ───── #141: Haferstedt, Netzbucht und Sandquell (Welt #140, 6a116f04, welt/beleben_orte.json) – Bewohner, Läden nur mit vorhandenen Waren, kurze Zeilen.
+   Stellen der Händler nach dem Vorschlag der Welt; Modelle vorerst aus dem Bestand (Figuren ordnet sie in #141 zu). ───── */
+type Neu = Omit<Laden, "id" | "waren" | "blick" | "vor"> & { waren?: Ware[]; blick?: [number, number]; vor?: [number, number] };
+const ort = (id: LadenId, L: Neu) => { const b = L.blick || [0, 1]; LAEDEN[id] = { ...L, id, waren: L.waren || [], blick: b, vor: L.vor || [L.x + b[0] * 1.3, L.y + b[1] * 1.3] }; };
+const W = (g: string, preis: number): Ware => ({ g, preis });
+/* Haferstedt, Marktflecken im Westen */
+ort("haferstedt_taverne", { name: "Zum Haferkranz", spruch: "Eintopf, Brot und ein Platz am Feuer.", haendler: "Wilma Garbe", modell: "npc.marktfrau", x: 6211, y: 6972.5,
+  gruss: "Komm rein, setz dich! Der Eintopf ist heiß, das Brot von heute früh.", tschuess: "Schlaf gut – oder kämpf gut, je nachdem.",
+  zeilen: ["Am Markttag ist hier kein Stuhl frei. Heute hast du Glück.", "Den Herd darfst du benutzen, wenn du selbst kochen willst. Nur nicht anbrennen lassen."],
+  waren: [W("brot", 8), W("bauerneintopf", 20), W("fischsuppe", 15), W("hasenbraten", 10), W("krug", 5)] });
+ort("haferstedt_baecker", { name: "Laibs Backstube", spruch: "Brot aus Haferstedter Korn.", haendler: "Jost Laib", modell: "npc.bauer", x: 6235, y: 6979.4,
+  gruss: "Frisch aus dem Ofen. Riech mal!", tschuess: "Bis morgen – dann ist es wieder warm.", zeilen: ["Das Mehl kommt von Mattes oben an der Mühle. Besseres findest du nirgends."],
+  waren: [W("brot", 8), W("mehl", 3)] });
+ort("haferstedt_schmiede", { name: "Esse am Markt", spruch: "Werkzeug, das hält.", haendler: "Frauke Esser", modell: "npc.schmiedin", x: 6203, y: 6996.5,
+  gruss: "Ein Beil, eine Hacke, ein Hammer? Oder willst du selbst an die Esse? Nur zu.", tschuess: "Halt die Schneide sauber.", zeilen: ["Esse und Amboss stehen jedem offen, der einen Hammer mitbringt."],
+  waren: [W("holzbeil_training", 10), W("holzbeil_einfach", 350), W("spitzhacke_training", 10), W("spitzhacke_einfach", 350), W("hammer", 10), W("sichel", 10)] /* wie der Handwerker der Waldmark */ });
+ort("haferstedt_muehle", { name: "Windmühle Haferstedt", spruch: "Mehl, frisch gemahlen.", haendler: "Mattes Mahler", modell: "npc.alter_bauer", x: 6245, y: 6951.5,
+  gruss: "Solange der Wind weht, mahlt sie. Und hier weht er immer.", tschuess: "Grüß Jost von mir.", waren: [W("mehl", 3)] });
+ort("haferstedt_allerlei", { name: "Allerlei vom Markt", spruch: "Von allem etwas.", haendler: "Ludger Krämer", modell: "npc.kaufmann", x: 6207, y: 6987.4, blick: [0, -1], vor: [6207, 6984.6],
+  gruss: "Äpfel, Krüge, Angeln, Würmer – was suchst du?", tschuess: "Komm am Markttag wieder, dann hab ich mehr.", waren: [W("apfel", 2), W("krug", 5), W("angelrute", 10), W("wurm", 2), W("leeres_flaeschchen", 2)] });
+ort("haferstedt_kraeuter", { name: "Kräuter und Tränke", spruch: "Für Wunden und Wehwehchen.", haendler: "Ilse Wermut", modell: "npc.kauffrau", x: 6223, y: 6987.4, blick: [0, -1], vor: [6223, 6984.6],
+  gruss: "Siehst müde aus. Ein Schlückchen?", tschuess: "Pass auf dich auf.", waren: [W("kleiner_heiltrank", 35), W("heiltrank", 150), W("leeres_flaeschchen", 2)] });
+ort("troedler_haferstedt", { name: "Trödelstand", spruch: "Ich nehm alles – fast alles.", haendler: "Der Trödler", modell: "npc.troedler", x: 6215, y: 6987.4, blick: [0, -1], vor: [6215, 6984.6], troedler: true,
+  gruss: "Alles hat seinen Preis. Die Hälfte davon zahl ich dir.", tschuess: "Gute Wege. Und bring mir, was du nicht brauchst." });
+ort("haferstedt_vogt", { name: "Marktvogt", spruch: "", haendler: "Reinhold Scheffel", modell: "npc.marktschreier", x: 6217, y: 6981.5, nurReden: true,
+  gruss: "Willkommen in Haferstedt. Wer hier verkauft, zahlt Standgeld. Wer kauft, zahlt nur den Preis.", tschuess: "Gute Geschäfte.",
+  zeilen: ["Zwischen Rabenmoor und der Küste gibt es keinen größeren Markt. Korn, Wolle, Fisch – alles kommt hierher.", "Die Fischer aus Netzbucht bringen jeden Markttag ihren Fang. Riecht man schon von Weitem.",
+    "Die Kapelle oben am Hang ist älter als das Dorf. Sagt jedenfalls der Pfarrer."] });
+/* Netzbucht, Fischerweiler an der Westküste */
+ort("netzbucht_fischer", { name: "Treibs Räucherfisch", spruch: "Frisch, gebraten oder geräuchert.", haendler: "Hauke Treib", modell: "npc.fischer", x: 6134, y: 6933.5, blick: [1, 0],
+  gruss: "Hering aus der Bucht, Aal von den Klippen. Was darf's sein?", tschuess: "Wind von achtern!", zeilen: ["Die Räucherhütte und das Feuer darfst du benutzen. Holz bringst du selbst mit."],
+  waren: [W("fisch_hering_roh", 4), W("fisch_hering_gebraten", 8), W("raeucherhering", 14), W("fisch_seeaal_gebraten", 10), W("aalsuppe", 30)] });
+ort("netzbucht_netze", { name: "Netze und Leinen", spruch: "Was der Fischer braucht.", haendler: "Gesa Knoten", modell: "npc.hafen_frau", x: 6148, y: 6930.5, blick: [-1, 0],
+  gruss: "Jedes Loch im Netz ist ein Fisch, der davonschwimmt. Brauchst du eine Angel?", tschuess: "Und lass dir nichts durch die Maschen gehen.",
+  zeilen: ["Drei Katen, eine Räucherhütte und die Bucht. Mehr braucht Netzbucht nicht."], waren: [W("angelrute", 10), W("wurm", 2), W("krug", 5)] });
+/* Sandquell, Oasenort in den Glutsanden */
+ort("sandquell_herberge", { name: "Herberge Zur kühlen Quelle", spruch: "Schatten, Wasser, ein Bett.", haendler: "Omid Karr", modell: "npc.glutbrunn_mann", x: 7372, y: 6727.4,
+  gruss: "Komm aus der Sonne! Wasser gibt es umsonst, das Essen nicht.", tschuess: "Trink, bevor du gehst. Die Dünen verzeihen nichts.",
+  zeilen: ["Die Karawanen bleiben zwei Nächte, dann ziehen sie weiter – zur Salzpfanne oder zum Nordstrand."],
+  waren: [W("brot", 8), W("krug_wasser", 2), W("fisch_glutwels_gebraten", 40), W("wildbretbraten", 20)] });
+ort("sandquell_markt", { name: "Wüstenmarkt", spruch: "Was die Karawanen bringen.", haendler: "Tarek Salzer", modell: "npc.kaufmann", x: 7378, y: 6753.4,
+  gruss: "Tränke gegen die Hitze, Fläschchen, Äpfel aus dem Westen. Teuer? Sie sind weit gereist.", tschuess: "Möge der Wind dir den Rücken kühlen.",
+  waren: [W("kleiner_heiltrank", 40), W("heiltrank", 170), W("leeres_flaeschchen", 3), W("apfel", 3), W("krug", 6)] });
+ort("troedler_sandquell", { name: "Karawanenlager", spruch: "Wir kaufen, was sich tragen lässt.", haendler: "Karawanenmeister Ruben Weit", modell: "npc.karawane", x: 7370, y: 6759.6, troedler: true,
+  gruss: "Alles, was sich auf ein Tier packen lässt, nehme ich. Zum halben Preis – die Reise ist lang.", tschuess: "Wir ziehen morgen weiter. Vielleicht.",
+  zeilen: ["Glutbrunn, die Salzpfanne, der Nordstrand – ohne Sandquell kommt keine Karawane durch."] });
+ort("sandquell_quelle", { name: "Quellwächterin", spruch: "", haendler: "Ayla Dünenruh", modell: "npc.glutbrunn_frau", x: 7386, y: 6745, nurReden: true,
+  gruss: "Die Quelle gehört niemandem. Darum wache ich über sie.", tschuess: "Geh mit Wasser.",
+  zeilen: ["Seit hundert Jahren ist sie nicht versiegt. Wer Sand hineinwirft, bekommt es mit mir zu tun.", "Nachts hört man die Dünen singen. Das ist nur der Wind. Meistens."] });
 export const LADEN_LISTE = Object.values(LAEDEN);
 /** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */
 export const ladenOffen = (L: Laden, stand: (id: string) => string): boolean => !L.wenn || stand(L.wenn.quest) === L.wenn.phase;
 /** Symbol je Laden (Minikarte und Karte) */
-export const LADEN_ZEICHEN: Record<string, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯" };
+export const LADEN_ZEICHEN: Record<string, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
+  haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺" };
 for (const L of LADEN_LISTE) if (L.troedler) LADEN_ZEICHEN[L.id] = "🪙"; /* Trödler (#88) */
 /* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */
 /** Ein Händler zahlt für seine eigenen Waren so viel von seinem Preis; der Trödler so viel vom Grundwert */
