@@ -7,7 +7,8 @@
   "aktuell": "v001",
   "hoehe_m": 0.9,
   "spieldatei": "img/figuren-echt3d/pet.steinbert.glb",
-  "bewegungen": "ruhe (wiegt sich, 2 s), laufen (vier Beine, diagonal, 0,67 s)",
+  "bewegungen": "ruhe (wiegt sich, 2 s), gehen (ruhiger Schritt, diagonale Beinpaare, 1,33 s), laufen (vier Beine, diagonal, 0,67 s)",
   "status": "Meshy „Crystalback Miner“, hüfthoch (0,9 m); gebaut mit fabrik/rig_vierbeiner.py → fabrik/export3d.py; Folgen im Spiel kommt später",
-  "herkunft": "Meshy"
+  "herkunft": "Meshy",
+  "mobil": "img/figuren-echt3d/pet.steinbert.mobil.glb"
 }
