@@ -4,7 +4,7 @@
  * Hartwig fragen, drei Spuren im Erlengrund-Wald lesen, den Graupelz in der Waldsenke stellen (Mini-Gegner, kein Boss, erscheint selten mit zwei Wölfen).
  * Danach hängt sein Fell an der Wand der Sägemühle (Schalter s8_trophaee). Lohn aus vorhandenen Gegenständen: Stärke 800, Geschick 400 XP, 2 Heiltränke, 150 Splitter, 1 Questpunkt.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Erlengrund-Wald und Waldsenke (Welt #120), Bodo (Figuren #121), Gegner graupelz mit seltener Wiederkehr (Systeme). Liste: doku/quests/s-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Einbau Süden #126, Anschlüsse #134). Stellen aus der Welt (#120). Liste: doku/quests/s-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { ERLENGRUND, BODO, HARTWIG } from "./quest_s_orte";

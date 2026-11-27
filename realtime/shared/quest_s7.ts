@@ -4,7 +4,7 @@
  * Drei Wiesenlichter einfangen (Splitterbinden 10), QUER: Agnes in Weidenhain gibt den Segen, die Kapelle weihen → Heilstelle (Schalter kreuzstein_heil, wie die Kapelle in A2).
  * Lohn: Splitterbinden 400 XP, 3 Seelenlichter, 60 Splitter, 1 Questpunkt.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf die Wegkapelle mit Wiesenlichtern (Welt #120), Odila (Figuren #121), Heilstelle kreuzstein (Systeme). Liste: doku/quests/s-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Einbau Süden #126, Anschlüsse #134). Stellen aus der Welt (#120). Liste: doku/quests/s-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { KREUZSTEIN, ODILA, AGNES } from "./quest_s_orte";

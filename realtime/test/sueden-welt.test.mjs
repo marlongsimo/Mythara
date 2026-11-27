@@ -1,5 +1,5 @@
 /*
- * Riftmere – Süden (#124): Quests S5 „Die Furt“ und S9 „Briefe nach Süden“ Ende zu Ende – echter Spielserver, nachgebildete Supabase, Lohn mit „abholen“ (#77).
+* Riftmere – Süden (#124): Quests S5 „Die Furt“, S9 „Briefe nach Süden“ und S6 „Schafe zählen“ Ende zu Ende, S4 „Klemmende Säge“ bis zu den Eisenbändern – echter Spielserver, nachgebildete Supabase, Lohn mit „abholen“ (#77).
  * Ute spielt beide ganz, Bea (ohne Bergbau 15, Heldenlevel 1) ist die Gegenprobe.
  * Aufruf: node test/sueden-welt.test.mjs   (nach node build.mjs)
  */
@@ -15,7 +15,7 @@ const MERKER = ["schmieden"], viel = (g, n) => Array.from({ length: n }, () => g
 const KAMPF = { skill_staerke: xpFuer(12), skill_geschick: xpFuer(12), skill_defense: xpFuer(12), skill_lp: xpFuer(12), skill_fernkampf: xpFuer(12), skill_magie: xpFuer(12) };
 const HELD = {
   /* Ute: Bergbau 15, Heldenlevel ab 10 – darf S5 und S9 */
-  [A]: { ...roh(), ...KAMPF, inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: [{ g: "splitter", n: 20 }], v: 2, merker: MERKER, berufe: { bergbau: xpFuer(15) } } },
+  [A]: { ...roh(), ...KAMPF, inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["hammer", { g: "splitter", n: 20 }], v: 2, merker: MERKER, berufe: { bergbau: xpFuer(15), holzfaellerei: xpFuer(10), schmieden: xpFuer(12) } }, quests: { die_gesperrte_strasse: { s: "fertig" }, weidenhain_wasser_auf_die_muehle: { s: "fertig" } } },
   /* Bea: ohne Bergbau, Heldenlevel 1 */
   [B]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: [{ g: "splitter", n: 20 }], v: 2, merker: MERKER } } };
 const SETZEN = [], ABSCHLUSS = [], GUTSCHRIFT = [];
@@ -65,6 +65,8 @@ async function herstellen(s, x, y, rezept, menge = 1) { if (x !== null) await st
   const a = (await warte(s, (m) => m.t === "handwerk" && (m.tat === "nein" || m.tat === "start"))) || {}; if (a.tat !== "start") return a.text || "?";
   await (s.handwerk.find((m) => m.tat === "stop") || warte(s, (m) => m.t === "handwerk" && m.tat === "stop", 90000)); await schlaf(300); return "ok"; }
 const S5 = QUESTS.find((q) => q.id === "lehmfurt_die_furt"), S9 = QUESTS.find((q) => q.id === "weidenhain_briefe_nach_sueden");
+const S4 = QUESTS.find((q) => q.id === "erlengrund_klemmende_saege"), S6 = QUESTS.find((q) => q.id === "heckenhof_schafe_zaehlen");
+const AMBOSS = [6470.4, 6427.6];
 const fig = (Q, id) => Q.figuren.find((x) => x.id === id), obj = (Q, id) => Q.objekte.find((o) => o.id === id);
 const zu = async (s, F) => stelle(s, F.x + 1, F.y);
 /** Kampfverbindung in Weidenhain (Gebiet welt_weidenhain, Ursprung 6400 | 6656) */
@@ -108,8 +110,32 @@ try {
   await zu(ute, fig(S9, "kranich")); await rede(ute, "kranich"); d = await sag(ute, "kranich", "brief_kranich"); await schlaf(600);
   const ab = ABSCHLUSS.find((a) => a.p_user === A && a.p_quest === S9.id);
   check(ute.b[S9.id] === "fertig" && ab && ab.p_punkte === 1 && anzahl(ute, "splitter") >= sp1 + 100, `S9 fertig bei Kranich in Kielmund: 1 Questpunkt, 100 Splitter (${anzahl(ute, "splitter") - sp1})`);
+
+  console.log("S6 „Schafe zählen“");
+  await zu(ute, fig(S6, "tamme")); await rede(ute, "tamme"); await sag(ute, "tamme", "annehmen"); await schlaf(400);
+  check(stand(ute, S6).phase === "laeuft", "Ute nimmt S6 an");
+  const sch = S6.figuren.filter((x) => x.id.startsWith("schaf_"));
+  check(sch.length === 5 && sch.every((x) => x.modell === "schaf3d" && x.folgt && x.beiseite), "Fünf Schafe als Questfiguren (schaf3d), sie folgen und stehen danach im Pferch");
+  { const g = obj(S6, "s6_gatter"); await stelle(ute, g.x, g.y - 1); const t = await ding(ute, "s6_gatter"); check(!QB.erledigt(S6, ute.b[S6.id], "gatter") && /Noch nicht alle/.test(t), "Gatter vor den Schafen: noch nicht alle da"); }
+  for (const x of sch) { await zu(ute, x); await rede(ute, x.id); await sag(ute, x.id, "locken"); await schlaf(250); }
+  check(sch.every((x) => QB.erledigt(S6, ute.b[S6.id], x.id)), "Alle fünf Schafe gelockt");
+  const K1 = { hat: () => false, verloren: () => false };
+  check(sch.every((x) => QB.figurFolgt(S6, x, ute.b[S6.id], K1)), "… und sie folgen Ute");
+  { const g = obj(S6, "s6_gatter"); await stelle(ute, g.x, g.y - 1); await ding(ute, "s6_gatter"); }
+  check(QB.erledigt(S6, ute.b[S6.id], "gatter") && sch.every((x) => !QB.figurFolgt(S6, x, ute.b[S6.id], K1)), "Gatter zu: die Schafe folgen nicht mehr (sie stehen im Pferch)");
+  const km = anzahl(ute, "kuhfleisch");
+  await zu(ute, fig(S6, "tamme")); await rede(ute, "tamme"); await sag(ute, "tamme", "fertig"); await schlaf(600);
+  check(ute.b[S6.id] === "fertig" && anzahl(ute, "kuhfleisch") === km + 2, `S6 fertig, Lohn abgeholt: 2 Kuhfleisch (${anzahl(ute, "kuhfleisch") - km})`);
+
+  console.log("S4 „Klemmende Säge“ (bis zu den Eisenbändern)");
+  await zu(ute, fig(S4, "bodo")); await rede(ute, "bodo"); await sag(ute, "bodo", "annehmen"); await schlaf(400);
+  check(stand(ute, S4).phase === "laeuft", "Ute nimmt S4 an (nach B2, Holzfällerei 10)");
+  await zu(ute, fig(S4, "tebbe")); await rede(ute, "tebbe"); await sag(ute, "tebbe", "baender_fragen"); await schlaf(300);
+  check(QB.erledigt(S4, ute.b[S4.id], "tebbe"), "Tebbe verrät, wie man Eisenbänder legt");
+  { const r = await herstellen(ute, ...AMBOSS, "eisenbaender"); check(r === "ok" && anzahl(ute, "eisenband") === 2 && QB.erledigt(S4, ute.b[S4.id], "baender"), `Eisenbänder am Amboss auch während S4 (${r}, ${anzahl(ute, "eisenband")})`); }
+  { const o = obj(S4, "s4_rad"); await stelle(ute, o.x, o.y - 1); const t = await ding(ute, "s4_rad"); check(!QB.erledigt(S4, ute.b[S4.id], "rad") && anzahl(ute, "eisenband") === 2, "Ohne Eichenstämme: das Rad bleibt kaputt, die Bänder bleiben (" + t.slice(0, 40) + ")"); }
   check(!/Server-Fehler|TypeError|ReferenceError/.test(log), "Keine Fehler im Server-Log");
 } catch (e) { console.error(e); f++; }
 srv.kill(); sb.close();
-console.log(f ? `\nSüden (S5, S9): ${f} FEHLER` : "\nSüden (S5, S9): alles in Ordnung");
+console.log(f ? `\nSüden (S4, S5, S6, S9): ${f} FEHLER` : "\nSüden (S4, S5, S6, S9): alles in Ordnung");
 process.exit(f ? 1 : 0);
