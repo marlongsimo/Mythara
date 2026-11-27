@@ -22,8 +22,8 @@ const HELD = {
   /* Hugo: Fischen 25, Kochen 40, Reuse, Krug, Mühlbarsch, Eintopf; eine Fischsuppe wirkt noch (aus dem Speicher) */
   [C]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["reuse", "angelrute", "krug", "fisch_muehlbarsch_roh", "fisch_muehlbarsch_roh", "bauerneintopf", ...roheFische(6)], v: 2, merker: MERKER,
     berufe: { fischen: xpFuer(25), kochen: xpFuer(40) }, wirkungen: [{ id: "fischsuppe", bis: BALD }] } },
-  /* Ida: spielt „Schilf und Schnur“ von vorn (nichts dabei) */
-  [D]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: roheFische(3) /* Reserve, falls beim Braten alles anbrennt */, v: 2, merker: MERKER } },
+  /* Ida: spielt „Schilf und Schnur“ von vorn (nichts dabei); Kochen 31 – beim Bachling brennt dann nichts mehr an (Rezeptstufe +30), sonst konnte der Schritt „braten“ zufällig scheitern */
+  [D]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: roheFische(3) /* Reserve */, v: 2, merker: MERKER, berufe: { kochen: xpFuer(31) } } },
   /* Jule: Kochen 50 (nichts brennt an), bringt Brot und Bachling mit; Suppe kocht sie in der Taverne */
   [E]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["brot", "fisch_bachling_gebraten", "fisch_muehlbarsch_roh", "krug_wasser"], v: 2, merker: MERKER, berufe: { kochen: xpFuer(50) } } } };
 const SETZEN = [], ABSCHLUSS = [], GUTSCHRIFT = [];

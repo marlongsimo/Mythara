@@ -9,6 +9,7 @@
  */
 import { RUHE_TEMPO } from "./held3d";
 import { reiseStelle, type Reise } from "../../../shared/reisende";
+import { tierStelle, TIERARTEN, type Tierplatz } from "../../../shared/tiere";
 import { gltfLader } from "./gltf";
 import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
@@ -68,6 +69,14 @@ export class ReisenderFigur {
     this.npc.gruppe.position.set(p.x, this.u.hoehe(p.x, p.y), p.y); if (!p.steht) this.npc.blick(p.dx, p.dy); this.npc.spiele(p.steht ? "ruhe" : "gehen"); this.npc.schritt(dt);
     if (this.karren) { if (!p.steht) { const l = Math.hypot(p.dx, p.dy) || 1; this.kdx = p.dx / l; this.kdy = p.dy / l; } /* der Karren rollt 1,8 Felder hinter dem Händler, die Deichsel zu ihm */
       const kx = p.x - this.kdx * 1.8, kz = p.y - this.kdy * 1.8; this.karren.position.set(kx - p.x, this.u.hoehe(kx, kz) - this.u.hoehe(p.x, p.y), kz - p.y); this.karren.rotation.y = Math.atan2(this.kdx, this.kdy); } }
+}
+
+/** Ein Tier zur Stimmung (Phase 11, shared/tiere.ts): die Stelle kommt aus der Uhr; gehen, sonst fressen oder Männchen machen. Kein Kampf */
+export class TierFigur {
+  readonly npc: Npc3D; x = 0; z = 0;
+  constructor(private u: Umgebung, readonly p: Tierplatz, readonly i: number) { const A = TIERARTEN[p.art]; this.npc = new Npc3D(A.datei, undefined, A.hoehe); this.schritt(0); }
+  schritt(dt: number) { const s = tierStelle(this.p, this.i, Date.now() / 1000, (x, z) => this.u.gehbar(Math.floor(x), Math.floor(z))); /* gehbar erwartet ganze Felder */ this.x = s.x; this.z = s.y;
+    this.npc.gruppe.position.set(s.x, this.u.hoehe(s.x, s.y), s.y); this.npc.blick(s.dx, s.dy); this.npc.spiele(s.geht ? "gehen" : TIERARTEN[this.p.art].pause); this.npc.schritt(dt); }
 }
 
 /** Ein Bewohner, der in seinem Haus umhergeht, stehen bleibt und ab und zu vor die Tür tritt */

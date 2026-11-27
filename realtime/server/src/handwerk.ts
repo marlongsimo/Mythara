@@ -45,7 +45,9 @@ const ladungZiel = (r: Rezept): string | null => (r.ergebnis.startsWith("ladung:
 /** Phase 5b: Waffe laden/entladen – die angelegte Waffe passt zum Rezept (Seltenheit)? Zurück: Fehlertext oder null */
 const entladen = (r: Rezept): boolean => r.ergebnis === "entladen:" + AN_WAFFE;
 function waffePasst(nutzer: string, r: Rezept): string | null { const w = waffeLadung(nutzer), G = w && GEGENSTAENDE[w.g]; if (!w || !G || !G.waffe) return "Leg die Waffe an, die du laden willst.";
-  if (entladen(r)) return w.n > 0 ? null : `${G.name} ist nicht geladen.`; if (r.fuer && G.seltenheit !== r.fuer) return `Dieses Binden ist für ${r.fuer === "selten" ? "seltene" : r.fuer === "episch" ? "epische" : r.fuer === "legendaer" ? "legendäre" : "mythische"} Waffen – ${G.name} ist das nicht.`; return null; }
+  if (entladen(r)) return w.n > 0 ? null : `${G.name} ist nicht geladen.`;
+  if (r.fuer === "stufe70" || G.passiv) return r.fuer === "stufe70" && G.passiv ? null : G.passiv ? `${G.name} lädst du mit einem Splitter je Ladung (Waffe der Stufe 70).` : `Dieses Binden ist für Waffen der Stufe 70 – ${G.name} ist keine.`; /* #151 */
+  if (r.fuer && G.seltenheit !== r.fuer) return `Dieses Binden ist für ${r.fuer === "selten" ? "seltene" : r.fuer === "episch" ? "epische" : r.fuer === "legendaer" ? "legendäre" : "mythische"} Waffen – ${G.name} ist das nicht.`; return null; }
 /** Welche Sorte einer Zutat nehmen: die erste, von der genug da ist */
 const sorte = (nutzer: string, g: string[], n: number) => g.find((x) => anzahlVon(nutzer, x) >= n) || null;
 /** Was fehlt für ein Stück (null = alles da); spar: diese Zutat (Index) braucht eine Einheit weniger (Glut) */
@@ -94,7 +96,7 @@ function wartenAbholen(s: HandwerkSpieler, r0: Rezept): string | null { const W 
   if (jetzt < W.fertig) return `Noch nicht fertig – noch ${zeitText(W.fertig - jetzt)}.`;
   const je = r.menge || 1; let k = 0; while (k < W.n && aufnehmen(sb, s.nutzer, r.ergebnis, je, false) === je) k++;
   if (!k) return "Dein Rucksack ist voll.";
-  berufXpDazu(sb, s.nutzer, rezeptBeruf(r), r.xp * k); if (r.quest) for (let i = 0; i < k; i++) HANDWERK_QUEST.fertig(s.nutzer, r);
+  berufXpDazu(sb, s.nutzer, rezeptBeruf(r), r.xp * k); for (let i = 0; i < k; i++) HANDWERK_QUEST.fertig(s.nutzer, r); /* jedes Stück zählt für Quests (G4: drei Räucherheringe) – wie beim sofortigen Herstellen, auch ohne Quest-Rezept */
   wartenSetzen(sb, s.nutzer, k < W.n ? { ...W, n: W.n - k } : null);
   senden(s, { t: "handwerk", tat: "abgeholt", rezept: r.id, menge: k * je, rest: W.n - k });
   senden(s, { t: "chat", kanal: "system", text: `Du nimmst ${k * je} × ${(GEGENSTAENDE[r.ergebnis] || { name: r.ergebnis }).name} aus dem Rauch.${k < W.n ? " Der Rest hängt noch – dein Rucksack ist voll." : ""}`, zeit: Date.now() }); return null; }

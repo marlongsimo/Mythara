@@ -1,6 +1,6 @@
 # Stand – wo wir im Fahrplan stehen
 
-Gepflegt von der Rolle Konzept & Review. Zuletzt aktualisiert: **27.11.2026, 7:30 UTC**.
+Gepflegt von der Rolle Konzept & Review. Zuletzt aktualisiert: **27.11.2026, 10:55 UTC**.
 Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzept.pdf` · Arbeitsweise: `doku/ARBEITSWEISE.md`
 
 ## Fahrplan (Grenzland)
@@ -15,13 +15,15 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | 2 | Waldland: Quests A1–A3, Zielscheibe, Kapelle, Bäckerei, Brot, Golem-Beute, Mühle je Spieler | ✅ live |
 | 3 | Weidenhain & Riedwiesen – 3a Splitterbinden + Wegstein + B1 · 3b Wirkungen, Fischen, Kochen · 3c B2, Werkstatt Weidenhain, Sterneisen/Kernbaum | ✅ live und vom Nutzer getestet (26.11.) |
 | 4 | Westmark & erster Boss: Banditen-Varianten, B3, Boss-Baukasten, Instanzen, B4 Rotmantel | ✅ live (27.11.) – bitte im Spiel testen |
-| **5** | **Vorbereitung Moor**: Kräuterkunde, geladene Waffen, Set-Bonus | 🟡 Systeme fertig (#43); Inhalte bei Integration (#29, #31, #47, #80) |
-| 6 | Raben-Trilogie & Aschenwerth: Rabenpriester, C1–C3, Rabengrund, Bossing | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
-| 7 | Graufurt zur Stadt, Fährkette, Ostufer, Grüner Turm | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
-| 8 | Der Weg nach Grauwacht: Fahle Weiten (W3), Grauwacht im Wiederaufbau, Quests E1–E4, Wachtrüstung | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
-| 9 | Glut und Strom: Glutsande (W2), Glutbrunn, Quests F1–F4, Quer-Quest „Die Karte des Boten“ | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
-| 10 | Salz und Segel: Smaragdküste (W4), Kielmund, Quests G1–G4, Fischen an der Küste | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
-| Süden | Dörfer, Arbeits- und Gegnerplätze, kurze Quests S1–S9 entlang der Südstraße | 🟡 Konzept `doku/konzepte/sueden.md`; Welt #120, Figuren #121, Quests #124 |
+| **5** | **Vorbereitung Moor**: Kräuterkunde, geladene Waffen, Set-Bonus | ✅ live und vom Nutzer getestet (27.11., „ganz gut“) |
+| 6 | Raben-Trilogie & Aschenwerth: Rabenpriester, C1–C3, Rabengrund, Bossing | ✅ live (27.11., main 2fbe914b) – **bitte testen**: C1–C3, Federmutter, Oberster Rabenpriester, Kerkermeister |
+| 7 | Graufurt zur Stadt, Fährkette, Ostufer, Grüner Turm | ✅ live (27.11., main e53962ed) – alle Quests im Spiel; Welt-Tests zum Durchspielen folgen (Quests) – **bitte testen** |
+| 8 | Der Weg nach Grauwacht: Fahle Weiten (W3), Grauwacht im Wiederaufbau, Quests E1–E4, Wachtrüstung | ✅ live (27.11., main e53962ed) – alle Quests im Spiel; Welt-Tests zum Durchspielen folgen (Quests) – **bitte testen** |
+| 9 | Glut und Strom: Glutsande (W2), Glutbrunn, Quests F1–F4, Quer-Quest „Die Karte des Boten“ | ✅ live (27.11., main e53962ed) – alle Quests im Spiel; Welt-Tests zum Durchspielen folgen (Quests) – **bitte testen** |
+| 10 | Salz und Segel: Smaragdküste (W4), Kielmund, Quests G1–G4, Fischen an der Küste | ✅ live (27.11., main e53962ed) – alle Quests im Spiel; Welt-Tests zum Durchspielen folgen (Quests) – **bitte testen** |
+| 11 | Über den Pass: Hochlande (W5), Hauptort Steinhag, Bergwerk, Almen, Hochpass – Gegner 46–58 | 🟡 Konzept `doku/konzepte/phase-11.md`; Vorarbeit Welt und Figuren (27.11.) |
+| Süden | Dörfer, Arbeits- und Gegnerplätze, kurze Quests S1–S9 entlang der Südstraße | ✅ live (27.11.): Orte, Gegner, Fleisch/Gerichte, Reisende, S1–S9 |
+| — | Ganze Welt als Kampfwelt, Gegnerplätze über die ganze Welt (#122, #130), 10 neue Gegner aus Modellen des Nutzers (#138) | ✅ live: Kampfwelt, 10 neue Gegner, Streifgebiete (#143), Orte Haferstedt/Netzbucht/Sandquell (#140/#141), 158 Holz-/Erzstellen (#142) |
 
 ## Festland (Weltkonzept)
 

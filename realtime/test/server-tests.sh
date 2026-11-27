@@ -45,6 +45,7 @@ TESTS=(
   welt-beleben
   welt-sammelstellen
   welt-streifgebiete
+  welt-hochlande
   phase5
   phase8-10
   abholen
@@ -59,6 +60,10 @@ TESTS=(
   waldweg
   welt-bau
   welt-dreh
+  speer
+  waffen70
+  hochlande-leben
+  tiere
   welt-daten
   welt-grenzen
   welt-raster
