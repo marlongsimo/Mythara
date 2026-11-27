@@ -116,6 +116,8 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
+  /** Heiler (Phase 7, Grünlicht): heilt im Kampf alle alle Sekunden den schwächsten Verbündeten (nur dieser Art, wenn nur) im Umkreis radius um anteil seines Lebens */
+  heiler?: { alle: number; anteil: number; radius: number; nur?: string };
   /** Glocke (#102): friedlich gegen Helden, für die dieser Schalter an ist (der Server setzt „glocke_laeutet“ eine Minute nach jeder vollen Stunde) – greift sie nicht an und lässt von ihnen ab */
   friedlichBei?: string;
   /** Gift (#102): nach einem Treffer mit dieser Chance Schaden über Zeit (jeSek Leben je Sekunde, dauer Sekunden) */
@@ -284,6 +286,36 @@ Object.assign(MONSTER, {
       { wurf: [{ g: "@selten", chance: 100 / 16 }, { g: "@episch", chance: 100 / 64 }, { g: "@legendaer", chance: 100 / 512 }] },
       { wurf: [{ g: "splitterkern", chance: 100 / 64 }, { g: "rabenschwinge", chance: 100 / 256 }, { g: "rabenkueken", chance: 100 / 2000 }] }] },
 } as Record<string, MonsterDef>);
+
+/* ───────── Phase 7 (#40): Graufurt, Ostufer und der Turm mit dem grünen Licht – Werte doku/konzepte/phase-7.md (Beute: Vorschläge des Konzepts, beute.md folgt) ───────── */
+Object.assign(MONSTER, {
+  /** Schlickkrebs: Stufe 45, langsam, hohe Defense (Ufer, Schilf) */
+  schlickkrebs: { name: "Schlickkrebs", stufe: 45, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 80, tempo: 1.6, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 70, magie: 40 }, r: 0.5,
+    angriff: { name: "Scherenhieb", art: "nah", schaden: [1, 9], takt: 3, reich: 1.5, aushol: 0 },
+    v2: { staerke: 80, geschick: 45, defense: 75, magie: 10, ticks: 6, abwehr: { nah: 40, fern: 35, magie: 0 } }, aggroReich: 3,
+    info: "Ein Krebs so groß wie ein Hund, der Panzer voller Schlick. Langsam – aber an seinen Scheren beißt man sich die Zähne aus.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [10, 20] }] }, { wurf: [{ g: "krebsschere", chance: 40, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten:Rüstung", chance: 100 / 128 }] }] },
+  /** Splitterreiher: Stufe 50, Fernkampf (Splitter-Stoß), flieht nicht (Ostufer-Wiesen) */
+  splitterreiher: { name: "Splitterreiher", stufe: 50, bild: "img/echtzeit/bandit.webp", hoehe: 110, lp: 75, tempo: 3.4, angriffswert: { nah: 10, fern: 50, magie: 0 }, abwehr: { nah: 45, fern: 50, magie: 35 }, r: 0.45,
+    angriff: { name: "Splitter-Stoß", art: "fern", schaden: [1, 11], takt: 2, reich: 6, aushol: 0 },
+    v2: { fernkampf: 100, geschick: 40, staerke: 20, defense: 50, magie: 20, ticks: 4, abwehr: { nah: 0, fern: 20, magie: 5 } },
+    info: "Ein grauer Reiher mit Splittern statt Federn am Hals. Er schleudert sie, bevor man nah genug ist.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [12, 24] }] }, { wurf: [{ g: "erz_splittereisen", chance: 8, anzahl: [1, 3] }, { g: "seelenlicht", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten:Bogen", chance: 100 / 128 }] }] },
+  /** Turmwächter: Stufe 58, gerüstete Steinfigur der Wacht, Rundumschlag mit Ansage (Fläche um sein Ziel) */
+  turmwaechter: { name: "Turmwächter", stufe: 58, bild: "img/echtzeit/bandit.webp", hoehe: 140, lp: 120, tempo: 2.2, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 80, fern: 70, magie: 45 }, r: 0.55,
+    angriff: { name: "Speerhieb", art: "nah", schaden: [1, 13], takt: 2.5, reich: 1.9, aushol: 0 },
+    spezial: { name: "Rundumschlag", laden: 1, alle: 9, radius: 2.2, reich: 2, schaden: [8, 14], art: "nah" },
+    v2: { staerke: 105, geschick: 70, defense: 85, magie: 20, ticks: 5, abwehr: { nah: 40, fern: 30, magie: -5 } }, aggroReich: 4,
+    info: "Eine gerüstete Steinfigur mit dem Wappen der Wacht auf der Brust. Wer den Turm betritt, wird gestellt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [15, 30] }] }, { wurf: [{ g: "wachtstein", chance: 35, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 64 }, { g: "@episch", chance: 100 / 512 }] }] },
+  /** Grünlicht: Stufe 60, Irrlicht auf dem Turmdach, heilt Turmwächter in der Nähe */
+  gruenlicht: { name: "Grünlicht", stufe: 60, bild: "img/gegner/irrlicht.jpg", hoehe: 90, lp: 90, tempo: 3.0, angriffswert: { nah: 0, fern: 0, magie: 60 }, abwehr: { nah: 60, fern: 40, magie: 80 }, r: 0.4,
+    angriff: { name: "Grünes Feuer", art: "magie", schaden: [1, 10], takt: 2.5, reich: 5, aushol: 0 }, heiler: { alle: 6, anteil: 0.15, radius: 8, nur: "turmwaechter" },
+    v2: { magie: 95, geschick: 30, staerke: 10, defense: 60, ticks: 5, abwehr: { nah: 10, fern: -10, magie: 40 } },
+    info: "Ein grünes Licht, das schwebt und flüstert. Wo es ist, stehen die Turmwächter wieder auf.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [20, 40] }] }, { wurf: [{ g: "seelenlicht", chance: 60, anzahl: [2, 5] }] }, { wurf: [{ g: "@selten:Stab", chance: 100 / 32 }] }] },
+} as Record<string, MonsterDef>);
+
 
 
 /** Trefferchance aus Angriffs- und Verteidigungswert (beide würfeln 0 bis Wert, der höhere Angriffswurf trifft) */

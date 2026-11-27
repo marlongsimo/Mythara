@@ -48,7 +48,7 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   /** Instanz (shared/boss.ts): die Kopie, zu der dieses Wesen gehört – es sieht und trifft nur Wesen derselben Kopie; welle: Nummer seiner Welle */ instanz?: string; welle?: number;
   /** vom Boss gerufen (Kennung des Bosses): kehrt nicht wieder; weg = verschwindet am Ende des Schritts */ helfer?: number; weg?: boolean;
   /** Boss-Baukasten: Stand des Kampfes; laufende Ansage (Rest in s, Felder, Angriff); Trinken am Heilort (Rest in s, Anteil des Lebens) */ boss?: BossLauf; ansage?: { t: number; felder: [number, number][]; a: Ansage }; trinkT?: number; trinkN?: number;
-  /** #102: unangreifbar bis (Simulationszeit: Flackern, Eingraben des Bosses); Flackern-Takt; eingegraben (Sand-Auftauchen, nicht im Zustand) und die laufende Ansage dazu */ weg0?: number; flackerT?: number; vergraben?: boolean; auftauchen?: { t: number; x: number; y: number };
+  /** #102: unangreifbar bis (Simulationszeit: Flackern, Eingraben des Bosses); Flackern-Takt; eingegraben (Sand-Auftauchen, nicht im Zustand) und die laufende Ansage dazu */ weg0?: number; flackerT?: number; /** Heiler: Zeit seit dem letzten Heilen */ heilT?: number; vergraben?: boolean; auftauchen?: { t: number; x: number; y: number };
   /** Stilwechsel (MonsterDef.stile): der laufende Stil und seine Zeit; Verkleidung: was der Held angelegt hat (setzt der Server, MonsterDef.friedlichMit) */ stil?: number; stilT?: number; angelegt?: string[];
   /** Türen: für diesen Helden gesperrte Felder (Rechenfelder x0, y0, x1, y1) mit Text; wann zuletzt gemeldet */ sperren?: { f: number[]; t: string }[]; sperrZ?: number }
 export interface Geschoss { id: number; x: number; y: number; zielId: number; zx: number; zy: number; tempo: number; von: number; spec: Spec; knall: number; art: string }
@@ -470,6 +470,9 @@ export class Sim {
         const D = MONSTER[w.typ]; if (w.spottT > 0) { const s = this.nach(w.spottId); if (s && !s.tot) { ziel = s; w.zielId = s.id; } }
         if (w.vergraben || w.auftauchen) { this.grabSchritt(w, D); continue; } /* Sand-Auftauchen (#102) */
         if (D.friedlichBei) { if (ziel && ziel.held && (ziel.schalterAn || []).includes(D.friedlichBei)) { ziel = undefined; w.zielId = 0; w.wach = false; w.pfad = []; } } /* Glocke (#102) */
+        if (D.heiler && ziel) { const Hh = D.heiler; w.heilT = (w.heilT || 0) + DT; if (w.heilT >= Hh.alle) { /* Heiler (Grünlicht): der schwächste Verbündete in der Nähe */
+          let o: Wesen | null = null; for (const f of this.freunde(w)) if (!f.held && f !== w && (!Hh.nur || f.typ === Hh.nur) && f.lp < f.max * 0.85 && abstand(w, f) <= Hh.radius && (!o || f.lp / f.max < o.lp / o.max)) o = f;
+          if (o) { w.heilT = 0; this.heilen(o, o.max * Hh.anteil, w); this.ev.push({ a: "text", id: w.id, t: "heilt" }); } } }
         if (D.flackern && ziel) { w.flackerT = (w.flackerT || 0) + DT; if (w.flackerT >= D.flackern.alle) { w.flackerT = 0; w.weg0 = this.zeit + D.flackern.dauer; this.ev.push({ a: "flackern", id: w.id, t: D.flackern.dauer }); } }
         if (D.stile && D.stile.length) this.stilSchritt(w, D, ziel);
         if (this.fliehen(w, D, ziel)) { /* läuft zum Kumpan */ }

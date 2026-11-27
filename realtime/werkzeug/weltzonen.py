@@ -20,6 +20,15 @@ import subprocess
 US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"],
                                cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])  # die Quelle meldet zuerst ihren Umfang
 BESONDERS = {
+    # Phase 7 (#40): Ostufer – Schlickkrebse am Westufer, Splitterreiher auf den Wiesen (Stufe 45–60, nur über die Fähre)
+    "ostufer": {"leine": 12, "wandern": 3,
+                "lager": [("schlickkrebs", 6800, 6520), ("schlickkrebs", 6798, 6518), ("schlickkrebs", 6800, 6560), ("schlickkrebs", 6802, 6558),
+                          ("splitterreiher", 6830, 6480), ("splitterreiher", 6828, 6478), ("splitterreiher", 6860, 6540), ("splitterreiher", 6870, 6600), ("splitterreiher", 6868, 6598)]},
+    # Phase 7 (#40, D2): der Turm mit dem grünen Licht – Turmwächter auf den Ebenen, das Grünlicht mit einem Wächter auf dem Dach
+    "turm_ebene1": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10896, 9612), ("turmwaechter", 10894, 9610)]},
+    "turm_ebene2": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10928, 9612), ("turmwaechter", 10926, 9610)]},
+    "turm_ebene3": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10960, 9612)]},
+    "turm_dach": {"leine": 10, "wandern": 1, "lager": [("gruenlicht", 10990, 9612), ("turmwaechter", 10988, 9614)]},
     # Phase 6 (#17, #26): Aschenwerth – drei Novizen am Steinkreis (friedlich mit Rabenkapuze), Akoluthen und die Federmutter im Heiligtum, Moorraben am Moor
     "aschenwerth": {"leine": 12, "wandern": 2,
                     "lager": [("rabenpriester_novize", 6240, 6728), ("rabenpriester_novize", 6244, 6728), ("rabenpriester_novize", 6242, 6730),

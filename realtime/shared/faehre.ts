@@ -10,7 +10,13 @@ export interface Anleger { /** Stelle zum Antippen (Weltfelder) */ x: number; y:
 export interface Faehre { id: string; a: Anleger; b: Anleger; /** an, wenn dieser Schalter für den Spieler an ist (QuestDef.schalter) */ schalter: string;
   /** Text ohne Schalter */ nein: string; /** Sekunden der Überfahrt (Standard FAEHRE_DAUER) */ dauer?: number }
 
-export const FAEHREN: Faehre[] = [];
+export const FAEHREN: Faehre[] = [
+  /* Phase 7 (#40): Graufurt – Westanleger ↔ Ostanleger, nach D1 „Die Fährkette“ (Schalter faehre_frei) */
+  { id: "graufurt", schalter: "faehre_frei", dauer: 3,
+    nein: "Kord Weller schüttelt den Kopf: „Die Kette ist gerissen. Ohne neue Glieder fährt hier nichts – frag Hauptfrau Stahl im Bergfried.“",
+    a: { name: "Westanleger", region: "graufurt", x: 6717.6, y: 6513.4, ankunft: [6717.5, 6515.5] },
+    b: { name: "Ostanleger", region: "graufurt", x: 6736.4, y: 6513.4, ankunft: [6736.5, 6515.5] } },
+];
 /* Beispiel (für die Integration):
    { id: "graufurt", schalter: "faehre_frei", nein: "Der Fährmann schüttelt den Kopf: „Die Kette ist gerissen. Ohne neue Glieder fährt hier nichts.“",
      a: { name: "Westanleger", region: "graufurt", x: …, y: …, ankunft: [… , …] }, b: { name: "Ostanleger", region: "ostufer", x: …, y: …, ankunft: [… , …] } } */

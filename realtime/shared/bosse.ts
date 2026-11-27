@@ -18,6 +18,10 @@ export const BOSSE: Record<string, BossDef> = {};
 export const INSTANZEN: InstanzDef[] = [];
 export const TUEREN: Tuer[] = [];
 
+/* Phase 7 (#40, D2): die Wappentür des Turms am Ostufer – offen mit dem Schalter wappentuer_offen (D2 setzt ihn ab dem Schritt „tuer“) */
+TUEREN.push({ id: "turm_wappentuer", feld: [6840, 6519, 6840, 6519], schalter: "wappentuer_offen", eingang: "turm_wappentuer",
+  zu: "Die Tür trägt ein Wappen – ein Turm über drei Wellen. Sie ist verschlossen. Vielleicht weiß jemand in Graufurt, wer hier hineindarf." });
+
 /* ───────── Phase 6 (#18): Der Oberste Rabenpriester im Thronsaal (doku/konzepte/phase-6.md „Bosskampf“) ─────────
    Thronsaal = Region rabengrund_thronsaal (Weltfelder 10752…10783 × 9600…9631): Becken (10768, 9615), vier Säulen (±6 Felder), Altar im Norden.
    Instanz je Versuch mit Federsiegel; offen, solange der Schalter „rabenpriester_thronsaal“ an ist (C3 im Schritt Thronsaal, danach Bossing). */

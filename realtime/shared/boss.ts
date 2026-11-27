@@ -67,7 +67,8 @@ export interface InstanzDef { id: string; name: string;
 
 export interface Tuer { id: string; /** gesperrte Felder in Weltfeldern: x0, y0, x1, y1 (Ecken eingeschlossen) */ feld: [number, number, number, number];
   /** offen, wenn dieser Schalter für den Spieler an ist */ schalter: string; /** Text, wenn man davor steht */ zu: string;
-  /** Tür vor einer Instanz mit Eintritt (InstanzDef.id): zusätzlich nur offen mit dem Gegenstand dabei – oder wenn man im Raum bzw. in der Tür steht */ instanz?: string }
+  /** Tür vor einer Instanz mit Eintritt (InstanzDef.id): zusätzlich nur offen mit dem Gegenstand dabei – oder wenn man im Raum bzw. in der Tür steht */ instanz?: string;
+  /** Eingang der Welt (Interaktion mit Teleport, z. B. „turm_wappentuer“), der nur bei offener Tür geht – sonst der Text zu (Browser) */ eingang?: string }
 
 /** So lange bleibt eine Kopie ohne ihren Spieler bestehen (Sekunden) */
 export const INSTANZ_LEER = 60;

@@ -518,3 +518,25 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
   const [sel, art] = g.slice(1).split(":"), werkzeug = /^(holzbeil|spitzhacke|angel)/;
   const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
   return L.length ? L[Math.floor(zufall() * L.length)].id : null; }
+
+/* ───────── Phase 7 (#40): Graufurt, Ostufer, Turm – Bilder img/objekte3d/graufurt/symbole/ und Wels img/objekte3d/skilling/angeln/symbole/ (Figuren #37) ───────── */
+{ const G7 = "img/objekte3d/graufurt/symbole/", A7 = "img/objekte3d/skilling/angeln/symbole/";
+  GEGENSTAENDE.kettenglied = { id: "kettenglied", name: "Kettenglied", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 8, bild: G7 + "kettenglied.webp",
+    text: "Ein schweres Glied aus Splittereisen, frisch vom Amboss. Acht davon braucht die Winde am Westanleger." };
+  GEGENSTAENDE.kettenschloss = { id: "kettenschloss", name: "Kettenschloss", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G7 + "kettenschloss.webp",
+    text: "Ein Schloss, das zwei Kettenenden für immer verbindet. Von der Schmiedin aus Graufurt." };
+  GEGENSTAENDE.splitterkern_gruen = { id: "splitterkern_gruen", name: "Grüner Splitterkern", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: G7 + "splitterkern_gruen.webp",
+    text: "Der Kern des Signalfeuers. Er ist warm und pulsiert grün – als wartete er noch auf eine Antwort." };
+  GEGENSTAENDE.krebsschere = { id: "krebsschere", name: "Krebsschere", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: G7 + "krebsschere.webp", wert: 6,
+    text: "Die Schere eines Schlickkrebses, hart wie Stein. Köche sagen, das Fleisch darin sei das beste am ganzen Fluss." };
+  GEGENSTAENDE.wachtstein = { id: "wachtstein", name: "Wachtstein", art: "Rohstoff", seltenheit: "selten", stapel: 1000, bild: G7 + "wachtstein.webp", wert: 25,
+    text: "Ein Stück der Steinfiguren aus dem Turm, das Wappen der Wacht noch zu erkennen. Die Wacht in Grauwacht würde dafür bezahlen." };
+  GEGENSTAENDE.fisch_wels_roh = { id: "fisch_wels_roh", name: "Graufurter Wels (roh)", art: "Rohstoff", seltenheit: "gewoehnlich", bild: A7 + "fisch_wels_roh.webp",
+    text: "Ein großer Wels aus dem Fährhafen, schwer und glitschig. Am Feuer gebraten heilt er 11 Lebenspunkte – oder er wird zu Almas Welspastete." };
+  GEGENSTAENDE.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", bild: A7 + "fisch_wels_gebraten.webp", trank: "fisch_wels_gebraten",
+    text: "Dick, fett und knusprig. Heilt 11 Lebenspunkte." };
+  GEGENSTAENDE.fisch_wels_verbrannt = { id: "fisch_wels_verbrannt", name: "Verbrannter Wels", art: "Abfall", seltenheit: "anfaenger", bild: A7 + "fisch_wels_verbrannt.webp", text: "Schwarz bis auf die Gräten. Den will niemand essen." };
+  GEGENSTAENDE.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", bild: G7 + "welspastete.webp", trank: "welspastete",
+    text: "Almas Pastete aus Wels und Mehl, das Rezept der Taverne „Zur Furt“. Heilt 14 Lebenspunkte." };
+  VERBRAUCH.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 11, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "11 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Dick, fett und knusprig." };
+  VERBRAUCH.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", heilt: { fest: 14, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "14 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Almas Pastete aus Wels und Mehl." }; }

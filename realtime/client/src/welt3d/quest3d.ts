@@ -63,6 +63,8 @@ export class QuestWelt {
   sperren(): number[][] { return [...SCHRANKEN.filter(({ q, s }) => !offenFuer(q, s.id)).map(({ s }) => [...s.feld]), ...this.tuerenZu().map((t) => [t.feld[0], t.feld[1], t.feld[2] + 1, t.feld[3] + 1])]; } /* Türen: Ecken eingeschlossen, das Raster sperrt bis ausschließlich x1/y1 */
   /** Türen (shared/bosse.ts), die für diesen Spieler zu sind – dieselben sperrt der Server in der Kampfwelt */
   private tuerenZu() { return TUEREN.length && questGeladen() ? tuerenZu(TUEREN, (s) => schalterAn((id) => questStandB(id), s), { hat: (g) => inventar().rucksack.includes(g), x: this.u.ort.x, y: this.u.ort.y }, INSTANZEN) : TUEREN; }
+  /** Eingang der Welt hinter einer Tür (Tuer.eingang): ihr Text, solange sie für diesen Spieler zu ist – sonst null */
+  eingangZu(id: string): string | null { const t = TUEREN.find((x) => x.eingang === id); if (!t) return null; return this.tuerenZu().some((x) => x.id === t.id) ? t.zu : null; }
   /** Türen vor Instanzen mit Eintritt hängen an der Stelle (im Raum, in der Tür): zweimal je Sekunde nachsehen */
   private tuerT = 0;
   /** Wo steht die Figur gerade (wer umhergeht: der Wanderer in der Welt) */

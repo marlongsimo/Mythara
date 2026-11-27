@@ -167,6 +167,10 @@ const fisch = (f: string, level: number, xp: number, name: string) => dazu({ id:
 fisch("bachling", 1, 30, "Fisch");
 fisch("muehlbarsch", 10, 50, "Fisch");
 fisch("moorhecht", 20, 80, "Fisch");
+fisch("wels", 45, 140, "Fisch"); /* Phase 7 (#40) */
+/* Phase 7 (#40): D3 Welspastete am Herd (Kochen 45), D1 Kettenglieder am Amboss (Schmieden 45, Quest-Rezept: 1 Splittereisenbarren → 1 Glied) */
+dazu({ id: "welspastete", station: "herd", ergebnis: "welspastete", level: 45, zutaten: [{ g: ["fisch_wels_roh"], n: 1 }, { g: ["mehl"], n: 1 }], xp: 160, ticks: 6, stufe: 0, gruppe: "Pastete", verbrannt: "fisch_wels_verbrannt" });
+dazu({ id: "kettenglied", station: "amboss", ergebnis: "kettenglied", level: 45, zutaten: [{ g: ["barren_splittereisen"], n: 1 }], xp: 90, ticks: 5, stufe: 0, gruppe: "Auftrag der Wacht", quest: "graufurt_die_faehrkette" });
 dazu({ id: "krug_wasser", station: "brunnen", ergebnis: "krug_wasser", level: 1, zutaten: [{ g: ["krug"], n: 1 }], xp: 0, ticks: 2, stufe: 0, gruppe: "Wasser" });
 dazu({ id: "brot_backen", station: "backofen", ergebnis: "brot", level: 1, zutaten: [{ g: ["mehl"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 25, ticks: 5, stufe: 0, gruppe: "Brot", verbrannt: "brot_verbrannt" });
 dazu({ id: "fischsuppe", station: "kessel", ergebnis: "fischsuppe", level: 15, zutaten: [{ g: ["fisch_muehlbarsch_roh"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 70, ticks: 5, stufe: 0, gruppe: "Suppe", verbrannt: "suppe_verbrannt" });
