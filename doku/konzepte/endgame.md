@@ -1,7 +1,7 @@
 # Endgame und der Weg dorthin
 
 *Konzept-Chat, 27.11.2026. **Als Idee festgehalten** (Nutzer, 27.11.). Wir arbeiten später weiter daran.*
-Baut auf den **Boss-Regeln** auf (`boss-regeln.md`, im Kanon). Die **Endgame-Ausrüstung** (Uralt 75, Unikate 80, Stufe 90) legt **der Nutzer selbst fest**. Hier steht nur, **wo** sie herkommt.
+Baut auf den **Boss-Regeln** auf (`boss-regeln.md`, im Kanon). Die **Endgame-Ausrüstung** (Unikate 80, Stufe 85/90) legt **der Nutzer selbst fest**. Hier steht nur, **wo** sie herkommt.
 
 ## 1. Midgame: ans Bossen heranführen
 
@@ -33,7 +33,7 @@ Jeder Midgame-Boss hat **einen** seltenen, begehrten Drop: Ring oder Amulett mit
 
 | Säule | Stufe | Art | Lohn |
 |---|---|---|---|
-| **Rissgrube** (Hochlande) | 75 | Minispiel, allein oder 2–4 | Uralt-Teile (`rissgrube.md`) |
+| **Rissgrube** (Hochlande) | 70 | Minispiel, allein oder 2–4 | Waffen der Stufe 70 (`rissgrube.md`, `waffen-70.md`) |
 | **Unikat-Bosse** (Frostkrone) | 80 | 3 Bosse, je einer pro Stil-Schwäche, allein oder 2–4 | Unikate |
 | **„Die Passwacht hält“** | 70–80 | Punkte-Minispiel | Teile mit Stilboni gegen Punkte |
 | **Raid „Sturm auf die Wachtfeste“** | 85–90 | **fest 4 Spieler**, 3 Schwierigkeitsgrade | Teile der Stufe 90 |

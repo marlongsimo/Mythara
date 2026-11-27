@@ -2,7 +2,7 @@
 
 *Entwurf Konzept-Chat, 27.11.2026, noch nicht abgesegnet.*
 
-Diese Grundregel gilt für alle Bosse ab den Hütern der Hochlande, ebenso für das Endgame (Rissgrube, Uralt, Unikate, Weltenkern) und die Gruppen-Bosse.
+Diese Grundregel gilt für alle Bosse ab den Hütern der Hochlande, ebenso für das Endgame (Rissgrube, Unikate, Raid, Weltenkern) und die Gruppen-Bosse.
 Grundsatz: **Bosse dürfen eine deutlich höhere Stufe haben als die Helden.** Besiegen kann man sie trotzdem mit **Mechanik**, Ausrüstung und Vorbereitung. **Gebete gibt es nicht.**
 
 ## 1. Warum ein Boss Stufe 300 haben kann
@@ -17,7 +17,7 @@ Grundsatz: **Bosse dürfen eine deutlich höhere Stufe haben als die Helden.** B
 | Abschnitt | Ausrüstung | Boss-Stufe |
 |---|---|---|
 | Hüter der Hochlande (Grumhold, Sturmschwinge, Frostwitwe) | Stufe 70 | ca. 150–200 |
-| Rissgrube / Uralt | Stufe 75 | ca. 220–280 |
+| Rissgrube (Waffen) | Stufe 70 | ca. 220–280 |
 | Unikate | Stufe 80 | ca. 280–350 |
 | Weltenkern | Stufe 90 | ca. 400+ |
 
