@@ -130,9 +130,9 @@ const GW = { burg: [6706, 5704], platz: [6706, 5748], abtei: [6672, 5768] };
     { id: "nonne_2", rolle: "Nonne (Küche)", x: 6682, y: 5785.6, ausbau: "abtei" }, { id: "nonne_3", rolle: "Nonne (Garten)", x: 6662, y: 5772, ausbau: "abtei" });
   /* Brücke zur Furt: die ersten zwei Bögen; die übrigen acht, die Furt dahinter und die Wache baut hochlande.mjs (Phase 11, #147) – keine Sperre mehr */
   weg([[6722, 5760], [6730, 5760.5]], 1.8, "p");
-  ding("dorf_bruecke_01", 6733, 5761.5, { id: "furtbruecke_1" }); ding("dorf_bruecke_01", 6739.6, 5761.5, { id: "furtbruecke_2" });
+  ding("hochland_steinbruecke_ow", 6733, 5761.5, { id: "furtbruecke_1" }); ding("hochland_steinbruecke_ow", 6739.6, 5761.5, { id: "furtbruecke_2" });   /* Steinbögen von Figuren (#148) */
   freigeben.push({ art: "rechteck", x0: 6728, y0: 5758.9, x1: 6741, y1: 5761.5 });
-  lies("furtbruecke", 6727, 5760, "Die Brücke zur Furt. Zehn Bögen über den Grauen Sund bis zur Sandbank drüben – und drüben, im Dunst, die Hochlande."); }
+  lies("furtbruecke", 6727, 5760, "Die Brücke zur Furt. Zehn steinerne Bögen über den Grauen Sund bis zur Sandbank drüben – und drüben, im Dunst, die Hochlande."); }
 
 /* ───── Hügelgräberfeld ───── */
 const GRAEBER = [[6432, 5752, 4.5], [6452, 5742, 5, "grabkammer_1"], [6476, 5750, 4], [6494, 5764, 5, "grabkammer_2"], [6440, 5776, 4], [6466, 5778, 8, "hauptmann"], [6488, 5790, 4], [6452, 5798, 4.5]];

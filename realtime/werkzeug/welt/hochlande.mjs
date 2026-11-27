@@ -55,7 +55,7 @@ export const ORTE = { furt: [6800, 5761], steinhag: [6990, 5892], steinhagsee: [
   alm: [7190, 6000], einsiedelei: [7340, 5664], spiegelsee: [7322, 5650], nordklippen: [7250, 5440] };
 
 /* ═══════ 1. Brücke zur Furt und die Furt über die Sandbank ═══════ */
-{ for (let i = 0; i < 8; i++) ding("dorf_bruecke_01", 6746.2 + i * 6.6, 5761.5, { id: "furtbruecke_" + (i + 3) });   /* zehn Bögen über den Grauen Sund (festland.py überschreibt kein Meer) */
+{ for (let i = 0; i < 8; i++) ding("hochland_steinbruecke_ow", 6746.2 + i * 6.6, 5761.5, { id: "furtbruecke_" + (i + 3) });   /* zehn Bögen über den Grauen Sund (festland.py überschreibt kein Meer) */
   freigeben.push({ art: "rechteck", x0: 6741, y0: 5758.9, x1: 6794, y1: 5761.5 });
   /* die Furt: eine flache Sandbank am Ostufer, wo die Brücke aufsetzt */
   male(6788, 5750, 6812, 5772, (x, y) => { const d = Math.hypot((x - 6798) / 11, (y - 5761) / 9) + 0.12 * welle(x, y); return d < 0.7 ? "s" : d < 1 ? (welle(x, y) > 0 ? "s" : "g") : null; });
