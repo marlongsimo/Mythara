@@ -41,12 +41,12 @@ try {
   const anna = await spieler(TA, KUPFER.region), ben = await spieler(TB, KUPFER.region); await warte(anna, (m) => m.t === "inventar"); await warte(ben, (m) => m.t === "inventar");
   check(!(anna.inv.pets || []).length, "Anna hat noch keinen Begleiter");
   await bei(anna, KUPFER); await bei(ben, KUPFER, 2); const st = await nein(anna, KUPFER.id); check(st.tat === "start", "Anna baut Kupfer ab");
-  const fund = await warte(anna, (m) => m.t === "pet" && m.tat === "fund", 15000); await schlaf(300);
+  const fund = await warte(anna, (m) => m.t === "pet" && m.tat === "fund", 40000) /* unter Last (parallel.mjs) dauert der erste Hieb länger */; await schlaf(300);
   check(fund && fund.id === "steinbert", "beim Abbau gefunden: Steinbert (Bergbau)");
   check((anna.inv.pets || []).join() === "steinbert" && anna.inv.petAktiv === "steinbert", "im Spielerstand (pets, petAktiv) – es folgt sofort");
   check(!(anna.inv.rucksack || []).some((x) => /stein/.test(typeof x === "string" ? x : x.g)), "nicht im Rucksack (gebunden, nicht handelbar, geht nicht verloren)");
   check(anna.chat.some((t) => /Anna hat beim Bergbau einen kleinen Begleiter gefunden: Steinbert/.test(t)) && ben.chat.some((t) => /Steinbert/.test(t)), "Ansage im Chat – auch Ben liest sie");
-  await warte(anna, (m) => m.t === "berg" && m.tat === "erz", 15000); await schlaf(300);
+  await warte(anna, (m) => m.t === "berg" && m.tat === "erz", 40000); await schlaf(300);
   check((anna.inv.pets || []).length === 1, "je Beruf nur eins: weiterer Abbau, kein zweiter Fund");
   sende(anna, { t: "berg", tat: "stop" }); await bei(anna, KUPFER); await schlaf(2500);
   check(ben.spieler && ben.spieler.some((d) => d.n === "Anna" && d.p === "steinbert"), "Ben sieht Steinbert bei Anna (Spielerliste: p)");
