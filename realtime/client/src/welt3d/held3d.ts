@@ -12,6 +12,7 @@
  */
 import { TICK } from "../../../shared/kampfwerte";
 import { TeleportEffekt } from "../echt3d/darsteller";
+import { Aufladung, SPLITTER_VIOLETT } from "../echt3d/aufladung";
 /** Dauer des Teleport-Effekts (Sekunden, wie echt3d/figur.ts) */
 const TELEPORT_S = 1.8;
 import * as THREE from "three";
@@ -196,8 +197,16 @@ export class Held3D {
     const neu = m.clipAction(c); neu.reset(); neu.setLoop(einmal ? THREE.LoopOnce : THREE.LoopRepeat, Infinity); neu.clampWhenFinished = halten; neu.timeScale = tempo;
     if (this.aktion && this.aktion !== neu) neu.crossFadeFrom(this.aktion, 0.12, false); neu.play(); this.aktion = neu; this.name = name; }
   /** weiterrechnen; der Blick dreht weich zur Laufrichtung (Modell schaut nach +z, also Süden) */
+  /* ───────── Geladene Waffe „(s)“ (Phase 5b, #47): violettes Splitterleuchten an der sichtbaren Waffe, solange sie Ladungen hat ───────── */
+  private aufladungFx: Aufladung | null = null; private aufladungTeil: THREE.Object3D | null = null;
+  /** an: die sichtbare Waffe leuchtet; rest (0…1): unter 0,2 flackert es (gleich leer) */
+  aufladen(an: boolean, rest = 1): void { const w = an ? [...this.teile].find(([n, o]) => /^waffe/.test(n) && o.visible) : undefined;
+    if (!an || !w || !this.wurzel || (this.aufladungFx && this.aufladungTeil !== w[1])) { if (this.aufladungFx) { this.aufladungFx.entfernen(); this.aufladungFx = null; this.aufladungTeil = null; } if (!an || !w || !this.wurzel) return; }
+    if (!this.aufladungFx) { this.aufladungFx = new Aufladung(w[1], this.wurzel, SPLITTER_VIOLETT, { zart: true }); this.aufladungTeil = w[1]; }
+    this.aufladungFx.rest = rest; }
   schritt(dtMs: number, gieren: number): void {
     if (!this.wurzel) { this.ersatz.schritt(dtMs, gieren); return; } if (!this.an) return; const dt = dtMs / 1000;
+    if (this.aufladungFx) this.aufladungFx.weiter(dt);
     if (this.held && this.held.ich) this.zeigen(); /* angelegte Waffen können sich ändern (Ausrüstung) */
     const ziel = Math.atan2(Math.cos(this.blickW), Math.sin(this.blickW)); let d = ziel - this.dreh; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
     this.dreh += d * Math.min(1, dt * 12); this.wurzel.rotation.y = this.dreh; if (this.mixer) this.mixer.update(dt);
