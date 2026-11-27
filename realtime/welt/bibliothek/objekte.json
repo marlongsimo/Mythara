@@ -14787,6 +14787,3741 @@
     "fest": true
    },
    "hinweis": "Ursprung auf der Wasserlinie (z = 0), Kiel −1,1 m. Bug nach Norden (−y), Länge 12 m (+2,2 m Bugspriet), Breite 4 m. Begehbares Deck auf 1,3 m (y −4,9 … +5,5, x ±1,7), Achterkastell-Dach 2,8 m (y 3,0 … 5,4). Gangway-Lücke in der Reling mittschiffs an Steuerbord (+x, y −0,6 … +0,8): dort den Steg anlegen."
+  },
+  {
+   "id": "grauwacht_kaserne_01",
+   "name": "Kaserne der Wacht",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/gesamt.webp",
+   "groesse": [
+    1060,
+    835
+   ],
+   "anker": [
+    0.3849,
+    0.881
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -7.0,
+      "x1": 7.0,
+      "y0": -6,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 7.0,
+      "x1": 10.0,
+      "y0": -4.0,
+      "y1": -1.0,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.9,
+      "x1": 0.9,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -6.1,
+      "x1": -5.1,
+      "y0": -5.4,
+      "y1": -3.4
+     },
+     {
+      "x0": -4.7,
+      "x1": -3.7,
+      "y0": -5.4,
+      "y1": -3.4
+     },
+     {
+      "x0": -3.3,
+      "x1": -2.3,
+      "y0": -5.4,
+      "y1": -3.4
+     },
+     {
+      "x0": 2.3,
+      "x1": 3.3,
+      "y0": -5.4,
+      "y1": -3.4
+     },
+     {
+      "x0": 3.7,
+      "x1": 4.7,
+      "y0": -5.4,
+      "y1": -3.4
+     },
+     {
+      "x0": 5.1,
+      "x1": 6.1,
+      "y0": -5.4,
+      "y1": -3.4
+     },
+     {
+      "x0": -3.6,
+      "x1": -2.4,
+      "y0": -2.4,
+      "y1": -1.6
+     },
+     {
+      "x0": 2.25,
+      "x1": 3.75,
+      "y0": -2.2,
+      "y1": -1.8
+     },
+     {
+      "x0": -0.6,
+      "x1": 0.6,
+      "y0": -5.6,
+      "y1": -5.2
+     },
+     {
+      "x0": 5.7,
+      "x1": 6.3,
+      "y0": -1.5,
+      "y1": -0.9
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      336
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/haupt_innen.webp",
+     "tiefe": -5.98,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      222
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/haupt_seite.webp",
+     "tiefe": -5.97,
+     "rolle": "seite",
+     "versatz": [
+      738,
+      216
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      67,
+      500
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      353,
+      611
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      353,
+      581
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      148
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "turm_seite",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/turm_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      898,
+      177
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/turm_vorn.webp",
+     "tiefe": -1.0,
+     "rolle": "vorn",
+     "versatz": [
+      754,
+      317
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_dach",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_kaserne_01/turm_dach.webp",
+     "tiefe": -0.7,
+     "rolle": "dach",
+     "versatz": [
+      734,
+      155
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -6.8,
+     "x1": 6.8,
+     "y0": -5.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    151,
+    972,
+    744
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "grauwacht_gerberei_01",
+   "name": "Gerberei",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/grauwacht_gerberei_01/gesamt.webp",
+   "groesse": [
+    563,
+    684
+   ],
+   "anker": [
+    0.3892,
+    0.8509
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.0,
+      "x1": 3.0,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -2.0,
+      "x1": -0.7999999999999999,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -2.5,
+      "x1": -1.9,
+      "y0": -1.7,
+      "y1": -1.1
+     },
+     {
+      "x0": -1.7,
+      "x1": -1.1,
+      "y0": -4.1,
+      "y1": -3.5
+     },
+     {
+      "x0": 1.05,
+      "x1": 1.75,
+      "y0": -3.95,
+      "y1": -3.25
+     },
+     {
+      "x0": -0.6,
+      "x1": 0.6,
+      "y0": -2.8,
+      "y1": -2.0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_gerberei_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      64,
+      259
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_gerberei_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      71,
+      194
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_gerberei_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      357,
+      187
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_gerberei_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      70,
+      423
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_gerberei_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      111,
+      477
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_gerberei_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      111,
+      443
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_gerberei_01/haupt_dach.webp",
+     "tiefe": 0.5,
+     "rolle": "dach",
+     "versatz": [
+      40,
+      185
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_gerberei_01/haupt_vordach.webp",
+     "tiefe": 1.8,
+     "rolle": "vordach",
+     "versatz": [
+      186,
+      437
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 2.8,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.4,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    43,
+    188,
+    472,
+    660
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.4,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "grauwacht_tischlerei_01",
+   "name": "Tischlerei",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/grauwacht_tischlerei_01/gesamt.webp",
+   "groesse": [
+    605,
+    698
+   ],
+   "anker": [
+    0.3966,
+    0.8579
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.5,
+      "x1": 3.5,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.09999999999999987,
+      "x1": 2.3,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -2.4,
+      "x1": -1.2,
+      "y0": -2.8,
+      "y1": -2.0
+     },
+     {
+      "x0": 0.4,
+      "x1": 1.6,
+      "y0": -3.8,
+      "y1": -3.0
+     },
+     {
+      "x0": -3.0,
+      "x1": -1.8,
+      "y0": -4.6,
+      "y1": -4.2
+     },
+     {
+      "x0": 1.8,
+      "x1": 3.0,
+      "y0": -4.6,
+      "y1": -4.2
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_tischlerei_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      271
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_tischlerei_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      201
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_tischlerei_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      402,
+      194
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_tischlerei_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      67,
+      430
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_tischlerei_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      233,
+      474
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_tischlerei_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      233,
+      437
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_tischlerei_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      112
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -3.3,
+     "x1": 3.3,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 1.2,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    115,
+    514,
+    607
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 1.2,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "grauwacht_weberei_01",
+   "name": "Weberei",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/grauwacht_weberei_01/gesamt.webp",
+   "groesse": [
+    557,
+    746
+   ],
+   "anker": [
+    0.3877,
+    0.867
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.0,
+      "x1": 3.0,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.9,
+      "x1": -0.8999999999999999,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -0.6,
+      "x1": 0.6,
+      "y0": -2.8,
+      "y1": -2.0
+     },
+     {
+      "x0": -2.6,
+      "x1": -1.4,
+      "y0": -4.6,
+      "y1": -4.2
+     },
+     {
+      "x0": 1.55,
+      "x1": 2.45,
+      "y0": -4.3,
+      "y1": -3.7
+     },
+     {
+      "x0": 0.65,
+      "x1": 2.15,
+      "y0": -1.8,
+      "y1": -1.4
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_weberei_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      304
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_weberei_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      191
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_weberei_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      354,
+      184
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_weberei_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      67,
+      421
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_weberei_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      113,
+      542
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_weberei_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      113,
+      508
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_weberei_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      182
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 2.8,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.4,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    185,
+    466,
+    655
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.4,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "grauwacht_buergerhaus_01",
+   "name": "Bürgerhaus (Fachwerk auf Steinsockel)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_01/gesamt.webp",
+   "groesse": [
+    503,
+    770
+   ],
+   "anker": [
+    0.3753,
+    0.8743
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.5,
+      "x1": -0.5,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.0,
+      "x1": 1.2,
+      "y0": -2.6,
+      "y1": -1.8
+     },
+     {
+      "x0": -1.9,
+      "x1": -0.9,
+      "y0": -4.8,
+      "y1": -2.8
+     },
+     {
+      "x0": 0.9,
+      "x1": 1.9,
+      "y0": -4.5,
+      "y1": -3.5
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      324
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      208
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      303,
+      201
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      333
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      105,
+      568
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      105,
+      534
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      69
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    72,
+    413,
+    681
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "grauwacht_buergerhaus_02",
+   "name": "Bürgerhaus (Stein, Erker)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/gesamt.webp",
+   "groesse": [
+    551,
+    770
+   ],
+   "anker": [
+    0.3862,
+    0.8369
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.0,
+      "x1": 3.0,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 1.0,
+      "x1": 2.8,
+      "y0": -0.3999999999999999,
+      "y1": 0.8,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -2.1,
+      "x1": -1.1,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.0,
+      "x1": 1.2,
+      "y0": -2.8,
+      "y1": -2.0
+     },
+     {
+      "x0": -2.6,
+      "x1": -1.4,
+      "y0": -4.6,
+      "y1": -4.2
+     },
+     {
+      "x0": 1.3,
+      "x1": 2.3,
+      "y0": -4.5,
+      "y1": -3.5
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      301
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      189
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      351,
+      182
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      418
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      100,
+      539
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      100,
+      506
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      117
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "erker_seite",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/erker_seite.webp",
+     "tiefe": -0.37,
+     "rolle": "seite",
+     "versatz": [
+      329,
+      400
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "erker_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/erker_vorn.webp",
+     "tiefe": 0.8,
+     "rolle": "vorn",
+     "versatz": [
+      244,
+      476
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "erker_dach",
+     "bild": "img/welt/gebaeude/raeumlich/grauwacht_buergerhaus_02/erker_dach.webp",
+     "tiefe": 1.0,
+     "rolle": "dach",
+     "versatz": [
+      229,
+      381
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 2.8,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    120,
+    461,
+    691
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "kielmund_lagerhaus_01",
+   "name": "Lagerhaus am Kai (Speicher)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/kielmund_lagerhaus_01/gesamt.webp",
+   "groesse": [
+    771,
+    866
+   ],
+   "anker": [
+    0.4087,
+    0.8827
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -5.0,
+      "x1": 5.0,
+      "y0": -6,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -2.7,
+      "x1": -0.30000000000000004,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -4.1,
+      "x1": -3.5,
+      "y0": -1.7,
+      "y1": -1.1
+     },
+     {
+      "x0": -3.3,
+      "x1": -2.7,
+      "y0": -1.7,
+      "y1": -1.1
+     },
+     {
+      "x0": 2.75,
+      "x1": 3.65,
+      "y0": -2.3,
+      "y1": -1.7
+     },
+     {
+      "x0": 2.75,
+      "x1": 3.65,
+      "y0": -3.7,
+      "y1": -3.1
+     },
+     {
+      "x0": -0.6,
+      "x1": 0.6,
+      "y0": -5.6,
+      "y1": -5.2
+     },
+     {
+      "x0": -3.9,
+      "x1": -3.3,
+      "y0": -4.9,
+      "y1": -4.3
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_lagerhaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      64,
+      357
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_lagerhaus_01/haupt_innen.webp",
+     "tiefe": -5.98,
+     "rolle": "innen",
+     "versatz": [
+      71,
+      222
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_lagerhaus_01/haupt_seite.webp",
+     "tiefe": -5.97,
+     "rolle": "seite",
+     "versatz": [
+      549,
+      216
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_lagerhaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      70,
+      500
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_lagerhaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      174,
+      630
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_lagerhaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      174,
+      589
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_lagerhaus_01/haupt_dach.webp",
+     "tiefe": 0.5,
+     "rolle": "dach",
+     "versatz": [
+      40,
+      215
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_lagerhaus_01/haupt_vordach.webp",
+     "tiefe": 1.0,
+     "rolle": "vordach",
+     "versatz": [
+      352,
+      499
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -4.8,
+     "x1": 4.8,
+     "y0": -5.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.5,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    43,
+    218,
+    680,
+    804
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.5,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "kielmund_hafenmeisterei_01",
+   "name": "Hafenmeisterei",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/gesamt.webp",
+   "groesse": [
+    646,
+    763
+   ],
+   "anker": [
+    0.3343,
+    0.8697
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.0,
+      "x1": 3.0,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 3.0,
+      "x1": 5.4,
+      "y0": -3.9,
+      "y1": -1.5,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.35,
+      "x1": -0.25,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -0.6,
+      "x1": 1.8,
+      "y0": -2.5,
+      "y1": -1.9
+     },
+     {
+      "x0": -2.4,
+      "x1": -1.2,
+      "y0": -4.6,
+      "y1": -4.2
+     },
+     {
+      "x0": 1.2,
+      "x1": 2.4,
+      "y0": -4.2,
+      "y1": -3.4
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      338
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      265
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      354,
+      259
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      67,
+      495
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      139,
+      558
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      139,
+      525
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      257
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "turm_seite",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/turm_seite.webp",
+     "tiefe": -3.87,
+     "rolle": "seite",
+     "versatz": [
+      493,
+      158
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/turm_vorn.webp",
+     "tiefe": -1.5,
+     "rolle": "vorn",
+     "versatz": [
+      378,
+      269
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_dach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_hafenmeisterei_01/turm_dach.webp",
+     "tiefe": -1.2,
+     "rolle": "dach",
+     "versatz": [
+      358,
+      141
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 2.8,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.8,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    144,
+    557,
+    672
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -0.8,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "kielmund_kontor_01",
+   "name": "Kontor (Kaufmannshaus)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/kielmund_kontor_01/gesamt.webp",
+   "groesse": [
+    551,
+    789
+   ],
+   "anker": [
+    0.3862,
+    0.8776
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.0,
+      "x1": 3.0,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.6,
+      "x1": 0.6,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.2,
+      "x1": 1.2,
+      "y0": -2.3,
+      "y1": -1.7
+     },
+     {
+      "x0": -2.4,
+      "x1": -1.2,
+      "y0": -4.6,
+      "y1": -4.2
+     },
+     {
+      "x0": 1.2,
+      "x1": 2.4,
+      "y0": -4.6,
+      "y1": -4.2
+     },
+     {
+      "x0": -2.4,
+      "x1": -1.2,
+      "y0": -3.0,
+      "y1": -2.2
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_kontor_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      338
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_kontor_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      218
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_kontor_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      351,
+      211
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_kontor_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      333
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_kontor_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      172,
+      582
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_kontor_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      172,
+      564
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_kontor_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      70
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 2.8,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    73,
+    461,
+    701
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "kielmund_fischerhaus_01",
+   "name": "Fischerhaus (Holz, Giebel zur Gasse)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_01/gesamt.webp",
+   "groesse": [
+    455,
+    650
+   ],
+   "anker": [
+    0.3622,
+    0.8511
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.0,
+      "x1": 2.0,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.1,
+      "x1": -0.09999999999999998,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.5,
+      "x1": -0.5,
+      "y0": -4.6,
+      "y1": -2.6
+     },
+     {
+      "x0": 0.2,
+      "x1": 1.4,
+      "y0": -2.6,
+      "y1": -1.8
+     },
+     {
+      "x0": 0.9,
+      "x1": 1.5,
+      "y0": -4.5,
+      "y1": -3.9
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      237
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      189
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      255,
+      182
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      333
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      100,
+      453
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      100,
+      419
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      70
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    73,
+    365,
+    561
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -0.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "kielmund_fischerhaus_02",
+   "name": "Fischerhaus (Holz, langes Dach)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_02/gesamt.webp",
+   "groesse": [
+    548,
+    597
+   ],
+   "anker": [
+    0.3999,
+    0.8302
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.0,
+      "x1": 3.0,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -2.1,
+      "x1": -1.1,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 1.3,
+      "x1": 2.3,
+      "y0": -4.0,
+      "y1": -2.0
+     },
+     {
+      "x0": -1.95,
+      "x1": -1.25,
+      "y0": -3.35,
+      "y1": -2.65
+     },
+     {
+      "x0": -0.4,
+      "x1": 0.8,
+      "y0": -2.4,
+      "y1": -1.6
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_02/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      64,
+      231
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_02/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      71,
+      184
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_02/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      357,
+      177
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_02/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      70,
+      365
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_02/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      106,
+      395
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_02/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      106,
+      361
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_02/haupt_dach.webp",
+     "tiefe": 0.5,
+     "rolle": "dach",
+     "versatz": [
+      40,
+      129
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_02/haupt_vordach.webp",
+     "tiefe": 1.2,
+     "rolle": "vordach",
+     "versatz": [
+      61,
+      365
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 2.8,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    43,
+    132,
+    457,
+    545
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "kielmund_fischerhaus_03",
+   "name": "Fischerhaus (Stein unten, kleines Haus)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/gesamt.webp",
+   "groesse": [
+    521,
+    592
+   ],
+   "anker": [
+    0.3163,
+    0.8372
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.0,
+      "x1": 2.0,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 2.0,
+      "x1": 4.0,
+      "y0": -3.5,
+      "y1": -0.5,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.3,
+      "x1": -0.30000000000000004,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.5,
+      "x1": 1.5,
+      "y0": -4.0,
+      "y1": -2.0
+     },
+     {
+      "x0": -1.7,
+      "x1": -0.7,
+      "y0": -3.7,
+      "y1": -2.7
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      229
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      174
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      255,
+      168
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      356
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      91,
+      395
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      91,
+      361
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      100
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "schuppen_seite",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/schuppen_seite.webp",
+     "tiefe": -3.47,
+     "rolle": "seite",
+     "versatz": [
+      359,
+      189
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "schuppen_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/schuppen_vorn.webp",
+     "tiefe": -0.5,
+     "rolle": "vorn",
+     "versatz": [
+      264,
+      361
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "schuppen_dach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_fischerhaus_03/schuppen_dach.webp",
+     "tiefe": -0.2,
+     "rolle": "dach",
+     "versatz": [
+      244,
+      166
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.8,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    103,
+    432,
+    504
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -0.8,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "kielmund_tempel_01",
+   "name": "Tempel von Kielmund",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/kielmund_tempel_01/gesamt.webp",
+   "groesse": [
+    863,
+    1216
+   ],
+   "anker": [
+    0.3651,
+    0.9168
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -5.0,
+      "x1": 5.0,
+      "y0": -12,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.1,
+      "x1": 1.1,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -0.7,
+      "x1": 0.7,
+      "y0": -10.75,
+      "y1": -10.05
+     },
+     {
+      "x0": -2.95,
+      "x1": -1.45,
+      "y0": -4.2,
+      "y1": -3.8
+     },
+     {
+      "x0": 1.45,
+      "x1": 2.95,
+      "y0": -4.2,
+      "y1": -3.8
+     },
+     {
+      "x0": -2.95,
+      "x1": -1.45,
+      "y0": -6.2,
+      "y1": -5.8
+     },
+     {
+      "x0": 1.45,
+      "x1": 2.95,
+      "y0": -6.2,
+      "y1": -5.8
+     },
+     {
+      "x0": -2.95,
+      "x1": -1.45,
+      "y0": -8.2,
+      "y1": -7.8
+     },
+     {
+      "x0": 1.45,
+      "x1": 2.95,
+      "y0": -8.2,
+      "y1": -7.8
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_tempel_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      63,
+      406
+     ]
+    },
+    {
+     "name": "schiff_innen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_tempel_01/schiff_innen.webp",
+     "tiefe": -11.98,
+     "rolle": "innen",
+     "versatz": [
+      71,
+      270
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "schiff_seite",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_tempel_01/schiff_seite.webp",
+     "tiefe": -11.97,
+     "rolle": "seite",
+     "versatz": [
+      549,
+      264
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "schiff_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_tempel_01/schiff_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      70,
+      674
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_tempel_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      250,
+      962
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_tempel_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      250,
+      924
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "schiff_dach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_tempel_01/schiff_dach.webp",
+     "tiefe": 0.5,
+     "rolle": "dach",
+     "versatz": [
+      40,
+      70
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "schiff_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/kielmund_tempel_01/schiff_vordach.webp",
+     "tiefe": 2.4,
+     "rolle": "vordach",
+     "versatz": [
+      71,
+      883
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -4.8,
+     "x1": 4.8,
+     "y0": -11.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    43,
+    73,
+    772,
+    1216
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "ocker_lehmhaus_01",
+   "name": "Lehmhaus (Flachdach, Sonnensegel)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_01/gesamt.webp",
+   "groesse": [
+    456,
+    520
+   ],
+   "anker": [
+    0.3793,
+    0.8377
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.5,
+      "x1": -0.5,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.7,
+      "x1": 1.7,
+      "y0": -3.8,
+      "y1": -1.8
+     },
+     {
+      "x0": -1.9,
+      "x1": -1.3,
+      "y0": -3.3,
+      "y1": -2.7
+     },
+     {
+      "x0": -0.4,
+      "x1": 0.8,
+      "y0": -2.2,
+      "y1": -1.4
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      42,
+      175
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_01/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      48,
+      95
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_01/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      287,
+      88
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      48,
+      277
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      89,
+      330
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      89,
+      297
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_01/haupt_dach.webp",
+     "tiefe": 0.15,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      79
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_01/haupt_vordach.webp",
+     "tiefe": 1.6,
+     "rolle": "vordach",
+     "versatz": [
+      28,
+      290
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    31,
+    82,
+    366,
+    504
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "ocker_lehmhaus_02",
+   "name": "Gekalktes Lehmhaus (zweistöckig)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_02/gesamt.webp",
+   "groesse": [
+    471,
+    674
+   ],
+   "anker": [
+    0.3672,
+    0.8742
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.55,
+      "x1": 0.55,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.0,
+      "x1": 1.2,
+      "y0": -2.8,
+      "y1": -2.0
+     },
+     {
+      "x0": -2.2,
+      "x1": -1.0,
+      "y0": -4.6,
+      "y1": -4.2
+     },
+     {
+      "x0": 1.15,
+      "x1": 2.05,
+      "y0": -4.3,
+      "y1": -3.7
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_02/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      42,
+      249
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_02/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      48,
+      95
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_02/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      287,
+      88
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_02/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      48,
+      325
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_02/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      135,
+      479
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_02/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      135,
+      446
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_02/haupt_dach.webp",
+     "tiefe": 0.15,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      79
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    82,
+    382,
+    597
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "ocker_lehmhaus_03",
+   "name": "Lehmhaus mit Anbau",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/gesamt.webp",
+   "groesse": [
+    548,
+    540
+   ],
+   "anker": [
+    0.3594,
+    0.8422
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.0,
+      "x1": 1.5,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 1.5,
+      "x1": 4.1,
+      "y0": -3.6,
+      "y1": -0.6,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.9,
+      "x1": -0.8999999999999999,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -0.9,
+      "x1": 0.1,
+      "y0": -3.7,
+      "y1": -2.7
+     },
+     {
+      "x0": -2.7,
+      "x1": -1.7,
+      "y0": -3.4,
+      "y1": -1.4
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      42,
+      189
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      48,
+      95
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      263,
+      88
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      48,
+      277
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      94,
+      350
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      94,
+      316
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/haupt_dach.webp",
+     "tiefe": 0.15,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      79
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "anbau_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/anbau_seite.webp",
+     "tiefe": -3.57,
+     "rolle": "seite",
+     "versatz": [
+      397,
+      156
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "anbau_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/anbau_vorn.webp",
+     "tiefe": -0.6,
+     "rolle": "vorn",
+     "versatz": [
+      273,
+      296
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "anbau_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_03/anbau_dach.webp",
+     "tiefe": -0.48,
+     "rolle": "dach",
+     "versatz": [
+      263,
+      146
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 1.3,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.4,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    82,
+    461,
+    463
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.4,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "ocker_lehmhaus_04",
+   "name": "Kleines Lehmhaus (Würfel)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_04/gesamt.webp",
+   "groesse": [
+    414,
+    516
+   ],
+   "anker": [
+    0.3674,
+    0.8302
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.0,
+      "x1": 2.0,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.09999999999999998,
+      "x1": 1.1,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.3,
+      "x1": -0.3,
+      "y0": -3.8,
+      "y1": -1.8
+     },
+     {
+      "x0": 0.85,
+      "x1": 1.55,
+      "y0": -3.15,
+      "y1": -2.45
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_04/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      45,
+      171
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_04/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      52,
+      98
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_04/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      242,
+      91
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_04/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      51,
+      279
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_04/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      145,
+      328
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_04/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      145,
+      294
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmhaus_04/haupt_dach.webp",
+     "tiefe": 0.2,
+     "rolle": "dach",
+     "versatz": [
+      41,
+      81
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    44,
+    84,
+    321,
+    437
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "ocker_karawanenhof_01",
+   "name": "Karawanenhof (Halle mit Arkaden, Seitenflügel)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/gesamt.webp",
+   "groesse": [
+    998,
+    909
+   ],
+   "anker": [
+    0.4821,
+    0.5901
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -7.0,
+      "x1": 7.0,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": -7.0,
+      "x1": -3.5,
+      "y0": -0.0,
+      "y1": 6.0,
+      "voll": true
+     },
+     {
+      "x0": 3.5,
+      "x1": 7.0,
+      "y0": -0.0,
+      "y1": 6.0,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.2,
+      "x1": 1.2,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.2,
+      "x1": 1.2,
+      "y0": -3.7,
+      "y1": -3.1
+     },
+     {
+      "x0": -5.8,
+      "x1": -5.2,
+      "y0": -1.5,
+      "y1": -0.9
+     },
+     {
+      "x0": -5.1,
+      "x1": -4.5,
+      "y0": -1.5,
+      "y1": -0.9
+     },
+     {
+      "x0": 4.95,
+      "x1": 5.85,
+      "y0": -1.7,
+      "y1": -1.1
+     },
+     {
+      "x0": 4.95,
+      "x1": 5.85,
+      "y0": -3.7,
+      "y1": -3.1
+     },
+     {
+      "x0": -3.6,
+      "x1": -2.4,
+      "y0": -3.4,
+      "y1": -2.6
+     },
+     {
+      "x0": 2.25,
+      "x1": 3.75,
+      "y0": -3.2,
+      "y1": -2.8
+     },
+     {
+      "x0": -5.95,
+      "x1": -5.25,
+      "y0": -4.15,
+      "y1": -3.45
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      42,
+      213
+     ]
+    },
+    {
+     "name": "halle_innen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/halle_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      141,
+      100
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "halle_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/halle_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      811,
+      93
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "halle_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/halle_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      140,
+      329
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      412,
+      393
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      412,
+      351
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "halle_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/halle_dach.webp",
+     "tiefe": 0.2,
+     "rolle": "dach",
+     "versatz": [
+      130,
+      83
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "halle_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/halle_vordach.webp",
+     "tiefe": 2.2,
+     "rolle": "vordach",
+     "versatz": [
+      269,
+      367
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "west_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/west_seite.webp",
+     "tiefe": 0.03,
+     "rolle": "seite",
+     "versatz": [
+      215,
+      372
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "west_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/west_vorn.webp",
+     "tiefe": 6.0,
+     "rolle": "vorn",
+     "versatz": [
+      48,
+      656
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "west_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/west_dach.webp",
+     "tiefe": 6.15,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      362
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "ost_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/ost_seite.webp",
+     "tiefe": 0.03,
+     "rolle": "seite",
+     "versatz": [
+      719,
+      372
+     ],
+     "koerper": 2
+    },
+    {
+     "name": "ost_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/ost_vorn.webp",
+     "tiefe": 6.0,
+     "rolle": "vorn",
+     "versatz": [
+      552,
+      656
+     ],
+     "koerper": 2
+    },
+    {
+     "name": "ost_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_karawanenhof_01/ost_dach.webp",
+     "tiefe": 6.15,
+     "rolle": "dach",
+     "versatz": [
+      542,
+      362
+     ],
+     "koerper": 2
+    }
+   ],
+   "raum": [
+    {
+     "x0": -6.8,
+     "x1": 6.8,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    86,
+    906,
+    833
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "ocker_lehmfeste_01",
+   "name": "Lehmfeste (Wehrbau mit vier Ecktürmen)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/gesamt.webp",
+   "groesse": [
+    921,
+    1178
+   ],
+   "anker": [
+    0.3986,
+    0.8649
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -4.5,
+      "x1": 4.5,
+      "y0": -9,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": -6.0,
+      "x1": -3.0,
+      "y0": -1.5,
+      "y1": 1.5,
+      "voll": true
+     },
+     {
+      "x0": 3.0,
+      "x1": 6.0,
+      "y0": -1.5,
+      "y1": 1.5,
+      "voll": true
+     },
+     {
+      "x0": -6.0,
+      "x1": -3.0,
+      "y0": -10.5,
+      "y1": -7.5,
+      "voll": true
+     },
+     {
+      "x0": 3.0,
+      "x1": 6.0,
+      "y0": -10.5,
+      "y1": -7.5,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.1,
+      "x1": 1.1,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -0.6,
+      "x1": 0.6,
+      "y0": -5.4,
+      "y1": -4.6
+     },
+     {
+      "x0": -2.75,
+      "x1": -1.25,
+      "y0": -5.2,
+      "y1": -4.8
+     },
+     {
+      "x0": 1.25,
+      "x1": 2.75,
+      "y0": -5.2,
+      "y1": -4.8
+     },
+     {
+      "x0": -3.6,
+      "x1": -2.4,
+      "y0": -8.4,
+      "y1": -8.0
+     },
+     {
+      "x0": 3.1,
+      "x1": 3.7,
+      "y0": -1.7,
+      "y1": -1.1
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      45,
+      366
+     ]
+    },
+    {
+     "name": "feste_innen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/feste_innen.webp",
+     "tiefe": -8.98,
+     "rolle": "innen",
+     "versatz": [
+      147,
+      294
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "feste_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/feste_seite.webp",
+     "tiefe": -8.97,
+     "rolle": "seite",
+     "versatz": [
+      577,
+      288
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "feste_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/feste_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      146,
+      716
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      303,
+      866
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      303,
+      828
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "feste_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/feste_dach.webp",
+     "tiefe": 0.2,
+     "rolle": "dach",
+     "versatz": [
+      136,
+      278
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "turm_sw_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_sw_seite.webp",
+     "tiefe": -1.47,
+     "rolle": "seite",
+     "versatz": [
+      194,
+      528
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_sw_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_sw_vorn.webp",
+     "tiefe": 1.5,
+     "rolle": "vorn",
+     "versatz": [
+      51,
+      668
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_sw_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_sw_dach.webp",
+     "tiefe": 1.7,
+     "rolle": "dach",
+     "versatz": [
+      41,
+      518
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_so_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_so_seite.webp",
+     "tiefe": -1.47,
+     "rolle": "seite",
+     "versatz": [
+      626,
+      528
+     ],
+     "koerper": 2
+    },
+    {
+     "name": "turm_so_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_so_vorn.webp",
+     "tiefe": 1.5,
+     "rolle": "vorn",
+     "versatz": [
+      483,
+      668
+     ],
+     "koerper": 2
+    },
+    {
+     "name": "turm_so_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_so_dach.webp",
+     "tiefe": 1.7,
+     "rolle": "dach",
+     "versatz": [
+      473,
+      518
+     ],
+     "koerper": 2
+    },
+    {
+     "name": "turm_nw_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_nw_seite.webp",
+     "tiefe": -10.47,
+     "rolle": "seite",
+     "versatz": [
+      333,
+      96
+     ],
+     "koerper": 3
+    },
+    {
+     "name": "turm_nw_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_nw_vorn.webp",
+     "tiefe": -7.5,
+     "rolle": "vorn",
+     "versatz": [
+      189,
+      236
+     ],
+     "koerper": 3
+    },
+    {
+     "name": "turm_nw_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_nw_dach.webp",
+     "tiefe": -7.3,
+     "rolle": "dach",
+     "versatz": [
+      180,
+      86
+     ],
+     "koerper": 3
+    },
+    {
+     "name": "turm_no_seite",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_no_seite.webp",
+     "tiefe": -10.47,
+     "rolle": "seite",
+     "versatz": [
+      765,
+      96
+     ],
+     "koerper": 4
+    },
+    {
+     "name": "turm_no_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_no_vorn.webp",
+     "tiefe": -7.5,
+     "rolle": "vorn",
+     "versatz": [
+      621,
+      236
+     ],
+     "koerper": 4
+    },
+    {
+     "name": "turm_no_dach",
+     "bild": "img/welt/gebaeude/raeumlich/ocker_lehmfeste_01/turm_no_dach.webp",
+     "tiefe": -7.3,
+     "rolle": "dach",
+     "versatz": [
+      612,
+      86
+     ],
+     "koerper": 4
+    }
+   ],
+   "raum": [
+    {
+     "x0": -4.3,
+     "x1": 4.3,
+     "y0": -8.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    44,
+    89,
+    828,
+    1099
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
   }
  ]
 }

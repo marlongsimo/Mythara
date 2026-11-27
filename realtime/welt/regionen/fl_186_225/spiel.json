@@ -12,9 +12,9 @@
   "sperren": [
    {
     "art": "rechteck",
-    "x0": 470,
+    "x0": 473,
     "y0": 44.5,
-    "x1": 478,
+    "x1": 476,
     "y1": 48.5,
     "schalter": "lehmfurt_trittsteine"
    },
@@ -494,9 +494,20 @@
    }
   },
   {
+   "id": "kielmund_hafenmeisterei",
+   "art": "lesen",
+   "x": 454.5,
+   "y": 148.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Hafenmeisterei. Wer hier anlegt, zahlt Liegegeld – und wer ablegen will, fragt nach dem Wetter."
+   }
+  },
+  {
    "id": "furt",
    "art": "lesen",
-   "x": 478.5,
+   "x": 476.5,
    "y": 46.5,
    "radius": 1.8,
    "abgleich": "keiner",

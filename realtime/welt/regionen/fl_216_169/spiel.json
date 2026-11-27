@@ -769,6 +769,39 @@
     "text": "Volle Erzwagen – seit Wochen ist keiner nach Grauwacht gefahren.",
     "questobjekt": "erzwagen"
    }
+  },
+  {
+   "id": "schneesturm_hinweis_2",
+   "art": "lesen",
+   "x": 114.67,
+   "y": 7.27,
+   "radius": 2.2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Schneesturm tobt über der Frostkrone. Man sieht die eigene Hand nicht mehr – wer hier weitergeht, kommt nicht wieder. Kehr um."
+   }
+  },
+  {
+   "id": "schneesturm_hinweis_3",
+   "art": "lesen",
+   "x": 54.67,
+   "y": 67.27,
+   "radius": 2.2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Schneesturm tobt über der Frostkrone. Man sieht die eigene Hand nicht mehr – wer hier weitergeht, kommt nicht wieder. Kehr um."
+   }
+  },
+  {
+   "id": "schneesturm_weg",
+   "art": "lesen",
+   "x": 9.5,
+   "y": 114.5,
+   "radius": 2.2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Weg verschwindet im Weiß. Der Sturm heult so laut, dass man die eigenen Schritte nicht hört. Die Leute der Passwacht sagen: Wer jetzt hinaufgeht, den holt die Frostkrone."
+   }
   }
  ],
  "senken": [

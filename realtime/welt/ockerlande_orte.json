@@ -175,7 +175,7 @@
    6830,
    7340
   ],
-  "rotlehm_gebaeude": 44,
+  "rotlehm_gebaeude": 47,
   "brunnenkreis": [
    7070,
    7180
@@ -232,7 +232,7 @@
    "id": "karawanenmeisterin_rotlehm",
    "rolle": "Karawanenmeisterin (Karawanenhof)",
    "x": 6796,
-   "y": 7309
+   "y": 7310.5
   },
   {
    "id": "treiber_rotlehm",
@@ -273,7 +273,7 @@
   {
    "id": "haendlerin_brunnenkreis",
    "rolle": "Händlerin (Wasser, Proviant)",
-   "x": 7065,
+   "x": 7065.5,
    "y": 7189.2
   },
   {
@@ -447,7 +447,7 @@
    "id": "brunnenkreis_stand",
    "ort": "Brunnenkreis",
    "art": "Wasser und Proviant",
-   "x": 7065,
+   "x": 7065.5,
    "y": 7189.2,
    "blick": [
     0,
@@ -481,14 +481,14 @@
   {
    "id": "herd_rotlehm",
    "station": "herd",
-   "x": 6794,
-   "y": 7307.4
+   "x": 6781.5,
+   "y": 7308.4
   },
   {
    "id": "kessel_rotlehm",
    "station": "kessel",
-   "x": 6799,
-   "y": 7307.4
+   "x": 6810.5,
+   "y": 7308.4
   },
   {
    "id": "esse_rotlehm",
@@ -511,8 +511,8 @@
   {
    "id": "feuer_brunnenkreis",
    "station": "feuer",
-   "x": 7077,
-   "y": 7188.6
+   "x": 7076.5,
+   "y": 7188.1
   },
   {
    "id": "kessel_dornhag",
@@ -637,8 +637,8 @@
   {
    "id": "ockerlande_nebelkraut_1",
    "art": "nebelkraut",
-   "x": 7079.5,
-   "y": 7178.5,
+   "x": 7078.5,
+   "y": 7179.5,
    "region": "fl_216_211"
   },
   {
@@ -700,6 +700,90 @@
    300
   ],
   "eingang": "ockerhoehle_eingang"
+ },
+ "ockermutter": {
+  "reste": [
+   {
+    "id": "ockermutter_reste_1",
+    "x": 7255.5,
+    "y": 7414.5
+   },
+   {
+    "id": "ockermutter_reste_2",
+    "x": 7211.2,
+    "y": 7461.1
+   },
+   {
+    "id": "ockermutter_reste_3",
+    "x": 7175.7,
+    "y": 7493.4
+   }
+  ],
+  "region": "ockermutter_bau",
+  "ursprung": [
+   374,
+   300
+  ],
+  "feld": [
+   11968,
+   9600,
+   11999,
+   9631
+  ],
+  "eingang": "ockermutter_eingang",
+  "eingang_xy": [
+   7150,
+   7505.5
+  ],
+  "ziel": [
+   11984,
+   9627
+  ],
+  "hinaus": "ockermutter_hinaus",
+  "boss": [
+   11984,
+   9609
+  ],
+  "mitte": [
+   11984,
+   9614
+  ],
+  "radius": 11.5,
+  "nischen": [
+   [
+    11970.9,
+    9614
+   ],
+   [
+    11973.3,
+    9606.5
+   ],
+   [
+    11994.7,
+    9606.5
+   ],
+   [
+    11997.1,
+    9614
+   ],
+   [
+    11994.7,
+    9621.5
+   ],
+   [
+    11973.3,
+    9621.5
+   ]
+  ],
+  "spur_von": [
+   7269,
+   7406
+  ],
+  "spur_bis": [
+   7150.5,
+   7509
+  ],
+  "spuren": 20
  },
  "rastplaetze": [
   "rast_ockerlande_1",

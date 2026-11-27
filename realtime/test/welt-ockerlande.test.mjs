@@ -40,7 +40,7 @@ console.log("\nRotlehm, Brunnenkreis, Rastplätze");
   check(!luecken.length, "an der Karawanenstraße höchstens ~150 Felder ohne Ort oder Rastplatz", luecken); }
 check(OK.fischplaetze.every((f) => da(...f.stehplatz, 1) && !R.begehbar(f.x, f.y)), `${OK.fischplaetze.length} Fischplätze am Ockerstrom`);
 
-console.log("\nDornhag, Tafelrast, Höhle, Arbeit");
+console.log("\nDornhag, Tafelrast, Höhlen, Arbeit");
 for (const [k, name, min] of [["dornhag", "Dornhag", 7], ["tafelrast", "Tafelrast", 5]]) { const [cx, cy] = OK.orte[k], geb = OBJ.filter((o) => Math.hypot(o.x - cx, o.y - cy) < 26 && BIB.get(o.objekt)?.kategorie === "gebaeude").length;
   const b = OK.banken.find((x) => x.ort === name), l = OK.laeden.find((x) => x.ort === name), st = OK.stationen.some((s) => Math.hypot(s.x - cx, s.y - cy) < 26), ia = [...IA.values()].filter((i) => i.id.startsWith(k)), weg = ia.filter((i) => !da(i.x, i.y)).map((i) => i.id);
   check(geb >= min && b && l && st && ia.length >= 2 && !weg.length, `${name}: ${geb} Gebäude, ${b?.gebaeude ? "Bank" : "Bankkiste"}, Laden, Station – erreichbar`, weg); }
@@ -49,6 +49,14 @@ for (const [k, name, min] of [["dornhag", "Dornhag", 7], ["tafelrast", "Tafelras
   const an = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => seen.has(Math.floor(x + dx) + "," + Math.floor(y + dy)));
   const ad = lies("sammelstellen.json").senken.filter((s) => s.name.startsWith("Adern in der Höhle im Roten Tisch")).flatMap((s) => s.adern), aw = ad.filter((a) => !an(a.x, a.y)).map((a) => a.id);
   check(e && da(e.x, e.y) && ad.length >= 4 && ad.some((a) => a.art === "ureisen") && !aw.length, `Höhle im Roten Tisch: Eingang erreichbar, ${ad.length} Adern (Ureisen) drinnen erreichbar`, aw); }
+/* Block I: Bau der Ockermutter (Instanz) – Eingang von Dornhag aus erreichbar, Spuren der Herde, runder Kessel: Boss, Mitte und alle Nischen vom Einstieg aus erreichbar, keine Hindernisse im Kessel */
+{ const O = OK.ockermutter, e = IA.get("ockermutter_eingang"), H = region("ockermutter_bau"), [hx, hy] = H.region.ursprung.map((v) => v * 32); const RH = new G.WeltRaster(); for (const c of G.chunksBauen(H, bib.gelaende, bib.objekte).chunks) RH.dazu(c);
+  const seen = new Set(), q = [[Math.floor(e.daten.ziel[0]), Math.floor(e.daten.ziel[1])]]; while (q.length) { const [x, y] = q.pop(); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy, k = nx + "," + ny; if (seen.has(k) || nx < hx || ny < hy || nx >= hx + 32 || ny >= hy + 32 || !RH.begehbar(nx + 0.5, ny + 0.5)) continue; seen.add(k); q.push([nx, ny]); } }
+  let frei = 0, voll = 0; for (let y = -O.radius + 1; y <= O.radius - 1; y++) for (let x = -O.radius + 1; x <= O.radius - 1; x++) if (Math.hypot(x, y) < O.radius - 1.5) { voll++; if (seen.has(Math.floor(O.mitte[0] + x) + "," + Math.floor(O.mitte[1] + y))) frei++; }
+  const nw = O.nischen.filter(([x, y]) => !seen.has(Math.floor(x) + "," + Math.floor(y))).map(([x, y]) => x + "|" + y), sp = OBJ.filter((o) => o.id.startsWith("ockermutter_spur_")).length;
+  check(e && da(e.x, e.y) && da(...OK.orte.dornhag) && O.ursprung[0] * 32 === O.feld[0], "Bau der Ockermutter: Eingang an der Ockerkanzel von Dornhag aus erreichbar");
+  check(frei === voll && voll > 300 && !nw.length && seen.has(Math.floor(O.boss[0]) + "," + Math.floor(O.boss[1])), `runder Kessel: ${frei}/${voll} Felder frei (Platz für den Sprung), Boss und ${O.nischen.length} Nischen fürs Rudel erreichbar`, nw);
+  const rw = O.reste.filter((r) => !da(r.x, r.y)).map((r) => r.id); check(sp >= 10 && O.reste.length === 3 && !rw.length, `${sp} Spuren und 3 Stellen mit Resten der Herde zwischen Dornhag und dem Eingang`, rw); }
 { const fw = OK.fischplaetze.filter((f) => !da(...f.stehplatz, 1) || R.begehbar(f.x, f.y)).map((f) => f.id), kw = OK.kraeuter.filter((k) => !da(k.x, k.y, 1)).map((k) => k.id);
   check(OK.fischplaetze.length >= 6 && !fw.length, `${OK.fischplaetze.length} Fischplätze (Strom, Wasserlöcher, Mündung) erreichbar, Fanggrund im Wasser`, fw); check(OK.kraeuter.length >= 5 && !kw.length, `${OK.kraeuter.length} Kräuter an den Wasserstellen`, kw);
   const SM = lies("sammelstellen.json"), pts = [...SM.lichtungen.flatMap((l) => l.baeume), ...SM.senken.flatMap((s) => s.adern)].filter((p) => p.y < 9000), alle = [...pts, ...OK.kraeuter, ...OK.fischplaetze.map((f) => ({ x: f.stehplatz[0], y: f.stehplatz[1] }))];

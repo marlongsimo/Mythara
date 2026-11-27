@@ -45,7 +45,7 @@ const koerperVon = (o) => { const b = BIB.get(o.objekt); const k = o.kollision |
 const koerper = [];
 for (const f of readdirSync(join(WELT, "festland"))) if (/^plan_.*\.json$/.test(f) && f !== "plan_ockerlande.json") for (const o of JSON.parse(readFileSync(join(WELT, "festland", f), "utf8")).objekte || []) if (o.objekt) koerper.push(...koerperVon(o));
 const bau = (objekt, x, y, mehr = {}) => { const b = BIB.get(objekt); if (b && b.kategorie !== "bewuchs" && Number.isInteger(y / 32)) y -= 0.01; const o = ding(objekt, x, y, mehr);
-  for (const r of koerperVon(o)) { const hit = koerper.find((q) => r[0] < q[2] && q[0] < r[2] && r[1] < q[3] && q[1] < r[3]); if (hit && b.kategorie === "gebaeude") throw new Error(`${o.id} überdeckt ${hit[4]}`); koerper.push(r); } return o; };
+  const rs = koerperVon(o); for (const r of rs) { const hit = koerper.find((q) => r[0] < q[2] && q[0] < r[2] && r[1] < q[3] && q[1] < r[3]); if (hit && b.kategorie === "gebaeude") throw new Error(`${o.id} überdeckt ${hit[4]}`); } koerper.push(...rs);   /* erst alle Körper prüfen: mehrteilige Gebäude überdecken sich nicht selbst */ return o; };
 const BODEN = new Set([..."lLy.,gsfa"]);
 const npc = [], banken = [], laeden = [], stationen = [], namen = [], orte = {}, rast = [], wege = [], fische = [];
 const passt1 = (r, mehr) => { const rand = mehr.rand ?? 1; if (regionVon(r[0], r[1] - 0.5) !== regionVon(r[2], r[3] + 0.5)) return false;
@@ -98,7 +98,7 @@ for (const t of PLAN.trockenfluesse) { const xs = t.map((p) => p[0]), ys = t.map
 /* ═══════ 5. Wasserlöcher mit grünem Rand, Akazienhaine ═══════ */
 for (const [x0, y0] of PLAN.wasserloecher) male(x0 - 9, y0 - 7, x0 + 9, y0 + 7, (x, y) => { const d = Math.hypot((x - x0) / 5, (y - y0) / 3.5) + 0.1 * welle(x, y); if (d < 1.6) hebe(x, y, -0.4 * Math.max(0, 1.4 - d));
   return d < 1 ? "w" : d < 1.4 ? (welle(x, y) > 0 ? "v" : ".") : d < 1.9 ? (welle(x, y) > 0.5 ? "." : null) : null; });
-const AKAZIE = ["stil_laub_oliv", "stil_laub_gold", "stil_laub_oliv"];
+const AKAZIE = ["ocker_akazie", "stil_laub_gold", "ocker_akazie"];   /* Akazie von Figuren (#172) */
 for (const [cx, cy, r] of PLAN.akazienhaine) for (let i = 0; i < r * 1.2; i++) { const a = wurf() * 6.28, d = Math.sqrt(wurf()) * r, x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d;
   if (!"lLy.,".includes(jetzt(x, y)) || objekte.some((o) => Math.hypot(o.x - x, o.y - y) < 3)) continue; ding(wahl(AKAZIE), x, y, { s: +(0.85 + wurf() * 0.35).toFixed(2) }); }
 /* Streu: einzelne Akazien und Felsen auf der Steppe */
@@ -121,7 +121,7 @@ weg(PLAN.karawanenstrasse, 2.6, "e"); for (const w of PLAN.nebenwege) weg(w, 1.8
   const G = [[[FX, FURT_Y], [cx + 70, cy]], [[cx, cy - 46], [cx, cy + 50]], [[cx - 50, cy - 24], [cx + 66, cy - 24]], [[cx - 50, cy + 22], [cx + 66, cy + 22]], [[cx - 40, cy - 40], [cx - 40, cy + 44]], [[cx + 40, cy - 40], [cx + 40, cy + 44]], [[cx - 50, cy + 40], [cx + 66, cy + 40]]];
   for (const g of G) weg(g, 2.4, "p");
   male(cx - 9, cy - 7, cx + 9, cy + 7, (x, y) => (Math.hypot((x - cx) / 9, (y - cy) / 7) < 1 ? "p" : null));   /* Markt */
-  bau("dorf_brunnen_01", cx, cy - 0.5, { id: "rotlehm_brunnen" }); bau("moor_menhir_02", cx - 6, cy + 3, { id: "rotlehm_wegstein" }); bau("wz_bindestein", cx + 6, cy + 3, { id: "rotlehm_bindestein" });
+  bau("ocker_ziehbrunnen", cx, cy - 0.5, { id: "rotlehm_brunnen" }); bau("moor_menhir_02", cx - 6, cy + 3, { id: "rotlehm_wegstein" }); bau("wz_bindestein", cx + 6, cy + 3, { id: "rotlehm_bindestein" });
   lies("rotlehm", cx + 2.5, cy + 1.6, "Rotlehm. Eine Stadt aus Lehm und Staub am Ockerstrom – hier enden die Karawanen aus den Glutsanden.");
   lies("rotlehm_wegstein", cx - 6, cy + 4.6, "Der Wegstein von Rotlehm."); lies("rotlehm_bindestein", cx + 6, cy + 4.6, "Ein Bindestein am Markt von Rotlehm.");
   for (const [i, [o, dx, dy]] of [["dorf_marktstand_01", -6, -5], ["dorf_marktstand_02", 6, -5], ["dorf_marktstand_03", -6, 6.5], ["k_stand_rot", 6, 6.5]].entries()) { const st = baue(o, cx + dx, cy + dy, { id: "rotlehm_stand_" + (i + 1), rand: 0 }, 3);
@@ -131,7 +131,7 @@ weg(PLAN.karawanenstrasse, 2.6, "e"); for (const w of PLAN.nebenwege) weg(w, 1.8
     for (let x = F0[0]; x < F0[2]; x += 2) { bau("burg_mauer_quer", x + 1, F0[1] + 1, { id: "rotlehm_feste_mauer_n" + x }); if (Math.abs(x + 1 - GX) > 2.6) bau("burg_mauer_quer", x + 1, F0[3] + 1, { id: "rotlehm_feste_mauer_s" + x }); }
     for (let y = F0[1]; y < F0[3] - 1; y += 2) { bau("burg_mauer_laengs", F0[0], y + 2, { id: "rotlehm_feste_mauer_w" + y }); bau("burg_mauer_laengs", F0[2], y + 2, { id: "rotlehm_feste_mauer_o" + y }); }
     for (const [x, y] of [[F0[0], F0[1]], [F0[2], F0[1]], [F0[0], F0[3]], [F0[2], F0[3]]]) bau("burg_eckturm", x, y + 1.3, { id: `rotlehm_feste_turm_${x}_${y}` });
-    bau("burg_torhaus", GX, F0[3] + 1, { id: "rotlehm_feste_tor" }); bau("graufurt_bergfried_01", GX, F0[1] + 10, { id: "rotlehm_feste_bergfried", s: 1.4 });
+    bau("burg_torhaus", GX, F0[3] + 1, { id: "rotlehm_feste_tor" }); bau("ocker_lehmfeste_01", GX, F0[1] + 12, { id: "rotlehm_feste_bergfried" });
     lies("rotlehm_feste", GX + 2.5, F0[3] + 3, "Die Lehmfeste von Rotlehm. Die Mauern sind dick wie ein Mann lang ist – gegen Hitze, Hyänen und Räuber.");
     npc.push({ id: "festenhauptfrau_rotlehm", rolle: "Hauptfrau der Lehmfeste", x: GX + 1.5, y: F0[1] + 12.5 }, { id: "festenwache_rotlehm", rolle: "Wache am Festentor", x: GX - 3, y: F0[3] + 3 }); }
   /* Karawanenhof im Nordwesten: ummauerter Hof mit Zelten, Ständen, Herd und Kessel */
@@ -139,13 +139,14 @@ weg(PLAN.karawanenstrasse, 2.6, "e"); for (const w of PLAN.nebenwege) weg(w, 1.8
     for (let x = K0[0]; x < K0[2]; x += 2) { bau("burg_mauer_quer", x + 1, K0[1] + 1, { id: "rotlehm_karawanenhof_mauer_n" + x }); if (Math.abs(x + 1 - GX) > 3) bau("burg_mauer_quer", x + 1, K0[3] + 1, { id: "rotlehm_karawanenhof_mauer_s" + x }); }
     for (let y = K0[1]; y < K0[3] - 1; y += 2) { bau("burg_mauer_laengs", K0[0], y + 2, { id: "rotlehm_karawanenhof_mauer_w" + y }); bau("burg_mauer_laengs", K0[2], y + 2, { id: "rotlehm_karawanenhof_mauer_o" + y }); }
     bau("burg_torhaus", GX, K0[3] + 1, { id: "rotlehm_karawanenhof_tor" });
-    for (const [i, x] of [K0[0] + 5, K0[0] + 12, K0[2] - 12, K0[2] - 5].entries()) bau("welt_zelt_01", x, K0[1] + 7, { id: "rotlehm_karawanenhof_zelt_" + (i + 1) });
+    bau("ocker_karawanenhof_01", GX, K0[1] + 9, { id: "rotlehm_karawanenhof_halle" });
+    for (const [i, x] of [K0[0] + 5, K0[2] - 5].entries()) bau(i ? "ocker_zelt_rund" : "ocker_zelt_gross", x, K0[1] + 7, { id: "rotlehm_karawanenhof_zelt_" + (i + 1) });
     const s1 = baue("dorf_marktstand_02", K0[0] + 8, K0[3] - 4, { id: "rotlehm_karawanenhof_stand_1", rand: 0 }, 3), s2 = baue("k_stand_rot", K0[2] - 8, K0[3] - 4, { id: "rotlehm_karawanenhof_stand_2", rand: 0 }, 3);
     for (const st of [s1, s2]) laeden.push({ id: st.id, ort: "Rotlehm", art: "Stand im Karawanenhof", x: st.x, y: +(st.y + 1.2).toFixed(1), blick: [0, -1] });
-    const h = baue("hand_herd_01", GX - 2, K0[1] + 12, { id: "rotlehm_karawanenhof_herd", rand: 0 }, 3), k = baue("hand_kessel_01", GX + 3, K0[1] + 12, { id: "rotlehm_karawanenhof_kessel", rand: 0 }, 3);
+    const h = baue("hand_herd_01", GX - 14.5, K0[1] + 13, { id: "rotlehm_karawanenhof_herd", rand: 0 }, 3), k = baue("hand_kessel_01", GX + 14.5, K0[1] + 13, { id: "rotlehm_karawanenhof_kessel", rand: 0 }, 3);   /* seitlich der Halle im Hof */
     stationen.push({ id: "herd_rotlehm", station: "herd", x: h.x, y: h.y + 1.4 }, { id: "kessel_rotlehm", station: "kessel", x: k.x, y: k.y + 1.4 });
     lies("rotlehm_karawanenhof", GX + 3.5, K0[3] + 3, "Der Karawanenhof. Kamelglocken, Gewürzsäcke, und im Schatten der Mauer schläft ein Treiber auf seinen Ballen.");
-    npc.push({ id: "karawanenmeisterin_rotlehm", rolle: "Karawanenmeisterin (Karawanenhof)", x: GX, y: K0[1] + 15 }, { id: "treiber_rotlehm", rolle: "Treiber", x: K0[0] + 6, y: K0[1] + 10 }); }
+    npc.push({ id: "karawanenmeisterin_rotlehm", rolle: "Karawanenmeisterin (Karawanenhof)", x: GX, y: K0[1] + 16.5 }, { id: "treiber_rotlehm", rolle: "Treiber", x: K0[0] + 6, y: K0[1] + 10 }); }
   /* Bank, Werkstatt, Taverne */
   const bank = baue("waldmark_bank_01", cx + 14, cy - 10, { id: "rotlehm_bank" }); lies("rotlehm_bank_tuer", bank.x, bank.y + 0.6, "Die Bank von Rotlehm – im kühlsten Haus der Stadt.");
   banken.push({ id: "rotlehm_bank", ort: "Rotlehm", gebaeude: "rotlehm_bank", schalter: [bank.x, bank.y + 1.4] }); npc.push({ id: "bankier_rotlehm", rolle: "Bank", x: bank.x, y: bank.y + 1.4 });
@@ -156,7 +157,7 @@ weg(PLAN.karawanenstrasse, 2.6, "e"); for (const w of PLAN.nebenwege) weg(w, 1.8
   laeden.push({ id: "rotlehm_taverne", ort: "Rotlehm", art: "Taverne", x: tav.x + 1.5, y: tav.y + 1.4, blick: [0, 1] }); npc.push({ id: "wirt_rotlehm", rolle: "Wirt (Taverne)", x: tav.x + 1.5, y: tav.y + 1.4 });
   npc.push({ id: "haendler_rotlehm_1", rolle: "Händler (Markt)", x: cx - 6, y: cy - 3.8 }, { id: "fergin_rotlehm", rolle: "Fährmann an der Furt", x: FX + 6, y: FURT_Y + 2.5 });
   /* Häuser: Steinhäuser und Katen an den Gassen */
-  const FREI = [[cx - 10, cy - 8, cx + 10, cy + 8]]; const HAUS = ["graufurt_steinhaus_01", "graufurt_steinhaus_02", "moor_kate_01", "moor_kate_02", "weidenhain_kate_01", "graufurt_steinhaus_01"];
+  const FREI = [[cx - 10, cy - 8, cx + 10, cy + 8]]; const HAUS = ["ocker_lehmhaus_01", "ocker_lehmhaus_02", "ocker_lehmhaus_03", "ocker_lehmhaus_04", "ocker_lehmhaus_01", "ocker_lehmhaus_03"];   /* Lehmhäuser von Figuren (#172) */
   let n = 0; for (const tiefe of [4, 8]) for (let y = cy - 44; y < cy + 48; y++) for (let x = cx - 56; x < cx + 72 && n < 40; x++) { if (n >= 40) break;
     const o = wahl(HAUS); if (!passt(o, x, y, 1, { frei: FREI })) continue; let vorn = false; for (let v = 1; v <= tiefe && !vorn; v++) for (let u = -1; u <= 1; u++) if ("pe".includes(jetzt(x + u, y + v))) vorn = true; if (!vorn) continue;
     bau(o, x, y); n++; }
@@ -170,8 +171,9 @@ weg(PLAN.karawanenstrasse, 2.6, "e"); for (const w of PLAN.nebenwege) weg(w, 1.8
 { const W = PLAN.wasserloecher.reduce((b, p) => (Math.hypot(p[0] - BK[0], p[1] - BK[1]) < Math.hypot(b[0] - BK[0], b[1] - BK[1]) ? p : b)), [cx, cy] = W;   /* der Weiler um das Wasserloch */
   orte.brunnenkreis = [cx, cy]; namen.push(["Brunnenkreis", "Ort", cx, cy]);
   male(cx - 16, cy - 14, cx + 16, cy + 14, (x, y) => { const d = Math.hypot((x - cx) / 15, (y - cy) / 12); return d < 1 && !nass(jetzt(x, y)) && d > 0.5 ? "." : null; });
-  for (let a = 0.3; a < 6.28; a += 1.05) { try { baue("welt_zelt_01", cx + Math.cos(a) * 13, cy + Math.sin(a) * 10.5, { rand: 0 }, 4); } catch { /* kein Platz: Zelt fällt weg */ } }
-  baue("moor_kate_01", cx - 16, cy - 2, { id: "brunnenkreis_kate" }, 6); baue("weidenhain_kate_01", cx + 16, cy + 2, { id: "brunnenkreis_haus" }, 6);
+  for (let a = 0.3; a < 6.28; a += 1.05) { try { baue(a < 3 ? "ocker_zelt_rund" : "ocker_zelt_gross", cx + Math.cos(a) * 13, cy + Math.sin(a) * 10.5, { rand: 0 }, 4); } catch { /* kein Platz: Zelt fällt weg */ } }
+  baue("ocker_lehmhaus_04", cx - 16, cy - 2, { id: "brunnenkreis_kate" }, 6); baue("ocker_lehmhaus_01", cx + 16, cy + 2, { id: "brunnenkreis_haus" }, 6);
+  try { baue("ocker_ziehbrunnen", cx + 9, cy - 4, { id: "brunnenkreis_ziehbrunnen", rand: 0 }, 5); } catch { /* ohne Ziehbrunnen */ }
   const f = baue("dorf_festfeuer_01", cx + 7, cy + 7, { id: "brunnenkreis_feuer", rand: 0 }, 4); stationen.push({ id: "feuer_brunnenkreis", station: "feuer", x: f.x, y: f.y + 1.6 });
   const st = baue("dorf_marktstand_02", cx - 7, cy + 8, { id: "brunnenkreis_stand", rand: 0 }, 4); laeden.push({ id: st.id, ort: "Brunnenkreis", art: "Wasser und Proviant", x: st.x, y: +(st.y + 1.2).toFixed(1), blick: [0, -1] });
   lies("brunnenkreis", cx, cy + 6, "Brunnenkreis. Ein Wasserloch, ein Kreis aus Zelten – und jede Karawane hält hier, ob sie will oder nicht.");
@@ -199,11 +201,16 @@ const kraut = (id, art, x, y) => { for (let r = 2; r < 9; r++) for (let a = 0; a
   weg([[cx - 20, cy + 3], [cx + 22, cy + 3]], 2.2, "e"); weg([[cx, cy + 3], [cx, cy - 12]], 2, "e");
   const bank = baue("waldmark_bank_01", cx + 9, cy, { id: "dornhag_bank" }); lies("dornhag_bank_tuer", bank.x, bank.y + 0.6, "Die Bank von Dornhag. Die Hirten legen hier ihre Wollgelder ein.");
   banken.push({ id: "dornhag_bank", ort: "Dornhag", gebaeude: "dornhag_bank", schalter: [bank.x, bank.y + 1.4] }); npc.push({ id: "bankier_dornhag", rolle: "Bank", x: bank.x, y: bank.y + 1.4 });
-  for (const [o, dx, dy] of [["moor_kate_01", -10, 0], ["weidenhain_kate_01", -14, -8], ["moor_kate_02", -4, -10], ["dorf_scheune_holz_01", 10, -10], ["weidenhain_bauernhaus_01", 16, 0], ["moor_kate_01", -12, 12], ["dorf_huette_holz_02", 8, 12], ["graufurt_steinhaus_02", 16, 12]]) try { baue(o, cx + dx, cy + dy, {}, 6); } catch { /* weniger Häuser */ }
+  for (const [o, dx, dy] of [["ocker_lehmhaus_04", -10, 0], ["ocker_lehmhaus_01", -14, -8], ["ocker_lehmhaus_03", -4, -10], ["dorf_scheune_holz_01", 10, -10], ["weidenhain_bauernhaus_01", 16, 0], ["ocker_lehmhaus_02", -12, 12], ["ocker_lehmhaus_04", 8, 12], ["graufurt_steinhaus_02", 16, 12]]) try { baue(o, cx + dx, cy + dy, {}, 6); } catch { /* weniger Häuser */ }
   const kessel = baue("hand_kessel_01", cx - 3, cy + 7, { id: "dornhag_kessel", rand: 0 }, 4); stationen.push({ id: "kessel_dornhag", station: "kessel", x: kessel.x, y: kessel.y + 1.4 });
   const st = baue("dorf_marktstand_02", cx + 3, cy + 7, { id: "dornhag_stand", rand: 0 }, 4); laeden.push({ id: st.id, ort: "Dornhag", art: "Wolle, Milch, Käse", x: st.x, y: +(st.y + 1.2).toFixed(1), blick: [0, -1] });
   /* Dornenhecke um den Ort (Lücken an den Wegen) und ein Pferch im Osten */
-  for (let a = 0; a < 6.28; a += 0.13) { const x = cx + Math.cos(a) * 20, y = cy + 1 + Math.sin(a) * 17; if (Math.abs(y - cy - 3) < 3 || (Math.abs(x - cx) < 3 && y < cy)) continue; if (!passt("stil_busch_02", x, y, 0.8, { rand: 0 })) continue; bau("stil_busch_02", x, y, { s: 0.8, id: "dornhag_dorn_" + Math.round(a * 100) }); }
+  for (let a = 0; a < 6.28; a += 0.13) { const x = cx + Math.cos(a) * 20, y = cy + 1 + Math.sin(a) * 17; if (Math.abs(y - cy - 3) < 3 || (Math.abs(x - cx) < 3 && y < cy)) continue; /* Dornenhecke von Figuren (#172): Stücke dürfen aneinanderstoßen; an Ost- und Westseite um 90° gedreht */
+    const senk = Math.abs(Math.cos(a)) > 0.7, r = senk ? [x - 0.3, y - 1.5, x + 0.3, y + 1.5] : [x - 1.5, y - 0.3, x + 1.5, y + 0.3];
+    let frei = true; for (let v = Math.floor(r[1]); v < Math.ceil(r[3]) && frei; v++) for (let u = Math.floor(r[0]); u < Math.ceil(r[2]); u++) if (!BODEN.has(jetzt(u + 0.5, v + 0.5))) { frei = false; break; }
+    if (!frei || koerper.some((q) => !String(q[4]).startsWith("dornhag_dorn_") && r[0] - 1 < q[2] && q[0] < r[2] + 1 && r[1] - 1 < q[3] && q[1] < r[3] + 1)) continue;
+    if ([...interaktionen.map((i) => [i.x, i.y]), ...npc.map((n) => [n.x, n.y])].some(([px, py]) => px > r[0] - 1.5 && px < r[2] + 1.5 && py > r[1] - 1.5 && py < r[3] + 1.5)) continue;
+    ding("ocker_dornenhecke", x, y, { id: "dornhag_dorn_" + Math.round(a * 100), ...(senk ? { dreh: 90 } : {}) }); koerper.push([...r, "dornhag_dorn_" + Math.round(a * 100)]); }
   lies("dornhag", cx + 1.5, cy + 1.4, "Dornhag. Hinter den Dornenhecken sind die Herden sicher vor den Hyänen – meistens.");
   npc.push({ id: "hirtin_dornhag", rolle: "Hirtin", x: cx - 2, y: cy + 4.5 }, { id: "haendler_dornhag", rolle: "Händler (Laden)", x: st.x, y: st.y + 1.2 },
     ...[[28, -4], [31, 0], [27, 4], [33, 5], [30, -8]].map(([dx, dy], i) => ({ id: "dornhag_herde_" + (i + 1), rolle: (i % 2 ? "Ziege" : "Rind") + " (Stimmung)", x: cx + dx, y: cy + dy })));
@@ -214,7 +221,7 @@ const kraut = (id, art, x, y) => { for (let r = 2; r < 9; r++) for (let a = 0; a
   for (let i = objekte.length - 1; i >= 0; i--) if (Math.abs(objekte[i].x - cx) < 26 && Math.abs(objekte[i].y - cy) < 24 && /^ok_/.test(objekte[i].id)) { const o = objekte.splice(i, 1)[0]; for (let j = koerper.length - 1; j >= 0; j--) if (koerper[j][4] === o.id) koerper.splice(j, 1); }
   male(cx - 14, cy - 10, cx + 12, cy + 12, (x, y) => (nass(jetzt(x, y)) || jetzt(x, y) === "F" ? null : Math.hypot((x - cx) / 14, (y - cy) / 11) < 1 ? "." : null));
   weg([[cx - 14, cy], [T.aufgang[0], T.aufgang[1]]], 2, "e");
-  for (const [o, dx, dy] of [["graufurt_steinhaus_01", -8, -6], ["moor_kate_02", 4, -8], ["graufurt_steinhaus_02", -9, 8], ["weidenhain_kate_01", 7, 8], ["dorf_schuppen_holz_01", -2, 10]]) try { baue(o, cx + dx, cy + dy, {}, 6); } catch { /* weniger Häuser */ }
+  for (const [o, dx, dy] of [["ocker_lehmhaus_02", -8, -6], ["ocker_lehmhaus_04", 4, -8], ["ocker_lehmhaus_03", -9, 8], ["ocker_lehmhaus_01", 7, 8], ["dorf_schuppen_holz_01", -2, 10]]) try { baue(o, cx + dx, cy + dy, {}, 6); } catch { /* weniger Häuser */ }
   const kiste = baue("steinhag_bankkiste", cx + 2, cy + 2, { id: "tafelrast_bankkiste", rand: 0 }, 5); lies("tafelrast_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste von Tafelrast, im Fels verankert. Was du einlegst, liegt auf deinem Konto.");
   banken.push({ id: "tafelrast_bankkiste", ort: "Tafelrast", kiste: [kiste.x, kiste.y + 1.4] });
   const sm = baue("dorf_schmiede_01", cx - 2, cy - 2, { id: "tafelrast_steinmetz" }, 6); stationen.push({ id: "esse_tafelrast", station: "esse", x: sm.x - 1.5, y: sm.y + 1.4 }, { id: "amboss_tafelrast", station: "amboss", x: sm.x + 1.5, y: sm.y + 1.4 });
@@ -241,6 +248,40 @@ const kraut = (id, art, x, y) => { for (let r = 2; r < 9; r++) for (let a = 0; a
       { id: "ockerhoehle_halle", art: "lesen", x: 16, y: 16.6, radius: 1.6, abgleich: "keiner", daten: { text: "Eine Halle im Inneren des Tafelbergs. Die Wände glänzen schwarz und blau – Ureisen und Splittereisen." } }] }, null, 1) + "\n");
   kraut("tafelrast_eisenhut_1", "eisenhut", cx + 10, cy - 8); }
 
+/* ───── Block I: Bau der Ockermutter unter der Ockerkanzel (Instanz) – Eingang an der Ostflanke (zu Dornhag hin), runde Kampfhöhle mit Platz für Sprung und Rudel,
+   dazu die Spuren der gerissenen Herde von Dornhag bis zum Eingang ───── */
+const OM_U = [374, 300], om = {};
+{ const T = TAFEL["Ockerkanzel"], [mx, my] = T.mitte, [rx, ry] = T.r, dh = orte.dornhag, a = Math.atan2(dh[1] - my, dh[0] - mx);
+  let s = 1.0, ex = 0, ey = 0; for (; s < 1.6; s += 0.02) { ex = Math.round((mx + Math.cos(a) * rx * s) * 2) / 2; ey = Math.round((my + Math.sin(a) * ry * s) * 2) / 2; if (jetzt(ex, ey) !== "F" && jetzt(ex, ey + 1) !== "F" && jetzt(ex, ey - 1.5) === "F" || s > 1.3) break; }
+  male(ex - 3, ey - 1.5, ex + 3, ey + 3, (x, y) => (jetzt(x, y) === "F" && y < ey ? null : "g")); bau("hoehle_tuer_01", ex, ey - 0.4, { id: "ockermutter_eingang" });
+  const ZIEL = [OM_U[0] * 32 + 16, OM_U[1] * 32 + 27];
+  lies("ockermutter_eingang", ex, ey + 1.2, "Ein Schlund im Fuß der Ockerkanzel. Der Lehm davor ist zertrampelt, es riecht nach Aas. Von drinnen kommt ein Lachen, das kein Mensch lacht.", { tat: "ockermutter_hoehle", knopf: "Hineingehen", ziel: ZIEL });
+  /* Spuren der gerissenen Herde: vom Westrand Dornhags bis vor den Eingang, leicht geschlängelt; drei Stellen mit Resten */
+  const start = [dh[0] - 21, dh[1] + 2], ziel = [ex + 0.5, ey + 3.5], L = Math.hypot(ziel[0] - start[0], ziel[1] - start[1]), nx = -(ziel[1] - start[1]) / L, ny = (ziel[0] - start[0]) / L, spur = [];
+  for (let t = 0, i = 0; t <= L; t += 8) { const q = 3.5 * Math.sin(t / 23) + 1.5 * Math.sin(t / 7.3); let x = start[0] + (ziel[0] - start[0]) * t / L + nx * q, y = start[1] + (ziel[1] - start[1]) * t / L + ny * q;
+    if (nass(jetzt(x, y)) || jetzt(x, y) === "F" || koerper.some((r) => x > r[0] - 0.8 && x < r[2] + 0.8 && y > r[1] - 0.8 && y < r[3] + 0.8)) continue;
+    spur.push([+x.toFixed(1), +y.toFixed(1)]); ding("welt_spuren_01", x, y, { id: "ockermutter_spur_" + ++i, s: 0.9 }); }
+  const RESTE = [[0.12, "Die Dornenhecke ist hier niedergedrückt, Wolle hängt in den Dornen. Die Herde ist nicht hinausgelaufen – sie wurde hinausgetrieben."],
+    [0.5, "Ein Rind, oder was davon übrig ist. Die Bisse sind groß wie ein Brotlaib, und um die Reste herum Spuren von einem Dutzend Hyänen."],
+    [0.85, "Schleifspuren im Lehm, alle in eine Richtung: zum Fuß der Ockerkanzel. Was hier getötet wurde, wurde nicht hier gefressen."]];
+  om.reste = RESTE.map(([f, text], i) => { const p = spur[Math.min(spur.length - 1, Math.round(f * (spur.length - 1)))]; lies("ockermutter_reste_" + (i + 1), p[0] + 0.8, p[1] + 0.6, text); return { id: "ockermutter_reste_" + (i + 1), x: +(p[0] + 0.8).toFixed(2), y: +(p[1] + 0.6).toFixed(2) }; });
+  /* Kampfhöhle (Untergrund, 1 Chunk): runder Kessel Ø ~24 Felder aus Lehm, glatt (kein Hindernis – Platz für den Sprung), sechs Nischen am Rand, aus denen das Rudel kommt, Gang nach Süden */
+  const zw = (x, y) => 0.6 * Math.sin(x / 2.1 + y / 2.9) + 0.4 * Math.sin(y / 1.6 - x / 2.7), M = [16, 14], R = 11.5;
+  const NISCHEN = [180, -145, -35, 0, 35, 145].map((g, i) => { const w = g * Math.PI / 180; return [+(M[0] + Math.cos(w) * (R + 1.6)).toFixed(1), +(M[1] + Math.sin(w) * (R + 1.6)).toFixed(1)]; });
+  const G = Array.from({ length: 32 }, (_, y) => Array.from({ length: 32 }, (_, x) => { const px = x + 0.5, py = y + 0.5, d = Math.hypot(px - M[0], py - M[1]) + 0.35 * zw(x, y);
+    if (d < R) return zw(x * 0.7, y * 0.7) > 0.55 ? "L" : "l"; if (NISCHEN.some(([nx2, ny2]) => Math.hypot(px - nx2, py - ny2) < 2.4)) return "g"; if (Math.abs(px - 16) < 1.9 && y > 22 && y < 31) return "g"; return "F"; }));
+  const dir = join(WELT, "regionen", "ockermutter_bau"); if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "region.json"), JSON.stringify({ id: "ockermutter_bau", name: "Der Bau der Ockermutter", untertitel: "Unter der Ockerkanzel (Instanz)", ursprung: OM_U, chunks: [1, 1], biom: "hoehle", stufe: 12, ebene: "untergrund" }, null, 1) + "\n");
+  writeFileSync(join(dir, "gelaende.txt"), G.map((r) => r.join("")).join("\n") + "\n");
+  writeFileSync(join(dir, "objekte.json"), "[\n" + [{ id: "ockermutter_leiter", objekt: "hoehle_leiter_01", x: 16, y: 29.4 }, { id: "ockermutter_feuerkorb_1", objekt: "moor_feuerkorb_01", x: 14.3, y: 25 }, { id: "ockermutter_feuerkorb_2", objekt: "moor_feuerkorb_01", x: 17.7, y: 25 },
+    { id: "ockermutter_lager", objekt: "hoehle_lager_01", x: 16, y: 5.2 }, { id: "ockermutter_spuren_1", objekt: "welt_spuren_01", x: 12, y: 18 }, { id: "ockermutter_spuren_2", objekt: "welt_spuren_01", x: 20.5, y: 11 }].map((o) => " " + JSON.stringify(o)).join(",\n") + "\n]\n");
+  writeFileSync(join(dir, "spiel.json"), JSON.stringify({ start: [[16, 27]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] },
+    interaktionen: [{ id: "ockermutter_hinaus", art: "eingang", x: 16, y: 30.2, radius: 2, abgleich: "keiner", daten: { text: "Hinaus in die Ockerlande.", tat: "ockermutter_hinaus", knopf: "Hinaus", ziel: [ex, ey + 2.2] } },
+      { id: "ockermutter_kessel", art: "lesen", x: 16, y: 23.4, radius: 1.6, abgleich: "keiner", daten: { text: "Ein runder Kessel unter dem Tafelberg, der Boden festgetreten und glatt. In den Nischen ringsum glimmen Augen." } }] }, null, 1) + "\n");
+  const W0 = [OM_U[0] * 32, OM_U[1] * 32];
+  Object.assign(om, { region: "ockermutter_bau", ursprung: OM_U, feld: [W0[0], W0[1], W0[0] + 31, W0[1] + 31], eingang: "ockermutter_eingang", eingang_xy: [ex, ey], ziel: ZIEL, hinaus: "ockermutter_hinaus",
+    boss: [W0[0] + 16, W0[1] + 9], mitte: [W0[0] + M[0], W0[1] + M[1]], radius: R, nischen: NISCHEN.map(([x, y]) => [W0[0] + x, W0[1] + y]), spur_von: start, spur_bis: ziel, spuren: spur.length }); }
+
 /* ───── Fische und Kräuter an den übrigen Wasserlöchern ───── */
 for (const [i, [x, y]] of PLAN.wasserloecher.entries()) { if (Math.hypot(x - DH[0], y - DH[1]) < 30) continue;
   uferplatz("fischplatz_wasserloch_" + (i + 1), i % 2 ? "wels" : "moorhecht", i % 2 ? 45 : 20, x, y, "Ein Wasserloch in der Lehmsteppe. Erstaunlich, was hier im trüben Wasser schwimmt.");
@@ -254,6 +295,6 @@ const hoehenListe = [...hoehen].filter(([, h]) => Math.abs(h) > 0.02).map(([k, h
 writeFileSync(join(WELT, "festland", "plan_ockerlande.json"), JSON.stringify({ hinweis: "Erzeugt von werkzeug/welt/ockerlande.mjs (#172): Ockerlande – Lehmsteppe, Ockerstrom, Tafelberge, Trockenflüsse, Wasserlöcher, Akazien. Weltfelder.", gelaende: patches, hoehen: hoehenListe, eben, objekte, interaktionen, sperren, freigeben }) + "\n");
 for (const [k, g] of urs) if (!alt.has(k)) alt.set(k, g);
 writeFileSync(GRUNDDATEI, JSON.stringify({ hinweis: "ockerlande.mjs: ursprüngliches Gelände unter den eigenen Flächen (für wiederholte Läufe)", felder: Object.fromEntries(alt) }) + "\n");
-writeFileSync(join(WELT, "ockerlande_orte.json"), JSON.stringify({ hinweis: "Phase 12 Ockerlande (Welt #172): Gelände (Strom, Tafelberge, Trockenflüsse, Wasserlöcher, Haine), Rotlehm, Brunnenkreis, Wege, Rastplätze; Dornhag und Tafelrast folgen. Weltfelder.", land: LAND, strom: STROM, furt: [STROM[3][0], FURT_Y], tafelberge: TAFEL, trockenfluesse: PLAN.trockenfluesse, wasserloecher: PLAN.wasserloecher, akazienhaine: PLAN.akazienhaine, orte, namen, npc, banken, laeden, stationen, fischplaetze: fische, kraeuter, adern, hoehle: { region: "ockerhoehle", ursprung: HOEHLE_U, eingang: "ockerhoehle_eingang" }, rastplaetze: rast, wege: [...wege, { punkte: PLAN.karawanenstrasse, breite: 2.6 }] }, null, 1) + "\n");
+writeFileSync(join(WELT, "ockerlande_orte.json"), JSON.stringify({ hinweis: "Phase 12 Ockerlande (Welt #172): Gelände (Strom, Tafelberge, Trockenflüsse, Wasserlöcher, Haine), Rotlehm, Brunnenkreis, Wege, Rastplätze; Dornhag und Tafelrast folgen. Weltfelder.", land: LAND, strom: STROM, furt: [STROM[3][0], FURT_Y], tafelberge: TAFEL, trockenfluesse: PLAN.trockenfluesse, wasserloecher: PLAN.wasserloecher, akazienhaine: PLAN.akazienhaine, orte, namen, npc, banken, laeden, stationen, fischplaetze: fische, kraeuter, adern, hoehle: { region: "ockerhoehle", ursprung: HOEHLE_U, eingang: "ockerhoehle_eingang" }, ockermutter: om, rastplaetze: rast, wege: [...wege, { punkte: PLAN.karawanenstrasse, breite: 2.6 }] }, null, 1) + "\n");
 const zaehl = {}; for (const c of feld.values()) zaehl[c] = (zaehl[c] || 0) + 1;
 console.log(`Ockerlande: ${feld.size} Geländefelder ${JSON.stringify(zaehl)}, ${hoehenListe.length} Höhen, ${objekte.length} Objekte`);

@@ -56,6 +56,11 @@ if os.path.exists(_sm):
         _p = _l.get('baeume') or _l.get('adern'); _mx = _l.get('x', sum(q['x'] for q in _p) / len(_p)); _my = _l.get('y', sum(q['y'] for q in _p) / len(_p))
         ausnahmen.append({'x': _mx, 'y': _my, 'r': max(8, max(math.hypot(q['x'] - _mx, q['y'] - _my) for q in _p) + 6), 'grund': f"Sammelstelle {_l['name']}"})
 for s in json.load(open(os.path.join(W, 'troedler_standorte.json'), encoding='utf8'))['standorte']: ausnahmen.append({'x': s['x'], 'y': s['y'], 'r': 6, 'grund': f"Trödler {s['id']}"})
+# Sperren (Welt-Erlebnis): auf dem Bergsturz und im Schneesturm keine Gegner (sperren.py)
+_sp = os.path.join(W, 'sperren.json')
+if os.path.exists(_sp):
+    for _k, _n in (('drachenarm', 'Bergsturz am Drachenarm'), ('frostkrone', 'Schneesturm an der Frostkrone')):
+        for _p in json.load(open(_sp, encoding='utf8'))[_k]['kette'][::3]: ausnahmen.append({'x': _p[0] + 0.5, 'y': _p[1] + 0.5, 'r': 4, 'grund': _n})
 # Hauptstadt Steinhag (#167): in der Ringmauer und ~12 Felder davor keine Gegner (Kreise im Raster, damit die Prüfung sie kennt)
 _ho = os.path.join(W, 'hochlande_orte.json')
 _fo = os.path.join(W, 'fahleweiten_orte.json')
