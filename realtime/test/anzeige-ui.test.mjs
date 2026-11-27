@@ -6,6 +6,8 @@
    Stamm im Rucksack, Holzfällerei-XP unter Skills → Berufe. Aufruf: node test/holz-ui.test.mjs (BILD=pfad/ für Fotos) */
 import { createRequire } from "node:module"; import { createServer } from "node:http"; import { spawn } from "node:child_process";
 const require = createRequire(import.meta.url), { chromium } = require("playwright");
+/* #98: Gefahrenfarben (client/src/gefahranzeige.ts) grün · gelb · orange · rot */
+const GEFAHR = ["rgb(95, 227, 95)", "rgb(255, 225, 74)", "rgb(255, 154, 46)", "rgb(255, 74, 58)"];
 let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) fehler++; };
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000a001", ["tok_ben__" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000b002" };
 const WERTE = { "00000000-0000-0000-0000-00000000a001": { ep: { schildwaechter: 300 }, seelen: 0 }, "00000000-0000-0000-0000-00000000b002": { ep: { kopfgeldjaeger: 120 }, seelen: 0 } }, SIEGE = [], buchungen = [];
@@ -71,7 +73,7 @@ try {
     if (ziel) { await anna.mouse.click(ziel.x, ziel.y, { button: "right" }); await anna.waitForTimeout(400); if (!menueLv && process.env.BILD) await anna.screenshot({ path: process.env.BILD + "menue-level.png" }); if (!menueLv) menueLv = await anna.evaluate(() => { const k = [...document.querySelectorAll(".ez-aktionen .kopf")].find((e) => e.querySelector(".lv")); return k ? { t: k.textContent, c: getComputedStyle(k.querySelector(".lv")).color } : null; }); await anna.click('.ez-aktionen button:has-text("Angreifen")', { force: true, timeout: 20000 }) /* unter Last braucht der Klick länger (#109) */.catch(() => {}); await anna.waitForTimeout(300); }
     if (await anna.evaluate(() => Boolean(window.__tat))) break; await anna.keyboard.press("Escape"); }
   const tat = await anna.evaluate(() => window.__tat || null);
-  check(tat && tat.an && /^Angriff: Bandit Lvl 1$/.test(tat.t) && /rgb\(\d+, 255, 0\)/.test(tat.c), "Oben mittig (#98): „Angriff: Bandit Lvl 1“, Level grün " + JSON.stringify(tat));
+  check(tat && tat.an && /^Angriff: Bandit Lvl \d+$/.test(tat.t) && GEFAHR.includes(tat.c), "Oben mittig (#98): „Angriff: Bandit Lvl n“, Stufe aus den Werten, Gefahrenfarbe " + JSON.stringify(tat));
   await ben.waitForFunction(() => window.EZK && window.EZK.bereit && window.EZK.z && [...window.EZK.figuren.values()].some((g) => !g.held && !g.tot), null, { timeout: 120000, polling: 1000 }).catch(() => {}); /* Bens Kampf muss bereit sein (unter Last dauert das) */
   /* Ben greift ebenfalls an (direkt über seine Verbindung; das Menü prüft der Test bei Anna) → Anna sieht seinen Lebensbalken */
   { const annasZiel = await anna.evaluate(() => (window.EZK.z && window.EZK.z.ich && window.EZK.z.ich.zielId) || 0);
@@ -80,7 +82,7 @@ try {
         if (frei[0]) K.netz.sende({ t: "ziel", id: frei[0][0] }); return false; }, annasZiel); if (ok) break; await ben.waitForTimeout(500); } }
   { let bb = []; for (let i = 0; i < 40 && !bb.some((x) => x === true); i++) { await anna.waitForTimeout(500); bb = await benBalken(); }
     check(bb.some((x) => x === true), "Mitspieler im Kampf: Lebensbalken sichtbar " + JSON.stringify(bb)); }
-  check(menueLv && /Bandit Lvl 1/.test(menueLv.t) && /rgb\(\d+, 255, 0\)/.test(menueLv.c), "Gedrückt halten / Rechtsklick: „Bandit Lvl 1“, Level grün (leichter als Anna): " + JSON.stringify(menueLv));
+  check(menueLv && tat && menueLv.t === tat.t.replace(/^Angriff: /, "") && menueLv.c === tat.c, "Gedrückt halten / Rechtsklick: dieselbe Stufe und Gefahrenfarbe wie oben: " + JSON.stringify(menueLv));
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "anzeige-angreifen.png" });
   /* Nach den Kampf-Prüfungen Anna aus dem Banditengebiet holen: unter Last stirbt sie dort sonst, und gefallen() leitet (gewollt) auf ./?von=tod weiter – der Rest des Tests liefe ins Leere */
   await anna.evaluate(() => window.EZW.welt3d.versetzen(6448.5, 6444.5)); await anna.waitForTimeout(1500);
