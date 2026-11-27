@@ -38,6 +38,7 @@ TESTS=(
   phase6-quest
   phase4
   phase4-inhalte
+  b3-welt
   phase5
   phase8-10
   abholen

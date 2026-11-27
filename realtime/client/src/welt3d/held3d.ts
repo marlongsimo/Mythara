@@ -208,6 +208,11 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   /* Mooshocker: Modell in echter Größe (0,7 m hoch) im Maßstab der Helden (2,0 m statt 1,8 m); die Gegnerhöhe (Name, Lebensbalken) kommt aus MONSTER.hoehe */
   mooshocker: { datei: "mooshocker3d", angriff: "kopfstoss", ersatz: "gegner.bandit.v003", mass: 2.0 },
   waldgolem: { datei: "waldgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003" },
+  /* Phase 4 (#24): Banditen-Varianten und Hauptmann Rotmantel – eigene Modelle der Figuren-Fabrik, mit echtzeit=1 exportiert (Tempo stimmt) */
+  bandit_spaeher: { datei: "bandit3d_spaeher", angriff: "dolchwurf", ersatz: "gegner.bandit.v003" },
+  bandit_schlaeger: { datei: "bandit3d_schlaeger", angriff: "angriff_axt", ersatz: "gegner.bandit.v003" },
+  bandit_armbrust: { datei: "bandit3d_armbrust", angriff: "schiessen", ersatz: "gegner.bandit.v003" },
+  rotmantel: { datei: "banditenboss3d", angriff: "hieb2h", ersatz: "gegner.bandit.v003" },
   kuh: { datei: "kuh3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   zielscheibe: { datei: "zielscheibe3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {

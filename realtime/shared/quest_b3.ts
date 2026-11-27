@@ -110,8 +110,8 @@ export const QUEST_B3: QuestDef = {
       ],
     },
   },
-  /* Karrenbrief: fällt nur, solange er noch fehlt; beim fünften Späher garantiert (Rolle Spiel: chance 100 ab Zähler 4) */
-  beute: { b3_karrenbrief: { erledigt: SP, offen: ["brief"] } },
+  /* Karrenbrief: fällt garantiert beim fünften Späher (ab Zähler 4), nur solange er noch fehlt */
+  beute: { b3_karrenbrief: { erledigt: SP, offen: ["brief"], zaehler: { schritt: "spaeher", min: 4 } } },
   schalter: { leiter_unterschlupf: [FERTIG, { erledigt: ["kisten"] }], gisbert_aepfel: FERTIG },
   belohnungText: "Belohnung: Fernkampf 500, Geschick 300, LP 200 XP, 10 Äpfel, 120 Splitter · danach: Gisbert Ast verkauft Äpfel",
   belohnung: { xp: { fernkampf: 500, geschick: 300, lp: 200 }, splitter: 120, gegenstaende: [{ g: "apfel", n: 10 }] },
