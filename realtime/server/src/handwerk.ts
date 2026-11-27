@@ -13,7 +13,7 @@ const TICK_MS = process.env.HANDWERK_TICK_MS !== undefined ? Number(process.env.
 import { berufAn, beruf } from "../../shared/berufe";
 import { levelAus } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
-import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, platzFuer, ladungen, ladungenDazu, waffeLadung, waffeLadenDazu, waffeEntladen, wartenVon, wartenSetzen } from "./inventar";
+import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, platzFuer, ladungen, ladungenDazu, waffeLadung, waffeLadenDazu, waffeEntladen, wartenVon, wartenSetzen, ladungMax, merkerHat, merkerDazu } from "./inventar";
 import { LADUNG_MAX, RESONANZ_MAL, AN_WAFFE, WAFFE_LADUNG_MAX } from "../../shared/splitterbinden";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
@@ -53,7 +53,9 @@ function fehlt(nutzer: string, r: Rezept, spar = -1): string | null {
   return null; }
 const sparIndex = (r: Rezept) => { let best = -1, n = 1; r.zutaten.forEach((z, i) => { if (z.n > n) { n = z.n; best = i; } }); return best; };   // die häufigste Zutat (mindestens 2 nötig)
 /** Passt das Ergebnis noch in den Rucksack? Wenn eine verbrauchte Zutat einzeln liegt, wird ihr Fach frei */
-const passt = (nutzer: string, r: Rezept) => { if (entladen(r)) return true; const l = ladungZiel(r); return l === AN_WAFFE ? (waffeLadung(nutzer) || { n: WAFFE_LADUNG_MAX }).n < WAFFE_LADUNG_MAX : l ? ladungen(nutzer, l) < LADUNG_MAX : passtG(nutzer, r); };
+const passt = (nutzer: string, r: Rezept) => { if (entladen(r)) return true; const l = ladungZiel(r); return l === AN_WAFFE ? (waffeLadung(nutzer) || { n: WAFFE_LADUNG_MAX }).n < WAFFE_LADUNG_MAX : l ? ladungen(nutzer, l) < ladungMax(nutzer, l) : merkerZiel(r) ? true : passtG(nutzer, r); };
+/** „merker:…“ (Splitterkern einsetzen): das Rezept setzt einen Merker im Inventar statt eines Gegenstands */
+const merkerZiel = (r: Rezept): string | null => (r.ergebnis.startsWith("merker:") ? r.ergebnis.slice(7) : null);
 const passtG = (nutzer: string, r: Rezept) => platzFuer(nutzer, r.ergebnis) || r.zutaten.some((z) => z.g.some((g) => GEGENSTAENDE[g] && !GEGENSTAENDE[g].stapel && anzahlVon(nutzer, g) > 0));
 
 const ARTIKEL: Partial<Record<string, string>> = { bindestein: "den", amboss: "den", feuer: "ein", backofen: "einen", herd: "einen", kessel: "einen", brunnen: "einen" };
@@ -65,10 +67,11 @@ export function handwerkStart(s: HandwerkSpieler, id: string, menge: number): st
   if (r.warten && wartenVon(s.nutzer)) return wartenAbholen(s, r); /* läuft schon ein Auftrag: abholen (oder sagen, wie lange noch) */
   const L = handwerkLevel(s.nutzer, r.station); if (L < r.level) return `Dafür brauchst du ${(beruf(berufAn(r.station)) || { name: "Handwerk" }).name} ${r.level}.`;
   if (r.quest) { const q = HANDWERK_QUEST.pruefen(s.nutzer, r); if (q) return q; }
+  { const m = merkerZiel(r); if (m && merkerHat(s.nutzer, m)) return "Dein Wegstein trägt schon einen Splitterkern."; if (m && anzahlVon(s.nutzer, "wegstein") <= 0) return "Du brauchst deinen Wegstein im Rucksack."; }
   const w = WERKZEUG_AN[r.station]; if (w && anzahlVon(s.nutzer, w) <= 0) return `Du brauchst einen ${GEGENSTAENDE[w].name} im Rucksack.`;
   const f = fehlt(s.nutzer, r); if (f) return `Dir fehlt: ${f}.`;
   if (ladungZiel(r) === AN_WAFFE || entladen(r)) { const w = waffePasst(s.nutzer, r); if (w) return w; if (!passt(s.nutzer, r)) return `Mehr als ${WAFFE_LADUNG_MAX} Ladungen hält keine Waffe.`; } /* Phase 5b */
-  else if (!passt(s.nutzer, r)) return ladungZiel(r) ? `Der ${GEGENSTAENDE[ladungZiel(r)!] ? GEGENSTAENDE[ladungZiel(r)!].name : "Stein"} ist voll – mehr als ${LADUNG_MAX} Ladungen hält er nicht.` : "Dein Rucksack ist voll.";
+  else if (!passt(s.nutzer, r)) return ladungZiel(r) ? `Der ${GEGENSTAENDE[ladungZiel(r)!] ? GEGENSTAENDE[ladungZiel(r)!].name : "Stein"} ist voll – mehr als ${ladungMax(s.nutzer, ladungZiel(r)!)} Ladungen hält er nicht.` : "Dein Rucksack ist voll.";
   if (ladungZiel(r) && ladungZiel(r) !== AN_WAFFE && anzahlVon(s.nutzer, ladungZiel(r)!) <= 0) return `Du brauchst deinen ${GEGENSTAENDE[ladungZiel(r)!].name} im Rucksack.`;
   const n = Math.max(1, Math.min(1000, Math.floor(menge) || 1));
   if (r.warten) return wartenStart(s, r, n); /* Räucherhütte (#102) */
@@ -120,10 +123,11 @@ function fertigStueck(a: Arbeit): boolean {
     return true; }
   if (laden === AN_WAFFE) { stueck = waffeLadenDazu(sb, s.nutzer, glut ? RESONANZ_MAL : 1); if (!stueck) { handwerkStop(s, "voll"); return false; } } /* Phase 5b: Ladungen an der angelegten Waffe */
   else if (laden) { if (anzahlVon(s.nutzer, laden) <= 0) { handwerkStop(s, "werkzeug"); return false; } stueck = ladungenDazu(sb, s.nutzer, laden, glut ? RESONANZ_MAL : 1); if (!stueck) { handwerkStop(s, "voll"); return false; } }
+  else if (merkerZiel(r)) { if (!merkerDazu(sb, s.nutzer, merkerZiel(r)!)) { handwerkStop(s, "fertig"); return false; } a.rest = 1; } /* Splitterkern: einmal */
   else if (!aufnehmen(sb, s.nutzer, r.ergebnis, r.menge || 1)) { handwerkStop(s, "voll"); return false; } else stueck = r.menge || 1;
   const vorher = handwerkLevel(s.nutzer, r.station), xp = Math.round(r.xp * (glut ? 1.5 : 1)), b = berufAn(r.station); berufXpDazu(sb, s.nutzer, b, xp); const nachher = handwerkLevel(s.nutzer, r.station);
   a.rest--; const G = GEGENSTAENDE[laden === AN_WAFFE ? (waffeLadung(s.nutzer) || { g: "" }).g : laden || r.ergebnis]; HANDWERK_QUEST.fertig(s.nutzer, r); /* jedes Stück zählt für Quests (2 Bogensehnen, 2 Kupferbarren …) */ if (r.quest && !HANDWERK_QUEST.weiter(s.nutzer, r)) a.rest = 0; /* Questrezept: nur so viele, wie die Quest noch braucht (B2: drei Tafeln) */
-  senden(s, { t: "handwerk", tat: "fertig", rezept: r.id, g: r.ergebnis, name: G ? G.name : r.ergebnis, xp, beruf: b, glut, gespart: spar >= 0, rest: a.rest, level: nachher, aufstieg: nachher > vorher ? nachher : 0,
+  senden(s, { t: "handwerk", tat: "fertig", rezept: r.id, g: r.ergebnis, name: G ? G.name : merkerZiel(r) ? "Splitterkern im Wegstein" : r.ergebnis, xp, beruf: b, glut, gespart: spar >= 0, rest: a.rest, level: nachher, aufstieg: nachher > vorher ? nachher : 0,
     ...(laden ? { ladungen: laden === AN_WAFFE ? (waffeLadung(s.nutzer) || { n: 0 }).n : ladungen(s.nutzer, laden), stueck } : r.menge ? { stueck } : {}) });
   if (a.rest <= 0) { arbeiten.delete(s); senden(s, { t: "handwerk", tat: "stop", rezept: r.id, grund: "fertig" }); return false; }
   if (fehlt(s.nutzer, r)) { handwerkStop(s, "zutaten"); return false; }

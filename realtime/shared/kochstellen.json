@@ -60,6 +60,40 @@
    "name": "Kessel",
    "schalter": "taverne_kueche",
    "gesperrt": "Hildes Kessel. Frag erst die Wirtin."
+  },
+  {
+   "id": "raeucherhuette_moewenbucht",
+   "station": "raeucherhuette",
+   "x": 6214,
+   "y": 7168,
+   "ort": "fl_186_211",
+   "name": "Räucherhütte",
+   "schalter": "raeucherhuette_frei",
+   "gesperrt": "Die Räucherhütte der Möwenbucht. Die Fischer lassen nur hinein, wer ihnen geholfen hat."
+  },
+  {
+   "id": "feuer_moewenbucht",
+   "station": "feuer",
+   "x": 6218,
+   "y": 7169.25,
+   "ort": "fl_186_211",
+   "name": "Feuer der Möwenbucht"
+  },
+  {
+   "id": "kessel_kraeuterhof",
+   "station": "kessel",
+   "x": 6422,
+   "y": 7062,
+   "ort": "fl_186_211",
+   "name": "Kessel am Kräuterhof"
+  },
+  {
+   "id": "feuer_kuestenweg",
+   "station": "feuer",
+   "x": 6300,
+   "y": 7226.25,
+   "ort": "fl_186_225",
+   "name": "Rastfeuer am Küstenweg"
   }
  ]
 }

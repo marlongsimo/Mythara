@@ -9,6 +9,8 @@ import STANDORTE_JSON from "./seelenlicht_standorte.json";
 export const BERUF_BINDEN = "splitterbinden";
 /** Höchstens so viele Ladungen im Wegstein */
 export const LADUNG_MAX = 100;
+/** Splitterkern (#18, beute.md): einmal am Bindestein in den Wegstein gesetzt (Merker im Inventar), fasst er so viele Ladungen */
+export const LADUNG_MAX_KERN = 200, KERN_MERKER = "splitterkern_wegstein";
 /** Gegenstand, dessen Ladungen ein Rezept „ladung:<g>“ füllt */
 export const LADBAR = ["wegstein"] as const;
 export type Ladbar = (typeof LADBAR)[number];

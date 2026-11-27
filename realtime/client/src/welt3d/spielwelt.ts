@@ -313,6 +313,7 @@ export class Spielwelt3D implements WeltKern {
     const text = a.daten && typeof a.daten.text === "string" ? a.daten.text : "", tat = a.daten && typeof a.daten.tat === "string" ? a.daten.tat : "", knopf = a.daten && typeof a.daten.knopf === "string" ? a.daten.knopf : "";
     const ziel = a.daten && Array.isArray(a.daten.ziel) && a.daten.ziel.length === 2 ? (a.daten.ziel as number[]) : null;
     if (istBankschalter(a.id)) return { text: "Bank", tat: () => bankZeigen(a.id === "bankschalter" ? "Bankschalter Weidenhain" : "Bank der Waldmark") }; /* Bankschalter (shared/bank.ts): gleich die Bank, wie in OSRS */
+    { const zu = this.quest ? this.quest.eingangZu(a.id) : null; if (zu) return { text: knopf || "Betreten", tat: () => { const el = $("#ez-dorf-hilfe"); el.textContent = zu; el.style.display = ""; } }; } /* Wappentür (#40): verschlossen */
     if (ziel) { const S = SPRUENGE[a.id]; /* Phase 4: manche Sprünge erst mit Quest-Schalter (shared/bosse.ts) */
       return { text: /hinauf|hoch/i.test(knopf) ? "Hoch" : /hinab|hinunter|runter/i.test(knopf) ? "Runter" : knopf || "Hinabsteigen",
         tat: () => { if (S && !(questGeladen() && schalterAn((id) => questStandB(id), S.schalter))) { chatSystem(S.zu); return; } this.springen(ziel[0], ziel[1]); } }; }

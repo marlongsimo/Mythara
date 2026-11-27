@@ -23,16 +23,19 @@ import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT, waffeLadungVerbrauchen, hat as invHat, abgeben } from "./inventar";
-import { geladen as istGeladen } from "../../shared/gegenstaende";
+import { geladen as istGeladen, beuteAufloesen, GEGENSTAENDE } from "../../shared/gegenstaende";
 import { erlegt, xpLiveSetzen, heldXpSetzen, getroffen, zielscheibeFrei, schalter } from "./quests";
 import { weltJeSpieler, instanzAus, bossSieg } from "./bosse";
+import { BOSSE } from "../../shared/bosse";
 import { GLOCKE, WIND, glockeLaeutet, glockeStunde, boeeNr } from "../../shared/weltereignisse";
 import { ZIELSCHEIBE_BIS } from "../../shared/sim";
 import { levelAus as levelVon } from "../../shared/kampfwerte";
 
 /** Schalter, die Gegner kennen (MonsterDef.aggressivNach, #81) */
-const SCHALTER_GEGNER = [...new Set(Object.values(MONSTER).map((m) => m.aggressivNach && m.aggressivNach.schalter).filter((s): s is string => Boolean(s)))];
+const SCHALTER_GEGNER = [...new Set([...Object.values(MONSTER).map((m) => m.aggressivNach && m.aggressivNach.schalter), ...Object.values(BOSSE).flatMap((B) => B.phasen.flatMap((p) => (p.heilorte || []).map((h) => h.ausser)))].filter((s): s is string => Boolean(s)))]; /* auch Heilort.ausser (Becken getrübt) */
 /** Verkleidung (#49): Gegenstände, die Gegner friedlich machen (MonsterDef.friedlichMit) */
+/** Funde, die im Chat gemeldet werden (beute.md „Seltene Funde sichtbar machen“) */
+const SELTENER_FUND = new Set(["episch", "legendaer", "mythisch"]);
 /** Glocke (#102): in welcher Stunde ein Konto sie zuletzt gehört hat (einmal je Stunde ein Text) */
 const glockeGehoert = new Map<string, number>();
 const VERKLEIDUNG = new Set(Object.values(MONSTER).flatMap((m) => m.friedlichMit || []));
@@ -382,7 +385,9 @@ setInterval(() => {
     const z = Z.sim.zustand(); let stufe = false;
     { const K0 = KARTEN[Z.karte]; if (K0 && K0.ursprung) for (const ev of z.ev) if (ev.a === "beute") { /* Beute auf den Boden der Region: 30 s nur für den Besitzer, dann 5 min für alle */
       const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), besitzer = (q && q.kampf && q.kampf.nutzer) || "";
-      for (const [g, n, nur] of ev.g) if (!nur || (besitzer && bedingungErfuellt(besitzer, nur))) bodenDazu(K0.weltRegion || weltRegionBei(K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y), K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y, g, n, besitzer, LOOT); } } /* die eine Kampfwelt: Region nach der Stelle */ /* bedingte Beute nur, wenn der Bezwinger die Bedingung erfüllt */
+      for (const [g0, n, nur] of ev.g) { if (nur && !(besitzer && bedingungErfuellt(besitzer, nur))) continue; const g = beuteAufloesen(g0); if (!g || !GEGENSTAENDE[g]) continue; /* „@selten“ … : eine zufällige Ausrüstung dieser Stufe */
+        bodenDazu(K0.weltRegion || weltRegionBei(K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y), K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y, g, n, besitzer, LOOT);
+        if (besitzer && SELTENER_FUND.has(GEGENSTAENDE[g].seltenheit)) systemAn(besitzer, `Seltener Fund: ${n > 1 ? n + " × " : ""}${GEGENSTAENDE[g].name}!`); } } } /* beute.md: seltene Funde im Chat */ /* die eine Kampfwelt: Region nach der Stelle */ /* bedingte Beute nur, wenn der Bezwinger die Bedingung erfüllt */
     for (const ev of z.ev) if (ev.a === "treffer") { /* Zielscheibe: Treffer zählen für Quests; wer über Fernkampf 10 ist (oder sie nicht freigeschaltet hat), lernt nichts */
       const q = [...Z.spieler].find((o) => o.heldId === ev.von), nutzer = q && q.kampf && q.kampf.nutzer; if (!q || !nutzer) continue; getroffen(nutzer, ev.typ, ev.art);
       if (jetzt - (q.zielHinweis || 0) > 60000) { const frei = zielscheibeFrei(nutzer), h = q.heldId ? Z.sim.nach(q.heldId) : undefined, fern = h && h.kw ? levelVon(h.kw.skills.fernkampf || 0, "fernkampf") : 0;
