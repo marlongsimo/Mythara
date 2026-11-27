@@ -87,6 +87,7 @@ TESTS=(
   hueter
   gegner-stufe
   gefahr
+  sperren
   midgame-bosse
   zunft-rohstoffe
   zunft
