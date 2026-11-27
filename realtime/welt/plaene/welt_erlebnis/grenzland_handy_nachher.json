@@ -1,0 +1,74 @@
+[
+ {
+  "ort": "Riedwiesen",
+  "bereit_ms": 3076,
+  "erstes_bild_ms": 3283,
+  "daten_mb": 19.3,
+  "anfragen": 298,
+  "fps_ruhig": 10.8,
+  "fps_gehen": 9.8,
+  "max_bild_ms": 167,
+  "ruckler": 0,
+  "info": "10 FPS · 27 Aufrufe · 25 Chunks",
+  "weg": [
+   6208,
+   6531,
+   6234,
+   6531
+  ]
+ },
+ {
+  "ort": "Riedwiesen",
+  "bereit_ms": 1537,
+  "erstes_bild_ms": 3489,
+  "daten_mb": 19.3,
+  "anfragen": 298,
+  "fps_ruhig": 11.3,
+  "fps_gehen": 10.3,
+  "max_bild_ms": 150,
+  "ruckler": 0,
+  "info": "11 FPS · 27 Aufrufe · 25 Chunks",
+  "weg": [
+   6208,
+   6531,
+   6234,
+   6531
+  ]
+ },
+ {
+  "ort": "Grenzland West",
+  "bereit_ms": 2738,
+  "erstes_bild_ms": 2940,
+  "daten_mb": 17.9,
+  "anfragen": 290,
+  "fps_ruhig": 18.8,
+  "fps_gehen": 17.3,
+  "max_bild_ms": 133,
+  "ruckler": 0,
+  "info": "19 FPS · 20 Aufrufe · 25 Chunks",
+  "weg": [
+   6143,
+   6407,
+   6171,
+   6407
+  ]
+ },
+ {
+  "ort": "Nordsaum",
+  "bereit_ms": 3054,
+  "erstes_bild_ms": 3175,
+  "daten_mb": 22.3,
+  "anfragen": 324,
+  "fps_ruhig": 3.8,
+  "fps_gehen": 3.8,
+  "max_bild_ms": 317,
+  "ruckler": 0,
+  "info": "4 FPS · 60 Aufrufe · 25 Chunks",
+  "weg": [
+   6443,
+   6370,
+   6447,
+   6370
+  ]
+ }
+]

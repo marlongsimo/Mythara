@@ -1,0 +1,84 @@
+{
+ "hinweis": "Verdichtung (verdichten.py): je Gebiet Bewuchs, Kleinigkeiten am Weg, Tierplätze. Weltfelder.",
+ "gebiete": {
+  "fl_186_198": {
+   "schritt": "grenzland",
+   "bewuchs": 205,
+   "gruppen": 100,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "westried": {
+   "schritt": "grenzland",
+   "bewuchs": 193,
+   "gruppen": 80,
+   "kleinigkeiten": 17,
+   "tiere": 1
+  },
+  "nordwald": {
+   "schritt": "grenzland",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 6,
+   "tiere": 2
+  },
+  "nordsaum": {
+   "schritt": "grenzland",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 25,
+   "tiere": 0
+  },
+  "osthof": {
+   "schritt": "grenzland",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 2,
+   "tiere": 0
+  },
+  "obstwiesen": {
+   "schritt": "grenzland",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 1,
+   "tiere": 0
+  },
+  "osthang": {
+   "schritt": "grenzland",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 3,
+   "tiere": 0
+  },
+  "weidenhain": {
+   "schritt": "grenzland",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 1,
+   "tiere": 0
+  }
+ },
+ "tiere": [
+  {
+   "id": "vd_tier_westried_1",
+   "tier": "Ziege",
+   "x": 6189.4,
+   "y": 6488.9,
+   "region": "westried"
+  },
+  {
+   "id": "vd_tier_nordwald_1",
+   "tier": "Ziege",
+   "x": 6378.0,
+   "y": 6430.2,
+   "region": "nordwald"
+  },
+  {
+   "id": "vd_tier_nordwald_2",
+   "tier": "Schaf",
+   "x": 6363.6,
+   "y": 6451.0,
+   "region": "nordwald"
+  }
+ ]
+}
