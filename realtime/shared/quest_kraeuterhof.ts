@@ -40,7 +40,7 @@ export const QUEST_KRAEUTERHOF: QuestDef = {
       log: "Leg hinter dem Kräuterhof die zwei Beete an – Ringelblume und Moorglöckchen ({n:beete})." },
     { id: "beet_2", text: "Die zwei Beete anlegen", ereignis: { art: "objekt", id: "kh_beet_2" }, nach: ["ableger"], gruppe: "beete", wo: KRAEUTERHOF.beet_2,
       log: "Leg hinter dem Kräuterhof die zwei Beete an – Ringelblume und Moorglöckchen ({n:beete})." },
-    { id: "traenke", text: "Zwei Heiltränke aus der ersten Ernte brauen", ereignis: { art: "herstellen", rezept: "heiltrank" }, anzahl: 2, nach: ["beet_1", "beet_2"], wo: KRAEUTERHOF.kessel,
+    { id: "traenke", text: "Zwei Heiltränke aus der ersten Ernte brauen", ereignis: { art: "herstellen", rezept: "brauen_heiltrank" }, anzahl: 2, nach: ["beet_1", "beet_2"], wo: KRAEUTERHOF.kessel,
       log: "Brau am Kessel des Kräuterhofs zwei Heiltränke ({n:traenke}) – Ringelblume aus dem neuen Beet und Wegerich." },
   ],
   objekte: [

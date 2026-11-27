@@ -328,7 +328,7 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
     text: "Ein Ring mit fünf schweren Schlüsseln. Einer davon passt zur Tür des Beutelagers im Unterschlupf." };
   GEGENSTAENDE.silberleuchter = { id: "silberleuchter", name: "Silberleuchter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "silberleuchter.webp",
     text: "Zwei silberne Kerzenleuchter, in Sackleinen gewickelt. Die aus Gisberts Karrenbrief – Othmar wird sie zurückhaben wollen." };
-  GEGENSTAENDE.rabenbrief = { id: "rabenbrief", name: "Brief mit Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "karrenbrief.webp",
+  GEGENSTAENDE.rabenbrief = { id: "rabenbrief", name: "Brief mit Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "rabenbrief.webp",
     text: "Schwarzes Wachs, ein Rabe darin, das Siegel gebrochen. „Für jeden Splitter, den ihr bringt, eine Feder. Die Insel wartet. – Der Oberste.“" };
   GEGENSTAENDE.rotes_banner = { id: "rotes_banner", name: "Rotes Banner", art: "Zierde", seltenheit: "episch", bild: P4 + "rotes_banner.webp",
     text: "Rotmantels Banner, schwerer roter Stoff, an den Rändern verbrannt. Ein Sammelstück – irgendwann hängt es in deinem Haus." };
@@ -639,6 +639,13 @@ GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /*
     ["moorgloeckchen", "Moorglöckchen", 8, "Kleine blaue Glocken aus dem Rabenmoor. Wer daran riecht, atmet freier."], ["eisenhut", "Eisenhut", 12, "Dunkle Blüten vom Friedhof im Nordwald. Giftig – nur gebraut zu gebrauchen."],
     ["nebelkraut", "Nebelkraut", 18, "Ein graues Kraut aus den Nebelfeldern des Rabenmoors. Es riecht nach Regen."], ["lindenbluete", "Lindenblüte", 30, "Eine Blüte der alten Linde in Weidenhain. Sie wächst nur langsam nach."]];
   for (const [id, name, wert, text] of KR) GEGENSTAENDE[id] = { id, name, art: "Kraut", seltenheit: "anfaenger", bild: KS + id + ".webp", wert, text };
+  /* Questgegenstände um die Kräuter: Miras Rezeptbuch (quest_mira.ts) und der Kräuterhof (quest_kraeuterhof.ts) */
+  GEGENSTAENDE.rezeptheft = { id: "rezeptheft", name: "Miras Rezeptheft", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+    text: "Ein dünnes Heft voller Flecken, die Ecken vom Kesseldampf gewellt. Auf dem Umschlag steht „Mira“, darunter: „Nicht für Hedda.“" };
+  GEGENSTAENDE.ringelblumensamen = { id: "ringelblumensamen", name: "Ringelblumensamen", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: KS + "ringelblume.webp",
+    text: "Ein Tütchen Samen, sorgfältig gefaltet. Nicht zu nass halten, steht darauf." };
+  GEGENSTAENDE.moorgloeckchen_ableger = { id: "moorgloeckchen_ableger", name: "Moorglöckchen-Ableger", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: KS + "moorgloeckchen.webp",
+    text: "Drei kleine Pflanzen mit Moorerde an den Wurzeln, in ein feuchtes Tuch geschlagen." };
   GEGENSTAENDE.sichel = { id: "sichel", name: "Sichel", art: "Werkzeug", seltenheit: "anfaenger", bild: TS + "sichel.webp", modell3d: "img/figuren-echt3d/basemann3d.teile/waffe.sichel.glb", wert: 10,
     text: "Eine kleine Sichel für Kräuter. Ohne sie reißt man die Pflanzen nur aus." };
   GEGENSTAENDE.leeres_flaeschchen = { id: "leeres_flaeschchen", name: "Leeres Fläschchen", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: TS + "leeres_flaeschchen.webp", modell3d: TM + "leeres_flaeschchen.glb", wert: 2,
