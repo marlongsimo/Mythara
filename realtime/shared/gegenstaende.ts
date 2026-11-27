@@ -23,6 +23,7 @@ export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf
 export interface WaffenWerte { art: Art; /** Mehr Schaden gegen eine Gegnerfamilie (MONSTER.familie), z. B. { wald: 0.15 } = +15 % Max Hit */ gegen?: Record<string, number>; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
 export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number }; text: string;
+  /** #151 Waffen der Stufe 70: passive Fähigkeit, solange die Waffe Ladungen hat (chance je Treffer) – geladen wird sie mit 1 Splitter je Ladung, Laden bindet sie */ passiv?: Passiv;
   /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; /** Grundwert in Splittern für den Trödler (#88), wenn kein Laden ihn führt */ wert?: number; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
 
 const KAMPFART: Record<Art, string> = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie" };
@@ -34,8 +35,9 @@ export function werteVon(G: Gegenstand): [string, string][] {
     if (W.art === "nah") z.push(["Geschick", `+${W.geschick || 0}`], ["Stärke", `+${W.staerke || 0}`]);
     else if (W.art === "fern") z.push(["Fernkampf-Angriff", `+${W.fernAngriff || 0}`], ["Fernkampf-Stärke", `+${W.fernStaerke || 0}`]);
     else z.push(["Magische Genauigkeit", `+${W.genau || 0}`], ["Magie-Stärke", `+${W.magieStaerke || 0}`]);
-    z.push(["Angriffstempo", `${W.ticks} Ticks (${zahl(W.ticks * 0.5)} s)`], ["Reichweite", W.art === "nah" ? (W.reich <= 1 ? "1 Feld (Nahkampf)" : "Nahkampf") : `${zahl(W.reich)} Felder`]);
+    z.push(["Angriffstempo", `${W.ticks} Ticks (${zahl(W.ticks * 0.5)} s)`], ["Reichweite", W.art === "nah" ? (W.reich >= 2 ? `${Math.floor(W.reich)} Felder (Nahkampf)` : W.reich <= 1 ? "1 Feld (Nahkampf)" : "Nahkampf") : `${zahl(W.reich)} Felder`]);
     if (G.abwehr) z.push(["Eigene Abwehr", `Nah ${G.abwehr.nah} · Fern ${G.abwehr.fern} · Magie ${G.abwehr.magie}`]); if (G.zweihand) z.push(["Hände", "zweihändig (kein Schild)"]);
+    if (G.passiv) z.push(["Geladen", `${G.passiv.name}: ${Math.round(G.passiv.chance * 100)} % je Treffer – ${G.passiv.text}`], ["Laden", "Bindestein, 1 Splitter je Ladung (höchstens 1.000) · bindet die Waffe"]); /* #151 */
     if (G.anforderung) z.push(["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`]); return z; }
   if (G.trank && VERBRAUCH[G.trank]) return VERBRAUCH[G.trank].werte;
   if (G.abwehr) return [["Verteidigung Nahkampf", vz(G.abwehr.nah)], ["Verteidigung Fernkampf", vz(G.abwehr.fern)], ["Verteidigung Magie", vz(G.abwehr.magie)], ...(G.bonus && G.bonus.fernAngriff ? [["Fernkampf-Angriff", vz(G.bonus.fernAngriff)] as [string, string]] : []), ...(G.bonus && G.bonus.genau ? [["Magische Genauigkeit", vz(G.bonus.genau)] as [string, string]] : []), ...(G.anforderung ? [["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`] as [string, string]] : [])];
@@ -97,7 +99,7 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 4, staerke: 6 }, /* vorläufig: Streitkolben, 3 Ticks – Werte folgen */
     text: "Ein Streitkolben mit sternförmigem Kopf aus dunklem Stahl, der Schaft grün lackiert und bronzebeschlagen." },
   sterndorn: { id: "sterndorn", name: "Seltener Speer", platz: "waffe", art: "Speer", seltenheit: "selten", ebenen: ["waffe.sterndorn"],
-    waffe: { art: "nah", ticks: 4, reich: 1.5, geschick: 6, staerke: 6 }, /* vorläufig: Speer, 4 Ticks, Reichweite wie Nahkampf (Reichweite 2 folgt) – Werte folgen */
+    waffe: { art: "nah", ticks: 4, reich: 2, geschick: 6, staerke: 6 }, /* Speer: Nahkampf aus 2 Feldern (sim.ts NAH_LANG); Werte aus BALANCING */
     text: "Ein langer Speer mit schlanker Spitze und grünem Wimpel – für zwei Hände und große Reichweite." },
   mondlangbogen: { id: "mondlangbogen", name: "Seltener Langbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.lang"],
     waffe: { art: "fern", ticks: 5, reich: 7, flug: 18, fernAngriff: 12, fernStaerke: 12 }, /* vorläufig: Langbogen – Werte folgen */
@@ -272,7 +274,7 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
   GEGENSTAENDE.barren_waldstein = { id: "barren_waldstein", name: "Waldsteinbarren", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: Q + "barren_waldstein.webp",
     text: "Geschmolzener Waldstein. Das Metall nimmt keine Splitter an." };
   GEGENSTAENDE.waldsaebel = { ...GEGENSTAENDE.waldsaebel /* der vorhandene Gesegnete Waldsäbel: eigenes Modell (waffe.waldsaebel) und Bild */, untauschbar: true,
-    anforderung: { skill: "geschick", level: 5 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 21, staerke: 19, gegen: { wald: 0.15 } },
+    anforderung: { skill: "geschick", level: 5 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 16, staerke: 14, gegen: { wald: 0.15 } } /* Balancing 27.11.: knapp unter dem Eidschwert der Stufe 10 (18/16) */,
     text: "Eine geschwungene Klinge aus Waldstein, der Griff aus dem Holz des Waldgottes, umrankt von lebendigen Dornen. Er trifft, was die Splitter verändert haben, härter: +15 % Schaden gegen Wesen des Waldes (Waldgolems, Mooshocker). Nicht tauschbar." }; }
 /* Phase 2 „Waldland“ (26.11.2026): Gegenstände der Einsteigerquests A1–A3, Essen und Golem-Beute (Bilder: fabrik/waldland_dinge.py) */
 { const Q = "img/objekte3d/skilling/erzeugnisse/";
@@ -390,7 +392,7 @@ const BALANCING: Record<string, Bal> = {
   eiddolch_gewoehnlich: { a: ["geschick", 10], w: { ticks: 2, reich: 1, geschick: 10, staerke: 6 } }, eiddolch: { a: ["geschick", 20], w: { ticks: 2, reich: 1, geschick: 11, staerke: 11 } },
   eidzweihaender_gewoehnlich: { a: ["staerke", 10], w: { ticks: 4, reich: 1, geschick: 27, staerke: 26 }, zweihand: true }, eidzweihaender: { a: ["staerke", 20], w: { ticks: 4, reich: 1, geschick: 38, staerke: 38 }, zweihand: true },
   sternbrecher_gewoehnlich: { a: ["staerke", 10], w: { ticks: 3, reich: 1, geschick: 13, staerke: 14 } }, sternbrecher: { a: ["staerke", 20], w: { ticks: 3, reich: 1, geschick: 16, staerke: 20 } },
-  sterndorn_gewoehnlich: { a: ["geschick", 10], w: { ticks: 4, reich: 1, geschick: 11, staerke: 12 }, ab: [5, 5, 0], zweihand: true }, sterndorn: { a: ["geschick", 20], w: { ticks: 4, reich: 1, geschick: 15, staerke: 17 }, ab: [7, 7, 0], zweihand: true },
+  sterndorn_gewoehnlich: { a: ["geschick", 10], w: { ticks: 4, reich: 2, geschick: 11, staerke: 12 }, ab: [5, 5, 0], zweihand: true }, sterndorn: { a: ["geschick", 20], w: { ticks: 4, reich: 2, geschick: 15, staerke: 17 }, ab: [7, 7, 0], zweihand: true },
   /* Fernkampf: Oak/Willow-Kurzbogen mit Eisen-/Stahlpfeilen, Langbogen, Armbrust mit Bolzen (Black/Mithril) */
   mondkurzbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 3, reich: 5, fernAngriff: 14, fernStaerke: 16 } }, mondkurzbogen: { a: ["fernkampf", 20], w: { ticks: 3, reich: 5, fernAngriff: 20, fernStaerke: 22 } },
   mondlangbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 5, reich: 7, fernAngriff: 14, fernStaerke: 20 } }, mondlangbogen: { a: ["fernkampf", 20], w: { ticks: 5, reich: 7, fernAngriff: 20, fernStaerke: 27 } },
@@ -414,7 +416,7 @@ const BALANCING: Record<string, Bal> = {
   eiddolch_episch: { a: ["geschick", 35], w: { ticks: 2, reich: 1, geschick: 15, staerke: 14 } }, eiddolch_legendaer: { a: ["geschick", 45], w: { ticks: 2, reich: 1, geschick: 25, staerke: 24 } }, eiddolch_mythisch: { a: ["geschick", 65], w: { ticks: 2, reich: 1, geschick: 40, staerke: 40 } },
   eidzweihaender_episch: { a: ["staerke", 35], w: { ticks: 4, reich: 1, geschick: 43, staerke: 44 }, zweihand: true }, eidzweihaender_legendaer: { a: ["staerke", 45], w: { ticks: 4, reich: 1, geschick: 69, staerke: 70 }, zweihand: true }, eidzweihaender_mythisch: { a: ["staerke", 65], w: { ticks: 4, reich: 1, geschick: 92, staerke: 93 }, zweihand: true },
   sternbrecher_episch: { a: ["staerke", 35], w: { ticks: 3, reich: 1, geschick: 25, staerke: 23 } }, sternbrecher_legendaer: { a: ["staerke", 45], w: { ticks: 3, reich: 1, geschick: 36, staerke: 39 } }, sternbrecher_mythisch: { a: ["staerke", 65], w: { ticks: 3, reich: 1, geschick: 60, staerke: 55 } },
-  sterndorn_episch: { a: ["geschick", 35], w: { ticks: 4, reich: 1, geschick: 23, staerke: 24 }, ab: [9, 9, 0], zweihand: true }, sterndorn_legendaer: { a: ["geschick", 45], w: { ticks: 4, reich: 1, geschick: 36, staerke: 42 }, ab: [12, 12, 0], zweihand: true }, sterndorn_mythisch: { a: ["geschick", 65], w: { ticks: 4, reich: 1, geschick: 55, staerke: 60 }, ab: [15, 15, 0], zweihand: true },
+  sterndorn_episch: { a: ["geschick", 35], w: { ticks: 4, reich: 2, geschick: 23, staerke: 24 }, ab: [9, 9, 0], zweihand: true }, sterndorn_legendaer: { a: ["geschick", 45], w: { ticks: 4, reich: 2, geschick: 36, staerke: 42 }, ab: [12, 12, 0], zweihand: true }, sterndorn_mythisch: { a: ["geschick", 65], w: { ticks: 4, reich: 2, geschick: 55, staerke: 60 }, ab: [15, 15, 0], zweihand: true },
   mondkurzbogen_episch: { a: ["fernkampf", 35], w: { ticks: 3, reich: 5, fernAngriff: 29, fernStaerke: 31 } }, mondkurzbogen_legendaer: { a: ["fernkampf", 45], w: { ticks: 3, reich: 5, fernAngriff: 47, fernStaerke: 49 } }, mondkurzbogen_mythisch: { a: ["fernkampf", 65], w: { ticks: 3, reich: 5, fernAngriff: 69, fernStaerke: 60 } },
   mondlangbogen_episch: { a: ["fernkampf", 35], w: { ticks: 5, reich: 7, fernAngriff: 31, fernStaerke: 38 } }, mondlangbogen_legendaer: { a: ["fernkampf", 45], w: { ticks: 5, reich: 7, fernAngriff: 49, fernStaerke: 60 } }, mondlangbogen_mythisch: { a: ["fernkampf", 65], w: { ticks: 5, reich: 7, fernAngriff: 69, fernStaerke: 73 } },
   sternarmbrust_episch: { a: ["fernkampf", 35], w: { ticks: 6, reich: 6, fernAngriff: 55, fernStaerke: 82 } }, sternarmbrust_legendaer: { a: ["fernkampf", 45], w: { ticks: 6, reich: 6, fernAngriff: 90, fernStaerke: 100 } }, sternarmbrust_mythisch: { a: ["fernkampf", 65], w: { ticks: 6, reich: 6, fernAngriff: 94, fernStaerke: 122 } },
@@ -423,8 +425,8 @@ const BALANCING: Record<string, Bal> = {
   eisenwachthelm_episch: { a: ["defense", 35], ab: [19, 19, -1], mal: HELM }, eisenwacht_episch: { a: ["defense", 35], ab: [61, 63, -6], mal: PANZER }, eisenbeinschienen_episch: { a: ["defense", 35], ab: [31, 31, -4], mal: BEINE },
   eisenwachthelm_legendaer: { a: ["defense", 45], ab: [30, 30, -1], mal: HELM }, eisenwacht_legendaer: { a: ["defense", 45], ab: [78, 80, -6], mal: PANZER }, eisenbeinschienen_legendaer: { a: ["defense", 45], ab: [49, 49, -4], mal: BEINE },
   eisenwachthelm_mythisch: { a: ["defense", 65], ab: [45, 46, -1], mal: HELM }, eisenwacht_mythisch: { a: ["defense", 65], ab: [104, 106, -6], mal: PANZER }, eisenbeinschienen_mythisch: { a: ["defense", 65], ab: [66, 66, -4], mal: BEINE },
-  jaegerkapuze_episch: { a: ["defense", 35], ab: [4, 4, 4], mal: [4, -1] }, jaegerwams_episch: { a: ["defense", 35], ab: [23, 20, 20], mal: [15, -15] }, jaegerhose_episch: { a: ["defense", 35], ab: [10, 8, 8], mal: [8, -10] },
-  jaegerkapuze_legendaer: { a: ["defense", 45], ab: [7, 7, 6], mal: [6, -1] }, jaegerwams_legendaer: { a: ["defense", 45], ab: [40, 40, 40], mal: [20, -15] }, jaegerhose_legendaer: { a: ["defense", 45], ab: [16, 16, 14], mal: [11, -10] },
+  jaegerkapuze_episch: { a: ["defense", 35], ab: [9, 9, 6], mal: [4, -1] }, jaegerwams_episch: { a: ["defense", 35], ab: [31, 32, 24], mal: [15, -15] }, jaegerhose_episch: { a: ["defense", 35], ab: [18, 18, 10], mal: [8, -10] },
+  jaegerkapuze_legendaer: { a: ["defense", 45], ab: [10, 10, 8], mal: [6, -1] }, jaegerwams_legendaer: { a: ["defense", 45], ab: [40, 40, 40], mal: [20, -15] }, jaegerhose_legendaer: { a: ["defense", 45], ab: [20, 20, 14], mal: [11, -10] },
   jaegerkapuze_mythisch: { a: ["defense", 65], ab: [12, 12, 10], mal: [10, -1] }, jaegerwams_mythisch: { a: ["defense", 65], ab: [54, 55, 50], mal: [30, -15] }, jaegerhose_mythisch: { a: ["defense", 65], ab: [25, 27, 24], mal: [17, -10] },
   magierkapuze_episch: { a: ["defense", 35], ab: [0, 0, 4], mal: [0, 4] }, magierrobe_episch: { a: ["defense", 35], ab: [0, 0, 20], mal: [0, 20] }, magierrock_episch: { a: ["defense", 35], ab: [0, 0, 15], mal: [0, 15] },
   magierkapuze_legendaer: { a: ["defense", 45], ab: [6, 6, 6], mal: [0, 6] }, magierrobe_legendaer: { a: ["defense", 45], ab: [10, 10, 22], mal: [0, 22] }, magierrock_legendaer: { a: ["defense", 45], ab: [8, 8, 17], mal: [0, 17] },
@@ -544,13 +546,40 @@ export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math
   GEGENSTAENDE.moorwasser_geweiht = { id: "moorwasser_geweiht", name: "Geweihtes Moorwasser", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/kraeuterkunde/symbole/lindentau_stark.webp",
     text: "Das Moorwasser ist klar geworden und leuchtet schwach grün, wie das Licht unter der Linde. Es trübt das Splitterbecken." }; }
 
+/* ───────── #151 Waffen der Stufe 70 (doku/konzepte/waffen-70.md, Entscheidung des Nutzers): Echoschneide, Seelenbogen, Seelenfokus ─────────
+   Mythisch mit Anforderung 70 (Rahmen wie Mythisch). Am Bindestein mit 1 Splitter je Ladung laden (höchstens 1.000), Laden bindet die Waffe, jeder Angriff kostet 1 Ladung;
+   solange Ladung da ist: 15 % je Treffer die Passive (sim.ts treffen). Geladen wirkt nur die Passive (kein × 1,1 wie bei den anderen geladenen Waffen).
+   Herkunft: Mini-Boss der Hochlande (Block H) – vorbereitet in STUFE70_BEUTE, noch in keiner Drop-Tabelle. Modelle aus den Vorlagen des Nutzers (Figuren d50193d6e): Teile waffe.<name>, Bilder img/objekte3d/ausruestung/stufe70/. */
+export type PassivId = "nachhall" | "seelenzug" | "seelenbrand";
+export interface Passiv { id: PassivId; name: string; chance: number; text: string }
+export const PASSIVE: Record<PassivId, Passiv> = {
+  nachhall: { id: "nachhall", name: "Nachhall", chance: 0.15, text: "Der Schlag trifft ein zweites Mal mit halbem Schaden." },
+  seelenzug: { id: "seelenzug", name: "Seelenzug", chance: 0.15, text: "Ein Viertel des Schadens heilt dich." },
+  seelenbrand: { id: "seelenbrand", name: "Seelenbrand", chance: 0.15, text: "Das Ziel brennt 6 s: alle 2 s 3 Schaden." },
+};
+/** Seelenbrand: Schaden je Sekunde und Dauer (der Dauerschaden der Simulation zahlt in Stößen zu 3 aus – alle 2 s) */
+export const SEELENBRAND = { jeSek: 1.5, dauer: 6 };
+export const WAFFEN_STUFE70 = ["echoschneide", "seelenbogen", "seelenfokus"];
+{ const B = "img/objekte3d/ausruestung/stufe70/", T = "Mit Splittern geladen erwacht in ihr eine Kraft – solange die Ladung reicht.";
+  GEGENSTAENDE.echoschneide = { id: "echoschneide", name: "Echoschneide", platz: "waffe", art: "Einhandschwert", seltenheit: "mythisch", ebenen: ["waffe.echoschneide"], bild: B + "echoschneide.webp",
+    anforderung: { skill: "geschick", level: 70 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 75, staerke: 77 }, passiv: PASSIVE.nachhall,
+    text: "Eine Klinge, die nachklingt. Jeder Hieb hallt in ihr wider. " + T };
+  GEGENSTAENDE.seelenbogen = { id: "seelenbogen", name: "Seelenbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "mythisch", ebenen: ["waffe.seelenbogen"], bild: B + "seelenbogen.webp", zweihand: true,
+    anforderung: { skill: "fernkampf", level: 70 }, waffe: { art: "fern", ticks: 4, reich: 5, flug: 18, fernAngriff: 75, fernStaerke: 66 }, passiv: PASSIVE.seelenzug,
+    text: "Die Sehne summt wie ein Atemzug. Was der Pfeil nimmt, gibt er dem Schützen zurück. " + T };
+  GEGENSTAENDE.seelenfokus = { id: "seelenfokus", name: "Seelenfokus", platz: "waffe", art: "Stab", seltenheit: "mythisch", ebenen: ["waffe.seelenfokus"], bild: B + "seelenfokus.webp", zweihand: true /* Zweihand-Stab (Figuren) */,
+    anforderung: { skill: "magie", level: 70 }, waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 30, magieStaerke: 216 }, passiv: PASSIVE.seelenbrand,
+    text: "Ein Stab mit einem Herz aus kaltem Feuer. Wen er trifft, der brennt von innen. " + T }; }
+/** Vorbereitet für den Mini-Boss der Hochlande (Block H): je Waffe 1 : 100 in der starken Fassung, keine in der Quest-Fassung – noch nicht eingetragen */
+export const STUFE70_BEUTE = { wurf: WAFFEN_STUFE70.map((g) => ({ g, chance: 1 })) };
+
 /* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
 /** Ist das eine Platzhalter-Beute („@<seltenheit>[:<Art>]“)? */
 export const beutePlatzhalter = (g: string): boolean => g.startsWith("@");
 /** Platzhalter auflösen: eine zufällige Waffe oder Rüstung dieser Seltenheit (ohne Werkzeuge, Questlohn und Set-Teile); Art-Filter über GegenstandDef.art (Teilwort) */
 export function beuteAufloesen(g: string, zufall: () => number = Math.random): string | null { if (!beutePlatzhalter(g)) return g;
   const [sel, art] = g.slice(1).split(":"), werkzeug = /^(holzbeil|spitzhacke|angel)/;
-  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
+  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !G.passiv /* #151: Stufe 70 nur vom Mini-Boss */ && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
   return L.length ? L[Math.floor(zufall() * L.length)].id : null; }
 
 /* ───────── Phase 7 (#40): Graufurt, Ostufer, Turm – Bilder img/objekte3d/graufurt/symbole/ und Wels img/objekte3d/skilling/angeln/symbole/ (Figuren #37) ───────── */
@@ -580,7 +609,7 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
   GEGENSTAENDE.kloeppel = { id: "kloeppel", name: "Klöppel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G8 + "kloeppel.webp",
     text: "Ein Klöppel aus Kernbaum, schwer und gerade. Er gehört in die Glocke von Grauwacht." };
   GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
-    anforderung: { skill: "geschick", level: 25 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 22, staerke: 22 },
+    anforderung: { skill: "geschick", level: 40 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 33, staerke: 34 } /* Balancing 27.11.: zwischen Stufe 35 und 45, nur Lohn aus E4 */,
     text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }
 
 /* ───────── Phase 9 (#86): Glutsande und Glutbrunn – Bilder img/objekte3d/glutsande/symbole/, Glutwels img/objekte3d/skilling/angeln/symbole/ (Figuren #75) ───────── */
@@ -689,13 +718,13 @@ VERBRAUCH.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: 
 
 /* ───────── Phase 8, E-Quests (#118): Briefe, Glocke, Tjarks Eid, Mettes Schafe, Grablichter – Bilder aus dem Bestand, wo eines passt ───────── */
 { const E = "img/objekte3d/skilling/erzeugnisse/", K = "img/objekte3d/skilling/kochen/symbole/";
-  GEGENSTAENDE.othmars_brief = { id: "othmars_brief", name: "Othmars Brief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+  GEGENSTAENDE.othmars_brief = { id: "othmars_brief", name: "Othmars Brief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/othmars_brief.webp",
     text: "Ein gefaltetes Blatt, oft gestrichen, eng beschrieben. Außen steht nur: „Für Gunhild.“" };
-  GEGENSTAENDE.barren_glockenbronze = { id: "barren_glockenbronze", name: "Glockenbronze", art: "Rohstoff", seltenheit: "selten", untauschbar: true, stapel: 8, bild: E + "barren_kupfer.webp",
+  GEGENSTAENDE.barren_glockenbronze = { id: "barren_glockenbronze", name: "Glockenbronze", art: "Rohstoff", seltenheit: "selten", untauschbar: true, stapel: 8, bild: "img/objekte3d/skilling/erzeugnisse/barren_glockenbronze.webp",
     text: "Vier Teile Kupfer, ein Teil Splittereisen. Wenn man daran klopft, singt der Barren." };
-  GEGENSTAENDE.glocke_neu = { id: "glocke_neu", name: "Neue Glocke", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
+  GEGENSTAENDE.glocke_neu = { id: "glocke_neu", name: "Neue Glocke", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/grauwacht/symbole/glocke_neu.webp",
     text: "Die neue Glocke von Grauwacht, noch warm aus der Form. Schwer genug, dass man sie mit beiden Armen tragen muss." };
-  GEGENSTAENDE.tjarks_eid = { id: "tjarks_eid", name: "Tjarks Eid", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+  GEGENSTAENDE.tjarks_eid = { id: "tjarks_eid", name: "Tjarks Eid", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/tjarks_eid.webp",
     text: "Ein Eid, aufgeschrieben und mit „Tjark Sölde“ unterzeichnet: Die Freien vom Grenzposten kehren zur Wacht zurück." };
   GEGENSTAENDE.hammelfleisch = { id: "hammelfleisch", name: "Hammelfleisch", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "kuhfleisch.webp", wert: 4,
     text: "Fleisch von einem der Schafe aus Heidrast. Mit Wasser im Herd wird ein Eintopf daraus." };
@@ -706,7 +735,7 @@ VERBRAUCH.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: 
     text: "Ein kaltes, blasses Licht aus den Hügelgräbern. Es will zurück auf seinen Stein." }; }
 
 /* ───────── Phase 9, F-Quests (#118): Kords Brief, Pfannenblech, Tempelabschrift ───────── */
-GEGENSTAENDE.kords_brief = { id: "kords_brief", name: "Kords Brief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+GEGENSTAENDE.kords_brief = { id: "kords_brief", name: "Kords Brief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/kords_brief.webp",
   text: "Ein Brief von Kord Weller, dem Fährmann aus Graufurt, an seine Schwester in Glutbrunn. Der Umschlag ist voller Sand." };
 GEGENSTAENDE.pfannenblech = { id: "pfannenblech", name: "Pfannenblech", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/barren_splittereisen.webp",
   text: "Ein breites, dickes Blech aus Splittereisen für Ruwens Siedepfanne. Es hält die Glut aus." };
@@ -714,9 +743,9 @@ GEGENSTAENDE.tempelabschrift = { id: "tempelabschrift", name: "Tempelabschrift",
   text: "Die Inschrift aus dem versandeten Tempel, Zeichen für Zeichen abgeschrieben. Lesen kann sie hier niemand." };
 
 /* ───────── Phase 10, G-Quests (#118): Frachtbrief, Lampenöl, Splitterglut, Fischernetz ───────── */
-GEGENSTAENDE.frachtbrief = { id: "frachtbrief", name: "Frachtbrief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+GEGENSTAENDE.frachtbrief = { id: "frachtbrief", name: "Frachtbrief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/karrenbrief.webp",
   text: "Ein Frachtbrief aus dem umgestürzten Wagen: „Salz und Tuch, von Weidenhain nach Kielmund.“ Darunter ein Siegel der Küstenhäuser." };
-GEGENSTAENDE.lampenoel = { id: "lampenoel", name: "Lampenöl", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "trank",
+GEGENSTAENDE.lampenoel = { id: "lampenoel", name: "Lampenöl", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/lampenoel.webp",
   text: "Ein Krug trübes, gelbes Öl, aus Heringen ausgekocht. Es riecht streng und brennt lange." };
 GEGENSTAENDE.splitterglut = { id: "splitterglut", name: "Splitterglut", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/seelenlicht.webp",
   text: "Ein Seelenlicht, mit fünf Splittern zu einer Glut gebunden. Sie wärmt die Hand und erlischt nicht." };

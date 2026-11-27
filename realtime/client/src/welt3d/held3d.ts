@@ -291,5 +291,7 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   frostwolf: { datei: "frostwolf3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   eisgolem: { datei: "eisgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 },
   drakling: { datei: "drakling3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 } /* Bodengegner (Figuren 7cd8342fd) */ }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
+/** #139: die Modelldatei einer Gegnerart (für das Vorladen beim Einloggen) – oder undefined */
+export const gegnerModell = (typ: string): string | undefined => (GEGNER3D[typ] ? GEGNER3D[typ].datei : undefined);
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }

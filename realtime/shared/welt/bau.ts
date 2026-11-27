@@ -20,6 +20,9 @@ function rahmen(k: Flaeche): number[] {
   if (k.art === "rechteck") return [k.x, k.y, k.x + k.b, k.y + k.h];
   return [Math.min(...k.punkte.map((p) => p[0])), Math.min(...k.punkte.map((p) => p[1])), Math.max(...k.punkte.map((p) => p[0])), Math.max(...k.punkte.map((p) => p[1]))];
 }
+/** Drehung (#148) eines Versatzes vom Fußpunkt, im Uhrzeigersinn von oben gesehen (x nach Osten, y nach Süden): 90° macht aus Osten Süden */
+export function drehe(dx: number, dy: number, dreh = 0): [number, number] { const d = ((dreh % 360) + 360) % 360;
+  return d === 90 ? [-dy, dx] : d === 180 ? [-dx, -dy] : d === 270 ? [dy, -dx] : [dx, dy]; }
 /** Welche Kollision gilt für diese Platzierung? (eigene Angabe vor Bibliothek) */
 export const kollisionVon = (p: Platzierung, def: ObjektDef | undefined): Kollision | null => (p.kollision !== undefined ? p.kollision : def ? def.kollision : null);
 
@@ -27,14 +30,19 @@ export const kollisionVon = (p: Platzierung, def: ObjektDef | undefined): Kollis
  *  Ein Feld gilt als versperrt, wenn die Fläche mindestens vier von neun Messpunkten des Feldes trifft; das Feld unter dem Fußpunkt eines Kreises immer. */
 export function sperrFelder(p: Platzierung, def: ObjektDef | undefined): number[][] {
   const k = kollisionVon(p, def); if (!k) return [];
-  if (k.art === "gebaeude") return gebaeudeFelder(p, k);
+  const d = p.dreh || 0;
+  if (k.art === "gebaeude") { const f = gebaeudeFelder(p, k); if (!d) return f; /* #148: die Felder des ungedrehten Gebäudes um den Fußpunkt drehen (Feldmitten) */
+    const da = new Set<string>(); for (const [i, j] of f) { const [cx, cy] = drehe(i + 0.5 - p.x, j + 0.5 - p.y, d); da.add(Math.floor(p.x + cx) + "," + Math.floor(p.y + cy)); }
+    return [...da].map((x) => x.split(",").map(Number)); }
   const s = p.s ?? 1, sp = p.spiegeln ? -1 : 1, [x0, y0, x1, y1] = rahmen(k), aus: number[][] = [];
-  const ax = p.x + Math.min(x0 * s * sp, x1 * s * sp), bx = p.x + Math.max(x0 * s * sp, x1 * s * sp);
-  for (let j = Math.floor(p.y + y0 * s); j <= Math.floor(p.y + y1 * s); j++) for (let i = Math.floor(ax); i <= Math.floor(bx); i++) {
-    let n = 0; for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) if (trifft(k, (i + (a + 0.5) / 3 - p.x) / (s * sp), (j + (b + 0.5) / 3 - p.y) / s)) n++;
+  /* örtlich (spiegeln, Maßstab) → gedreht → Welt; Messpunkte rückwärts: Welt → zurückgedreht → örtlich */
+  const ecken = [[x0, y0], [x1, y0], [x0, y1], [x1, y1]].map(([x, y]) => drehe(x * s * sp, y * s, d));
+  const ax = p.x + Math.min(...ecken.map((e) => e[0])), bx = p.x + Math.max(...ecken.map((e) => e[0])), ay = p.y + Math.min(...ecken.map((e) => e[1])), by = p.y + Math.max(...ecken.map((e) => e[1]));
+  for (let j = Math.floor(ay); j <= Math.floor(by); j++) for (let i = Math.floor(ax); i <= Math.floor(bx); i++) {
+    let n = 0; for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) { const [ux, uy] = drehe(i + (a + 0.5) / 3 - p.x, j + (b + 0.5) / 3 - p.y, 360 - d); if (trifft(k, ux / (s * sp), uy / s)) n++; }
     if (n >= 4) aus.push([i, j]);
   }
-  if (k.art === "kreis") { const i = Math.floor(p.x + (k.dx || 0) * s * sp), j = Math.floor(p.y + (k.dy || 0) * s); if (!aus.some((f) => f[0] === i && f[1] === j)) aus.push([i, j]); }
+  if (k.art === "kreis") { const [cx, cy] = drehe((k.dx || 0) * s * sp, (k.dy || 0) * s, d), i = Math.floor(p.x + cx), j = Math.floor(p.y + cy); if (!aus.some((f) => f[0] === i && f[1] === j)) aus.push([i, j]); }
   return aus;
 }
 

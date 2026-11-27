@@ -35,6 +35,8 @@ import { QuestWelt } from "./quest3d";
 import { dialogOffen, gespraechMit, schliessen as dialogSchliessen } from "../dialog";
 /** So weit darf man sich während eines Gesprächs entfernen (Felder) */
 const GESPRAECH_WEIT = 5;
+/** #139: Gegner, deren Lager so nah am Startplatz liegen (Felder), lädt der Browser vor dem Ladeschirm-Ende; höchstens so lange (ms) wartet der Ladeschirm zusätzlich; die festen Modelle danach im Hintergrund */
+const VORLADEN_WEIT = 80, LADEN_MAX_MS = 12000, VORWAERMEN = ["bandit3d", "mooshocker3d", "waldgolem3d", "banditenboss3d", "stadtwache3d"];
 import { HaendlerWelt } from "./haendler3d";
 import { BankWelt } from "./bank3d";
 import { HolzWelt } from "./holz3d";
@@ -50,7 +52,8 @@ import { bankZeigen } from "../bank";
 import { istBankschalter } from "../../../shared/bank";
 import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
-import { vorlage } from "./held3d";
+import { vorlage, gegnerModell } from "./held3d";
+import { WELTKAMPF } from "../../../shared/weltzonen";
 import { Welt3D } from "./motor";
 import { heldenFigur3D, FigurArt } from "./held3d";
 import { WELT, weltDatei } from "../welt/welt";
@@ -65,7 +68,7 @@ import { aktiverHeld } from "../held";
 import { angelegteEbenen, inventarVomServerDa, inventar } from "../inventar";
 /* angelegtes Beil / angelegte Spitzhacke: in der Hand zeigen */
 import { serverZusatz } from "../gruppe";
-import { karteDrehen } from "../rahmen";
+import { karteDrehen, rucksackVorladen } from "../rahmen";
 /** die Minikarte zeichnet einen größeren Ausschnitt als sichtbar (Rand zum Verschieben und Drehen bis zum nächsten Zeichnen) */
 const KARTE_RAND = 1.5, HANDY_KARTE = matchMedia("(pointer: coarse)").matches;
 import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
@@ -101,9 +104,9 @@ export function tatText(t: string): string { let m = /^Mit (.+) sprechen$/.exec(
   m = /^(.+) (fällen|abbauen|benutzen|pflücken|untersuchen|öffnen|betreten|lesen|aufheben)$/.exec(t); if (m) return m[2].charAt(0).toUpperCase() + m[2].slice(1) + ": " + m[1]; return t; }
 /** Oben mittig kurz zeigen, was gerade gemacht wird (wie der Aktionstext in OSRS) */
 let tatUhr = 0;
-export function tatZeigen(text: string): void { if (!text || typeof document === "undefined") return; let el = document.getElementById("ez-tat");
+export function tatZeigen(text: string, lv?: { text: string; farbe: string }): void { if (!text || typeof document === "undefined") return; let el = document.getElementById("ez-tat");
   if (!el) { el = document.createElement("div"); el.id = "ez-tat"; el.setAttribute("role", "status"); document.body.appendChild(el); }
-  el.textContent = text; el.classList.add("an"); clearTimeout(tatUhr); tatUhr = window.setTimeout(() => el!.classList.remove("an"), 2200); }
+  el.textContent = text; if (lv) { const b = document.createElement("b"); b.className = "lvfarbe"; b.textContent = " " + lv.text; b.style.color = lv.farbe; el.appendChild(b); } /* #98: Gegner-Level in der Farbe des Abstands */ el.classList.add("an"); clearTimeout(tatUhr); tatUhr = window.setTimeout(() => el!.classList.remove("an"), 2200); }
 export class Spielwelt3D implements WeltKern {
   motor = new Welt3D(); index!: WeltIndex; raster = new WeltRaster(); daten = new Map<string, ChunkDaten | "holt">(); gueltig = new Set<string>();
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
@@ -130,7 +133,8 @@ export class Spielwelt3D implements WeltKern {
     /* erst die ersten Bilder zeichnen (dabei übersetzt der Browser die Shader – das hält die Seite kurz an), dann mit dem Server verbinden:
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
     this.motor.r.compile(this.motor.szene, this.motor.kamera); await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null))));
-    if (new URLSearchParams(location.search).get("vorwaermen") !== "0") setTimeout(() => void this.vorwaermen(), 2500); /* Gegner- und Wachenmodelle im Hintergrund laden und ihre Shader übersetzen: kein Haken beim ersten Gegner */
+    const warm = new URLSearchParams(location.search).get("vorwaermen") !== "0"; /* #139: die Gegner um den Startplatz vorladen, bevor der Ladeschirm geht; die übrigen festen Modelle danach */
+    const vorab = warm ? this.vorwaermen(this.gegnerUm(this.ort.x, this.ort.y)) : Promise.resolve(); if (warm) setTimeout(() => void this.vorwaermen(VORWAERMEN), 2500);
     this.motor.ausbauDa = (m) => markeDa(m, stufenAn); addEventListener("ez-quest", () => this.stufenPruefen());
     this.quest = new QuestWelt(this); this.sperrenNeu(); /* Quest 01 (shared/quest01.ts) */
     this.haendler = new HaendlerWelt(this); /* Händler am Marktplatz (shared/laeden.ts) */
@@ -148,6 +152,9 @@ export class Spielwelt3D implements WeltKern {
     await new Promise<void>((ok) => { const t0 = performance.now(), pruefen = () => { const f = this.figur as { vollstaendig?: boolean; geladen: boolean };
       const konto = mitKonto(), ausruestungBekannt = konto === false || (konto === true && inventarVomServerDa()); /* mit Konto: erst wenn der Server das Inventar geschickt hat, steht fest, was angelegt ist */
       if (((f.vollstaendig ?? f.geladen) && ausruestungBekannt) || performance.now() - t0 > 8000) ok(); else setTimeout(pruefen, 50); }; pruefen(); });
+    /* #139: dazu die Bilder von Rucksack und Ausrüstung, die Gegnermodelle um den Startplatz und die erste Lage der Kampfwelt – zusammen höchstens LADEN_MAX_MS */
+    { const t0 = performance.now(), bereit = new Promise<void>((ok) => { const p = () => { const b = anschluss3D.kampfBereit(); if (b !== false || performance.now() - t0 > LADEN_MAX_MS) ok(); else setTimeout(p, 50); }; p(); });
+      await Promise.race([Promise.all([rucksackVorladen().catch(() => undefined), vorab.catch(() => undefined), bereit]), new Promise((ok) => setTimeout(ok, LADEN_MAX_MS))]); }
     fertig();
   }
 
@@ -180,9 +187,14 @@ export class Spielwelt3D implements WeltKern {
     if (!this.imKampf) this.ausdauer.schritt(dt, laeuft, this.geschickLv); /* im Kampfgebiet rechnet der Server */ if (this.knopfAn !== this.ausdauer.an) { this.knopfAn = this.ausdauer.an; this.sprintKnopf(); } /* auch wenn der Server umschaltet oder der Knopf neu gebaut wurde */
     const w = Math.round(this.ausdauer.wert); if (w !== this.gelbZuletzt) { this.gelbZuletzt = w; gelbAnzeigen(w / 100); } }
   /** Shader vorwärmen: die Modelle einmal unsichtbar-klein unter den Boden stellen, übersetzen lassen (parallel, wenn der Browser es kann), wieder entfernen */
-  private async vorwaermen(): Promise<void> {
+  /** #139: die Modelle der Gegnerarten, deren Lager höchstens VORLADEN_WEIT Felder von dieser Stelle (Weltfelder) liegen */
+  private gegnerUm(x: number, y: number): string[] { const arten = new Set<string>(), R = VORLADEN_WEIT;
+    for (const z of WELTKAMPF) { if (x < z.x0 - R || y < z.y0 - R || x > z.x0 + z.b + R || y > z.y0 + z.h + R) continue;
+      for (const l of z.lager) { const wx = z.x0 + l.x * 2, wy = z.y0 + l.y * 2; if (Math.abs(wx - x) <= R && Math.abs(wy - y) <= R) arten.add(l.art); } }
+    return [...new Set([...arten].map(gegnerModell).filter((d): d is string => Boolean(d)))]; }
+  private async vorwaermen(dateien: string[]): Promise<void> {
     const M = this.motor, g = new THREE.Group(); g.position.set(this.ort.x, M.hoehe(this.ort.x, this.ort.y) - 30, this.ort.y); g.scale.setScalar(0.01);
-    for (const d of ["bandit3d", "mooshocker3d", "waldgolem3d", "banditenboss3d", "stadtwache3d"]) { try { const v = await vorlage(d); const k = SkeletonUtils.clone(v.szene); k.traverse((o) => { o.frustumCulled = false; if ((o as THREE.Mesh).isMesh) o.castShadow = true; }); g.add(k); } catch { /* fehlt: dann eben beim ersten Auftritt */ } }
+    for (const d of await Promise.all(dateien.map(async (d) => { try { await vorlage(d); return d; } catch { return ""; } }))) { if (!d) continue; try { const v = await vorlage(d); const k = SkeletonUtils.clone(v.szene); k.traverse((o) => { o.frustumCulled = false; if ((o as THREE.Mesh).isMesh) o.castShadow = true; }); g.add(k); } catch { /* fehlt: dann eben beim ersten Auftritt */ } }
     if (!g.children.length) return; M.szene.add(g);
     try { const r = M.r as THREE.WebGLRenderer & { compileAsync?: (s: THREE.Object3D, k: THREE.Camera, z?: THREE.Scene) => Promise<unknown> }; if (r.compileAsync) await r.compileAsync(g, M.kamera, M.szene); else r.compile(g, M.kamera, M.szene); } catch { /* egal */ }
     await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null)))); /* einmal mitzeichnen (auch in die Schattenkarte) */ M.szene.remove(g); }
@@ -229,7 +241,7 @@ export class Spielwelt3D implements WeltKern {
       if (st.weit < 12 && e.timeStamp - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
         /* kurz tippen / Linksklick = die erste Aktion (wie OSRS): an einer Stelle mit Handlung (Figur, Treppe, Tür, Ausgang, Gegenstand) hingehen und handeln */
         const stelle = this.stelleAmSchirm(e.clientX, e.clientY, true) || (b ? this.anStelle(b.x, b.z) : null); if (stelle && stelle.npc) { this.wahlWeg(); const v = this.vorFigur(stelle, () => {}); if (v.da()) { v.tat(); return; } this.gehe(v.x, v.y); this.vorhaben = this.pfad.length ? v : null; return; } /* Quest-NPC: kurz = nur hingehen, ein Feld davor, und zu ihm drehen (reden: lange drücken) */ if (stelle) /* kurz: Figuren als ganze Gestalt, Türen/Treppen nur am Boden – sonst erst dorthin gehen */ { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
-        { const g = anschluss3D.kampfAmSchirm(e.clientX, e.clientY); if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) { if (g && !g.held && g.team !== 0) tatZeigen(`Angreifen: ${g.name}`); return; } } /* Gegner: ganze Figur, sonst der Boden darunter */
+        { const g = anschluss3D.kampfAmSchirm(e.clientX, e.clientY); if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) { if (g && !g.held && g.team !== 0) tatZeigen(`Angriff: ${g.name}`, g.stufe ? { text: `Lvl ${g.stufe}`, farbe: levelFarbe(g.stufe - eigenesLv()) } : undefined); return; } } /* Gegner: ganze Figur, sonst der Boden darunter */
         if (anschluss3D.spielerBei(e.clientX, e.clientY)) { this.menueBei(e.clientX, e.clientY); return; } /* Mitspieler: gleich das Menü (Flüstern, Freund hinzufügen …) */
         this.motor.klick(e.clientX, e.clientY); } };
     /* PC: Rechtsklick = Aktionsmenü – aber nicht, wenn mit der rechten Maustaste die Kamera gedreht wurde */
@@ -391,9 +403,9 @@ export class Spielwelt3D implements WeltKern {
       { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) },
       ...(d.n && d.n !== ichName() ? [{ text: "Folgen", sym: "👣", tat: () => this.folgen(d.n) }, ...(konto ? [{ text: "Handeln", sym: "🤝", tat: () => this.handeln(d.n) }] : [])] : [])] });
     { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) { const M = t.typ && !t.held ? (MONSTER[t.typ] as { info?: string } | undefined) : undefined; /* Untersuchen (Bestiarium): Text zum Wesen; der Mooshocker zählt für Quest 02 */
-        gr.push({ kopf: t.name, lv: { text: `(Level ${t.stufe})`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angreifen: ${t.name}`); anschluss3D.kampfZiel(t.id); } }, /* den Gegner selbst, nicht die Bildschirmstelle – er kann inzwischen weitergelaufen sein (#109) */
+        gr.push({ kopf: t.name, lv: { text: `Lvl ${t.stufe}`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angriff: ${t.name}`, { text: `Lvl ${t.stufe}`, farbe: levelFarbe(t.stufe - eigenesLv()) }); anschluss3D.kampfZiel(t.id); } }, /* den Gegner selbst, nicht die Bildschirmstelle – er kann inzwischen weitergelaufen sein (#109) */
           ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${t.name}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${t.name}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
-      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, lv: { text: `(Level ${g.stufe})`, farbe: levelFarbe(g.stufe - eigenesLv()) } /* wie beim Antippen der Figur (#97) */, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
+      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, lv: { text: `Lvl ${g.stufe}`, farbe: levelFarbe(g.stufe - eigenesLv()) } /* wie beim Antippen der Figur (#97) */, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
     if (b) {
       const stBoden = this.stelleAmSchirm(px, py, true) || this.anStelle(b.x, b.z), st = stBoden || this.stelleAmSchirm(px, py), gehenZuerst = !stBoden && Boolean(st); /* ganze Figur; Treppe/Tür auch über ihrer Höhe – dann aber „Hierhin gehen“ zuerst */
       if (st) { const boden = this.bodenHier(b.x, b.z);

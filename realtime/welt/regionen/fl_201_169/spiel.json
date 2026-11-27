@@ -58,13 +58,6 @@
     "y0": 284,
     "x1": 268,
     "y1": 285
-   },
-   {
-    "art": "rechteck",
-    "x0": 309,
-    "y0": 350.4,
-    "x1": 311,
-    "y1": 354
    }
   ],
   "freigeben": [
@@ -73,6 +66,13 @@
     "x0": 296,
     "y0": 350.9,
     "x1": 309,
+    "y1": 353.5
+   },
+   {
+    "art": "rechteck",
+    "x0": 309,
+    "y0": 350.9,
+    "x1": 362,
     "y1": 353.5
    }
   ]
@@ -201,8 +201,7 @@
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
-    "text": "Die Brücke zur Furt. Nach zwei Bögen bricht sie ab; drüben, im Dunst, die Hochlande.",
-    "gesperrt": true
+    "text": "Die Brücke zur Furt. Zehn steinerne Bögen über den Grauen Sund bis zur Sandbank drüben – und drüben, im Dunst, die Hochlande."
    }
   },
   {
@@ -265,6 +264,39 @@
      11168,
      9658
     ]
+   }
+  },
+  {
+   "id": "furt",
+   "art": "lesen",
+   "x": 367,
+   "y": 353.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Furt. Hier setzt die Brücke auf eine Sandbank – früher ging man bei Ebbe zu Fuß hinüber. Vor dir steigen die Hochlande an."
+   }
+  },
+  {
+   "id": "furtbruecke_wache",
+   "art": "lesen",
+   "x": 292.5,
+   "y": 355.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wachposten der Burg. „Über die Brücke und die Furt geht es in die Hochlande. Dort drüben ist es rau – Bären, Trolle, und die Widder sind nicht zahm.“"
+   }
+  },
+  {
+   "id": "wegweiser_furt",
+   "art": "lesen",
+   "x": 378.5,
+   "y": 360.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Wegweiser: Westen – Grauwacht (über die Furt) · Osten – Steinhag"
    }
   },
   {

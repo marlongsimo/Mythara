@@ -541,6 +541,43 @@
     "block"
    ],
    "datei": "basefrau3d.teile/waffe.klinge_hauptmann.glb"
+  },
+  "waffe.echoschneide": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ],
+   "datei": "basefrau3d.teile/waffe.echoschneide.glb"
+  },
+  "waffe.seelenbogen": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ],
+   "datei": "basefrau3d.teile/waffe.seelenbogen.glb"
+  },
+  "waffe.seelenfokus": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab"
+   ],
+   "datei": "basefrau3d.teile/waffe.seelenfokus.glb"
   }
  },
  "aktionen": {

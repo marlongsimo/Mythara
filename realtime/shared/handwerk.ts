@@ -175,6 +175,8 @@ dazu({ id: "wegstein_laden", station: "bindestein", ergebnis: "ladung:wegstein",
 for (const [sel, W] of Object.entries(WAFFE_LADEN)) {
   dazu({ id: `waffe_laden_${sel}`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 2 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
   dazu({ id: `waffe_laden_${sel}_licht`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" }); }
+/* #151: Waffen der Stufe 70 (GegenstandDef.passiv) – 1 Splitter je Ladung, Splitterbinden 70; nur für sie (fuer „stufe70“), die übrigen Lade-Rezepte nehmen sie nicht */
+dazu({ id: "waffe_laden_stufe70", station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: "stufe70", level: 70, zutaten: [{ g: ["splitter"], n: 1 }], xp: 15, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
 /* Entladen: nur am Bindestein, die Splitter verfallen */
 /* Phase 6 (#17, #18): Federsiegel herstellen (zweiter Weg zum Thronsaal) und den Splitterkern in den Wegstein setzen (200 Ladungen, einmal) */
 dazu({ id: "federsiegel", station: "bindestein", ergebnis: "federsiegel", level: 30, zutaten: [{ g: ["rabenfedern"], n: 25 }, { g: ["splitter"], n: 50 }], xp: 120, ticks: 6, stufe: 2, gruppe: "Siegel" });

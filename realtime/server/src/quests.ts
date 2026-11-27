@@ -51,7 +51,7 @@ export async function antworten(sb: Sb, nutzer: string, id: string, a: string, w
   if (!motorImGespraech(nutzer, id)) return { fehler: "Das Gespräch ist vorbei." }; return motorAntworten(sb, nutzer, id, a, wo); }
 export function gespraechEnde(nutzer: string): void { motorEnde(nutzer); }
 /** #77: den Lohn einer abgeschlossenen Quest abholen („Okay“ im Abschlussfenster) – genau einmal */
-export async function abholen(sb: Sb, nutzer: string, id: string, wo?: { x?: number; y?: number }): Promise<MotorAbgeholt> { sbJe.set(nutzer, sb); return motorAbholen(sb, nutzer, id, wo); }
+export async function abholen(sb: Sb, nutzer: string, id: string, wo?: { x?: number; y?: number }, wahl?: unknown): Promise<MotorAbgeholt> { sbJe.set(nutzer, sb); return motorAbholen(sb, nutzer, id, wo, wahl); } /* wahl: #146 */
 /** #77: Quests, deren Lohn noch wartet */
 export const abholbereit = (nutzer: string): string[] => abholbereitListe(nutzer);
 

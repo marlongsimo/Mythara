@@ -45,6 +45,7 @@ TESTS=(
   welt-beleben
   welt-sammelstellen
   welt-streifgebiete
+  welt-hochlande
   phase5
   phase8-10
   abholen
@@ -58,6 +59,9 @@ TESTS=(
   welt-waldmark
   waldweg
   welt-bau
+  welt-dreh
+  speer
+  waffen70
   welt-daten
   welt-grenzen
   welt-raster
@@ -80,6 +84,8 @@ TESTS=(
   gegnerlast
   gegner-vorbereitet
   streifgebiete
+  belohnung-wahl
+  bergwerk-welt
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

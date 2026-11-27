@@ -289,6 +289,76 @@
    "region": "fl_186_211"
   },
   {
+   "id": "hochlande_eisenhut_1",
+   "art": "eisenhut",
+   "x": 7019.5,
+   "y": 5566.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_2",
+   "art": "nebelkraut",
+   "x": 7101.5,
+   "y": 5799.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_eisenhut_3",
+   "art": "eisenhut",
+   "x": 7155.5,
+   "y": 5772.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_4",
+   "art": "nebelkraut",
+   "x": 7037.5,
+   "y": 5513.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_eisenhut_5",
+   "art": "eisenhut",
+   "x": 7113.5,
+   "y": 5789.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_6",
+   "art": "nebelkraut",
+   "x": 7032.5,
+   "y": 5523.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_eisenhut_7",
+   "art": "eisenhut",
+   "x": 6875.5,
+   "y": 5728.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_8",
+   "art": "nebelkraut",
+   "x": 6915.5,
+   "y": 5628.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_eisenhut_9",
+   "art": "eisenhut",
+   "x": 6868.5,
+   "y": 5678.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_10",
+   "art": "nebelkraut",
+   "x": 6885.5,
+   "y": 5725.5,
+   "region": "fl_201_169"
+  },
+  {
    "id": "sueden_wegerich_1",
    "art": "wegerich",
    "x": 6406.5,

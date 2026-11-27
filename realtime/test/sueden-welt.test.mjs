@@ -39,8 +39,8 @@ const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...proce
 let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
 await new Promise((r) => setTimeout(r, 1200));
 function spieler(token, ort = "waldmark") { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8788/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }),
-  s = { ws, b: {}, punkte: 0, inv: null, chat: [], texte: [], dialoge: [], fisch: [], wurm: [], handwerk: [], getrunken: [], ruht: new Set(), wruht: new Set(), warte: [] };
-  ws.on("message", (r) => { const m = JSON.parse(String(r)); if (m.t === "quests") { s.b = m.b || {}; s.punkte = m.punkte; } if (m.t === "inventar") s.inv = m.inv; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text);
+  s = { ws, b: {}, punkte: 0, inv: null, chat: [], texte: [], dialoge: [], boden: [], fisch: [], wurm: [], handwerk: [], getrunken: [], ruht: new Set(), wruht: new Set(), warte: [] };
+  ws.on("message", (r) => { const m = JSON.parse(String(r)); if (m.t === "quests") { s.b = m.b || {}; s.punkte = m.punkte; } if (m.t === "inventar") s.inv = m.inv; if (m.t === "boden") s.boden = m.liste || []; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text);
     if (m.t === "qtext") s.texte.push(m.text); if (m.t === "dialog") s.dialoge.push(m); for (const k of ["fisch", "wurm", "handwerk", "getrunken"]) if (m.t === k) s[k].push(m); if (m.t === "fanggruende") s.ruht = new Set((m.weg || []).map((w) => w[0])); if (m.t === "wurmacker") s.wruht = new Set((m.weg || []).map((w) => w[0]));
     for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
   ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token, geraet: "test-" + String(token).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") })); fertig(s); }); }); }
@@ -166,11 +166,15 @@ try {
   { const K = QUESTS.find((q) => q.id === "kueste_der_kraeuterhof"), kob = (id) => K.objekte.find((o) => o.id === id);
     await zu(ute, fig(K, "frieda")); await rede(ute, "frieda"); await sag(ute, "frieda", "annehmen"); await schlaf(400);
     check(stand(ute, K).phase === "laeuft", "Ute nimmt den Kräuterhof an (nach Miras Rezeptbuch, Kräuterkunde 20)");
-    /* Platz im Rucksack (24) schaffen: Reste aus S4/S9, die der Kräuterhof nicht braucht – ein voller Rucksack verschluckt sonst Questgegenstände (Issue) */
+    await zu(ute, fig(K, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "samen_nehmen"); await schlaf(300);
+    /* #144: Hedda gibt den Ableger bei vollem Rucksack – er liegt am Boden neben Ute (nur für sie), der Schritt ist erledigt; Platz schaffen, aufheben, weiter */
+    { let i = 0; const t0 = Date.now(); while ((ute.inv.rucksack || []).length < 24 && Date.now() - t0 < 90000) { const [x, y, id] = RINGEL[i++ % 3]; await sammeln(ute, "kraut", id, x, y, "ringelblume", anzahl(ute, "ringelblume") + 1, 15000); } } /* Kräuter stapeln nicht: bis der Rucksack voll ist */
+    const voll = (ute.inv.rucksack || []).length; await zu(ute, fig(K, "hedda")); await rede(ute, "hedda"); const d0 = ute.dialoge.length; await sag(ute, "hedda", "ableger_bitten"); await schlaf(1500);
+    const amBoden = ute.boden.find((b) => b.g === "moorgloeckchen_ableger"), zeilen = ute.dialoge.slice(d0).flatMap((m) => (m.zeilen || []).map((z) => z.text)).join(" ");
+    check(voll === 24 && anzahl(ute, "moorgloeckchen_ableger") === 0 && amBoden && /am Boden/.test(zeilen), `Voller Rucksack (${voll}): Heddas Ableger liegt am Boden neben Ute, mit Hinweis (${amBoden ? "am Boden" : "fehlt"}; „${zeilen.slice(-80)}“)`);
     for (const g of ["brot", "barren_kupfer", "stamm_eiche", "fisch_muehlbarsch_gebraten"]) { const i = (ute.inv.rucksack || []).findIndex((x) => (typeof x === "string" ? x : x.g) === g); if (i < 0) continue;
       sende(ute, { t: "inv", tat: "fallen", i }); await warte(ute, (m) => m.t === "inventar"); }
-    await zu(ute, fig(K, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "samen_nehmen"); await schlaf(300);
-    await zu(ute, fig(K, "hedda")); await rede(ute, "hedda"); await sag(ute, "hedda", "ableger_bitten"); await schlaf(300);
+    if (amBoden) { await stelle(ute, amBoden.x, amBoden.y); sende(ute, { t: "aufheben", id: amBoden.i }); await warte(ute, (m) => m.t === "inventar", 2500); await schlaf(300); }
     check(anzahl(ute, "ringelblumensamen") === 1 && anzahl(ute, "moorgloeckchen_ableger") === 1, "Samen von Mira, Ableger von Hedda");
     for (const id of ["kh_beet_1", "kh_beet_2"]) { const o = kob(id); await stelle(ute, o.x, o.y - 1); await ding(ute, id); }
     check(QB.erledigt(K, ute.b[K.id], "beet_1") && QB.erledigt(K, ute.b[K.id], "beet_2"), "Beide Beete angelegt");

@@ -35,8 +35,9 @@ const GEHBAR = new Set(".,afjvtsuygTmhd"), WEG = new Set(["e", "k", "p"]);
 for (const g of [...(lies("gegnerplaetze.json").plaetze || []).filter((p) => !p.id.startsWith("gp_")), ...(lies("sueden_orte.json").gegner || [])]) hinder.push([g.x, g.y, 10 + (g.r || 0)]);
 for (const [k, [x, y]] of Object.entries(lies("glutsande_orte.json").orte || {})) if (k.startsWith("lager")) hinder.push([x, y, 16]);
 for (const s of [...(lies("troedler_standorte.json").standorte || []), ...(lies("bedienstellen.json").stationen || [])]) figuren.push([s.x, s.y, 5]);
-const ORTE = { ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte };
-const ORTSRADIUS = { haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 34, netzbucht: 14 };
+const ORTE = { ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, ...lies("hochlande_orte.json").orte };
+const HL = lies("hochlande_orte.json");
+const ORTSRADIUS = { haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 34, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
 
 /* ───── Gruppen: Ort, Art (holz/erz), Arten der Bäume bzw. Adern, Name ───── */
 const fest = (liste) => liste.filter((p) => p.x !== undefined).map((p) => ({ id: p.id, art: p.art, x: p.x, y: p.y }));
@@ -91,6 +92,17 @@ const PLAN = [
   ["salzpfanne", "holz", ["moorweide", "kernbaum", "kernbaum"], "Bäume an der Siederei"],
   ["nordstrand", "holz", ["kernbaum", "kernbaum", "moorweide"], "Kernbäume am Nordstrand"],
   ["nordstrand", "erz", ["sterneisen", "sterneisen", "splittereisen"], "Felsen am Nordstrand"],
+  /* Hochlande (Phase 11, #147): Stufe 40–65 – Bergbau im Bergwerk und an den Geröllhängen, Holz in den Tälern, einzelne alte Bäume */
+  ["bergwerk", "festerz", (HL.adern || []).map((p) => ({ ...p })), "Erzadern im Erzberg-Bergwerk"],
+  ["erzberg", "erz", ["sterneisen", "sterneisen", "splittereisen", "splittereisen"], "Geröllhang am Erzberg"],
+  ["hochpass", "erz", ["splittereisen", "splittereisen", "ureisen"], "Erzgrat am Hochpass"],
+  ["steinhag", "holz", ["kernbaum", "kernbaum", "eibe", "eibe"], "Bergwald unter Steinhag"],
+  ["steinhag", "erz", ["sterneisen", "sterneisen", "splittereisen"], "Steinbruch von Steinhag"],
+  ["alm", "holz", ["kernbaum", "kernbaum", "kernbaum", "eibe"], "Kernbäume an der Hohen Alm"],
+  ["alm", "erz", ["sterneisen", "splittereisen", "splittereisen"], "Felsen an der Hohen Alm"],
+  ["einsiedelei", "holz", ["eibe", "kernbaum", "kernbaum"], "Bäume am Spiegelsee"],
+  ["einsiedelei", "einzeln", ["weltenbaum"], "Der alte Baum über dem Spiegelsee"],
+  ["nordklippen", "erz", ["ureisen", "splittereisen", "splittereisen"], "Adern in den Nordklippen"],
   /* Nachtrag des Nutzers (#142): einzelne Stellen deutlich über der Gegend, sparsam, versteckt abseits der Wege (ohne Feldweg) – zum Entdecken */
   ["heckenhof", "einzeln", ["eibe"], "Einsame Eibe hinter dem Heckenhof"],
   ["summweide", "einzeln", ["moorweide"], "Alte Moorweide im Wiesengrund"],
@@ -130,7 +142,7 @@ for (const [ort, typ, arten, name] of PLAN) {
   if (typ.startsWith("fest")) { if (!arten.length) { bericht.push(`${name}: keine Vorschläge`); continue; } const erz = typ === "festerz" || ERZ_ARTEN.includes(arten[0].art);
     /* feste Vorschläge nach Nähe gruppieren (eine Gruppe je 20 Felder) */
     const teile = []; for (const p of arten) { const t = teile.find((t) => t.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 20)); (t || (teile.push([]), teile.at(-1))).push(p); }
-    teile.forEach((t, i) => { const nm = teile.length > 1 ? `${name} ${i + 1}` : name, region = regionAn(t[0].x, t[0].y).n, pts = t.map((p) => ({ ...p, region })), mx = t.reduce((s, p) => s + p.x, 0) / t.length, my = t.reduce((s, p) => s + p.y, 0) / t.length;
+    teile.forEach((t, i) => { const nm = teile.length > 1 ? `${name} ${i + 1}` : name, region = t[0].region ?? regionAn(t[0].x, t[0].y).n, pts = t.map((p) => ({ ...p, region })), mx = t.reduce((s, p) => s + p.x, 0) / t.length, my = t.reduce((s, p) => s + p.y, 0) / t.length;
       if (erz) senken.push({ name: nm, ort, x: +mx.toFixed(1), y: +my.toFixed(1), r: Math.max(4, Math.ceil(Math.max(...t.map((p) => Math.hypot(p.x - mx, p.y - my))) + 2)), adern: pts });
       else lichtungen.push({ name: nm, ort, baeume: pts }); gesetzt.push([mx, my, 6]); bericht.push(`${nm}: fest (${t.length})`); });
     continue; }

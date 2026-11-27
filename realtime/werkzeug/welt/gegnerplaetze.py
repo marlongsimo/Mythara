@@ -70,7 +70,7 @@ PLATZ = BEREICH & frei_wegrand & ~ndimage.binary_dilation(AUS, iterations=2)   #
 print(f'begehbar {int(geh.sum())}, abzudecken {int(BEREICH.sum())} Felder; {len(ausnahmen)} Ausnahmen')
 
 # ───── Länder und Stufen ─────
-LAND = {'Das Grenzland': (5, 20), 'Die Fahlen Weiten': (30, 50), 'Die Glutsande': (40, 60), 'Die Smaragdküste': (5, 35), 'Die Hochlande': (50, 65), 'Die Frostkrone': (60, 75),
+LAND = {'Das Grenzland': (5, 20), 'Die Fahlen Weiten': (30, 50), 'Die Glutsande': (40, 60), 'Die Smaragdküste': (5, 35), 'Die Hochlande': (45, 60), 'Die Frostkrone': (60, 75),
         'Der Drachenarm': (60, 75), 'Die Ockerlande': (45, 60), 'Das Weiße Ende': (70, 90)}
 ALT = {'waldweg': (1, 5), 'obstwiesen': (1, 5), 'osthof': (1, 5), 'westried': (8, 18), 'westmark': (10, 18), 'nordwald': (12, 18), 'nordsaum': (15, 22), 'osthang': (18, 24), 'graufurt': (20, 26),
        'rabenmoor': (8, 14), 'aschenwerth': (10, 16), 'ostufer': (45, 50), 'waldmark': (1, 3), 'weidenhain': (1, 5)}
@@ -113,7 +113,11 @@ def stufe_von(g):
     if g in VORHANDEN: return VORHANDEN[g]
     if g in UMBENANNT: return UMBENANNT[g][1]
     return NEU[g][0]
-def waehle(gel, lo, hi, k):
+# Länder mit eigener Tierwelt (Konzept): die Hochlande (Phase 11, #147) – Widder auf den Almen, Steppenwolf unten, Bär im Wald, Troll im Geröll, Adler an den Klippen
+LAND_WAHL = {'Die Hochlande': {'wald': ['hochlandbaer'], 'wiese': ['hochlandwidder', 'steppenwolf'], 'fels': ['bergtroll'], 'küste': ['klippenadler'],
+                               'heide': ['steppenwolf', 'hochlandwidder'], 'schnee': ['bergtroll'], 'moor': ['hochlandwidder'], 'wüste': ['steppenwolf']}}
+def waehle(gel, lo, hi, k, land=None):
+    if land in LAND_WAHL: kand = LAND_WAHL[land].get(gel) or LAND_WAHL[land]['wiese']; return kand[(k * 7 + k // 5) % len(kand)]
     kand = [g for g in WAHL[gel] if lo - 6 <= stufe_von(g) <= hi + 4] or sorted(WAHL[gel] + [g for v in WAHL.values() for g in v], key=lambda g: min(abs(stufe_von(g) - lo), abs(stufe_von(g) - hi)))[:3]
     kand.sort(key=lambda g: (g not in VORHANDEN and g not in UMBENANNT, abs(stufe_von(g) - (lo + hi) / 2)))   # vorhandene zuerst
     return kand[(k * 7 + k // 5) % min(len(kand), 4)]   # bis zu vier passende im Wechsel
@@ -160,7 +164,7 @@ IN_CONFIG = set(re.findall(r'^\s{2}(\w+): \{ name:', open(os.path.join(RT, 'shar
 fehlend, je_region = {}, {}
 for k, (x, y) in enumerate(neu_pkt):
     n = REG[y, x] or '?'; land, (lo, hi) = land_von(n, x, y) if n != '?' else ('?', (5, 20)); gel = gelaende_von(x, y)
-    g = waehle(gel, lo, hi, k); anzahl = 3 if k % 6 == 0 else 2 if k % 3 == 0 else 1
+    g = waehle(gel, lo, hi, k, land); anzahl = 3 if k % 6 == 0 else 2 if k % 3 == 0 else 1
     modell = UMBENANNT[g][0] if g in UMBENANNT else g
     quelle = 'vorhanden' if g in VORHANDEN else ('vorhanden (' + UMBENANNT[g][0] + ')') if g in UMBENANNT else 'vorhanden (Systeme)' if g in IN_CONFIG and NEU[g][2].startswith('neu') else 'fehlt' if NEU[g][2].startswith('neu') else 'vorhanden (Figuren)'   # Figuren hat die Gegner der Konzepte gebaut (Zweig claude/tender-heisenberg-bruby2, Leitstelle 27.11.)
     if quelle == 'fehlt': f = fehlend.setdefault(g, {'gegner': g, 'stufe': NEU[g][0], 'gelaende': NEU[g][1], 'herkunft': NEU[g][2], 'plaetze': 0}); f['plaetze'] += 1
