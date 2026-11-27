@@ -296,6 +296,36 @@
    "rolle": "Murmeltier (Stimmung)",
    "x": 7280.5,
    "y": 5380.5
+  },
+  {
+   "id": "verletzter_bergmann_1",
+   "rolle": "Verletzter Bergmann (H3)",
+   "x": 11656.8,
+   "y": 9632
+  },
+  {
+   "id": "verletzter_bergmann_2",
+   "rolle": "Verletzter Bergmann (H3)",
+   "x": 11650.8,
+   "y": 9637
+  },
+  {
+   "id": "verletzter_bergmann_3",
+   "rolle": "Verletzter Bergmann (H3)",
+   "x": 11643.8,
+   "y": 9641
+  },
+  {
+   "id": "sturmschwinge_horst",
+   "rolle": "Die Sturmschwinge (Hüterin, öffentlich nach H4)",
+   "x": 7030,
+   "y": 5536
+  },
+  {
+   "id": "frostwitwe_eishoehle",
+   "rolle": "Die Frostwitwe (Hüterin, Eishöhle)",
+   "x": 11760,
+   "y": 9611
   }
  ],
  "fischplaetze": [
@@ -644,6 +674,206 @@
   "r": 9.8,
   "hinweis": "Trollhalle: freie Fläche für den Mini-Boss (Instanz nach #116), Eingang von Osten über den Querschlag"
  },
+ "instanzen": [
+  {
+   "id": "horst_grauhorn",
+   "boss": "sturmschwinge",
+   "schalter": [
+    "sturmschwinge_horst",
+    "sturmschwinge_danach"
+   ],
+   "raum": [
+    11718,
+    9604,
+    11738,
+    9624
+   ],
+   "bossStart": [
+    11728.5,
+    9613.5
+   ],
+   "arena": {
+    "x": 11728,
+    "y": 9614,
+    "r": 9.5
+   },
+   "eingang": "horst_aufstieg",
+   "ausgang": "horst_hinab",
+   "rand": "Abbruchkanten in die Leere (X), nicht begehbar"
+  },
+  {
+   "id": "eishoehle_hochpass",
+   "boss": "frostwitwe",
+   "schalter": [
+    "frostwitwe_hoehle",
+    "frostwitwe_danach"
+   ],
+   "raum": [
+    11750,
+    9603,
+    11770,
+    9623
+   ],
+   "bossStart": [
+    11760.5,
+    9611.5
+   ],
+   "arena": {
+    "x": 11760,
+    "y": 9613,
+    "r": 9
+   },
+   "eingang": "eishoehle_eingang",
+   "ausgang": "eishoehle_hinaus",
+   "boden": "Eis im Schachbrett (i/I), nur Optik"
+  },
+  {
+   "id": "hochlande_bergwerk",
+   "boss": "grumhold",
+   "schalter": [
+    "grumhold_halle",
+    "grumhold_danach"
+   ],
+   "raum": [
+    11595,
+    9602,
+    11618,
+    9624
+   ],
+   "bossStart": [
+    11607.5,
+    9611.5
+   ],
+   "arena": {
+    "region": "hochlande_bergwerk",
+    "x": 11607,
+    "y": 9614,
+    "r": 9.8,
+    "hinweis": "Trollhalle: freie Fläche für den Mini-Boss (Instanz nach #116), Eingang von Osten über den Querschlag"
+   },
+   "eingang": "bergwerk_eingang",
+   "ausgang": "bergwerk_hinaus"
+  }
+ ],
+ "questorte": {
+  "h1": [
+   "furtbruecke_wache",
+   "steinhag_vogthof",
+   "passwacht",
+   "almhuette",
+   "erzwagen_lager"
+  ],
+  "h2": [
+   "kaesekeller",
+   "almhuette",
+   "kaeserei_kessel_quest",
+   "ziege_versteck_1",
+   "ziege_versteck_2",
+   "ziege_versteck_3"
+  ],
+  "h3": [],
+  "h4": [
+   "horst",
+   "horst_aufstieg",
+   "horst_steinmann_1",
+   "horst_steinmann_2",
+   "horst_steinmann_3",
+   "eishoehle_eingang",
+   "eisrunen"
+  ]
+ },
+ "ziegenwege": [
+  {
+   "id": "ausbuexziege_1",
+   "weg": [
+    [
+     7186,
+     6018
+    ],
+    [
+     7160,
+     6030
+    ],
+    [
+     7130,
+     6036
+    ]
+   ],
+   "versteck": [
+    7130,
+    6036
+   ]
+  },
+  {
+   "id": "ausbuexziege_2",
+   "weg": [
+    [
+     7200,
+     6018
+    ],
+    [
+     7230,
+     6010
+    ],
+    [
+     7262,
+     5992
+    ]
+   ],
+   "versteck": [
+    7262,
+    5992
+   ]
+  },
+  {
+   "id": "ausbuexziege_3",
+   "weg": [
+    [
+     7193,
+     6015
+    ],
+    [
+     7210,
+     6042
+    ],
+    [
+     7220,
+     6066
+    ]
+   ],
+   "versteck": [
+    7220,
+    6066
+   ]
+  }
+ ],
+ "bergwerk_quest": [
+  {
+   "sperre": {
+    "art": "rechteck",
+    "x0": 11661,
+    "y0": 9620,
+    "x1": 11671,
+    "y1": 9623,
+    "schalter": "bergwerk_stollen_frei"
+   },
+   "schalter": "bergwerk_stollen_frei",
+   "verletzte": [
+    [
+     11658,
+     9632
+    ],
+    [
+     11652,
+     9637
+    ],
+    [
+     11645,
+     9641
+    ]
+   ]
+  }
+ ],
  "baeche": {
   "grauhornbach": [
    [

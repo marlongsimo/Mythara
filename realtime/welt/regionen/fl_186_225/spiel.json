@@ -12,9 +12,9 @@
   "sperren": [
    {
     "art": "rechteck",
-    "x0": 473,
+    "x0": 470,
     "y0": 44.5,
-    "x1": 476,
+    "x1": 478,
     "y1": 48.5,
     "schalter": "lehmfurt_trittsteine"
    },
@@ -235,7 +235,7 @@
   {
    "id": "furt",
    "art": "lesen",
-   "x": 476.5,
+   "x": 478.5,
    "y": 46.5,
    "radius": 1.8,
    "abgleich": "keiner",

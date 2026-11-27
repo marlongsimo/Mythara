@@ -495,6 +495,38 @@
    "farbe": "#3e6a2a",
    "kachelPx": 420,
    "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "eis_hell",
+   "name": "Eis (hell)",
+   "zeichen": "i",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/eis-hell.webp",
+   "rang": 46,
+   "rand": {
+    "art": "hart",
+    "breite": 0.05
+   },
+   "farbe": "#c7e5f6",
+   "kachelPx": 420,
+   "herkunft": "werkzeug/welt/boden_eis.py (#162) aus der Schneekachel gerechnet – frei verwendbar"
+  },
+  {
+   "id": "eis_dunkel",
+   "name": "Eis (dunkel)",
+   "zeichen": "I",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/eis-dunkel.webp",
+   "rang": 47,
+   "rand": {
+    "art": "hart",
+    "breite": 0.05
+   },
+   "farbe": "#8cbbe0",
+   "kachelPx": 420,
+   "herkunft": "werkzeug/welt/boden_eis.py (#162) aus der Schneekachel gerechnet – frei verwendbar"
   }
  ]
 }

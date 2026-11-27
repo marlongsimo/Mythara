@@ -44,18 +44,18 @@
    "frei": 0
   },
   {
-   "name": "Blumen weidenhain 48",
-   "x": 6432.2,
-   "y": 6702.6,
+   "name": "Blumen weidenhain 65",
+   "x": 6439.2,
+   "y": 6737.6,
    "r": 1.6,
    "zeichen": ",",
    "auf": ".",
    "frei": 0
   },
   {
-   "name": "Blumen weidenhain 51",
-   "x": 6437.2,
-   "y": 6719.6,
+   "name": "Blumen osthof 69",
+   "x": 6544.2,
+   "y": 6429.6,
    "r": 1.6,
    "zeichen": ",",
    "auf": ".",
@@ -298,266 +298,329 @@
   {
    "id": "ort_d_weidenhain_37",
    "objekt": "k_faesser",
+   "x": 6407.9,
+   "y": 6676
+  },
+  {
+   "id": "ort_d_weidenhain_38",
+   "objekt": "dorf_holzstapel_01",
    "x": 6500.9,
    "y": 6680
   },
   {
-   "id": "ort_d_weidenhain_38",
-   "objekt": "k_faesser",
+   "id": "ort_d_weidenhain_39",
+   "objekt": "dorf_holzstapel_01",
    "x": 6508.1,
    "y": 6680
   },
   {
-   "id": "ort_d_weidenhain_39",
-   "objekt": "k_faesser",
+   "id": "ort_d_weidenhain_40",
+   "objekt": "dorf_holzstapel_01",
    "x": 6472.9,
    "y": 6681.8
   },
   {
-   "id": "ort_d_weidenhain_40",
-   "objekt": "k_faesser",
+   "id": "ort_d_weidenhain_41",
+   "objekt": "dorf_holzstapel_01",
    "x": 6479.1,
    "y": 6681.8
   },
   {
-   "id": "ort_d_weidenhain_41",
+   "id": "ort_d_weidenhain_42",
    "objekt": "k_faesser",
    "x": 6481.9,
    "y": 6682.8
   },
   {
-   "id": "ort_d_weidenhain_42",
+   "id": "ort_d_weidenhain_43",
    "objekt": "k_faesser",
+   "x": 6489.1,
+   "y": 6682.8,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_weidenhain_44",
+   "objekt": "dorf_holzstapel_01",
    "x": 6489.1,
    "y": 6681,
    "spiegeln": true
   },
   {
-   "id": "ort_d_weidenhain_43",
-   "objekt": "k_kiste",
-   "x": 6423.1,
-   "y": 6691.8
-  },
-  {
-   "id": "ort_d_weidenhain_44",
+   "id": "ort_d_weidenhain_45",
    "objekt": "k_faesser",
    "x": 6415.9,
-   "y": 6690,
+   "y": 6691.8,
    "spiegeln": true
-  },
-  {
-   "id": "ort_d_weidenhain_45",
-   "objekt": "dorf_holzstapel_01",
-   "x": 6480.9,
-   "y": 6698.8
   },
   {
    "id": "ort_d_weidenhain_46",
    "objekt": "dorf_holzstapel_01",
-   "x": 6490.1,
-   "y": 6697
+   "x": 6415.9,
+   "y": 6690
   },
   {
    "id": "ort_d_weidenhain_47",
    "objekt": "dorf_holzstapel_01",
+   "x": 6423.1,
+   "y": 6690,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_weidenhain_48",
+   "objekt": "k_kiste",
+   "x": 6480.9,
+   "y": 6698.8
+  },
+  {
+   "id": "ort_d_weidenhain_49",
+   "objekt": "k_faesser",
+   "x": 6490.1,
+   "y": 6697,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_weidenhain_50",
+   "objekt": "k_kiste",
+   "x": 6471.9,
+   "y": 6698.8,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_weidenhain_51",
+   "objekt": "k_kiste",
+   "x": 6480.1,
+   "y": 6697
+  },
+  {
+   "id": "ort_d_weidenhain_52",
+   "objekt": "k_kiste",
    "x": 6510.9,
    "y": 6698,
    "spiegeln": true
   },
   {
-   "id": "ort_d_weidenhain_48",
+   "id": "ort_d_weidenhain_53",
    "objekt": "k_faesser",
    "x": 6502.9,
-   "y": 6699,
-   "spiegeln": true
+   "y": 6699
   },
   {
-   "id": "ort_d_weidenhain_49",
+   "id": "ort_d_weidenhain_54",
    "objekt": "k_faesser",
    "x": 6467.9,
    "y": 6716.8
   },
   {
-   "id": "ort_d_weidenhain_50",
-   "objekt": "dorf_holzstapel_01",
-   "x": 6429.9,
-   "y": 6715
-  },
-  {
-   "id": "ort_d_weidenhain_51",
+   "id": "ort_d_weidenhain_55",
    "objekt": "dorf_holzstapel_01",
    "x": 6436.1,
    "y": 6715,
    "spiegeln": true
   },
   {
-   "id": "ort_d_weidenhain_52",
-   "objekt": "k_faesser",
-   "x": 6494.1,
-   "y": 6718
-  },
-  {
-   "id": "ort_d_weidenhain_53",
-   "objekt": "dorf_holzstapel_01",
-   "x": 6457.9,
-   "y": 6718
-  },
-  {
-   "id": "ort_d_weidenhain_54",
-   "objekt": "k_kiste",
-   "x": 6464.1,
-   "y": 6718
-  },
-  {
-   "id": "ort_d_weidenhain_55",
-   "objekt": "dorf_holzstapel_01",
-   "x": 6499.9,
-   "y": 6718
-  },
-  {
    "id": "ort_d_weidenhain_56",
    "objekt": "k_kiste",
-   "x": 6448.9,
-   "y": 6719.8
+   "x": 6483.1,
+   "y": 6719
   },
   {
    "id": "ort_d_weidenhain_57",
+   "objekt": "k_kiste",
+   "x": 6494.1,
+   "y": 6719.8
+  },
+  {
+   "id": "ort_d_weidenhain_58",
+   "objekt": "dorf_holzstapel_01",
+   "x": 6494.1,
+   "y": 6718,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_weidenhain_59",
+   "objekt": "dorf_holzstapel_01",
+   "x": 6464.1,
+   "y": 6718,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_weidenhain_60",
+   "objekt": "k_faesser",
+   "x": 6499.9,
+   "y": 6718,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_weidenhain_61",
    "objekt": "dorf_holzstapel_01",
    "x": 6455.1,
    "y": 6719.8
   },
   {
-   "id": "ort_d_osthof_58",
+   "id": "ort_d_weidenhain_62",
+   "objekt": "dorf_holzstapel_01",
+   "x": 6447.9,
+   "y": 6733.8,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_weidenhain_63",
    "objekt": "k_kiste",
-   "x": 6571.1,
+   "x": 6456.1,
+   "y": 6733.8,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_weidenhain_64",
+   "objekt": "dorf_holzstapel_01",
+   "x": 6456.1,
+   "y": 6732,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_weidenhain_65",
+   "objekt": "k_faesser",
+   "x": 6431.9,
+   "y": 6734.8
+  },
+  {
+   "id": "ort_d_osthof_66",
+   "objekt": "dorf_holzstapel_01",
+   "x": 6564.9,
    "y": 6419.8,
    "spiegeln": true
   },
   {
-   "id": "ort_d_osthof_59",
+   "id": "ort_d_osthof_67",
    "objekt": "k_faesser",
-   "x": 6564.9,
-   "y": 6418,
-   "spiegeln": true
+   "x": 6571.1,
+   "y": 6419.8
   },
   {
-   "id": "ort_d_osthof_60",
-   "objekt": "k_faesser",
+   "id": "ort_d_osthof_68",
+   "objekt": "dorf_holzstapel_01",
    "x": 6517.9,
    "y": 6425.8
   },
   {
-   "id": "ort_d_osthof_61",
+   "id": "ort_d_osthof_69",
+   "objekt": "dorf_holzstapel_01",
+   "x": 6543.1,
+   "y": 6426.8,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_osthof_70",
    "objekt": "k_zaun",
    "x": 6550.5,
    "y": 6407.8
   },
   {
-   "id": "ort_d_osthof_62",
+   "id": "ort_d_osthof_71",
    "objekt": "k_zaun",
    "x": 6553.5,
    "y": 6407.8
   },
   {
-   "id": "ort_d_osthof_63",
+   "id": "ort_d_osthof_72",
    "objekt": "k_zaun",
    "x": 6505.5,
    "y": 6409.8
   },
   {
-   "id": "ort_d_osthof_64",
+   "id": "ort_d_osthof_73",
    "objekt": "k_zaun",
    "x": 6508.5,
    "y": 6409.8
   },
   {
-   "id": "ort_d_osthof_65",
+   "id": "ort_d_osthof_74",
    "objekt": "k_zaun",
    "x": 6580.5,
    "y": 6425.8
   },
   {
-   "id": "ort_d_osthof_66",
+   "id": "ort_d_osthof_75",
    "objekt": "k_zaun",
    "x": 6547.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_67",
+   "id": "ort_d_osthof_76",
    "objekt": "k_zaun",
    "x": 6550.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_68",
+   "id": "ort_d_osthof_77",
    "objekt": "k_zaun",
    "x": 6553.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_69",
+   "id": "ort_d_osthof_78",
    "objekt": "k_zaun",
    "x": 6556.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_70",
+   "id": "ort_d_osthof_79",
    "objekt": "k_zaun",
    "x": 6559.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_71",
+   "id": "ort_d_osthof_80",
    "objekt": "k_zaun",
    "x": 6562.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_72",
+   "id": "ort_d_osthof_81",
    "objekt": "k_zaun",
    "x": 6565.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_73",
+   "id": "ort_d_osthof_82",
    "objekt": "k_zaun",
    "x": 6568.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_74",
+   "id": "ort_d_osthof_83",
    "objekt": "k_zaun",
    "x": 6571.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_75",
+   "id": "ort_d_osthof_84",
    "objekt": "k_zaun",
    "x": 6574.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_76",
+   "id": "ort_d_osthof_85",
    "objekt": "k_zaun",
    "x": 6583.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_waldweg_77",
+   "id": "ort_d_waldweg_86",
    "objekt": "hoehle_felswand_01",
    "x": 6538.11,
    "y": 6584.52,
    "s": 0.33
   },
   {
-   "id": "ort_d_waldweg_78",
+   "id": "ort_d_waldweg_87",
    "objekt": "hoehle_felswand_01",
    "x": 6570.96,
    "y": 6584.38,
    "s": 0.43
   },
   {
-   "id": "ort_d_waldweg_79",
+   "id": "ort_d_waldweg_88",
    "objekt": "hoehle_felswand_01",
    "x": 6543.36,
    "y": 6588.31,
@@ -565,14 +628,14 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_waldweg_80",
+   "id": "ort_d_waldweg_89",
    "objekt": "hoehle_felswand_01",
    "x": 6560.45,
    "y": 6580.56,
    "s": 0.33
   },
   {
-   "id": "ort_d_waldweg_81",
+   "id": "ort_d_waldweg_90",
    "objekt": "hoehle_felswand_01",
    "x": 6559.07,
    "y": 6588.55,
@@ -580,13 +643,14 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_nordwald_82",
-   "objekt": "dorf_holzstapel_01",
+   "id": "ort_d_nordwald_91",
+   "objekt": "k_kiste",
    "x": 6352.9,
-   "y": 6424.8
+   "y": 6424.8,
+   "spiegeln": true
   },
   {
-   "id": "ort_d_nordwald_83",
+   "id": "ort_d_nordwald_92",
    "objekt": "hoehle_felswand_01",
    "x": 6325.77,
    "y": 6361.61,
@@ -594,21 +658,21 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_nordwald_84",
+   "id": "ort_d_nordwald_93",
    "objekt": "hoehle_felswand_01",
    "x": 6378.71,
    "y": 6374.25,
    "s": 0.42
   },
   {
-   "id": "ort_d_nordwald_85",
+   "id": "ort_d_nordwald_94",
    "objekt": "hoehle_felswand_01",
    "x": 6362.37,
    "y": 6375.24,
    "s": 0.41
   },
   {
-   "id": "ort_d_nordwald_86",
+   "id": "ort_d_nordwald_95",
    "objekt": "hoehle_felswand_01",
    "x": 6368.11,
    "y": 6355.3,
@@ -616,21 +680,21 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_nordwald_87",
+   "id": "ort_d_nordwald_96",
    "objekt": "hoehle_felswand_01",
    "x": 6310.77,
    "y": 6378.74,
    "s": 0.31
   },
   {
-   "id": "ort_d_nordwald_88",
+   "id": "ort_d_nordwald_97",
    "objekt": "hoehle_felswand_01",
    "x": 6278.79,
    "y": 6344.32,
    "s": 0.41
   },
   {
-   "id": "ort_d_nordwald_89",
+   "id": "ort_d_nordwald_98",
    "objekt": "hoehle_felswand_01",
    "x": 6313.63,
    "y": 6351.07,
@@ -638,7 +702,7 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_nordwald_90",
+   "id": "ort_d_nordwald_99",
    "objekt": "hoehle_felswand_01",
    "x": 6322.76,
    "y": 6371.02,
@@ -646,165 +710,165 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_rabenmoor_91",
+   "id": "ort_d_rabenmoor_100",
    "objekt": "k_faesser",
    "x": 6290.1,
    "y": 6674
   },
   {
-   "id": "ort_d_rabenmoor_92",
+   "id": "ort_d_rabenmoor_101",
    "objekt": "k_faesser",
    "x": 6327.1,
    "y": 6690.8
   },
   {
-   "id": "ort_d_rabenmoor_93",
+   "id": "ort_d_rabenmoor_102",
    "objekt": "k_kiste",
    "x": 6338.1,
    "y": 6712.8,
    "spiegeln": true
   },
   {
-   "id": "ort_d_obstwiesen_94",
+   "id": "ort_d_obstwiesen_103",
    "objekt": "k_zaun",
    "x": 6537.5,
    "y": 6701.8
   },
   {
-   "id": "ort_d_obstwiesen_95",
-   "objekt": "k_zaun",
-   "x": 6540.5,
-   "y": 6701.8
-  },
-  {
-   "id": "ort_d_obstwiesen_96",
-   "objekt": "k_zaun",
-   "x": 6543.5,
-   "y": 6701.8
-  },
-  {
-   "id": "ort_d_obstwiesen_97",
-   "objekt": "k_zaun",
-   "x": 6546.5,
-   "y": 6701.8
-  },
-  {
-   "id": "ort_d_obstwiesen_98",
-   "objekt": "k_zaun",
-   "x": 6549.5,
-   "y": 6701.8
-  },
-  {
-   "id": "ort_d_obstwiesen_99",
-   "objekt": "k_zaun",
-   "x": 6552.5,
-   "y": 6701.8
-  },
-  {
-   "id": "ort_d_obstwiesen_100",
-   "objekt": "k_zaun",
-   "x": 6555.5,
-   "y": 6701.8
-  },
-  {
-   "id": "ort_d_obstwiesen_101",
-   "objekt": "k_zaun",
-   "x": 6558.5,
-   "y": 6701.8
-  },
-  {
-   "id": "ort_d_obstwiesen_102",
-   "objekt": "k_zaun",
-   "x": 6564.5,
-   "y": 6701.8
-  },
-  {
-   "id": "ort_d_obstwiesen_103",
-   "objekt": "k_zaun",
-   "x": 6540.5,
-   "y": 6721.8
-  },
-  {
    "id": "ort_d_obstwiesen_104",
    "objekt": "k_zaun",
-   "x": 6543.5,
-   "y": 6721.8
+   "x": 6540.5,
+   "y": 6701.8
   },
   {
    "id": "ort_d_obstwiesen_105",
    "objekt": "k_zaun",
-   "x": 6546.5,
-   "y": 6721.8
+   "x": 6543.5,
+   "y": 6701.8
   },
   {
    "id": "ort_d_obstwiesen_106",
    "objekt": "k_zaun",
-   "x": 6549.5,
-   "y": 6721.8
+   "x": 6546.5,
+   "y": 6701.8
   },
   {
    "id": "ort_d_obstwiesen_107",
    "objekt": "k_zaun",
-   "x": 6552.5,
-   "y": 6721.8
+   "x": 6549.5,
+   "y": 6701.8
   },
   {
    "id": "ort_d_obstwiesen_108",
    "objekt": "k_zaun",
-   "x": 6555.5,
-   "y": 6721.8
+   "x": 6552.5,
+   "y": 6701.8
   },
   {
    "id": "ort_d_obstwiesen_109",
    "objekt": "k_zaun",
-   "x": 6558.5,
-   "y": 6721.8
+   "x": 6555.5,
+   "y": 6701.8
   },
   {
    "id": "ort_d_obstwiesen_110",
    "objekt": "k_zaun",
-   "x": 6561.5,
-   "y": 6721.8
+   "x": 6558.5,
+   "y": 6701.8
   },
   {
    "id": "ort_d_obstwiesen_111",
    "objekt": "k_zaun",
    "x": 6564.5,
-   "y": 6721.8
+   "y": 6701.8
   },
   {
    "id": "ort_d_obstwiesen_112",
    "objekt": "k_zaun",
-   "x": 6567.5,
+   "x": 6540.5,
    "y": 6721.8
   },
   {
    "id": "ort_d_obstwiesen_113",
    "objekt": "k_zaun",
-   "x": 6579.5,
+   "x": 6543.5,
    "y": 6721.8
   },
   {
    "id": "ort_d_obstwiesen_114",
    "objekt": "k_zaun",
-   "x": 6582.5,
+   "x": 6546.5,
    "y": 6721.8
   },
   {
    "id": "ort_d_obstwiesen_115",
    "objekt": "k_zaun",
+   "x": 6549.5,
+   "y": 6721.8
+  },
+  {
+   "id": "ort_d_obstwiesen_116",
+   "objekt": "k_zaun",
+   "x": 6552.5,
+   "y": 6721.8
+  },
+  {
+   "id": "ort_d_obstwiesen_117",
+   "objekt": "k_zaun",
+   "x": 6555.5,
+   "y": 6721.8
+  },
+  {
+   "id": "ort_d_obstwiesen_118",
+   "objekt": "k_zaun",
+   "x": 6558.5,
+   "y": 6721.8
+  },
+  {
+   "id": "ort_d_obstwiesen_119",
+   "objekt": "k_zaun",
+   "x": 6561.5,
+   "y": 6721.8
+  },
+  {
+   "id": "ort_d_obstwiesen_120",
+   "objekt": "k_zaun",
+   "x": 6564.5,
+   "y": 6721.8
+  },
+  {
+   "id": "ort_d_obstwiesen_121",
+   "objekt": "k_zaun",
+   "x": 6567.5,
+   "y": 6721.8
+  },
+  {
+   "id": "ort_d_obstwiesen_122",
+   "objekt": "k_zaun",
+   "x": 6579.5,
+   "y": 6721.8
+  },
+  {
+   "id": "ort_d_obstwiesen_123",
+   "objekt": "k_zaun",
+   "x": 6582.5,
+   "y": 6721.8
+  },
+  {
+   "id": "ort_d_obstwiesen_124",
+   "objekt": "k_zaun",
    "x": 6585.5,
    "y": 6725.8
   },
   {
-   "id": "ort_d_obstwiesen_116",
+   "id": "ort_d_obstwiesen_125",
    "objekt": "hoehle_felswand_01",
    "x": 6580.96,
    "y": 6687.51,
    "s": 0.34
   },
   {
-   "id": "ort_d_obstwiesen_117",
+   "id": "ort_d_obstwiesen_126",
    "objekt": "hoehle_felswand_01",
    "x": 6565.74,
    "y": 6744.96,
@@ -812,14 +876,14 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_obstwiesen_118",
+   "id": "ort_d_obstwiesen_127",
    "objekt": "hoehle_felswand_01",
    "x": 6576.1,
    "y": 6732.33,
    "s": 0.32
   },
   {
-   "id": "ort_d_obstwiesen_119",
+   "id": "ort_d_obstwiesen_128",
    "objekt": "hoehle_felswand_01",
    "x": 6579.03,
    "y": 6706.41,
@@ -827,21 +891,21 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_obstwiesen_120",
+   "id": "ort_d_obstwiesen_129",
    "objekt": "hoehle_felswand_01",
    "x": 6548.49,
    "y": 6745.41,
    "s": 0.42
   },
   {
-   "id": "ort_d_obstwiesen_121",
+   "id": "ort_d_obstwiesen_130",
    "objekt": "hoehle_felswand_01",
    "x": 6581.62,
    "y": 6671.7,
    "s": 0.43
   },
   {
-   "id": "ort_d_obstwiesen_122",
+   "id": "ort_d_obstwiesen_131",
    "objekt": "hoehle_felswand_01",
    "x": 6534.41,
    "y": 6743.43,
@@ -849,7 +913,7 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_obstwiesen_123",
+   "id": "ort_d_obstwiesen_132",
    "objekt": "hoehle_felswand_01",
    "x": 6581.82,
    "y": 6680.99,
@@ -857,13 +921,13 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_124",
+   "id": "ort_d_westmark_133",
    "objekt": "k_kiste",
    "x": 6306.1,
    "y": 6582.8
   },
   {
-   "id": "ort_d_westmark_125",
+   "id": "ort_d_westmark_134",
    "objekt": "hoehle_felswand_01",
    "x": 6277.09,
    "y": 6521.88,
@@ -871,7 +935,7 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_126",
+   "id": "ort_d_westmark_135",
    "objekt": "hoehle_felswand_01",
    "x": 6306.27,
    "y": 6624.96,
@@ -879,14 +943,14 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_127",
+   "id": "ort_d_westmark_136",
    "objekt": "hoehle_felswand_01",
    "x": 6282.47,
    "y": 6606.27,
    "s": 0.42
   },
   {
-   "id": "ort_d_westmark_128",
+   "id": "ort_d_westmark_137",
    "objekt": "hoehle_felswand_01",
    "x": 6285.84,
    "y": 6511.82,
@@ -894,28 +958,28 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_129",
+   "id": "ort_d_westmark_138",
    "objekt": "hoehle_felswand_01",
    "x": 6322.85,
    "y": 6596.98,
    "s": 0.4
   },
   {
-   "id": "ort_d_westmark_130",
+   "id": "ort_d_westmark_139",
    "objekt": "hoehle_felswand_01",
    "x": 6322.71,
    "y": 6555.07,
    "s": 0.37
   },
   {
-   "id": "ort_d_westmark_131",
+   "id": "ort_d_westmark_140",
    "objekt": "hoehle_felswand_01",
    "x": 6276.96,
    "y": 6560.58,
    "s": 0.35
   },
   {
-   "id": "ort_d_westmark_132",
+   "id": "ort_d_westmark_141",
    "objekt": "hoehle_felswand_01",
    "x": 6280.53,
    "y": 6586.52,

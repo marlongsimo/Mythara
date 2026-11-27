@@ -51,7 +51,8 @@ for s in json.load(open(os.path.join(W, 'bedienstellen.json'), encoding='utf8'))
 _sm = os.path.join(W, 'sammelstellen.json')
 if os.path.exists(_sm):
     _S = json.load(open(_sm, encoding='utf8'))
-    for _l in _S['lichtungen'] + _S['senken']:
+    _SH = json.load(open(os.path.join(RT, 'shared', 'holz_standorte.json'), encoding='utf8'))['lichtungen'] + json.load(open(os.path.join(RT, 'shared', 'bergbau_standorte.json'), encoding='utf8'))['senken']   # auch, was Integration schon übernommen hat (gilt in der Welt)
+    for _l in _S['lichtungen'] + _S['senken'] + _SH:
         _p = _l.get('baeume') or _l.get('adern'); _mx = _l.get('x', sum(q['x'] for q in _p) / len(_p)); _my = _l.get('y', sum(q['y'] for q in _p) / len(_p))
         ausnahmen.append({'x': _mx, 'y': _my, 'r': max(8, max(math.hypot(q['x'] - _mx, q['y'] - _my) for q in _p) + 6), 'grund': f"Sammelstelle {_l['name']}"})
 for s in json.load(open(os.path.join(W, 'troedler_standorte.json'), encoding='utf8'))['standorte']: ausnahmen.append({'x': s['x'], 'y': s['y'], 'r': 6, 'grund': f"Trödler {s['id']}"})

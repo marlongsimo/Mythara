@@ -1,0 +1,13 @@
+[
+ {"id":"kaesekeller_leiter_1","objekt":"hoehle_leiter_01","x":16.5,"y":25.5},
+ {"id":"kaesekeller_kaeserad_2","objekt":"hochland_kaeserad","x":10.5,"y":9.5},
+ {"id":"kaesekeller_kaeserad_3","objekt":"hochland_kaeserad","x":12.5,"y":9.5},
+ {"id":"kaesekeller_kaeserad_4","objekt":"hochland_kaeserad","x":14.5,"y":9.5},
+ {"id":"kaesekeller_kaeserad_5","objekt":"hochland_kaeserad","x":18.5,"y":9.5},
+ {"id":"kaesekeller_kaeserad_6","objekt":"hochland_kaeserad","x":20.5,"y":9.5},
+ {"id":"kaesekeller_kaeserad_7","objekt":"hochland_kaeserad","x":22.5,"y":9.5},
+ {"id":"kaesekeller_faesser_8","objekt":"k_faesser","x":9.5,"y":15},
+ {"id":"kaesekeller_kiste_9","objekt":"k_kiste","x":22.5,"y":15},
+ {"id":"kaesekeller_kiste_10","objekt":"k_kiste","x":22.5,"y":18},
+ {"id":"kaesekeller_tisch_11","objekt":"hoehle_tisch_01","x":16,"y":16}
+]

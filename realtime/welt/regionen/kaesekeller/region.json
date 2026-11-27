@@ -1,0 +1,16 @@
+{
+ "id": "kaesekeller",
+ "name": "Der Käsekeller",
+ "untertitel": "Unter der Almhütte",
+ "ursprung": [
+  369,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "innen",
+ "stufe": 12,
+ "ebene": "untergrund"
+}
