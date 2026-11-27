@@ -84,6 +84,7 @@ npc.push({ id: "wache_suedstrasse", rolle: "Wache an der Südstraße (keine Sper
 const HOEHLE_U = [357, 300], KAPITAEN_U = [359, 300];
 { const [lx, ly] = ORTE.leuchtturm; male(lx - 8, ly - 8, lx + 22, ly + 8, (x, y) => (Math.hypot((x - lx - 7) / 14, (y - ly) / 7) < 1 && !"F~M".includes(zeichen(x, y)) ? (welle(x, y) > 0.7 ? "g" : ".") : null));
   ding("graufurt_turm_ost_01", lx, ly, { id: "leuchtturm", s: 1.6 }); ding("turm_signalfeuer_01", lx, ly - 1.4, { id: "leuchtturm_feuer", s: 0.7 }); ding("moor_kate_01", lx + 10, ly + 1, { id: "waerterhaus" });
+  ding("hand_kessel_01", lx + 14, ly + 4.6, { id: "leuchtturm_kessel" });   /* G2 (#118): Kessel am Wärterhaus, Station kessel_leuchtturm (shared/handwerk.ts, 6190 | 7039,5) */
   lies("leuchtturm", lx, ly + 1.2, "Der Leuchtturm auf der Klippe. Oben brennt kein Licht mehr – seit das Schiff unten am Strand liegt."); lies("waerterhaus", lx + 10.5, ly + 1.6, "Das Wärterhaus. Auf dem Tisch ein Logbuch, die letzte Seite ist herausgerissen.");
   npc.push({ id: "leuchtturmwaerter", rolle: "Leuchtturmwärter", x: lx + 12, y: ly + 3 });
   fischplatz("fischplatz_klippe", "klippenbarsch", 35, 6150.5, 7104.5, -0.5, 0.5, "Unten an der Klippe schäumt die Brandung – Klippenbarsche stehen im Kehrwasser.");
