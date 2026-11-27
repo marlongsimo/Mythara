@@ -9,7 +9,7 @@
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Issue #16 (Boss-Baukasten, Instanz, Tür mit Schlüssel, Ereignis für die Wellen, Gegenstände)
  * Othmar spricht in Quest 1, B3 und B4 (Figur in mehreren Quests, questbau.figurQuest, #48). Liste: doku/quests/b3-b4-bausteine.md.
- * Rotmantel (Kanon 27.11.): Am Eingang der Kammer wählt man öffentlich oder Instanz; die Instanz allein oder als Gruppe bis 4 – die Texte sprechen deshalb auch Gruppen an.
+ * Rotmantel (Kanon 27.11.): In der Quest kämpfst du immer allein, gegen eine schwächere, gut machbare Fassung (Instanz). Nach der Quest gibt es die stärkere Fassung öffentlich oder als eigene Instanz.
  * Orte: Issue #21 (Welt, 81778e67): Unterschlupf (Ursprung 10240 | 9600), Kammer rotmantel_kammer (Ursprung 10432 | 9600).
  */
 import type { QuestDef, Bed, Folge } from "./questbau";
@@ -66,7 +66,7 @@ export const QUEST_B4: QuestDef = {
     { id: "halle", text: "Die Versammlungshalle säubern", ereignis: { art: "erlegen", typ: "unterschlupf_welle" }, anzahl: 2, nach: ["schluessel"], wo: HALLE,
       log: "In der Versammlungshalle kommen die Banditen in zwei Wellen zu dritt. Halte stand ({n:halle} Wellen)." },
     { id: "rotmantel", text: "Hauptmann Rotmantel besiegen", ereignis: { art: "erlegen", typ: "rotmantel" }, nach: ["halle"], wo: KAMMER,
-      log: "Hinter dem roten Banner liegt die Kammer des Anführers – allein oder mit bis zu drei Gefährten. Hauptmann Rotmantel besiegen: aus dem Feld gehen, wenn es rot leuchtet, und ihn vom Thron weglocken." },
+      log: "Hinter dem roten Banner liegt die Kammer des Anführers. Besieg Hauptmann Rotmantel – du stehst ihm allein gegenüber. Weich dem Rundumschlag aus, wenn die Felder rot leuchten, und lock ihn vom Thron weg." },
     { id: "brief", text: "Den Brief mit dem Rabensiegel an dich nehmen", ereignis: { art: "aufheben", g: "rabenbrief" }, nach: ["halle"], wo: KAMMER,
       log: "Rotmantel trug einen Brief bei sich. Nimm ihn an dich." },
     { id: "banner", text: "Das rote Banner abnehmen", ereignis: { art: "objekt", id: "b4_banner" }, nach: ["rotmantel"], wo: BANNER,
@@ -103,7 +103,7 @@ export const QUEST_B4: QuestDef = {
       ],
       optionen: [
         { id: "annehmen", text: "Ich gehe hinab. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Ich hab keine Soldaten. Aber ich hab dich – und Gesa Brandt aus der Waldmark. Sie wartet mit zwei Wachen an der Hütte.",
-          "Unter den Fässern ist das Loch, das du gefunden hast. Die Wachstube, dahinter das Beutelager, die Versammlungshalle. Und irgendwo ganz hinten: Rotmantel.", "Kommt zurück – du und wer immer mit dir geht. Das ist ein Befehl, auch wenn ich keine geben darf."] } }] },
+          "Unter den Fässern ist das Loch, das du gefunden hast. Die Wachstube, dahinter das Beutelager, die Versammlungshalle. Und irgendwo ganz hinten: Rotmantel.", "Komm zurück. Das ist ein Befehl, auch wenn ich keine geben darf."] } }] },
         { id: "wacht", text: "Rotmantel war bei der Wacht?", folge: [
           { wenn: FERTIG, f: { weiter: true, zeilen: ["Einer der Letzten. Als die Wacht zerfiel, sind manche nach Hause gegangen. Er nicht.", "Und jetzt wissen wir, wem er am Ende gedient hat. Einem Raben."] } },
           { f: { weiter: true, zeilen: ["Einer der Letzten. Als die Wacht zerfiel, sind manche nach Hause gegangen, manche in die Städte.", "Er ist geblieben. Nur auf der anderen Seite."] } }] },
@@ -127,7 +127,7 @@ export const QUEST_B4: QuestDef = {
       ],
       optionen: [
         { id: "bereit", text: "Ich bin bereit.", folge: [{ f: { erledige: ["gesa"], zeilen: ["Gut. Unter den Fässern geht's runter.", "In der Wachstube sitzen Schläger und Armbrustschützen. Einer hat den Schlüssel zum Beutelager – such ihn.",
-          "Und wenn ihr Rotmantel seht – allein oder zu mehreren: Er schlägt rundum, wenn's um ihn rot wird. Dann raus da. Nicht heldenhaft sein. Lebendig sein.", "Die Kammer ist eng. Mehr als vier passen nicht hinein."] } }] },
+          "Und wenn du Rotmantel siehst: Er schlägt rundum, wenn's um ihn rot wird. Dann raus da. Nicht heldenhaft sein. Lebendig sein.", "In seine Kammer gehst du allein. Wir halten dir hier den Rücken frei."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Augen auf."] } }] },
       ],
     },
