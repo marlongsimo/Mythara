@@ -50,6 +50,7 @@ TESTS=(
   welt-fahleweiten
   welt-kielmund
   steinhag-welt
+  kielmund-welt
   phase5
   phase8-10
   abholen

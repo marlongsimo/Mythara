@@ -977,6 +977,32 @@
      5663.5
     ]
    ]
+  },
+  {
+   "id": "fischplatz_ockerstrom_nord",
+   "name": "Am Ockerstrom (Norden)",
+   "art": "moorhecht",
+   "region": "fl_201_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6749.5,
+     7326.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_ockerstrom_sued",
+   "name": "Am Ockerstrom (Süden)",
+   "art": "wels",
+   "region": "fl_201_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6752.5,
+     7356.5
+    ]
+   ]
   }
  ],
  "wurmacker": {

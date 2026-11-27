@@ -2500,6 +2500,36 @@
      "region": "fl_216_183"
     }
    ]
+  },
+  {
+   "name": "Adern am Kleinen Tisch",
+   "ort": "brunnenkreis",
+   "x": 7052.1,
+   "y": 7122.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_kleinen_tisch_sterneisen_1",
+     "art": "sterneisen",
+     "x": 7054.5,
+     "y": 7123.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "adern_am_kleinen_tisch_splittereisen_2",
+     "art": "splittereisen",
+     "x": 7050.5,
+     "y": 7124.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "adern_am_kleinen_tisch_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7051.5,
+     "y": 7120.5,
+     "region": "fl_216_211"
+    }
+   ]
   }
  ]
 }
