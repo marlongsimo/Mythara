@@ -7,7 +7,7 @@
 # 2. Danach: Kampfraster neu (werkzeug/weltzonen.py), Typprüfung, Spiel bauen, schnelle Tests – erst wenn alles grün ist, wird gepusht.
 #    Render baut den Spielserver aus feature/realtime-engine.
 # 3. main (die Webseite): Was in feature/realtime-engine unter echtzeit/, img/, UI/ und .github/scripts/ neu oder geändert ist, kommt nach main.
-#    Es wird nie etwas auf main gelöscht. Das geht ohne Auschecken (nur Git-Objekte).
+#    Gelöscht wird auf main nur, was in .github/main-loeschen.txt steht (einmalige Freigabe des Nutzers, #157). Das geht ohne Auschecken (nur Git-Objekte).
 #
 # Lokal ausprobieren ohne zu pushen:  TROCKEN=1 bash .github/scripts/welt-live.sh
 set -euo pipefail
@@ -93,21 +93,41 @@ if [ "${#NEU[@]}" -gt 0 ]; then
   STAND="HEAD"
 fi
 
-# main: neue und geänderte Dateien aus echtzeit/, img/, UI/ und .github/scripts/ übernehmen – ohne Auschecken, nichts löschen.
+# main: neue und geänderte Dateien aus echtzeit/, img/, UI/ und .github/scripts/ übernehmen – ohne Auschecken.
 # .github/scripts (#85): der Workflow läuft von main und liest dieses Skript dort. Dateien unter .github/workflows/ darf das Token der Pipeline nicht ändern (GitHub) – die bleiben Handarbeit.
+# Gelöscht wird auf main nur, was in .github/main-loeschen.txt steht (einmalige Freigabe des Nutzers, #157) – nie etwas unter GESCHUETZT.
 MAIN_PFADE="echtzeit img UI .github/scripts"
-AENDERUNG="$(git diff --name-only --diff-filter=AM origin/main "$STAND" -- $MAIN_PFADE)"
-if [ -z "$AENDERUNG" ]; then echo "main: schon aktuell"; exit 0; fi
-echo "main: $(printf '%s\n' "$AENDERUNG" | wc -l) Dateien neu oder geändert"
+# Einzeldateien an der Wurzel von main (Quelle=Ziel), siehe seite/LIESMICH.md: die Startseite (#78) und die Weiterleitungen alter Einstiege
+MAIN_DATEIEN="realtime/client/startseite.html=index.html seite/manifest.webmanifest=manifest.webmanifest seite/spiel.html=spiel.html"
+GESCHUETZT='^(echtzeit/|fonts/|vendor/|supabase/|doku/|realtime/|img/startseite/|img/app/mythara-(180|192|512)|img/app/mythara-maske-512|img/favicon|\.github/|index\.html$|manifest\.webmanifest$|spiel\.html$|CNAME$|robots\.txt$|sitemap\.xml$|verbindung\.js$|UI/mythara-ui\.css$)'
 export GIT_INDEX_FILE="$ARBEIT/main.index"
 git read-tree origin/main
-printf '%s\n' "$AENDERUNG" > "$ARBEIT/liste"
-git ls-tree -r "$STAND" -- $MAIN_PFADE | python3 -c '
+AENDERUNG="$(git diff --name-only --diff-filter=AM origin/main "$STAND" -- $MAIN_PFADE)"; n=0
+if [ -n "$AENDERUNG" ]; then
+  printf '%s\n' "$AENDERUNG" > "$ARBEIT/liste"; n=$(printf '%s\n' "$AENDERUNG" | wc -l)
+  git ls-tree -r "$STAND" -- $MAIN_PFADE | python3 -c '
 import sys
 liste = set(open(sys.argv[1], encoding="utf-8").read().splitlines())
 for zeile in sys.stdin:
     if zeile.rstrip("\n").split("\t", 1)[1] in liste: sys.stdout.write(zeile)' "$ARBEIT/liste" | git update-index --index-info
+fi
+for paar in $MAIN_DATEIEN; do q="${paar%%=*}"; z="${paar#*=}"
+  b="$(git rev-parse -q --verify "$STAND:$q" 2>/dev/null)" || continue
+  [ "$b" = "$(git rev-parse -q --verify "origin/main:$z" 2>/dev/null || true)" ] && continue
+  git update-index --add --cacheinfo "100644,$b,$z"; n=$((n + 1)); echo "main: $q → $z"
+done
+weg=0
+if git cat-file -e "$STAND:.github/main-loeschen.txt" 2>/dev/null; then
+  while IFS= read -r f; do
+    case "$f" in ""|\#*) continue;; esac
+    if [[ "$f" =~ $GESCHUETZT ]]; then echo "::warning::main-loeschen.txt: $f ist geschützt – bleibt"; continue; fi
+    git cat-file -e "origin/main:$f" 2>/dev/null || continue
+    git update-index --force-remove -- "$f"; weg=$((weg + 1))
+  done < <(git show "$STAND:.github/main-loeschen.txt")
+fi
+if [ "$n" = 0 ] && [ "$weg" = 0 ]; then unset GIT_INDEX_FILE; echo "main: schon aktuell"; exit 0; fi
+echo "main: $n Dateien neu oder geändert, $weg gelöscht (main-loeschen.txt)"
 BAUM="$(git write-tree)"; unset GIT_INDEX_FILE
-COMMIT="$(git commit-tree "$BAUM" -p origin/main -m "Automatisch live: Spiel, Welt und Bilder aus $ZIEL ($(git rev-parse --short "$STAND"))")"
+COMMIT="$(git commit-tree "$BAUM" -p origin/main -m "Automatisch live: Spiel, Welt und Bilder aus $ZIEL ($(git rev-parse --short "$STAND"))$([ "$weg" -gt 0 ] && echo " – $weg Dateien laut main-loeschen.txt entfernt (#157)")")"
 pushen "$COMMIT:refs/heads/main"
 echo "main aktualisiert: $COMMIT"
