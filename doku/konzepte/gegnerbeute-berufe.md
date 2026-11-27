@@ -27,7 +27,7 @@ Jeder Beruf bekommt etwas. Einige Beuteteile haben zwei Wege, damit sie gefragt 
 | Krebsschere | **Kräuterkunde** | Scherenpulver für einen „Panzersud“ (mit Eisenhut) | 42 | Defense +3, 5 min |
 | Federn | **Fischen** | Federköder (Werkbank, Federn + Garn) | 25 | an der Küste mehr Fang, seltener Fisch etwas häufiger |
 | Federn | **Kräuterkunde** | Leichtfuß-Trank (Federn + Wegerich) | 30 | 10 % schneller laufen, 3 min |
-| Wolfsfell | **Handwerk** | Fellumhang (Umhang-Platz, leichte Abwehr) | 40 | warmer Umhang für Fahle Weiten und Hochlande |
+| Wolfsfell | **Handwerk** | Fellhaube (Kopf, leichte Fernkampf-Rüstung) | 40 | eigene Haube zwischen den vorhandenen Stufen |
 | Wolfsfell | **Handwerk** | Fellfutter für Lederrüstung (Rüstung +1 Stufe Abwehr) | 55 | Aufwertung, keine neue Rüstung |
 | Chitin | **Schmieden** | Chitinplatten auf Schilde schmieden (Schild +Fernkampf-Abwehr) | 60 | Aufwertung |
 | Chitin | **Kräuterkunde** | Steinhaut (sehr stark) mit Chitin statt Golemstein | 65 | Defense +6, 5 min |
@@ -48,5 +48,4 @@ Jeder Beruf bekommt etwas. Einige Beuteteile haben zwei Wege, damit sie gefragt 
 ## Offen
 - Passt die Verteilung? Lieber mehr ins Kochen?
 - Gift als neue Wirkung (Klingengift, Gegengift) – Gift gibt es bisher nicht im Kampf, das wäre ein kleines neues System (Systeme).
-- Umhang-Platz: Gibt es den schon? Sonst wird der Fellumhang eine Brust-Aufwertung.
 - Rabenküken als Haustier?
