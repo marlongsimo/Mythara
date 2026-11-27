@@ -35,7 +35,7 @@ export const ALM = {
   ziegen: [[7158.5, 5984.5], [7228.5, 5990.5], [7216.5, 6040.5], [7153.5, 6028.5]] as Feld[], /* die vierte östlich des neuen Zauns (Welt) */
   /** im Pferch, wenn das Gatter zu ist */ pferch_ziegen: [[7184.5, 6019.5], [7189.5, 6021.5], [7196.5, 6019.5], [7201.5, 6021.5]] as Feld[],
   gatter: [7193.5, 6020.5] as Feld,
-  /** Käsekessel der Sennerin (Station kessel_alm, shared/handwerk.ts) */ kessel: [7198, 6002] as Feld,
+  /** Herd der Alm (Welt herd_alm) */ herd: [7178, 6007.4] as Feld,
   /** Käsekeller unter der Käserei (Region kaesekeller, Abstieg kaesekeller an der Almhütte), Regal mit dem Questobjekt kaeseregal */ keller: [11815.5, 9620] as Feld, regal: [11824, 9611.4] as Feld,
 };
 /** Bergwerk am Erzberg (Unterwelt hochlande_bergwerk): morsche Stempel im Stollen, Geröll vor dem tiefen Stollen, dahinter drei verschüttete Bergleute */
