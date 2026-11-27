@@ -1,0 +1,10 @@
+{
+  "id": "schild.glutstein",
+  "name": "Glutsteinschild (Arbeitsname)",
+  "kategorie": "schild",
+  "seltenheit": "selten",
+  "stufe": 40,
+  "aktuell": "v001",
+  "status": "v001: Modell des Nutzers (Meshy „Emberstone Relic“, uebergabe/figuren/schild/glutstein_schild.blend → quelle/meshy.glb), auf 0,82 m Höhe wie der Sternenschild skaliert (quelle/schild.glb, Vorderseite -y); Nebenhand-Teil an basemann3d/basefrau3d wie schild.sternen (arm_l, gleiche Bewegungen), über ein Probe-Rig ausgelagert (Bindung gleich), .mobil.glb; Rucksackbild img/objekte3d/ausruestung/stufe40/schild.glutstein.webp – Name und Herkunft legt der Nutzer fest",
+  "herkunft": "Meshy (Nutzer)"
+}
