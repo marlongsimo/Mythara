@@ -1,7 +1,7 @@
 {
  "hinweis": "Gegnerdichte (#130): Gegnerplätze der ganzen Oberwelt (Weltfelder). Von jedem begehbaren Feld außerhalb der Ausnahmen ist der nächste Platz höchstens ~25 Felder entfernt (vorhandene Lager aus weltzonen.py zählen mit). quelle: vorhanden | vorhanden (Modell in neuer Rolle) | vorhanden (Figuren, noch nicht auf feature) | fehlt (Modell nötig, Entscheidung des Nutzers). Erzeugt von werkzeug/welt/gegnerplaetze.py.",
  "reichweite": 25,
- "vorhandene_lager": 125,
+ "vorhandene_lager": 124,
  "plaetze": [
   {
    "id": "heckenhof_felder",
@@ -49497,6 +49497,30 @@
    "grund": "Sammelstelle Bäume am Weg (Hochlande 29)"
   },
   {
+   "x": 7094.166666666667,
+   "y": 5914.5,
+   "r": 9.800584750330273,
+   "grund": "Sammelstelle Bäume am Weg (Hochlande 31)"
+  },
+  {
+   "x": 6902.166666666667,
+   "y": 5900.833333333333,
+   "r": 9.726779962500002,
+   "grund": "Sammelstelle Bäume vor dem Westtor"
+  },
+  {
+   "x": 6401.5,
+   "y": 7015.0,
+   "r": 14.139410298049853,
+   "grund": "Sammelstelle Hain des Holzfällerhofs: Kernbäume"
+  },
+  {
+   "x": 6399.833333333333,
+   "y": 7020.833333333333,
+   "r": 11.497474167489846,
+   "grund": "Sammelstelle Hain des Holzfällerhofs: Weltenbaum-Setzlinge"
+  },
+  {
    "x": 6438.5,
    "y": 6474.5,
    "r": 9.16227766016838,
@@ -49837,6 +49861,42 @@
    "y": 5377.9,
    "r": 8.863564212655525,
    "grund": "Sammelstelle Adern am Weg (Hochlande 30)"
+  },
+  {
+   "x": 11872.2,
+   "y": 9646.5,
+   "r": 14.005623023850147,
+   "grund": "Sammelstelle Adern im Stollen der Bergmannszunft: Halle"
+  },
+  {
+   "x": 11867.5,
+   "y": 9622.7,
+   "r": 21.05456741324774,
+   "grund": "Sammelstelle Adern im Stollen der Bergmannszunft: Nordstollen"
+  },
+  {
+   "x": 11854.2,
+   "y": 9627.5,
+   "r": 19.678084661237662,
+   "grund": "Sammelstelle Adern im Stollen der Bergmannszunft: Weststollen"
+  },
+  {
+   "x": 11892.7,
+   "y": 9619.2,
+   "r": 26.950656314301664,
+   "grund": "Sammelstelle Adern im Stollen der Bergmannszunft: Oststollen"
+  },
+  {
+   "x": 11858.2,
+   "y": 9605.5,
+   "r": 9.832753579348061,
+   "grund": "Sammelstelle Adern im Stollen der Bergmannszunft: Urkammer"
+  },
+  {
+   "x": 7105.7,
+   "y": 5891.9,
+   "r": 8.863564212655525,
+   "grund": "Sammelstelle Adern vor dem Osttor"
   },
   {
    "x": 6932,
@@ -52162,7 +52222,7 @@
   },
   {
    "grund": "Questorte/Lesestellen (r 6), Bedienstellen (r 8), Trödler (r 6)",
-   "anzahl": 353
+   "anzahl": 359
   },
   {
    "grund": "Wasser, Fels und Gebirge (nicht begehbar), Inselchen unter 400 Feldern, Untergrund (Dungeons mit eigenen Gegnern)"

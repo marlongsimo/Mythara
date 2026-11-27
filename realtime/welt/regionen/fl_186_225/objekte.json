@@ -176,6 +176,7 @@
  {"id":"fischerzunft_steg_1","objekt":"dorf_bruecke_01","x":441.9,"y":153.3},
  {"id":"fischerzunft_steg_2","objekt":"dorf_bruecke_01","x":435.1,"y":153.3},
  {"id":"fischerzunft_steg_3","objekt":"dorf_bruecke_01","x":428.3,"y":153.3},
+ {"id":"fischerzunft_steg_4","objekt":"dorf_bruecke_01","x":421.5,"y":153.3},
  {"id":"fischerzunft_raeucherhuette","objekt":"kueste_raeucherhuette","x":444,"y":149.5},
  {"id":"fischerzunft_netze","objekt":"kueste_netze","x":441,"y":157.5},
  {"id":"fischerzunft_bankkiste","objekt":"steinhag_bankkiste","x":447,"y":157.51},

@@ -193,6 +193,72 @@
    ]
   },
   {
+   "id": "fischerzunft_silberbarsch_1",
+   "fisch": "silberbarsch",
+   "stufe": 70,
+   "x": 6375.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6375.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_silberbarsch_2",
+   "fisch": "silberbarsch",
+   "stufe": 70,
+   "x": 6374.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6374.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_sturmhecht_1",
+   "fisch": "sturmhecht",
+   "stufe": 80,
+   "x": 6373.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6373.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_sturmhecht_2",
+   "fisch": "sturmhecht",
+   "stufe": 80,
+   "x": 6372.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6372.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_tiefseeaal_1",
+   "fisch": "tiefseeaal",
+   "stufe": 90,
+   "x": 6371.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6371.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_tiefseeaal_2",
+   "fisch": "tiefseeaal",
+   "stufe": 90,
+   "x": 6370.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6370.5,
+    7352.5
+   ]
+  },
+  {
    "id": "fischplatz_klippe",
    "fisch": "klippenbarsch",
    "stufe": 35,
@@ -336,7 +402,13 @@
    "fischerzunft_fang_3",
    "fischerzunft_fang_4",
    "fischerzunft_fang_5",
-   "fischerzunft_fang_6"
+   "fischerzunft_fang_6",
+   "fischerzunft_silberbarsch_1",
+   "fischerzunft_silberbarsch_2",
+   "fischerzunft_sturmhecht_1",
+   "fischerzunft_sturmhecht_2",
+   "fischerzunft_tiefseeaal_1",
+   "fischerzunft_tiefseeaal_2"
   ]
  }
 }
