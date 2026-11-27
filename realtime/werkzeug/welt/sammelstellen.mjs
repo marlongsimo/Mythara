@@ -35,12 +35,12 @@ const GEHBAR = new Set(".,afjvtsuygTmhd"), WEG = new Set(["e", "k", "p"]);
 for (const g of [...(lies("gegnerplaetze.json").plaetze || []).filter((p) => !p.id.startsWith("gp_")), ...(lies("sueden_orte.json").gegner || [])]) hinder.push([g.x, g.y, 10 + (g.r || 0)]);
 for (const [k, [x, y]] of Object.entries(lies("glutsande_orte.json").orte || {})) if (k.startsWith("lager")) hinder.push([x, y, 16]);
 for (const s of [...(lies("troedler_standorte.json").standorte || []), ...(lies("bedienstellen.json").stationen || [])]) figuren.push([s.x, s.y, 5]);
-const FWO = lies("fahleweiten_orte.json");
-const ORTE = { ...(FWO.orte || {}), ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, ...lies("hochlande_orte.json").orte };
+const FWO = lies("fahleweiten_orte.json"), OKO = lies("ockerlande_orte.json");
+const ORTE = { ...Object.fromEntries(Object.entries(OKO.orte || {}).filter(([, v]) => Array.isArray(v))), ...(FWO.orte || {}), ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, ...lies("hochlande_orte.json").orte };
 const HL = lies("hochlande_orte.json");
 for (const r of HL.reisende || []) for (let i = 1; i < r.punkte.length; i++) { const [ax, ay] = r.punkte[i - 1], [bx, by] = r.punkte[i], L = Math.hypot(bx - ax, by - ay); for (let t = 0; t <= L; t += 2) hinder.push([ax + (bx - ax) * t / L, ay + (by - ay) * t / L, 3]); }   /* Wege der Reisenden (Bergleute Steinhag → Erzberg) frei halten */
 const KMO = lies("kielmund_orte.json"), STAEDTE = [HL.hauptstadt?.mauer, KMO.mauer && [6370, ...KMO.mauer.slice(1)]].filter(Boolean), STADT = STAEDTE[0], inStadt = (x, y, r = 0) => STAEDTE.some((S) => x > S[0] - r && x < S[2] + r && y > S[1] - r && y < S[3] + r);   /* Steinhag (#167), Kielmund (#174) */   /* Hauptstadt Steinhag (#167): in den Mauern keine Sammelstellen */
-const ORTSRADIUS = { grauwacht: 70, huegelgrund: 30, kohlstatt: 22, brechstein: 20, wollhag: 22, weiherhof: 26, haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 80, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
+const ORTSRADIUS = { rotlehm: 80, brunnenkreis: 22, grauwacht: 70, huegelgrund: 30, kohlstatt: 22, brechstein: 20, wollhag: 22, weiherhof: 26, haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 80, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
 
 /* ───── Gruppen: Ort, Art (holz/erz), Arten der Bäume bzw. Adern, Name ───── */
 const fest = (liste) => liste.filter((p) => p.x !== undefined).map((p) => ({ id: p.id, art: p.art, x: p.x, y: p.y }));
@@ -122,6 +122,9 @@ const PLAN = [
   ["brechstein", "erz", ["eisen", "eisen", "schwarzeisen"], "Eisenbruch am Grauen Fels"], ["brechstein", "erz", ["schwarzeisen", "sterneisen", "sterneisen"], "Sterneisen im Grauen Fels"],
   ["wollhag", "holz", ["tanne", "tanne", "eiche"], "Windbäume bei Wollhag"], ["wollhag", "erz", ["kupfer", "eisen", "eisen"], "Steine auf der Schafheide"],
   ["weiherhof", "holz", ["moorweide", "moorweide", "eibe"], "Weiden am Weiher"], ["weiherhof", "erz", ["kupfer", "eisen", "eisen"], "Senke am Weiherhof"],
+  /* Ockerlande (#172, Gefahr 45–65): Holz am Strom und in den Hainen, Erz an den Tafelbergen – Stufen wie in den Glutsanden (ab 35) */
+  ["rotlehm", "holz", ["moorweide", "moorweide", "kernbaum"], "Weiden am Ockerstrom"], ["rotlehm", "erz", ["schwarzeisen", "sterneisen", "sterneisen"], "Ockerbruch bei Rotlehm"],
+  ["brunnenkreis", "holz", ["kernbaum", "kernbaum", "moorweide"], "Akazien am Brunnenkreis"], ["brunnenkreis", "erz", ["sterneisen", "splittereisen", "splittereisen"], "Adern am Kleinen Tisch"],
   /* Nachtrag des Nutzers (#142): einzelne Stellen deutlich über der Gegend, sparsam, versteckt abseits der Wege (ohne Feldweg) – zum Entdecken */
   ["heckenhof", "einzeln", ["eibe"], "Einsame Eibe hinter dem Heckenhof"],
   ["summweide", "einzeln", ["moorweide"], "Alte Moorweide im Wiesengrund"],

@@ -1,0 +1,664 @@
+{
+ "hinweis": "Phase 12 Ockerlande (Welt #172): Gelände (Strom, Tafelberge, Trockenflüsse, Wasserlöcher, Haine), Rotlehm, Brunnenkreis, Wege, Rastplätze; Dornhag und Tafelrast folgen. Weltfelder.",
+ "land": [
+  6660,
+  7070,
+  8000,
+  7790
+ ],
+ "strom": [
+  [
+   6738,
+   7090
+  ],
+  [
+   6748,
+   7180
+  ],
+  [
+   6740,
+   7280
+  ],
+  [
+   6752,
+   7380
+  ],
+  [
+   6744,
+   7480
+  ],
+  [
+   6760,
+   7580
+  ],
+  [
+   6790,
+   7680
+  ]
+ ],
+ "furt": [
+  6752,
+  7340
+ ],
+ "tafelberge": {
+  "Roter Tisch": {
+   "mitte": [
+    7560,
+    7560
+   ],
+   "r": [
+    40,
+    26
+   ],
+   "aufgang": [
+    7516,
+    7560
+   ]
+  },
+  "Ockerkanzel": {
+   "mitte": [
+    7120,
+    7520
+   ],
+   "r": [
+    28,
+    20
+   ],
+   "aufgang": [
+    7120,
+    7544
+   ]
+  },
+  "Kleiner Tisch": {
+   "mitte": [
+    7000,
+    7120
+   ],
+   "r": [
+    20,
+    14
+   ],
+   "aufgang": [
+    7000,
+    7138
+   ]
+  }
+ },
+ "trockenfluesse": [
+  [
+   [
+    7520,
+    7590
+   ],
+   [
+    7400,
+    7630
+   ],
+   [
+    7240,
+    7600
+   ],
+   [
+    7060,
+    7640
+   ],
+   [
+    6900,
+    7600
+   ],
+   [
+    6790,
+    7610
+   ]
+  ],
+  [
+   [
+    7110,
+    7495
+   ],
+   [
+    7020,
+    7420
+   ],
+   [
+    6920,
+    7400
+   ],
+   [
+    6800,
+    7380
+   ]
+  ]
+ ],
+ "wasserloecher": [
+  [
+   7070,
+   7180
+  ],
+  [
+   7290,
+   7380
+  ],
+  [
+   7230,
+   7560
+  ],
+  [
+   7660,
+   7330
+  ]
+ ],
+ "akazienhaine": [
+  [
+   7180,
+   7340,
+   18
+  ],
+  [
+   7350,
+   7460,
+   16
+  ],
+  [
+   6940,
+   7180,
+   14
+  ],
+  [
+   7600,
+   7420,
+   18
+  ]
+ ],
+ "orte": {
+  "rotlehm": [
+   6830,
+   7340
+  ],
+  "rotlehm_gebaeude": 44,
+  "brunnenkreis": [
+   7070,
+   7180
+  ]
+ },
+ "namen": [
+  [
+   "Rotlehm",
+   "Stadt",
+   6830,
+   7340
+  ],
+  [
+   "Brunnenkreis",
+   "Ort",
+   7070,
+   7180
+  ]
+ ],
+ "npc": [
+  {
+   "id": "festenhauptfrau_rotlehm",
+   "rolle": "Hauptfrau der Lehmfeste",
+   "x": 6888.5,
+   "y": 7306.5
+  },
+  {
+   "id": "festenwache_rotlehm",
+   "rolle": "Wache am Festentor",
+   "x": 6884,
+   "y": 7315
+  },
+  {
+   "id": "karawanenmeisterin_rotlehm",
+   "rolle": "Karawanenmeisterin (Karawanenhof)",
+   "x": 6796,
+   "y": 7309
+  },
+  {
+   "id": "treiber_rotlehm",
+   "rolle": "Treiber",
+   "x": 6784,
+   "y": 7304
+  },
+  {
+   "id": "bankier_rotlehm",
+   "rolle": "Bank",
+   "x": 6842,
+   "y": 7330.4
+  },
+  {
+   "id": "wirt_rotlehm",
+   "rolle": "Wirt (Taverne)",
+   "x": 6817.5,
+   "y": 7331.4
+  },
+  {
+   "id": "haendler_rotlehm_1",
+   "rolle": "Händler (Markt)",
+   "x": 6824,
+   "y": 7336.2
+  },
+  {
+   "id": "fergin_rotlehm",
+   "rolle": "Fährmann an der Furt",
+   "x": 6758,
+   "y": 7342.5
+  },
+  {
+   "id": "brunnenwaechter",
+   "rolle": "Brunnenwächter",
+   "x": 7072,
+   "y": 7185.5
+  },
+  {
+   "id": "haendlerin_brunnenkreis",
+   "rolle": "Händlerin (Wasser, Proviant)",
+   "x": 7065,
+   "y": 7189.2
+  }
+ ],
+ "banken": [
+  {
+   "id": "rotlehm_bank",
+   "ort": "Rotlehm",
+   "gebaeude": "rotlehm_bank",
+   "schalter": [
+    6842,
+    7330.4
+   ]
+  }
+ ],
+ "laeden": [
+  {
+   "id": "rotlehm_stand_1",
+   "ort": "Rotlehm",
+   "art": "Marktstand",
+   "x": 6823.5,
+   "y": 7335.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "rotlehm_stand_2",
+   "ort": "Rotlehm",
+   "art": "Marktstand",
+   "x": 6835.5,
+   "y": 7335.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "rotlehm_stand_3",
+   "ort": "Rotlehm",
+   "art": "Marktstand",
+   "x": 6824.5,
+   "y": 7349.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "rotlehm_stand_4",
+   "ort": "Rotlehm",
+   "art": "Marktstand",
+   "x": 6836.5,
+   "y": 7350.7,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "rotlehm_karawanenhof_stand_1",
+   "ort": "Rotlehm",
+   "art": "Stand im Karawanenhof",
+   "x": 6786,
+   "y": 7309.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "rotlehm_karawanenhof_stand_2",
+   "ort": "Rotlehm",
+   "art": "Stand im Karawanenhof",
+   "x": 6806,
+   "y": 7309.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "rotlehm_taverne",
+   "ort": "Rotlehm",
+   "art": "Taverne",
+   "x": 6817.5,
+   "y": 7331.4,
+   "blick": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "brunnenkreis_stand",
+   "ort": "Brunnenkreis",
+   "art": "Wasser und Proviant",
+   "x": 7065,
+   "y": 7189.2,
+   "blick": [
+    0,
+    -1
+   ]
+  }
+ ],
+ "stationen": [
+  {
+   "id": "herd_rotlehm",
+   "station": "herd",
+   "x": 6794,
+   "y": 7307.4
+  },
+  {
+   "id": "kessel_rotlehm",
+   "station": "kessel",
+   "x": 6799,
+   "y": 7307.4
+  },
+  {
+   "id": "esse_rotlehm",
+   "station": "esse",
+   "x": 6812.5,
+   "y": 7357.4
+  },
+  {
+   "id": "amboss_rotlehm",
+   "station": "amboss",
+   "x": 6815.5,
+   "y": 7357.4
+  },
+  {
+   "id": "werkbank_rotlehm",
+   "station": "werkbank",
+   "x": 6821,
+   "y": 7358.4
+  },
+  {
+   "id": "feuer_brunnenkreis",
+   "station": "feuer",
+   "x": 7077,
+   "y": 7188.6
+  }
+ ],
+ "fischplaetze": [
+  {
+   "id": "fischplatz_ockerstrom_nord",
+   "fisch": "moorhecht",
+   "stufe": 20,
+   "x": 6749.5,
+   "y": 7326.5,
+   "stehplatz": [
+    6750.5,
+    7326.5
+   ]
+  },
+  {
+   "id": "fischplatz_ockerstrom_sued",
+   "fisch": "wels",
+   "stufe": 45,
+   "x": 6752.5,
+   "y": 7356.5,
+   "stehplatz": [
+    6753.5,
+    7356.5
+   ]
+  }
+ ],
+ "rastplaetze": [
+  "rast_ockerlande_1",
+  "rast_ockerlande_2",
+  "rast_ockerlande_3",
+  "rast_ockerlande_4",
+  "rast_ockerlande_5",
+  "rast_ockerlande_6"
+ ],
+ "wege": [
+  {
+   "punkte": [
+    [
+     7150,
+     6975
+    ],
+    [
+     7070,
+     7010
+    ],
+    [
+     7060,
+     7100
+    ],
+    [
+     7070,
+     7170
+    ],
+    [
+     6980,
+     7240
+    ],
+    [
+     6900,
+     7300
+    ],
+    [
+     6830,
+     7340
+    ]
+   ],
+   "breite": 2.6,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7070,
+     7170
+    ],
+    [
+     7170,
+     7270
+    ],
+    [
+     7290,
+     7400
+    ],
+    [
+     7400,
+     7470
+    ],
+    [
+     7490,
+     7520
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6830,
+     7340
+    ],
+    [
+     6880,
+     7460
+    ],
+    [
+     6960,
+     7560
+    ],
+    [
+     7060,
+     7640
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6830,
+     7340
+    ],
+    [
+     6760,
+     7340
+    ],
+    [
+     6700,
+     7340
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6752,
+     7340
+    ],
+    [
+     6900,
+     7340
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6830,
+     7294
+    ],
+    [
+     6830,
+     7390
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6780,
+     7316
+    ],
+    [
+     6896,
+     7316
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6780,
+     7362
+    ],
+    [
+     6896,
+     7362
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6790,
+     7300
+    ],
+    [
+     6790,
+     7384
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6870,
+     7300
+    ],
+    [
+     6870,
+     7384
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6780,
+     7380
+    ],
+    [
+     6896,
+     7380
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     7150,
+     6975
+    ],
+    [
+     7070,
+     7010
+    ],
+    [
+     7060,
+     7100
+    ],
+    [
+     7070,
+     7170
+    ],
+    [
+     6980,
+     7240
+    ],
+    [
+     6900,
+     7300
+    ],
+    [
+     6830,
+     7340
+    ]
+   ],
+   "breite": 2.6
+  }
+ ]
+}
