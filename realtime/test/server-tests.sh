@@ -86,6 +86,7 @@ TESTS=(
   zunft
   bank-orte
   steinhag-stadt
+  kielmund-stadt
   pets
   pets-welt
   bank-platzhalter

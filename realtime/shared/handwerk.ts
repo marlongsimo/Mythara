@@ -235,6 +235,11 @@ dazu({ id: "tiefseeaal_suppe", station: "kessel", ergebnis: "tiefseeaal_suppe", 
 dazu({ id: "glutwels_salzkruste", station: "herd", ergebnis: "glutwels_salzkruste", level: 65, zutaten: [{ g: ["fisch_glutwels_roh"], n: 1 }, { g: ["salz"], n: 2 }], xp: 260, ticks: 6, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_glutwels_verbrannt" });
 /* Phase 7 (#40): D3 Welspastete am Herd (Kochen 45), D1 Kettenglieder am Amboss (Schmieden 45, Quest-Rezept: 1 Splittereisenbarren → 1 Glied) */
 dazu({ id: "welspastete", station: "herd", ergebnis: "welspastete", level: 45, zutaten: [{ g: ["fisch_wels_roh"], n: 1 }, { g: ["mehl"], n: 1 }], xp: 160, ticks: 6, stufe: 0, gruppe: "Pastete", verbrannt: "fisch_wels_verbrannt" });
+/* #174 Hauptstadt Kielmund (Welt 7a15f6624, kielmund_orte.json → stationen): Esse, Amboss und Werkbank der Werkstatt am Markt, Herd der Taverne,
+   Räucherhütte am Hafen, Kessel im Fischerquartier */
+WERKSTAETTEN.push({ id: "esse_kielmund", station: "esse", x: 6447.5, y: 7325.4, ort: "fl_201_225" }, { id: "amboss_kielmund", station: "amboss", x: 6450.5, y: 7325.4, ort: "fl_201_225" },
+  { id: "werkbank_kielmund", station: "werkbank", x: 6456, y: 7327.4, ort: "fl_201_225" }, { id: "herd_kielmund_taverne", station: "herd", x: 6440, y: 7297.4, ort: "fl_201_225" },
+  { id: "raeucherhuette_kielmund", station: "raeucherhuette", x: 6400.5, y: 7320.6, ort: "fl_186_225" }, { id: "kessel_kielmund", station: "kessel", x: 6472, y: 7365.4, ort: "fl_201_225" });
 /* #141: Haferstedt und Netzbucht (Welt #140, 6a116f04) – Stationen an denselben Stellen der Baupläne wie in der Waldmark (welt/bedienstellen.json):
    Schmiede (dorf_schmiede_01) Esse und Amboss, Taverne (dorf_taverne_01) Herd und Kessel, Bäckerei (dorf_baeckerei_01) Backofen, der Brunnen am Markt; Netzbucht Feuer und Räucherhütte */
 WERKSTAETTEN.push({ id: "esse_haferstedt", station: "esse", x: 6201.4, y: 6992.8, ort: "fl_186_211" }, { id: "amboss_haferstedt", station: "amboss", x: 6204.4, y: 6992.6, ort: "fl_186_211" },
