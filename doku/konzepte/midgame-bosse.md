@@ -1,6 +1,6 @@
 # Midgame-Bosse: Mechanik und Steckbriefe
 
-*Entwurf Konzept-Chat, 27.11.2026, noch nicht abgesegnet.*
+*Konzept-Chat, 27.11.2026. **Vom Nutzer abgesegnet (27.11.)**: Kernmechaniken, Verteilung der Schwächen und Seltenheits-Drops.*
 Grundlage: `boss-regeln.md` (Kanon), `endgame.md` Abschnitt 1 (jeder bestehende Boss bekommt **1–2 Mechaniken**, nicht steigend; Ziel: ein Gespür fürs Bossen).
 Bestand nachgesehen in `realtime/shared/bosse.ts` und `config.ts` (Stand `feature/realtime-engine`, 27.11.). Die Stufen bleiben, wie sie sind (Nutzer).
 
@@ -58,6 +58,5 @@ Jeder Boss hat **einen** seltenen Drop, schwächer als die Endgame-Ausrüstung (
 Modelle gibt es dafür noch keine. Die Werte trägt die Integration ein, wenn es freigegeben ist.
 
 ## Offen
-- Passen die Kernmechaniken je Boss? Sollen beim Obersten wirklich vier Dinge wegfallen?
-- Passt die neue Verteilung der Schwächen? Sie ändert Abwehrwerte, die Stufen können sich dadurch leicht verschieben.
-- Seltenheits-Drops: Ideen so recht? Werte und Chancen (Vorschlag etwa 1 : 100 je Sieg in der starken Fassung).
+- Werte und genaue Chancen der Seltenheits-Drops (Richtwert 1 : 100 je Sieg in der starken Fassung), Modelle der Drops.
+- Neue Abwehrwerte für die geänderten Schwächen (Integration/Systeme); die angezeigte Stufe darf sich dabei leicht verschieben.
