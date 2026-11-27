@@ -9877,6 +9877,150 @@
     "wind": 0,
     "fest": true
    }
+  },
+  {
+   "id": "steinhag_schmelzofen",
+   "name": "Schmelzofen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/steinhag_schmelzofen.webp",
+   "groesse": [
+    93,
+    152
+   ],
+   "anker": [
+    0.4462,
+    0.9342
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.8
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Steinhag, #167), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/steinhag/schmelzofen.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "steinhag_brennofen",
+   "name": "Brennofen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/steinhag_brennofen.webp",
+   "groesse": [
+    132,
+    167
+   ],
+   "anker": [
+    0.4621,
+    0.9222
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 1.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Steinhag, #167), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/steinhag/brennofen.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "steinhag_bankkiste",
+   "name": "Bankkiste",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/steinhag_bankkiste.webp",
+   "groesse": [
+    74,
+    74
+   ],
+   "anker": [
+    0.4595,
+    0.8919
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.6,
+    "y": -0.38,
+    "b": 1.2,
+    "h": 0.75
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Steinhag, #167), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/steinhag/bankkiste.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "steinhag_zunftschild_hammer",
+   "name": "Zunftschild (Schlägel und Eisen)",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/steinhag_zunftschild_hammer.webp",
+   "groesse": [
+    30,
+    64
+   ],
+   "anker": [
+    0.6667,
+    0.9219
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Steinhag, #167), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/steinhag/zunftschild_hammer.glb",
+    "wind": 0,
+    "fest": true
+   },
+   "hinweis": "Wandarm: Ursprung am Fuß der Wand neben der Tür, das Schild ragt 0,9 m nach vorn (Süden) auf 2,0–2,5 m Höhe"
+  },
+  {
+   "id": "steinhag_zunftschild_amboss",
+   "name": "Zunftschild (Amboss)",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/steinhag_zunftschild_amboss.webp",
+   "groesse": [
+    30,
+    64
+   ],
+   "anker": [
+    0.6667,
+    0.9219
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/hochland_objekte.py (Steinhag, #167), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/steinhag/zunftschild_amboss.glb",
+    "wind": 0,
+    "fest": true
+   },
+   "hinweis": "Wandarm: Ursprung am Fuß der Wand neben der Tür, das Schild ragt 0,9 m nach vorn (Süden) auf 2,0–2,5 m Höhe"
   }
  ]
 }
