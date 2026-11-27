@@ -568,6 +568,36 @@
    "art": "Ort",
    "x": 6340,
    "y": 5834
+  },
+  {
+   "name": "Reifbach",
+   "art": "Ort",
+   "x": 6424,
+   "y": 5722
+  },
+  {
+   "name": "Rotlehm",
+   "art": "Stadt",
+   "x": 6830,
+   "y": 7340
+  },
+  {
+   "name": "Brunnenkreis",
+   "art": "Ort",
+   "x": 7070,
+   "y": 7180
+  },
+  {
+   "name": "Dornhag",
+   "art": "Dorf",
+   "x": 7290,
+   "y": 7404
+  },
+  {
+   "name": "Tafelrast",
+   "art": "Dorf",
+   "x": 7490,
+   "y": 7520
   }
  ]
 }

@@ -61,7 +61,8 @@ _ho = os.path.join(W, 'hochlande_orte.json')
 _fo = os.path.join(W, 'fahleweiten_orte.json')
 _mauern = ([(json.load(open(_ho, encoding='utf8'))['hauptstadt']['mauer'], 'Stadt Steinhag (Ringmauer)')] if os.path.exists(_ho) and json.load(open(_ho, encoding='utf8')).get('hauptstadt') else []) + \
           ([(json.load(open(_fo, encoding='utf8'))['grauwacht']['mauer'], 'Stadt Grauwacht (Stadtmauer, #171)')] if os.path.exists(_fo) and json.load(open(_fo, encoding='utf8')).get('grauwacht') else []) + \
-          ([([6370] + json.load(open(os.path.join(W, 'kielmund_orte.json'), encoding='utf8'))['mauer'][1:], 'Stadt Kielmund (Stadtmauer und Hafen, #174)')] if os.path.exists(os.path.join(W, 'kielmund_orte.json')) else [])
+          ([([6370] + json.load(open(os.path.join(W, 'kielmund_orte.json'), encoding='utf8'))['mauer'][1:], 'Stadt Kielmund (Stadtmauer und Hafen, #174)')] if os.path.exists(os.path.join(W, 'kielmund_orte.json')) else []) + \
+          ([((lambda c: [c[0] - 66, c[1] - 50, c[0] + 74, c[1] + 54])(json.load(open(os.path.join(W, 'ockerlande_orte.json'), encoding='utf8'))['orte']['rotlehm']), 'Stadt Rotlehm (#172)')] if os.path.exists(os.path.join(W, 'ockerlande_orte.json')) else [])
 for _m, _grund in _mauern:
     for _x in range(int(_m[0]) - 4, int(_m[2]) + 5, 12):
         for _y in range(int(_m[1]) - 4, int(_m[3]) + 5, 12): ausnahmen.append({'x': _x, 'y': _y, 'r': 17, 'grund': _grund})
@@ -172,9 +173,15 @@ for runde in range(12):
 # Gegner mit Werten in shared/config.ts (MONSTER) gelten als vorhanden – so werden neu gebaute Gegner (z. B. Steppenwolf, fab2fde5) ohne Handarbeit erkannt
 IN_CONFIG = set(re.findall(r'^\s{2}(\w+): \{ name:', open(os.path.join(RT, 'shared', 'config.ts'), encoding='utf8').read(), re.M))
 fehlend, je_region = {}, {}
+# Stabil (27.11.): ein Platz, der schon im letzten Lauf an derselben Stelle stand, behält Gegner und Anzahl (solange das Land dasselbe ist);
+# neue Plätze wählen nach einer festen Zahl aus ihrer Lage statt nach ihrer Nummer – so verschiebt ein neuer Ort nicht die Gegner der ganzen Welt
+_alt = os.path.join(W, 'gegnerplaetze.json')
+ALT_GP = {(p['x'], p['y']): p for p in (json.load(open(_alt, encoding='utf8')).get('plaetze', []) if os.path.exists(_alt) else []) if p['id'].startswith('gp_')}
 for k, (x, y) in enumerate(neu_pkt):
     n = REG[y, x] or '?'; land, (lo, hi) = land_von(n, x, y) if n != '?' else ('?', (5, 20)); gel = gelaende_von(x, y)
-    g = waehle(gel, lo, hi, k, land); anzahl = 3 if k % 6 == 0 else 2 if k % 3 == 0 else 1
+    h = (int(x + X0) * 73856093 ^ int(y + Y0) * 19349663) & 0x7fffffff; a = ALT_GP.get((int(x + X0) + 0.5, int(y + Y0) + 0.5))
+    if a and a.get('land') == land: g, anzahl = a['gegner'][0], a.get('anzahl', 1)
+    else: g = waehle(gel, lo, hi, h % 997, land); anzahl = 3 if h % 6 == 0 else 2 if h % 3 == 0 else 1
     modell = UMBENANNT[g][0] if g in UMBENANNT else g
     quelle = 'vorhanden' if g in VORHANDEN else ('vorhanden (' + UMBENANNT[g][0] + ')') if g in UMBENANNT else 'vorhanden (Systeme)' if g in IN_CONFIG and NEU[g][2].startswith('neu') else 'fehlt' if NEU[g][2].startswith('neu') else 'vorhanden (Figuren)'   # Figuren hat die Gegner der Konzepte gebaut (Zweig claude/tender-heisenberg-bruby2, Leitstelle 27.11.)
     if quelle == 'fehlt': f = fehlend.setdefault(g, {'gegner': g, 'stufe': NEU[g][0], 'gelaende': NEU[g][1], 'herkunft': NEU[g][2], 'plaetze': 0}); f['plaetze'] += 1
