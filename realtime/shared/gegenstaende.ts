@@ -672,3 +672,7 @@ GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /*
 GEGENSTAENDE.wildbret = { id: "wildbret", name: "Wildbret", art: "Rohstoff", seltenheit: "gewoehnlich", wert: 12, symbol: "kristall", text: "Dunkles Fleisch vom Wild der Hochlande. Am Herd geschmort wird ein kräftiger Braten daraus." };
 GEGENSTAENDE.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", symbol: "kristall", trank: "wildbretbraten", text: "Ein kräftiger Braten aus den Hochlanden. Heilt 12 Lebenspunkte." };
 VERBRAUCH.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Ein kräftiger Braten aus den Hochlanden." };
+
+/* ───────── C2 „Der Gesang der Spiralsteine“ (#118): Moorglöckchen-Wachs von Hedda – Questgegenstand, nicht handelbar; Bild vorerst das Moorglöckchen ───────── */
+GEGENSTAENDE.moorwachs = { id: "moorwachs", name: "Moorglöckchen-Wachs", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/kraeuter/symbole/moorgloeckchen.webp",
+  text: "Ein Klumpen weiches Wachs, das nach Moorglöckchen riecht. Hedda sagt, man solle es sich in die Ohren drücken, bevor die Steine singen." };

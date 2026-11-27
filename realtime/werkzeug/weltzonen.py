@@ -119,6 +119,8 @@ for rid, l in SUEDEN.items(): BESONDERS.setdefault(rid, {"leine": 12, "wandern":
 # #130 Gegnerdichte (Welt, welt/gegnerplaetze.json): spätestens alle ~25 Felder ein Gegnerplatz. Plätze mit quelle „fehlt“ (Modell nötig: Ockerlande, Hochlande,
 # Frostkrone, Drachenarm) vorerst ausgelassen, die des Südens stehen schon oben. Namen der Welt → Gegner (abwechselnd bei Gruppen); unbekannte Gegner fallen weg.
 GP_DATEI = os.path.join(WURZEL, "realtime", "welt", "gegnerplaetze.json")
+# #138: Modelle des Nutzers sind da (Figuren 8c2ed9b25) – deren Plätze mit quelle „fehlt“ gelten jetzt; der Drakling erst, wenn er als Bodengegner da ist
+GP_MODELL_DA = {"steppenwolf", "ockerhyaene", "hochlandwidder", "hochlandbaer", "klippenadler", "bergtroll", "tundraelch", "frostwolf", "eisgolem", "drakling"}  # Drakling als Bodengegner: Figuren 7cd8342fd
 GP_ALIAS = {"wolf": ["heidewolf"], "strandraeuber": ["strandraeuber_saebel", "strandraeuber_armbrust"], "karawanenraeuber": ["karawanenraeuber_saebel", "karawanenraeuber_bogen"],
             "wegelagerer": ["wegelagerer_knueppel", "wegelagerer_schleuder"]}
 import re as _re
@@ -127,7 +129,7 @@ GP = {}; GP_AUS = {"fehlt": 0, "unbekannt": 0}
 if os.path.exists(GP_DATEI):
     for p in json.load(open(GP_DATEI, encoding="utf-8"))["plaetze"]:
         q = p.get("quelle", "")
-        if q == "fehlt" or q.startswith("Süden"): GP_AUS["fehlt"] += 1 if q == "fehlt" else 0; continue
+        if (q == "fehlt" and not all(g in GP_MODELL_DA for g in p["gegner"])) or q.startswith("Süden"): GP_AUS["fehlt"] += 1 if q == "fehlt" else 0; continue
         reihe = [a for g in p["gegner"] for a in GP_ALIAS.get(g, [g])]
         for k in range(max(1, int(p.get("anzahl", 1)))):
             art = reihe[k % len(reihe)]
