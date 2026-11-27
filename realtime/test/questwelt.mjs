@@ -106,7 +106,8 @@ export async function starte({ sb: SB, srv: SRV, helden, env = {} }) {
         z = FANGSTELLEN.find((x) => x.grund === grund && !s.ruht.has(x.id)); if (!z) { await schlaf(500); continue; } s.msgs.fisch = []; await stelle(s, z.x + 1.2, z.y); sende(s, { t: "fisch", tat: "start", id: z.id }); }
       await schlaf(250); }
     sende(s, { t: "fisch", tat: "stop" }); await schlaf(300); return anzahl(s, g) >= n; }
-  const ende = (titel) => { check(!/Server-Fehler|TypeError|ReferenceError/.test(log), "Keine Fehler im Server-Log"); srv.kill(); sb.close();
+  srv.on("exit", (c) => { if (c !== null && c !== 0) console.log(`!! Server beendet (Code ${c}) – letzte Zeilen:\n` + log.split("\n").slice(-25).join("\n")); });
+  const ende = (titel) => { check(!/Server-Fehler|TypeError|ReferenceError/.test(log), "Keine Fehler im Server-Log"); if (f) console.log("--- Server-Log (Ende) ---\n" + log.split("\n").filter((z) => !/^(Welt|Verbindung|Kampf):/.test(z)).slice(-30).join("\n")); srv.kill(); sb.close();
     console.log(f ? `\n${titel}: ${f} FEHLER` : `\n${titel}: alles in Ordnung`); process.exit(f ? 1 : 0); };
   return { check, spieler, warte, sende, schlaf, anzahl, stelle, rede, sag, sprich, ding, objekt, stand, erl, fertig, kampf, kaempfen, kampfBis, aufheben, sammeln, herstellen, fischen, ende,
     log: () => log, HELD, ID, ABSCHLUSS, fehler: () => f };
