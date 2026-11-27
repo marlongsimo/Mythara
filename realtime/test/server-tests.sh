@@ -55,6 +55,7 @@ TESTS=(
   inhalt-phase8
   inhalt-phase9
   inhalt-phase10
+  bosse-116
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

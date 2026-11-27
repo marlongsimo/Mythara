@@ -20,6 +20,11 @@ import subprocess
 US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"],
                                cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])  # die Quelle meldet zuerst ihren Umfang
 BESONDERS = {
+    # #116: nach der Quest die Bosse öffentlich in ihren Räumen (stärkere Fassung, Wiederkehr 10 min); wer die Quest macht oder „eigene Instanz“ wählt, steht in einer Kopie und sieht sie nicht
+    "rabengrund_thronsaal": {"leine": 14, "wandern": 0, "mehrkampf": [[10752, 9600, 10783, 9631]], "lager": [("oberster_rabenpriester", 10768, 9606)]},
+    "hauptmann_gruft": {"leine": 14, "wandern": 0, "mehrkampf": [[11200, 9600, 11231, 9631]], "lager": [("grauer_hauptmann", 11216, 9619)]},
+    "tempel_kammer": {"leine": 14, "wandern": 0, "mehrkampf": [[11360, 9600, 11391, 9631]], "lager": [("sandmutter", 11376, 9612)]},
+    "wrack_kajuete": {"leine": 14, "wandern": 0, "mehrkampf": [[11488, 9600, 11519, 9631]], "lager": [("wrackkapitaen", 11504, 9614)]},
     # Phase 10 (#92): Klippenhöhlen (Untergrund, Welt #82) – Strandräuber im Schmugglerversteck, Krabben im Gezeitenbecken; der Wrackkapitän in der Kajüte (Instanz wrack_kajuete)
     "klippenhoehlen": {"leine": 10, "wandern": 2,
                        "lager": [("strandraeuber_saebel", 11442, 9618), ("strandraeuber_armbrust", 11444, 9614), ("strandraeuber_saebel", 11470, 9616), ("strandraeuber_armbrust", 11468, 9614),

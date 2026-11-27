@@ -276,7 +276,7 @@ Object.assign(MONSTER, {
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [100, 200] }] }, { wurf: [{ g: "rabenfedern", chance: 100, anzahl: [5, 10] }] }, { wurf: [{ g: "seelenlicht", chance: 30, anzahl: [3, 6] }] },
       { wurf: [{ g: "@selten", chance: 5 }] }] },
   /** Der Oberste Rabenpriester: Boss, Stufe 55, 350 LP, Max Hit 18 (Doppelhieb), Thronsaal als Instanz (shared/bosse.ts) */
-  oberster_rabenpriester: { name: "Der Oberste Rabenpriester", stufe: 55, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 350, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 40 }, abwehr: { nah: 60, fern: 55, magie: 50 }, r: 0.9, boss: true, wiederkehr: 999999,
+  oberster_rabenpriester: { name: "Der Oberste Rabenpriester", stufe: 55, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 350, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 40 }, abwehr: { nah: 60, fern: 55, magie: 50 }, r: 0.9, boss: true, wiederkehr: 600,
     angriff: { name: "Zwillingsklingen", art: "nah", schaden: [1, 18], takt: 2.0, reich: 2.2, aushol: 0 },
     v2: { staerke: 81, geschick: 70, defense: 60, magie: 60, staerkeBonus: 64, ticks: 4, abwehr: { nah: 20, fern: 15, magie: 10 } },
     info: "Der Oberste des Rabenordens. Auf seinem Thron aus Federn und Splittern wartet er seit Jahren darauf, dass jemand kommt.",
@@ -361,7 +361,7 @@ Object.assign(MONSTER, {
     info: "Eine Steinfigur am Eingang einer Grabkammer. Sie hält Wache, seit es keine Wacht mehr gibt.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [18, 35] }] }, { wurf: [{ g: "wachtstein", chance: 25 }] }, { wurf: [{ g: "erz_schwarzeisen", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 80 }] }] },
   /** Der Graue Hauptmann: Mini-Boss, Stufe 52, Geist in Wachtrüstung (Gruft, Instanz – shared/bosse.ts) */
-  grauer_hauptmann: { name: "Der Graue Hauptmann", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 260, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 55, magie: 45 }, r: 0.55, untot: true, boss: true, wiederkehr: 999999,
+  grauer_hauptmann: { name: "Der Graue Hauptmann", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 260, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 55, magie: 45 }, r: 0.55, untot: true, boss: true, wiederkehr: 600,
     angriff: { name: "Geisterklinge", art: "nah", schaden: [1, 15], takt: 2.5, reich: 1.9, aushol: 0 },
     v2: { staerke: 100, geschick: 70, defense: 60, magie: 40, staerkeBonus: 30, ticks: 5, abwehr: { nah: 25, fern: 25, magie: 0 } },
     info: "Der letzte Hauptmann von Grauwacht. Er hat seine Wacht nie beendet – und lässt die Toten nicht ruhen.",
@@ -401,7 +401,7 @@ Object.assign(MONSTER, {
     info: "Eine Gestalt aus Hitze und Licht. Sie flackert – und für einen Atemzug ist da nichts, was man treffen könnte.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [20, 40] }] }, { wurf: [{ g: "seelenlicht", chance: 40, anzahl: [2, 4] }] }, { wurf: [{ g: "erz_ureisen", chance: 6 }] }, { wurf: [{ g: "@selten", chance: 100 / 120 }] }] },
   /** Die Sandmutter: Mini-Boss, Stufe 60, riesiger Sandkriecher – gräbt sich ein, Ansage-Felder (Kammer im Tempel, Instanz) */
-  sandmutter: { name: "Die Sandmutter", stufe: 60, bild: "img/echtzeit/bandit.webp", hoehe: 150, lp: 320, tempo: 2.6, angriffswert: { nah: 65, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 60, magie: 45 }, r: 0.9, boss: true, wiederkehr: 999999,
+  sandmutter: { name: "Die Sandmutter", stufe: 60, bild: "img/echtzeit/bandit.webp", hoehe: 150, lp: 320, tempo: 2.6, angriffswert: { nah: 65, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 60, magie: 45 }, r: 0.9, boss: true, wiederkehr: 600,
     angriff: { name: "Kieferbiss", art: "nah", schaden: [1, 16], takt: 2.5, reich: 2.2, aushol: 0 },
     v2: { staerke: 110, geschick: 75, defense: 70, magie: 20, staerkeBonus: 30, ticks: 5, abwehr: { nah: 30, fern: 20, magie: 0 } },
     info: "Die Mutter aller Sandkriecher. Sie schläft in der Kammer unter dem Tempel – bis jemand das Auge öffnet.",
@@ -444,7 +444,7 @@ Object.assign(MONSTER, {
     info: "Ein Lurch, halb so lang wie ein Boot, schleimig und still. Sein Biss brennt noch lange nach.",
     drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [8, 18] }] }, { wurf: [{ g: "fisch_seeaal_roh", chance: 15 }] }, { wurf: [{ g: "@selten", chance: 100 / 200 }] }] },
   /** Der Wrackkapitän: Stufe 40, Geist, Mini-Boss in der Kajüte (Instanz wrack_kajuete, G3); ruft Strandräuber */
-  wrackkapitaen: { name: "Der Wrackkapitän", stufe: 40, bild: "img/echtzeit/bandit.webp", hoehe: 130, lp: 200, tempo: 3.0, angriffswert: { nah: 48, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 40, magie: 35 }, r: 0.5, untot: true, boss: true, wiederkehr: 999999,
+  wrackkapitaen: { name: "Der Wrackkapitän", stufe: 40, bild: "img/echtzeit/bandit.webp", hoehe: 130, lp: 200, tempo: 3.0, angriffswert: { nah: 48, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 40, magie: 35 }, r: 0.5, untot: true, boss: true, wiederkehr: 600,
     angriff: { name: "Geistersäbel", art: "nah", schaden: [1, 12], takt: 2.5, reich: 1.7, aushol: 0 },
     v2: { staerke: 75, geschick: 55, defense: 45, magie: 30, staerkeBonus: 20, ticks: 5, abwehr: { nah: 20, fern: 20, magie: 0 } },
     info: "Der Kapitän des Wracks. Er ist mit seinem Schiff untergegangen – und hat es nie verlassen.",

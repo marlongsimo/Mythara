@@ -22,6 +22,7 @@ import { questsLaden, questHoeren, reden, antworten, abholen, gespraechEnde, din
 import { wegZiel, WEGSTEIN_PAUSE_MS, HEIM } from "../../shared/wegstein";
 import { wegzielFrei } from "../../shared/quests";
 import { faehreAnfrage } from "./faehre";
+import { bossWahlSetzen } from "./bosse";
 import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen, reisekarteFrei, reisekarteNutzen } from "./inventar";
 import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, wirkungSetzen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
@@ -124,7 +125,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     { const t = String(roh); if (t === '{"t":"puls"}') { if (ws.readyState === WebSocket.OPEN) ws.send('{"t":"puls"}'); return; } /* Wachhund des Browsers: sofort antworten, zählt nicht als Aktivität */
       if (kanalRahmen(ws, t, kanal, (k, q) => { if (H.kanalAuf) H.kanalAuf(k, q); else k.close(4400, "kein kanal"); })) { if (s) s.zuletzt = Date.now(); return; } } /* vor dem Überflutungsschutz: Kampfeingaben haben ihren eigenen */
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { typ?: string; ziel?: string; rezept?: string; tab?: unknown; fach?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; namen?: unknown; ort?: unknown; geraet?: string; wieder?: boolean; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
+    let e: { wahl?: unknown; typ?: string; ziel?: string; rezept?: string; tab?: unknown; fach?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; namen?: unknown; ort?: unknown; geraet?: string; wieder?: boolean; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -288,6 +289,8 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (!frei && !ladungAbziehen(H.sb, s.nutzer, "wegstein")) { nein("Der Wegstein ist leer. Lade ihn am Bindestein an der Linde in Weidenhain – 2 Splitter je Ladung."); return; }
       wegsteinZuletzt.set(s.nutzer, jetzt); alleStop(s); teleportZiel(H, s.nutzer, z.x, z.y, z.region); s.wx = z.x; s.wy = z.y;
       senden(s, { t: "wegstein", ok: true, ziel, name: z.name, x: z.x, y: z.y, region: z.region, ladungen: invLadungen(s.nutzer, "wegstein"), ...(frei ? { reisekarte: true } : {}) }); }
+    else if (e.t === "bosswahl" && s) { /* #116: am Eingang nach der Quest – öffentlich oder eigene Instanz */ const nu = s.nutzer, t = bossWahlSetzen(nu, e.id, e.wahl, (sch) => schalter(nu, sch));
+      senden(s, { t: "bosswahl", ok: Boolean(t), id: e.id, wahl: t ? e.wahl : undefined, text: t || "Das geht hier nicht." }); }
     else if (e.t === "faehre") { /* Phase 7 (#49): Überfahrt wie der Wegstein – der Server prüft und setzt die Stelle, der Browser zeigt die Überfahrt und springt */
       const r = faehreAnfrage(s, e.id, { schalter, imKampf: kampfPruefer, gesperrt: (n, reg) => Boolean(regionGesperrt(n, reg)) }); if (!r.ok) { senden(s, { t: "faehre", ok: false, text: r.text }); return; }
       alleStop(s); teleportZiel(H, s.nutzer, r.x, r.y, r.region); s.wx = r.x; s.wy = r.y;

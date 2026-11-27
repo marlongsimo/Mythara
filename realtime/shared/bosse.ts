@@ -28,7 +28,7 @@ BOSSE.wrackkapitaen = { typ: "wrackkapitaen", phasen: [
   { ab: 1, ansagen: [{ name: "Säbelwirbel", alle: 4, felder: "rundum", schaden: [6, 11] }] },
   { ab: 0.6, text: "Der Wrackkapitän ruft seine Mannschaft!", ruf: { art: "strandraeuber_saebel", n: 2, text: "Alle Mann an Deck!" }, ansagen: [{ name: "Säbelwirbel", alle: 3, felder: "rundum", schaden: [6, 11] }] },
   { ab: 0.3, text: "Geisterwasser flutet die Kajüte!", ansagen: [{ name: "Geisterflut", sek: 4, felder: "raum", deckung: true, vorlauf: 2, schaden: [9, 15] }] } ] };
-INSTANZEN.push({ id: "wrack_kajuete", name: "Die Kajüte des Kapitäns", feld: [11488, 9600, 11519, 9631], schalter: "wrackkapitaen_kajuete",
+INSTANZEN.push({ id: "wrack_kajuete", name: "Die Kajüte des Kapitäns", feld: [11488, 9600, 11519, 9631], schalter: "wrackkapitaen_kajuete", danach: "wrackkapitaen_danach",
   gegner: [{ art: "wrackkapitaen", x: 11504.5, y: 9614.5 }], text: "Die Tür der Kajüte fällt ins Schloss. Am Kartentisch sitzt jemand, durch den man hindurchsieht." });
 
 /* ───────── Phase 9 (#86, F3): die Sandmutter in ihrer Kammer unter dem Tempel (Region tempel_kammer, Weltfelder 11360…11391 × 9600…9631) ─────────
@@ -38,7 +38,7 @@ BOSSE.sandmutter = { typ: "sandmutter", phasen: [
   { ab: 0.6, text: "Die Sandmutter gräbt sich ein!", eingraben: 5, ruf: { art: "sandkriecher", n: 2, text: "Der Sand bebt überall!" },
     ansagen: [{ name: "Treibsand", sek: 3, felder: "ziel", weite: 1, vorlauf: 2, schaden: [10, 16] }] },
   { ab: 0.3, text: "Die Sandmutter brüllt!", eingraben: 4, ansagen: [{ name: "Treibsand", sek: 2.5, felder: "ziel", weite: 2, vorlauf: 2, schaden: [12, 18] }, { name: "Sandschlag", alle: 3, felder: "rundum", schaden: [9, 15] }] } ] };
-INSTANZEN.push({ id: "tempel_kammer", name: "Die Kammer der Sandmutter", feld: [11360, 9600, 11391, 9631], schalter: "sandmutter_kammer",
+INSTANZEN.push({ id: "tempel_kammer", name: "Die Kammer der Sandmutter", feld: [11360, 9600, 11391, 9631], schalter: "sandmutter_kammer", danach: "sandmutter_danach",
   gegner: [{ art: "sandmutter", x: 11376.5, y: 9612.5 }], text: "Das Tor mit dem Auge schließt sich. Der Boden der Kammer atmet." });
 
 /* ───────── Phase 8 (#58, E4): der Graue Hauptmann in seiner Gruft (Region hauptmann_gruft, Weltfelder 11200…11231 × 9600…9631) ─────────
@@ -47,7 +47,7 @@ BOSSE.grauer_hauptmann = { typ: "grauer_hauptmann", phasen: [
   { ab: 1, ansagen: [{ name: "Rundumschlag", alle: 4, felder: "rundum", schaden: [8, 14] }] },
   { ab: 0.6, text: "Der Graue Hauptmann ruft seine Wacht!", ruf: { art: "wiedergaenger", n: 2, text: "Steht auf, Wacht!" }, ansagen: [{ name: "Rundumschlag", alle: 3, felder: "rundum", schaden: [8, 14] }] },
   { ab: 0.3, text: "Ein eisiger Sturm fegt durch die Gruft!", ansagen: [{ name: "Grabessturm", sek: 4, felder: "raum", deckung: true, vorlauf: 2, schaden: [12, 20] }] } ] };
-INSTANZEN.push({ id: "hauptmann_gruft", name: "Die Gruft des Grauen Hauptmanns", feld: [11200, 9600, 11231, 9631], schalter: "hauptmann_gruft",
+INSTANZEN.push({ id: "hauptmann_gruft", name: "Die Gruft des Grauen Hauptmanns", feld: [11200, 9600, 11231, 9631], schalter: "hauptmann_gruft", danach: "hauptmann_danach",
   gegner: [{ art: "grauer_hauptmann", x: 11216.5, y: 9619.5 }], text: "Hinter dir schließt sich die Gruft. Am Sarkophag regt sich etwas Graues." });
 
 /* ───────── Phase 6 (#18): Der Oberste Rabenpriester im Thronsaal (doku/konzepte/phase-6.md „Bosskampf“) ─────────
@@ -60,6 +60,6 @@ BOSSE.oberster_rabenpriester = { typ: "oberster_rabenpriester", phasen: [
     ansagen: [{ name: "Sturzraben", sek: 3, felder: "ziel", weite: 1, vorlauf: 2, schaden: [8, 14] }], heilorte: [BECKEN] },
   { ab: 0.3, text: "Schwarze Flügel breiten sich über den Saal!", hiebe: 2,
     ansagen: [{ name: "Schwarzer Flügelschlag", sek: 3, felder: "raum", deckung: true, vorlauf: 2, schaden: [15, 25] }], heilorte: [BECKEN] } ] };
-INSTANZEN.push({ id: "thronsaal", name: "Der Thronsaal", feld: [10752, 9600, 10783, 9631], schalter: "rabenpriester_thronsaal",
+INSTANZEN.push({ id: "thronsaal", name: "Der Thronsaal", feld: [10752, 9600, 10783, 9631], schalter: "rabenpriester_thronsaal", danach: "rabenpriester_danach",
   gegner: [{ art: "oberster_rabenpriester", x: 10768.5, y: 9607.5 }], eintritt: "federsiegel",
   ohne: "Der Altar am Tor bleibt kalt – ohne Federsiegel öffnet sich der Thronsaal nicht.", text: "Das Federsiegel zerfällt zu Asche. Der Thronsaal gehört dir – für diesen Versuch." });
