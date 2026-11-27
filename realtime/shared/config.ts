@@ -323,7 +323,7 @@ Object.assign(MONSTER, {
     angriff: { name: "Sprungbiss", art: "nah", schaden: [1, 6], takt: 2, reich: 1.4, aushol: 0 },
     v2: { staerke: 50, geschick: 35, defense: 25, magie: 5, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 6,
     info: "Ein grauer Wolf der Heide, mager und zäh. Wo einer heult, antworten drei.",
-    drops: [{ wurf: [{ g: "splitter", chance: 80, anzahl: [6, 14] }] }, { wurf: [{ g: "wolfsfell", chance: 50 }] }, { wurf: [{ g: "kuhfleisch", chance: 40 }] }] },
+    drops: [{ wurf: [{ g: "splitter", chance: 80, anzahl: [6, 14] }] }, { wurf: [{ g: "wolfsfell", chance: 50 }] }, { wurf: [{ g: "wolfsfleisch", chance: 40 }] }] },
   /** Rudelführer: Stufe 36, führt das Rudel (E1) */
   rudelfuehrer: { name: "Rudelführer", stufe: 36, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 80, tempo: 4.4, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 35, fern: 30, magie: 25 }, r: 0.5,
     angriff: { name: "Reißen", art: "nah", schaden: [1, 8], takt: 2, reich: 1.5, aushol: 0 },
@@ -449,6 +449,76 @@ Object.assign(MONSTER, {
     v2: { staerke: 75, geschick: 55, defense: 45, magie: 30, staerkeBonus: 20, ticks: 5, abwehr: { nah: 20, fern: 20, magie: 0 } },
     info: "Der Kapitän des Wracks. Er ist mit seinem Schiff untergegangen – und hat es nie verlassen.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [120, 250] }] }, { wurf: [{ g: "fisch_seeaal_roh", chance: 50, anzahl: [2, 4] }] }, { wurf: [{ g: "barren_eisen", chance: 30, anzahl: [3, 6] }] }, { wurf: [{ g: "@selten", chance: 100 / 12 }, { g: "@episch", chance: 100 / 60 }] }] },
+  /* ───── Süden (#126, doku/konzepte/sueden.md): Heckenhof bis Lehmfurt, Stufe 2–30; Beute nach beute.md (nur Fleisch neu) ───── */
+  /** Feldhase: Stufe 3, Heckenhof-Felder, Hasenfleisch für den Hasenbraten (S1) */
+  feldhase: { name: "Feldhase", stufe: 3, bild: "img/echtzeit/bandit.webp", hoehe: 40, lp: 8, tempo: 3.6, angriffswert: { nah: 3, fern: 0, magie: 0 }, abwehr: { nah: 3, fern: 2, magie: 2 }, r: 0.3, aggressiv: false,
+    angriff: { name: "Tritt", art: "nah", schaden: [0, 1], takt: 2.4, reich: 1.2, aushol: 0 },
+    v2: { geschick: 3, staerke: 3, defense: 2, magie: 1, ticks: 4, abwehr: { nah: 0, fern: 0, magie: 0 } },
+    info: "Ein brauner Feldhase. Er duckt sich in die Furche – bis man zu nah kommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 40, anzahl: [1, 2] }] }, { wurf: [{ g: "hasenfleisch", chance: 100 }] }] },
+  /** Krähenschwarm: Stufe 4, stiehlt Saat (S1), fliegt wie der Moorrabe */
+  kraehenschwarm: { name: "Krähenschwarm", stufe: 4, bild: "img/echtzeit/bandit.webp", hoehe: 60, lp: 10, tempo: 4.0, angriffswert: { nah: 4, fern: 0, magie: 0 }, abwehr: { nah: 3, fern: 1, magie: 3 }, r: 0.35,
+    angriff: { name: "Hacken", art: "nah", schaden: [1, 2], takt: 2, reich: 1.3, aushol: 0 },
+    v2: { geschick: 4, staerke: 4, defense: 3, magie: 1, ticks: 4, abwehr: { nah: 0, fern: -5, magie: 0 } }, aggroReich: 4,
+    info: "Ein Dutzend schwarze Krähen, die aufflattern und gleich wieder landen. Auf den Feldern des Heckenhofs bleibt kein Korn liegen.",
+    drops: [{ wurf: [{ g: "splitter", chance: 50, anzahl: [1, 3] }] }, { wurf: [{ g: "federn", chance: 30 }] }] },
+  /** Wildbienen-Schwarm: Stufe 8, greift nur an, wer den Stöcken zu nah kommt */
+  wildbienen_schwarm: { name: "Wildbienen-Schwarm", stufe: 8, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 14, tempo: 3.4, angriffswert: { nah: 9, fern: 0, magie: 0 }, abwehr: { nah: 10, fern: 4, magie: 6 }, r: 0.4,
+    angriff: { name: "Stiche", art: "nah", schaden: [1, 3], takt: 2, reich: 1.3, aushol: 0 },
+    v2: { geschick: 10, staerke: 8, defense: 6, magie: 1, ticks: 4, abwehr: { nah: 10, fern: -5, magie: 0 } }, aggroReich: 2,
+    info: "Eine summende Wolke über der Wiese. Wer die Stöcke in Ruhe lässt, den lassen sie in Ruhe.",
+    drops: [{ wurf: [{ g: "splitter", chance: 60, anzahl: [2, 4] }] }] },
+  /** Schilfkröte: Stufe 12, langsam und zäh – Trainingsgegner wie der Mooshocker (Schilfsee) */
+  schilfkroete: { name: "Schilfkröte", stufe: 12, bild: "img/echtzeit/bandit.webp", hoehe: 55, lp: 45, tempo: 1.4, angriffswert: { nah: 10, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 15, magie: 8 }, r: 0.45, aggressiv: false,
+    angriff: { name: "Kopfstoß", art: "nah", schaden: [1, 2], takt: 3, reich: 1.4, aushol: 0 },
+    v2: { geschick: 8, staerke: 10, defense: 22, magie: 1, angriffBonus: -20, ticks: 6, abwehr: { nah: 15, fern: 10, magie: -5 } },
+    info: "Eine Kröte mit einem Panzer aus Schlick und Schilf. Sie hat keine Eile – und hält viel aus.",
+    drops: [{ wurf: [{ g: "splitter", chance: 70, anzahl: [3, 6] }] }, { wurf: [{ g: "wurm", chance: 25, anzahl: [1, 3] }] }] },
+  /** Fuchs: Stufe 14, Erlengrund-Wald */
+  fuchs: { name: "Fuchs", stufe: 14, bild: "img/echtzeit/bandit.webp", hoehe: 50, lp: 24, tempo: 4.0, angriffswert: { nah: 14, fern: 0, magie: 0 }, abwehr: { nah: 10, fern: 8, magie: 8 }, r: 0.35,
+    angriff: { name: "Biss", art: "nah", schaden: [1, 3], takt: 2, reich: 1.3, aushol: 0 },
+    v2: { geschick: 16, staerke: 14, defense: 10, magie: 1, ticks: 4, abwehr: { nah: 0, fern: 0, magie: 0 } }, aggroReich: 4,
+    info: "Ein roter Fuchs, schlau und schnell. Er beißt lieber zuerst.",
+    drops: [{ wurf: [{ g: "splitter", chance: 75, anzahl: [3, 7] }] }, { wurf: [{ g: "leder_rau", chance: 20 }] }] },
+  /** Wildschwein: Stufe 18, Erlengrund-Wald, Wildschweinfleisch */
+  wildschwein: { name: "Wildschwein", stufe: 18, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 38, tempo: 3.4, angriffswert: { nah: 18, fern: 0, magie: 0 }, abwehr: { nah: 16, fern: 12, magie: 10 }, r: 0.5,
+    angriff: { name: "Hauer", art: "nah", schaden: [1, 4], takt: 2.4, reich: 1.4, aushol: 0 },
+    v2: { staerke: 22, geschick: 16, defense: 16, magie: 1, ticks: 5, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 4,
+    info: "Ein borstiger Keiler mit gelben Hauern. Er bricht durchs Unterholz wie ein Karren.",
+    drops: [{ wurf: [{ g: "splitter", chance: 80, anzahl: [4, 9] }] }, { wurf: [{ g: "wildschweinfleisch", chance: 70 }] }, { wurf: [{ g: "leder_rau", chance: 20 }] }] },
+  /** Wegelagerer mit Knüppel: Stufe 20, Südstraße, flieht */
+  wegelagerer_knueppel: { name: "Wegelagerer", stufe: 20, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 40, tempo: 3.0, angriffswert: { nah: 20, fern: 0, magie: 0 }, abwehr: { nah: 18, fern: 16, magie: 12 }, r: 0.4, fliehen: 0.25,
+    angriff: { name: "Knüppel", art: "nah", schaden: [1, 4], takt: 2.4, reich: 1.5, aushol: 0 },
+    v2: { staerke: 24, geschick: 20, defense: 18, magie: 1, ticks: 5, abwehr: { nah: 5, fern: 0, magie: 0 } },
+    info: "Ein Mann mit einem Knüppel und schlechten Absichten. Wenn es eng wird, ist er schneller weg als gekommen.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [5, 11] }] }, { wurf: [{ g: "brot", chance: 15 }, { g: "kleiner_heiltrank", chance: 8 }] }, { wurf: [{ g: "@selten", chance: 100 / 256 }] }] },
+  /** Wegelagerer mit Schleuder: Stufe 22, Fernkampf, flieht */
+  wegelagerer_schleuder: { name: "Wegelagerer", stufe: 22, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 36, tempo: 3.0, angriffswert: { nah: 6, fern: 22, magie: 0 }, abwehr: { nah: 14, fern: 20, magie: 12 }, r: 0.4, fliehen: 0.25,
+    angriff: { name: "Schleuderstein", art: "fern", schaden: [1, 4], takt: 2.6, reich: 5, aushol: 0 },
+    v2: { fernkampf: 28, geschick: 15, staerke: 10, defense: 16, magie: 1, ticks: 5, abwehr: { nah: 0, fern: 5, magie: 0 } },
+    info: "Er wirft Steine aus dem Gebüsch und rennt, sobald jemand auf ihn zukommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [5, 11] }] }, { wurf: [{ g: "brot", chance: 15 }, { g: "kleiner_heiltrank", chance: 8 }] }, { wurf: [{ g: "@selten:Bogen", chance: 100 / 256 }] }] },
+  /** Steinschlucker: Stufe 26, kleiner Golem, eigene Familie „stein“ (Steinbruch Lehmfurt) */
+  steinschlucker: { name: "Steinschlucker", familie: "stein", stufe: 26, bild: "img/echtzeit/bandit.webp", hoehe: 100, lp: 60, tempo: 1.8, angriffswert: { nah: 26, fern: 0, magie: 0 }, abwehr: { nah: 32, fern: 28, magie: 12 }, r: 0.55,
+    angriff: { name: "Faustschlag", art: "nah", schaden: [1, 5], takt: 3, reich: 1.6, aushol: 0 }, anfaellig: "wucht",
+    v2: { staerke: 32, geschick: 18, defense: 32, magie: 5, ticks: 6, abwehr: { nah: 20, fern: 15, magie: -10 } },
+    info: "Ein Klumpen aus Lehm und Bruchstein, der Erz frisst. Schläge mit Wucht bringen ihn ins Wanken.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [6, 14] }] }, { wurf: [{ g: "erz_kupfer", chance: 15, anzahl: [1, 2] }, { g: "erz_eisen", chance: 12, anzahl: [1, 2] }, { g: "erz_schwarzeisen", chance: 4 }] }, { wurf: [{ g: "@selten", chance: 100 / 200 }] }] },
+  /** Der Graupelz: Stufe 30, Alpha-Wolf (Mini-Gegner, kein Boss), mit zwei Wölfen in der Waldsenke; kommt nur alle 15 Minuten wieder (S8) */
+  graupelz: { name: "Der Graupelz", stufe: 30, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 110, tempo: 4.2, angriffswert: { nah: 32, fern: 0, magie: 0 }, abwehr: { nah: 28, fern: 24, magie: 20 }, r: 0.55, wiederkehr: 900,
+    angriff: { name: "Reißen", art: "nah", schaden: [1, 7], takt: 2.2, reich: 1.5, aushol: 0 },
+    v2: { staerke: 45, geschick: 38, defense: 28, magie: 5, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 6,
+    info: "Ein grauer Wolf, größer als die anderen, mit einer Narbe über dem Auge. Das Rudel folgt ihm.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [40, 80] }] }, { wurf: [{ g: "wolfsfleisch", chance: 100, anzahl: [1, 2] }] }, { wurf: [{ g: "wolfsfell", chance: 100 }] }, { wurf: [{ g: "@selten", chance: 100 / 24 }, { g: "@episch", chance: 100 / 240 }] }] },
+  /* Tiere zur Stimmung (friedlich wie die Kuh): Schafe am Heckenhof, Enten am Schilfsee */
+  schaf: { name: "Schaf", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 50, lp: 8, tempo: 1.4, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.4, aggressiv: false, wiederkehr: 30,
+    angriff: { name: "Stoß", art: "nah", schaden: [0, 1], takt: 3, reich: 1.3, aushol: 0 },
+    v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -60, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } },
+    info: "Ein wolliges Schaf vom Heckenhof. Es kaut und schaut.", drops: [{ wurf: [{ g: "garn", chance: 30, anzahl: [1, 2] }] }] },
+  ente: { name: "Ente", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 30, lp: 4, tempo: 2.0, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.25, aggressiv: false, wiederkehr: 30,
+    angriff: { name: "Schnabel", art: "nah", schaden: [0, 1], takt: 3, reich: 1.2, aushol: 0 },
+    v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -60, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } },
+    info: "Eine Ente vom Schilfsee. Sie watschelt, wohin sie will.", drops: [{ wurf: [{ g: "federn", chance: 30 }] }] },
 } as Record<string, MonsterDef>);
 
 

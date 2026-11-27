@@ -244,6 +244,19 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   strandraeuber_saebel: { datei: "strandraeuber_saebel3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
   strandraeuber_armbrust: { datei: "strandraeuber_armbrust3d", angriff: "schiessen", ersatz: "gegner.bandit.v003" },
   mangrovenlurch: { datei: "mangrovenlurch3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
-  wrackkapitaen: { datei: "wrackkapitaen3d", angriff: "angriff", ersatz: "gegner.bandit.v003" } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
+  wrackkapitaen: { datei: "wrackkapitaen3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  /* Süden (#126/#127, Figuren #121): Gegner und Tiere vom Figuren-Zweig */
+  feldhase: { datei: "feldhase3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  kraehenschwarm: { datei: "kraehe3d", angriff: "sturz", ersatz: "gegner.bandit.v003" },
+  wildbienen_schwarm: { datei: "wildbienen3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  schilfkroete: { datei: "schilfkroete3d", angriff: "kopfstoss", ersatz: "gegner.bandit.v003" },
+  fuchs: { datei: "fuchs3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  wildschwein: { datei: "wildschwein3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  wegelagerer_knueppel: { datei: "wegelagerer_knueppel3d", angriff: "angriff_axt", ersatz: "gegner.bandit.v003" },
+  wegelagerer_schleuder: { datei: "wegelagerer_schleuder3d", angriff: "dolchwurf", ersatz: "gegner.bandit.v003" },
+  steinschlucker: { datei: "steinschlucker3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003" },
+  graupelz: { datei: "graupelz3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  schaf: { datei: "schaf3d", angriff: "treffer", ersatz: "gegner.bandit.v003" },
+  ente: { datei: "ente3d", angriff: "laufen", ersatz: "gegner.bandit.v003" } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }
