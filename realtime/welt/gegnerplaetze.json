@@ -1,5 +1,5 @@
 {
- "hinweis": "Gegnerdichte (#130): Gegnerplätze der ganzen Oberwelt (Weltfelder). Von jedem begehbaren Feld außerhalb der Ausnahmen ist der nächste Platz höchstens ~25 Felder entfernt (vorhandene Lager aus weltzonen.py zählen mit). quelle: vorhanden | vorhanden (Modell in neuer Rolle) | fehlt (Modell nötig). Erzeugt von werkzeug/welt/gegnerplaetze.py.",
+ "hinweis": "Gegnerdichte (#130): Gegnerplätze der ganzen Oberwelt (Weltfelder). Von jedem begehbaren Feld außerhalb der Ausnahmen ist der nächste Platz höchstens ~25 Felder entfernt (vorhandene Lager aus weltzonen.py zählen mit). quelle: vorhanden | vorhanden (Modell in neuer Rolle) | vorhanden (Figuren, noch nicht auf feature) | fehlt (Modell nötig, Entscheidung des Nutzers). Erzeugt von werkzeug/welt/gegnerplaetze.py.",
  "reichweite": 25,
  "vorhandene_lager": 40,
  "plaetze": [
@@ -1917,7 +1917,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_155_123",
@@ -2292,7 +2292,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_155_148",
@@ -2742,7 +2742,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_155_178",
@@ -2772,7 +2772,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_180",
@@ -3057,7 +3057,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_199",
@@ -3132,7 +3132,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_204",
@@ -3162,7 +3162,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_206",
@@ -3192,7 +3192,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_208",
@@ -3207,7 +3207,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_209",
@@ -3267,7 +3267,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_213",
@@ -3282,7 +3282,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_214",
@@ -3297,7 +3297,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_215",
@@ -3507,7 +3507,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_229",
@@ -3582,7 +3582,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_234",
@@ -3642,7 +3642,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_238",
@@ -3687,7 +3687,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_241",
@@ -3762,7 +3762,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_246",
@@ -3792,7 +3792,7 @@
    "anzahl": 3,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_248",
@@ -4032,7 +4032,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_264",
@@ -4107,7 +4107,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_269",
@@ -4137,7 +4137,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_271",
@@ -4167,7 +4167,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_273",
@@ -4182,7 +4182,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_274",
@@ -4212,7 +4212,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_276",
@@ -4242,7 +4242,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_278",
@@ -4272,7 +4272,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_280",
@@ -4482,7 +4482,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_294",
@@ -4557,7 +4557,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_299",
@@ -4587,7 +4587,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_301",
@@ -4617,7 +4617,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_303",
@@ -4692,7 +4692,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_308",
@@ -4737,7 +4737,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_311",
@@ -4767,7 +4767,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_313",
@@ -4782,7 +4782,7 @@
    "anzahl": 3,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_314",
@@ -4797,7 +4797,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_315",
@@ -4932,7 +4932,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_324",
@@ -5007,7 +5007,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_329",
@@ -5037,7 +5037,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_331",
@@ -5067,7 +5067,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_333",
@@ -5112,7 +5112,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_336",
@@ -5142,7 +5142,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_338",
@@ -5187,7 +5187,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_341",
@@ -5217,7 +5217,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_343",
@@ -5247,7 +5247,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_345",
@@ -5292,7 +5292,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_348",
@@ -5457,7 +5457,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_359",
@@ -5487,7 +5487,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_361",
@@ -5517,7 +5517,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_363",
@@ -5562,7 +5562,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_366",
@@ -5592,7 +5592,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_368",
@@ -5637,7 +5637,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_371",
@@ -5667,7 +5667,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_373",
@@ -5712,7 +5712,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_376",
@@ -5742,7 +5742,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_378",
@@ -5757,7 +5757,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_379",
@@ -5772,7 +5772,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_380",
@@ -5907,7 +5907,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_389",
@@ -5937,7 +5937,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_391",
@@ -6012,7 +6012,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_396",
@@ -6042,7 +6042,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_398",
@@ -6087,7 +6087,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_401",
@@ -6117,7 +6117,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_403",
@@ -6162,7 +6162,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_406",
@@ -6192,7 +6192,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_408",
@@ -6222,7 +6222,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_410",
@@ -6237,7 +6237,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_411",
@@ -6252,7 +6252,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_412",
@@ -6267,7 +6267,7 @@
    "anzahl": 2,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_413",
@@ -6432,7 +6432,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_424",
@@ -6462,7 +6462,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_426",
@@ -6492,7 +6492,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_428",
@@ -6537,7 +6537,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_431",
@@ -6567,7 +6567,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_433",
@@ -6612,7 +6612,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_436",
@@ -6642,7 +6642,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_438",
@@ -6687,7 +6687,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_441",
@@ -6717,7 +6717,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_443",
@@ -6792,7 +6792,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_448",
@@ -6807,7 +6807,7 @@
    "anzahl": 2,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_449",
@@ -6822,7 +6822,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_450",
@@ -6867,7 +6867,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_453",
@@ -6882,7 +6882,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_454",
@@ -6897,7 +6897,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_455",
@@ -7107,7 +7107,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_469",
@@ -7137,7 +7137,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_471",
@@ -7167,7 +7167,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_473",
@@ -7212,7 +7212,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_476",
@@ -7242,7 +7242,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_478",
@@ -7287,7 +7287,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_481",
@@ -7317,7 +7317,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_483",
@@ -7362,7 +7362,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_486",
@@ -7392,7 +7392,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_488",
@@ -7437,7 +7437,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_491",
@@ -7467,7 +7467,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_493",
@@ -7482,7 +7482,7 @@
    "anzahl": 3,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_494",
@@ -7497,7 +7497,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_495",
@@ -7512,7 +7512,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_496",
@@ -7542,7 +7542,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_498",
@@ -7557,7 +7557,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_499",
@@ -7617,7 +7617,7 @@
    "anzahl": 2,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_503",
@@ -7782,7 +7782,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_514",
@@ -7812,7 +7812,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_516",
@@ -7842,7 +7842,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_518",
@@ -7887,7 +7887,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_521",
@@ -7917,7 +7917,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_523",
@@ -7962,7 +7962,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_526",
@@ -7992,7 +7992,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_528",
@@ -8037,7 +8037,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_531",
@@ -8067,7 +8067,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_533",
@@ -8112,7 +8112,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_536",
@@ -8157,7 +8157,7 @@
    "anzahl": 2,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_539",
@@ -8172,7 +8172,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_540",
@@ -8187,7 +8187,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_541",
@@ -8217,7 +8217,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_543",
@@ -8232,7 +8232,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_544",
@@ -8247,7 +8247,7 @@
    "anzahl": 2,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_545",
@@ -8292,7 +8292,7 @@
    "anzahl": 3,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_548",
@@ -8307,7 +8307,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_549",
@@ -8487,7 +8487,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_561",
@@ -8517,7 +8517,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_563",
@@ -8562,7 +8562,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_566",
@@ -8592,7 +8592,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_568",
@@ -8637,7 +8637,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_571",
@@ -8667,7 +8667,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_573",
@@ -8712,7 +8712,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_576",
@@ -8742,7 +8742,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_578",
@@ -8787,7 +8787,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_581",
@@ -8817,7 +8817,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_583",
@@ -8847,7 +8847,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_169_585",
@@ -8892,7 +8892,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_588",
@@ -8907,7 +8907,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_589",
@@ -8967,7 +8967,7 @@
    "anzahl": 2,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_593",
@@ -8982,7 +8982,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_594",
@@ -9042,7 +9042,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_598",
@@ -9237,7 +9237,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_611",
@@ -9267,7 +9267,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_613",
@@ -9312,7 +9312,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_616",
@@ -9342,7 +9342,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_618",
@@ -9387,7 +9387,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_621",
@@ -9417,7 +9417,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_623",
@@ -9462,7 +9462,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_626",
@@ -9492,7 +9492,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_628",
@@ -9537,7 +9537,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_631",
@@ -9567,7 +9567,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_169_633",
@@ -9582,7 +9582,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_169_634",
@@ -9597,7 +9597,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_169_635",
@@ -9642,7 +9642,7 @@
    "anzahl": 3,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_638",
@@ -9657,7 +9657,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_639",
@@ -9717,7 +9717,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_643",
@@ -9732,7 +9732,7 @@
    "anzahl": 3,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_644",
@@ -9942,7 +9942,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_658",
@@ -9987,7 +9987,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_661",
@@ -10017,7 +10017,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_663",
@@ -10062,7 +10062,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_666",
@@ -10092,7 +10092,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_668",
@@ -10137,7 +10137,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_671",
@@ -10167,7 +10167,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_673",
@@ -10212,7 +10212,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_676",
@@ -10242,7 +10242,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_169_678",
@@ -10302,7 +10302,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_169_682",
@@ -10317,7 +10317,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_169_683",
@@ -10332,7 +10332,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_169_684",
@@ -10407,7 +10407,7 @@
    "anzahl": 2,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_689",
@@ -10467,7 +10467,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_693",
@@ -10482,7 +10482,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_694",
@@ -10557,7 +10557,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_699",
@@ -10617,7 +10617,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_703",
@@ -10632,7 +10632,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_704",
@@ -10647,7 +10647,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_705",
@@ -10677,7 +10677,7 @@
    "anzahl": 2,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_707",
@@ -10737,7 +10737,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_711",
@@ -10767,7 +10767,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_713",
@@ -10812,7 +10812,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_716",
@@ -10842,7 +10842,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_718",
@@ -10887,7 +10887,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_721",
@@ -10917,7 +10917,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_723",
@@ -10962,7 +10962,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_726",
@@ -10992,7 +10992,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_728",
@@ -11022,7 +11022,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_730",
@@ -11052,7 +11052,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_732",
@@ -11067,7 +11067,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_733",
@@ -11142,7 +11142,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_738",
@@ -11157,7 +11157,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_739",
@@ -11232,7 +11232,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_744",
@@ -11307,7 +11307,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_749",
@@ -11367,7 +11367,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_753",
@@ -11382,7 +11382,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_754",
@@ -11397,7 +11397,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_755",
@@ -11442,7 +11442,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_758",
@@ -11487,7 +11487,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_761",
@@ -11517,7 +11517,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_763",
@@ -11562,7 +11562,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_766",
@@ -11592,7 +11592,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_768",
@@ -11637,7 +11637,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_771",
@@ -11667,7 +11667,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_773",
@@ -11742,7 +11742,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_778",
@@ -11757,7 +11757,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_779",
@@ -11787,7 +11787,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_781",
@@ -11817,7 +11817,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_783",
@@ -11832,7 +11832,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_784",
@@ -11892,7 +11892,7 @@
    "anzahl": 3,
    "stufe": 32,
    "gelaende": "heide",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_788",
@@ -11907,7 +11907,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_789",
@@ -11982,7 +11982,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_794",
@@ -12057,7 +12057,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_799",
@@ -12072,7 +12072,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_800",
@@ -12117,7 +12117,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_803",
@@ -12162,7 +12162,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_806",
@@ -12192,7 +12192,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_808",
@@ -12237,7 +12237,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_811",
@@ -12267,7 +12267,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_813",
@@ -12312,7 +12312,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_816",
@@ -12342,7 +12342,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_818",
@@ -12417,7 +12417,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_823",
@@ -12492,7 +12492,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_828",
@@ -12507,7 +12507,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_829",
@@ -12537,7 +12537,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_831",
@@ -12552,7 +12552,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_832",
@@ -12582,7 +12582,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_834",
@@ -12612,7 +12612,7 @@
    "anzahl": 3,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_836",
@@ -12627,7 +12627,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_837",
@@ -12657,7 +12657,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_839",
@@ -12672,7 +12672,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_840",
@@ -12687,7 +12687,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_841",
@@ -12702,7 +12702,7 @@
    "anzahl": 3,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_842",
@@ -12732,7 +12732,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_844",
@@ -12792,7 +12792,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_848",
@@ -12837,7 +12837,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_851",
@@ -12867,7 +12867,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_853",
@@ -12912,7 +12912,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_856",
@@ -12942,7 +12942,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_858",
@@ -12987,7 +12987,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_861",
@@ -13017,7 +13017,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_863",
@@ -13062,7 +13062,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_866",
@@ -13122,7 +13122,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_870",
@@ -13137,7 +13137,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_871",
@@ -13152,7 +13152,7 @@
    "anzahl": 3,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_872",
@@ -13182,7 +13182,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_874",
@@ -13212,7 +13212,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_876",
@@ -13227,7 +13227,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_877",
@@ -13257,7 +13257,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_879",
@@ -13332,7 +13332,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_884",
@@ -13377,7 +13377,7 @@
    "anzahl": 2,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_887",
@@ -13392,7 +13392,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_888",
@@ -13437,7 +13437,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_891",
@@ -13467,7 +13467,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_893",
@@ -13482,7 +13482,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_894",
@@ -13512,7 +13512,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_896",
@@ -13542,7 +13542,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_898",
@@ -13587,7 +13587,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_901",
@@ -13617,7 +13617,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_903",
@@ -13677,7 +13677,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_907",
@@ -13752,7 +13752,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_912",
@@ -13782,7 +13782,7 @@
    "anzahl": 3,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_914",
@@ -13812,7 +13812,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_916",
@@ -13827,7 +13827,7 @@
    "anzahl": 2,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_917",
@@ -13857,7 +13857,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_919",
@@ -13887,7 +13887,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_921",
@@ -13902,7 +13902,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_922",
@@ -13932,7 +13932,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_924",
@@ -13962,7 +13962,7 @@
    "anzahl": 3,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_926",
@@ -13977,7 +13977,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_927",
@@ -14007,7 +14007,7 @@
    "anzahl": 2,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_929",
@@ -14037,7 +14037,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_931",
@@ -14112,7 +14112,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_936",
@@ -14142,7 +14142,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_938",
@@ -14187,7 +14187,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_941",
@@ -14217,7 +14217,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_943",
@@ -14262,7 +14262,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_946",
@@ -14292,7 +14292,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_948",
@@ -14427,7 +14427,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_957",
@@ -14457,7 +14457,7 @@
    "anzahl": 2,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_959",
@@ -14502,7 +14502,7 @@
    "anzahl": 3,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_962",
@@ -14532,7 +14532,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_964",
@@ -14562,7 +14562,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_966",
@@ -14607,7 +14607,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_969",
@@ -14682,7 +14682,7 @@
    "anzahl": 3,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_974",
@@ -14697,7 +14697,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_975",
@@ -14787,7 +14787,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_981",
@@ -14817,7 +14817,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_983",
@@ -14862,7 +14862,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_986",
@@ -14892,7 +14892,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_988",
@@ -14922,7 +14922,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_990",
@@ -15012,7 +15012,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_996",
@@ -15042,7 +15042,7 @@
    "anzahl": 3,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_998",
@@ -15057,7 +15057,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_999",
@@ -15087,7 +15087,7 @@
    "anzahl": 2,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1001",
@@ -15102,7 +15102,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1002",
@@ -15132,7 +15132,7 @@
    "anzahl": 3,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1004",
@@ -15162,7 +15162,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1006",
@@ -15177,7 +15177,7 @@
    "anzahl": 2,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1007",
@@ -15207,7 +15207,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1009",
@@ -15222,7 +15222,7 @@
    "anzahl": 3,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1010",
@@ -15282,7 +15282,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1014",
@@ -15342,7 +15342,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1018",
@@ -15417,7 +15417,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1023",
@@ -15462,7 +15462,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1026",
@@ -15492,7 +15492,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_1028",
@@ -15537,7 +15537,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_1031",
@@ -15567,7 +15567,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_1033",
@@ -15642,7 +15642,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_1038",
@@ -15657,7 +15657,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_1039",
@@ -15702,7 +15702,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1042",
@@ -15732,7 +15732,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1044",
@@ -15807,7 +15807,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1049",
@@ -15882,7 +15882,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1054",
@@ -15957,7 +15957,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1059",
@@ -16017,7 +16017,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1063",
@@ -16047,7 +16047,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1065",
@@ -16062,7 +16062,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1066",
@@ -16092,7 +16092,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1068",
@@ -16167,7 +16167,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_1073",
@@ -16197,7 +16197,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_1075",
@@ -16287,7 +16287,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_1081",
@@ -16302,7 +16302,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_1082",
@@ -16347,7 +16347,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1085",
@@ -16362,7 +16362,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1086",
@@ -16377,7 +16377,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1087",
@@ -16407,7 +16407,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1089",
@@ -16482,7 +16482,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1094",
@@ -16557,7 +16557,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1099",
@@ -16587,7 +16587,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1101",
@@ -16602,7 +16602,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1102",
@@ -16632,7 +16632,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1104",
@@ -16647,7 +16647,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1105",
@@ -16692,7 +16692,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1108",
@@ -16722,7 +16722,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1110",
@@ -16767,7 +16767,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1113",
@@ -16797,7 +16797,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_1115",
@@ -16842,7 +16842,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_183_1118",
@@ -16962,7 +16962,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_1126",
@@ -16977,7 +16977,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_1127",
@@ -17007,7 +17007,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1129",
@@ -17082,7 +17082,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1134",
@@ -17157,7 +17157,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1139",
@@ -17232,7 +17232,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1144",
@@ -17262,7 +17262,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1146",
@@ -17292,7 +17292,7 @@
    "anzahl": 3,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1148",
@@ -17322,7 +17322,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1150",
@@ -17367,7 +17367,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1153",
@@ -17397,7 +17397,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1155",
@@ -17502,7 +17502,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_1162",
@@ -17532,7 +17532,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1164",
@@ -17607,7 +17607,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1169",
@@ -17682,7 +17682,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1174",
@@ -17727,7 +17727,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1177",
@@ -17757,7 +17757,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1179",
@@ -17772,7 +17772,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1180",
@@ -17817,7 +17817,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1183",
@@ -17877,7 +17877,7 @@
    "anzahl": 2,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1187",
@@ -17907,7 +17907,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1189",
@@ -17982,7 +17982,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1194",
@@ -18057,7 +18057,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1199",
@@ -18087,7 +18087,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1201",
@@ -18102,7 +18102,7 @@
    "anzahl": 3,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1202",
@@ -18117,7 +18117,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_1203",
@@ -18147,7 +18147,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_1205",
@@ -18222,7 +18222,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1210",
@@ -18267,7 +18267,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1213",
@@ -18282,7 +18282,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_1214",
@@ -18357,7 +18357,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1219",
@@ -18432,7 +18432,7 @@
    "anzahl": 1,
    "stufe": 32,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_1224",
@@ -18642,7 +18642,7 @@
    "anzahl": 3,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordwald_1238",
@@ -18657,7 +18657,7 @@
    "anzahl": 1,
    "stufe": 14,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordsaum_1239",
@@ -18717,7 +18717,7 @@
    "anzahl": 1,
    "stufe": 14,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordsaum_1243",
@@ -18732,7 +18732,7 @@
    "anzahl": 3,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordsaum_1244",
@@ -18792,7 +18792,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordsaum_1248",
@@ -18807,7 +18807,7 @@
    "anzahl": 1,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_212_198_1249",
@@ -18837,7 +18837,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_212_198_1251",
@@ -18852,7 +18852,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1252",
@@ -18867,7 +18867,7 @@
    "anzahl": 2,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1253",
@@ -18882,7 +18882,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1254",
@@ -18897,7 +18897,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1255",
@@ -18927,7 +18927,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1257",
@@ -18942,7 +18942,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1258",
@@ -19017,7 +19017,7 @@
    "anzahl": 1,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordwald_1263",
@@ -19092,7 +19092,7 @@
    "anzahl": 3,
    "stufe": 14,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordsaum_1268",
@@ -19107,7 +19107,7 @@
    "anzahl": 1,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordsaum_1269",
@@ -19167,7 +19167,7 @@
    "anzahl": 1,
    "stufe": 14,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordsaum_1273",
@@ -19182,7 +19182,7 @@
    "anzahl": 3,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordsaum_1274",
@@ -19227,7 +19227,7 @@
    "anzahl": 2,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_212_198_1277",
@@ -19242,7 +19242,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1278",
@@ -19257,7 +19257,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1279",
@@ -19272,7 +19272,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1280",
@@ -19287,7 +19287,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1281",
@@ -19392,7 +19392,7 @@
    "anzahl": 1,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordwald_1288",
@@ -19407,7 +19407,7 @@
    "anzahl": 2,
    "stufe": 14,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldmark_1289",
@@ -19467,7 +19467,7 @@
    "anzahl": 1,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_osthang_1293",
@@ -19542,7 +19542,7 @@
    "anzahl": 3,
    "stufe": 14,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1298",
@@ -19557,7 +19557,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1299",
@@ -19572,7 +19572,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1300",
@@ -19587,7 +19587,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1301",
@@ -19602,7 +19602,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1302",
@@ -19617,7 +19617,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1303",
@@ -19632,7 +19632,7 @@
    "anzahl": 3,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1304",
@@ -19647,7 +19647,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1305",
@@ -19692,7 +19692,7 @@
    "anzahl": 1,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_westried_1308",
@@ -19767,7 +19767,7 @@
    "anzahl": 2,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_osthof_1313",
@@ -19782,7 +19782,7 @@
    "anzahl": 1,
    "stufe": 3,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_osthof_1314",
@@ -19842,7 +19842,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_graufurt_1318",
@@ -19872,7 +19872,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1320",
@@ -19887,7 +19887,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1321",
@@ -19902,7 +19902,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1322",
@@ -19932,7 +19932,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1324",
@@ -19947,7 +19947,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1325",
@@ -19962,7 +19962,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1326",
@@ -19992,7 +19992,7 @@
    "anzahl": 3,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_westried_1328",
@@ -20082,7 +20082,7 @@
    "anzahl": 3,
    "stufe": 3,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldweg_1334",
@@ -20262,7 +20262,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1346",
@@ -20277,7 +20277,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1347",
@@ -20307,7 +20307,7 @@
    "anzahl": 2,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1349",
@@ -20322,7 +20322,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1350",
@@ -20352,7 +20352,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1352",
@@ -20382,7 +20382,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1354",
@@ -20397,7 +20397,7 @@
    "anzahl": 2,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1355",
@@ -20412,7 +20412,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1356",
@@ -20442,7 +20442,7 @@
    "anzahl": 3,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_westried_1358",
@@ -20517,7 +20517,7 @@
    "anzahl": 1,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldweg_1363",
@@ -20532,7 +20532,7 @@
    "anzahl": 3,
    "stufe": 3,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldweg_1364",
@@ -20607,7 +20607,7 @@
    "anzahl": 1,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_osthang_1369",
@@ -20667,7 +20667,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1373",
@@ -20682,7 +20682,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1374",
@@ -20697,7 +20697,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1375",
@@ -20727,7 +20727,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1377",
@@ -20757,7 +20757,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1379",
@@ -20772,7 +20772,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1380",
@@ -20832,7 +20832,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1384",
@@ -20847,7 +20847,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1385",
@@ -20877,7 +20877,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1387",
@@ -20922,7 +20922,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1390",
@@ -20937,7 +20937,7 @@
    "anzahl": 2,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1391",
@@ -20952,7 +20952,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1392",
@@ -21042,7 +21042,7 @@
    "anzahl": 1,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldweg_1398",
@@ -21192,7 +21192,7 @@
    "anzahl": 1,
    "stufe": 14,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1408",
@@ -21237,7 +21237,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1411",
@@ -21252,7 +21252,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1412",
@@ -21282,7 +21282,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1414",
@@ -21342,7 +21342,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1418",
@@ -21357,7 +21357,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1419",
@@ -21417,7 +21417,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1423",
@@ -21432,7 +21432,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1424",
@@ -21447,7 +21447,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1425",
@@ -21462,7 +21462,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1426",
@@ -21492,7 +21492,7 @@
    "anzahl": 1,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_westried_1428",
@@ -21642,7 +21642,7 @@
    "anzahl": 1,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_osthang_1438",
@@ -21657,7 +21657,7 @@
    "anzahl": 2,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_osthang_1439",
@@ -21717,7 +21717,7 @@
    "anzahl": 1,
    "stufe": 14,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1443",
@@ -21762,7 +21762,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1446",
@@ -21807,7 +21807,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1449",
@@ -21867,7 +21867,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1453",
@@ -21882,7 +21882,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1454",
@@ -21942,7 +21942,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1458",
@@ -21957,7 +21957,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1459",
@@ -21987,7 +21987,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1461",
@@ -22002,7 +22002,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1462",
@@ -22092,7 +22092,7 @@
    "anzahl": 1,
    "stufe": 12,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_westmark_1468",
@@ -22107,7 +22107,7 @@
    "anzahl": 2,
    "stufe": 14,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldweg_1469",
@@ -22317,7 +22317,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1483",
@@ -22392,7 +22392,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1488",
@@ -22407,7 +22407,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1489",
@@ -22467,7 +22467,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1493",
@@ -22482,7 +22482,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1494",
@@ -22527,7 +22527,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1497",
@@ -22542,7 +22542,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1498",
@@ -22557,7 +22557,7 @@
    "anzahl": 2,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1499",
@@ -22572,7 +22572,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_aschenwerth_1500",
@@ -22617,7 +22617,7 @@
    "anzahl": 1,
    "stufe": 12,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldweg_1503",
@@ -22707,7 +22707,7 @@
    "anzahl": 1,
    "stufe": 3,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_osthang_1509",
@@ -22812,7 +22812,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1516",
@@ -22872,7 +22872,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1520",
@@ -22917,7 +22917,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1523",
@@ -22932,7 +22932,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1524",
@@ -23052,7 +23052,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1532",
@@ -23082,7 +23082,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1534",
@@ -23097,7 +23097,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1535",
@@ -23112,7 +23112,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1536",
@@ -23127,7 +23127,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_aschenwerth_1537",
@@ -23142,7 +23142,7 @@
    "anzahl": 3,
    "stufe": 12,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_rabenmoor_1538",
@@ -23217,7 +23217,7 @@
    "anzahl": 1,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_weidenhain_1543",
@@ -23232,7 +23232,7 @@
    "anzahl": 3,
    "stufe": 3,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_obstwiesen_1544",
@@ -23322,7 +23322,7 @@
    "anzahl": 3,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_graufurt_1550",
@@ -23442,7 +23442,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1558",
@@ -23457,7 +23457,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1559",
@@ -23517,7 +23517,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1563",
@@ -23532,7 +23532,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1564",
@@ -23607,7 +23607,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1569",
@@ -23622,7 +23622,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1570",
@@ -23667,7 +23667,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1573",
@@ -23682,7 +23682,7 @@
    "anzahl": 3,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1574",
@@ -23697,7 +23697,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1575",
@@ -23712,7 +23712,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_aschenwerth_1576",
@@ -23742,7 +23742,7 @@
    "anzahl": 1,
    "stufe": 12,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_rabenmoor_1578",
@@ -23817,7 +23817,7 @@
    "anzahl": 2,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_osthang_1583",
@@ -23832,7 +23832,7 @@
    "anzahl": 1,
    "stufe": 18,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_osthang_1584",
@@ -23892,7 +23892,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1588",
@@ -23922,7 +23922,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_ostufer_1590",
@@ -23937,7 +23937,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1591",
@@ -24012,7 +24012,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1596",
@@ -24042,7 +24042,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1598",
@@ -24057,7 +24057,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1599",
@@ -24117,7 +24117,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1603",
@@ -24132,7 +24132,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1604",
@@ -24147,7 +24147,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1605",
@@ -24177,7 +24177,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1607",
@@ -24222,7 +24222,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1610",
@@ -24252,7 +24252,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_198_1612",
@@ -24342,7 +24342,7 @@
    "anzahl": 1,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_weidenhain_1618",
@@ -24357,7 +24357,7 @@
    "anzahl": 2,
    "stufe": 3,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_obstwiesen_1619",
@@ -24417,7 +24417,7 @@
    "anzahl": 1,
    "stufe": 14,
    "gelaende": "wald",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_graufurt_1623",
@@ -24522,7 +24522,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1630",
@@ -24552,7 +24552,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1632",
@@ -24567,7 +24567,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1633",
@@ -24582,7 +24582,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1634",
@@ -24612,7 +24612,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1636",
@@ -24642,7 +24642,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1638",
@@ -24657,7 +24657,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_1639",
@@ -24702,7 +24702,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1642",
@@ -24747,7 +24747,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_1645",
@@ -24777,7 +24777,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_198_1647",
@@ -24807,7 +24807,7 @@
    "anzahl": 2,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1649",
@@ -24822,7 +24822,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1650",
@@ -25062,7 +25062,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1666",
@@ -25092,7 +25092,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1668",
@@ -25107,7 +25107,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1669",
@@ -25167,7 +25167,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1673",
@@ -25182,7 +25182,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1674",
@@ -25212,7 +25212,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1676",
@@ -25242,7 +25242,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1678",
@@ -25257,7 +25257,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1679",
@@ -25317,7 +25317,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1683",
@@ -25362,7 +25362,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_211_1686",
@@ -25392,7 +25392,7 @@
    "anzahl": 3,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1688",
@@ -25407,7 +25407,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1689",
@@ -25602,7 +25602,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1702",
@@ -25707,7 +25707,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1709",
@@ -25782,7 +25782,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1714",
@@ -25842,7 +25842,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1718",
@@ -25857,7 +25857,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1719",
@@ -25917,7 +25917,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1723",
@@ -25992,7 +25992,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1728",
@@ -26007,7 +26007,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1729",
@@ -26202,7 +26202,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1742",
@@ -26292,7 +26292,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1748",
@@ -26367,7 +26367,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1753",
@@ -26382,7 +26382,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1754",
@@ -26442,7 +26442,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1758",
@@ -26457,7 +26457,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1759",
@@ -26517,7 +26517,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1763",
@@ -26547,7 +26547,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1765",
@@ -26592,7 +26592,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1768",
@@ -26637,7 +26637,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1771",
@@ -26667,7 +26667,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1773",
@@ -26682,7 +26682,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1774",
@@ -26847,7 +26847,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1785",
@@ -26862,7 +26862,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1786",
@@ -26877,7 +26877,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1787",
@@ -26907,7 +26907,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1789",
@@ -26967,7 +26967,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1793",
@@ -26982,7 +26982,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1794",
@@ -27042,7 +27042,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1798",
@@ -27057,7 +27057,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1799",
@@ -27117,7 +27117,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1803",
@@ -27132,7 +27132,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1804",
@@ -27192,7 +27192,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1808",
@@ -27207,7 +27207,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1809",
@@ -27267,7 +27267,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1813",
@@ -27312,7 +27312,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1816",
@@ -27342,7 +27342,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1818",
@@ -27357,7 +27357,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1819",
@@ -27372,7 +27372,7 @@
    "anzahl": 3,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1820",
@@ -27507,7 +27507,7 @@
    "anzahl": 2,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1829",
@@ -27522,7 +27522,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1830",
@@ -27552,7 +27552,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1832",
@@ -27567,7 +27567,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1833",
@@ -27582,7 +27582,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1834",
@@ -27642,7 +27642,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1838",
@@ -27657,7 +27657,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1839",
@@ -27672,7 +27672,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1840",
@@ -27687,7 +27687,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1841",
@@ -27702,7 +27702,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1842",
@@ -27717,7 +27717,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1843",
@@ -27732,7 +27732,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1844",
@@ -27792,7 +27792,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1848",
@@ -27807,7 +27807,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1849",
@@ -27867,7 +27867,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1853",
@@ -27897,7 +27897,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1855",
@@ -27942,7 +27942,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1858",
@@ -27972,7 +27972,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1860",
@@ -28122,7 +28122,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1870",
@@ -28152,7 +28152,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1872",
@@ -28197,7 +28197,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1875",
@@ -28242,7 +28242,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1878",
@@ -28257,7 +28257,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1879",
@@ -28347,7 +28347,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1885",
@@ -28392,7 +28392,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1888",
@@ -28407,7 +28407,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1889",
@@ -28467,7 +28467,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1893",
@@ -28497,7 +28497,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1895",
@@ -28542,7 +28542,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1898",
@@ -28572,7 +28572,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1900",
@@ -28722,7 +28722,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1910",
@@ -28752,7 +28752,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1912",
@@ -28782,7 +28782,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1914",
@@ -28842,7 +28842,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1918",
@@ -28857,7 +28857,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1919",
@@ -28917,7 +28917,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1923",
@@ -28947,7 +28947,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1925",
@@ -28992,7 +28992,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1928",
@@ -29007,7 +29007,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1929",
@@ -29067,7 +29067,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1933",
@@ -29097,7 +29097,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1935",
@@ -29142,7 +29142,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1938",
@@ -29172,7 +29172,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1940",
@@ -29217,7 +29217,7 @@
    "anzahl": 2,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1943",
@@ -29307,7 +29307,7 @@
    "anzahl": 2,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1949",
@@ -29322,7 +29322,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1950",
@@ -29352,7 +29352,7 @@
    "anzahl": 3,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1952",
@@ -29442,7 +29442,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1958",
@@ -29457,7 +29457,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1959",
@@ -29517,7 +29517,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1963",
@@ -29532,7 +29532,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1964",
@@ -29577,7 +29577,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1967",
@@ -29667,7 +29667,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1973",
@@ -29712,7 +29712,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1976",
@@ -29727,7 +29727,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1977",
@@ -29742,7 +29742,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_1978",
@@ -29772,7 +29772,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_1980",
@@ -29922,7 +29922,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1990",
@@ -29952,7 +29952,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1992",
@@ -30042,7 +30042,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_1998",
@@ -30057,7 +30057,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_1999",
@@ -30117,7 +30117,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2003",
@@ -30132,7 +30132,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2004",
@@ -30192,7 +30192,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2008",
@@ -30267,7 +30267,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2013",
@@ -30282,7 +30282,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2014",
@@ -30312,7 +30312,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2016",
@@ -30342,7 +30342,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_2018",
@@ -30357,7 +30357,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_2019",
@@ -30372,7 +30372,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_2020",
@@ -30522,7 +30522,7 @@
    "anzahl": 3,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2030",
@@ -30552,7 +30552,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2032",
@@ -30582,7 +30582,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2034",
@@ -30627,7 +30627,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2037",
@@ -30642,7 +30642,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2038",
@@ -30672,7 +30672,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2040",
@@ -30717,7 +30717,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2043",
@@ -30732,7 +30732,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2044",
@@ -30792,7 +30792,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2048",
@@ -30807,7 +30807,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2049",
@@ -30882,7 +30882,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2054",
@@ -30942,7 +30942,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_2058",
@@ -30957,7 +30957,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_2059",
@@ -31047,7 +31047,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2065",
@@ -31077,7 +31077,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2067",
@@ -31242,7 +31242,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2078",
@@ -31257,7 +31257,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2079",
@@ -31317,7 +31317,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2083",
@@ -31332,7 +31332,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2084",
@@ -31362,7 +31362,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2086",
@@ -31392,7 +31392,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2088",
@@ -31407,7 +31407,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2089",
@@ -31467,7 +31467,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2093",
@@ -31482,7 +31482,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2094",
@@ -31497,7 +31497,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_2095",
@@ -31602,7 +31602,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2102",
@@ -31767,7 +31767,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2113",
@@ -31782,7 +31782,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2114",
@@ -31842,7 +31842,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2118",
@@ -31857,7 +31857,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2119",
@@ -31917,7 +31917,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2123",
@@ -31932,7 +31932,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2124",
@@ -31992,7 +31992,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2128",
@@ -32007,7 +32007,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_2129",
@@ -32022,7 +32022,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_2130",
@@ -32112,7 +32112,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2136",
@@ -32127,7 +32127,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2137",
@@ -32247,7 +32247,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_2145",
@@ -32292,7 +32292,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2148",
@@ -32307,7 +32307,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2149",
@@ -32367,7 +32367,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2153",
@@ -32382,7 +32382,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2154",
@@ -32442,7 +32442,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_2158",
@@ -32457,7 +32457,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2159",
@@ -32517,7 +32517,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2163",
@@ -32532,7 +32532,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_2164",
@@ -32547,7 +32547,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_2165",
@@ -32652,7 +32652,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2172",
@@ -32817,7 +32817,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2183",
@@ -32832,7 +32832,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2184",
@@ -32892,7 +32892,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2188",
@@ -32907,7 +32907,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2189",
@@ -32967,7 +32967,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2193",
@@ -32982,7 +32982,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2194",
@@ -33042,7 +33042,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2198",
@@ -33057,7 +33057,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2199",
@@ -33177,7 +33177,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2207",
@@ -33222,7 +33222,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2210",
@@ -33267,7 +33267,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2213",
@@ -33282,7 +33282,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2214",
@@ -33342,7 +33342,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2218",
@@ -33357,7 +33357,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2219",
@@ -33417,7 +33417,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2223",
@@ -33432,7 +33432,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2224",
@@ -33492,7 +33492,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2228",
@@ -33507,7 +33507,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2229",
@@ -33567,7 +33567,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2233",
@@ -33582,7 +33582,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2234",
@@ -33597,7 +33597,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_2235",
@@ -33642,7 +33642,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2238",
@@ -33672,7 +33672,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2240",
@@ -33702,7 +33702,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2242",
@@ -33732,7 +33732,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2244",
@@ -33792,7 +33792,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2248",
@@ -33807,7 +33807,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2249",
@@ -33867,7 +33867,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2253",
@@ -33882,7 +33882,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2254",
@@ -33942,7 +33942,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2258",
@@ -33957,7 +33957,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2259",
@@ -34017,7 +34017,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2263",
@@ -34032,7 +34032,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2264",
@@ -34092,7 +34092,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2268",
@@ -34107,7 +34107,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2269",
@@ -34122,7 +34122,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_2270",
@@ -34197,7 +34197,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2275",
@@ -34227,7 +34227,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2277",
@@ -34242,7 +34242,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2278",
@@ -34257,7 +34257,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2279",
@@ -34317,7 +34317,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2283",
@@ -34332,7 +34332,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2284",
@@ -34392,7 +34392,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2288",
@@ -34407,7 +34407,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2289",
@@ -34467,7 +34467,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2293",
@@ -34482,7 +34482,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2294",
@@ -34542,7 +34542,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2298",
@@ -34557,7 +34557,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2299",
@@ -34617,7 +34617,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2303",
@@ -34647,7 +34647,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_225_2305",
@@ -34722,7 +34722,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2310",
@@ -34752,7 +34752,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2312",
@@ -34767,7 +34767,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2313",
@@ -34842,7 +34842,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2318",
@@ -34857,7 +34857,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2319",
@@ -34917,7 +34917,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2323",
@@ -34932,7 +34932,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2324",
@@ -34992,7 +34992,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2328",
@@ -35007,7 +35007,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2329",
@@ -35067,7 +35067,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2333",
@@ -35082,7 +35082,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2334",
@@ -35142,7 +35142,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2338",
@@ -35157,7 +35157,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2339",
@@ -35232,7 +35232,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_225_2344",
@@ -35247,7 +35247,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_2345",
@@ -35277,7 +35277,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2347",
@@ -35322,7 +35322,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2350",
@@ -35352,7 +35352,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2352",
@@ -35367,7 +35367,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2353",
@@ -35382,7 +35382,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2354",
@@ -35442,7 +35442,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2358",
@@ -35457,7 +35457,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2359",
@@ -35517,7 +35517,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2363",
@@ -35532,7 +35532,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2364",
@@ -35592,7 +35592,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2368",
@@ -35607,7 +35607,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2369",
@@ -35667,7 +35667,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2373",
@@ -35682,7 +35682,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2374",
@@ -35742,7 +35742,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2378",
@@ -35757,7 +35757,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2379",
@@ -35772,7 +35772,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_225_2380",
@@ -35832,7 +35832,7 @@
    "anzahl": 3,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_2384",
@@ -35877,7 +35877,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2387",
@@ -35922,7 +35922,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2390",
@@ -35967,7 +35967,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2393",
@@ -35982,7 +35982,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2394",
@@ -36042,7 +36042,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2398",
@@ -36057,7 +36057,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2399",
@@ -36117,7 +36117,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2403",
@@ -36132,7 +36132,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2404",
@@ -36192,7 +36192,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2408",
@@ -36207,7 +36207,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2409",
@@ -36267,7 +36267,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2413",
@@ -36282,7 +36282,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2414",
@@ -36342,7 +36342,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2418",
@@ -36357,7 +36357,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2419",
@@ -36417,7 +36417,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_225_2423",
@@ -36447,7 +36447,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_2425",
@@ -36477,7 +36477,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2427",
@@ -36522,7 +36522,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2430",
@@ -36552,7 +36552,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2432",
@@ -36567,7 +36567,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2433",
@@ -36582,7 +36582,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2434",
@@ -36642,7 +36642,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2438",
@@ -36657,7 +36657,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2439",
@@ -36702,7 +36702,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2442",
@@ -36717,7 +36717,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2443",
@@ -36732,7 +36732,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2444",
@@ -36792,7 +36792,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2448",
@@ -36807,7 +36807,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2449",
@@ -36867,7 +36867,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2453",
@@ -36882,7 +36882,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2454",
@@ -36942,7 +36942,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2458",
@@ -36957,7 +36957,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2459",
@@ -37047,7 +37047,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_2465",
@@ -37122,7 +37122,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2470",
@@ -37152,7 +37152,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2472",
@@ -37182,7 +37182,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2474",
@@ -37242,7 +37242,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2478",
@@ -37257,7 +37257,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2479",
@@ -37287,7 +37287,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2481",
@@ -37317,7 +37317,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2483",
@@ -37332,7 +37332,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2484",
@@ -37392,7 +37392,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2488",
@@ -37407,7 +37407,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2489",
@@ -37467,7 +37467,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2493",
@@ -37482,7 +37482,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2494",
@@ -37542,7 +37542,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2498",
@@ -37557,7 +37557,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2499",
@@ -37647,7 +37647,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2505",
@@ -37677,7 +37677,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2507",
@@ -37722,7 +37722,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2510",
@@ -37752,7 +37752,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2512",
@@ -37782,7 +37782,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2514",
@@ -37842,7 +37842,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2518",
@@ -37857,7 +37857,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2519",
@@ -37917,7 +37917,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2523",
@@ -37932,7 +37932,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2524",
@@ -37992,7 +37992,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2528",
@@ -38007,7 +38007,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2529",
@@ -38067,7 +38067,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2533",
@@ -38082,7 +38082,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2534",
@@ -38142,7 +38142,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2538",
@@ -38157,7 +38157,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2539",
@@ -38247,7 +38247,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2545",
@@ -38277,7 +38277,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2547",
@@ -38292,7 +38292,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2548",
@@ -38307,7 +38307,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2549",
@@ -38367,7 +38367,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2553",
@@ -38382,7 +38382,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2554",
@@ -38427,7 +38427,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2557",
@@ -38442,7 +38442,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2558",
@@ -38457,7 +38457,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2559",
@@ -38517,7 +38517,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2563",
@@ -38532,7 +38532,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2564",
@@ -38592,7 +38592,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2568",
@@ -38607,7 +38607,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2569",
@@ -38667,7 +38667,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2573",
@@ -38682,7 +38682,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2574",
@@ -38727,7 +38727,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2577",
@@ -38742,7 +38742,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2578",
@@ -38757,7 +38757,7 @@
    "anzahl": 2,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2579",
@@ -38772,7 +38772,7 @@
    "anzahl": 1,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2580",
@@ -38802,7 +38802,7 @@
    "anzahl": 3,
    "stufe": 38,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2582",
@@ -38832,7 +38832,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2584",
@@ -38862,7 +38862,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2586",
@@ -38892,7 +38892,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2588",
@@ -38907,7 +38907,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2589",
@@ -38967,7 +38967,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2593",
@@ -38982,7 +38982,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2594",
@@ -39042,7 +39042,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2598",
@@ -39057,7 +39057,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2599",
@@ -39117,7 +39117,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2603",
@@ -39132,7 +39132,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2604",
@@ -39192,7 +39192,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2608",
@@ -39207,7 +39207,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2609",
@@ -39297,7 +39297,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2615",
@@ -39327,7 +39327,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2617",
@@ -39357,7 +39357,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2619",
@@ -39387,7 +39387,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2621",
@@ -39417,7 +39417,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_2623",
@@ -39432,7 +39432,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2624",
@@ -39492,7 +39492,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2628",
@@ -39507,7 +39507,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2629",
@@ -39567,7 +39567,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2633",
@@ -39582,7 +39582,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_2634",
@@ -39642,7 +39642,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2638",
@@ -39657,7 +39657,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2639",
@@ -39717,7 +39717,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2643",
@@ -39732,7 +39732,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_2644",
@@ -39792,7 +39792,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2648",
@@ -39837,7 +39837,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2651",
@@ -39867,7 +39867,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2653",
@@ -39882,7 +39882,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2654",
@@ -39942,7 +39942,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2658",
@@ -39957,7 +39957,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2659",
@@ -40017,7 +40017,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2663",
@@ -40032,7 +40032,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2664",
@@ -40092,7 +40092,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2668",
@@ -40107,7 +40107,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2669",
@@ -40167,7 +40167,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2673",
@@ -40182,7 +40182,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2674",
@@ -40257,7 +40257,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2679",
@@ -40347,7 +40347,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2685",
@@ -40377,7 +40377,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2687",
@@ -40392,7 +40392,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2688",
@@ -40407,7 +40407,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2689",
@@ -40467,7 +40467,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2693",
@@ -40482,7 +40482,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2694",
@@ -40542,7 +40542,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2698",
@@ -40557,7 +40557,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2699",
@@ -40617,7 +40617,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2703",
@@ -40632,7 +40632,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2704",
@@ -40692,7 +40692,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2708",
@@ -40707,7 +40707,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2709",
@@ -40752,7 +40752,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_239_2712",
@@ -40767,7 +40767,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2713",
@@ -40797,7 +40797,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2715",
@@ -40842,7 +40842,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2718",
@@ -40857,7 +40857,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2719",
@@ -40917,7 +40917,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2723",
@@ -40932,7 +40932,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2724",
@@ -40992,7 +40992,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2728",
@@ -41007,7 +41007,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2729",
@@ -41127,7 +41127,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2737",
@@ -41172,7 +41172,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2740",
@@ -41217,7 +41217,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2743",
@@ -41232,7 +41232,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2744",
@@ -41307,7 +41307,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2749",
@@ -41367,7 +41367,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2753",
@@ -41382,7 +41382,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2754",
@@ -41412,7 +41412,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2756",
@@ -41442,7 +41442,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2758",
@@ -41487,7 +41487,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2761",
@@ -41517,7 +41517,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2763",
@@ -41532,7 +41532,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2764",
@@ -41547,7 +41547,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2765",
@@ -41592,7 +41592,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2768",
@@ -41637,7 +41637,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2771",
@@ -41682,7 +41682,7 @@
    "anzahl": 3,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2774",
@@ -41727,7 +41727,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2777",
@@ -41742,7 +41742,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2778",
@@ -41802,7 +41802,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2782",
@@ -41817,7 +41817,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2783",
@@ -41892,7 +41892,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2788",
@@ -41922,7 +41922,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2790",
@@ -41982,7 +41982,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2794",
@@ -42042,7 +42042,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2798",
@@ -42087,7 +42087,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2801",
@@ -42117,7 +42117,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2803",
@@ -42147,7 +42147,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2805",
@@ -42162,7 +42162,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2806",
@@ -42192,7 +42192,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2808",
@@ -42222,7 +42222,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2810",
@@ -42267,7 +42267,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2813",
@@ -42327,7 +42327,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2817",
@@ -42402,7 +42402,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2822",
@@ -42417,7 +42417,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2823",
@@ -42447,7 +42447,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2825",
@@ -42492,7 +42492,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_2828",
@@ -42522,7 +42522,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2830",
@@ -42552,7 +42552,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2832",
@@ -42627,7 +42627,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2837",
@@ -42672,7 +42672,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2840",
@@ -42717,7 +42717,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2843",
@@ -42807,7 +42807,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2849",
@@ -42867,7 +42867,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2853",
@@ -42927,7 +42927,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2857",
@@ -42957,7 +42957,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2859",
@@ -42972,7 +42972,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2860",
@@ -43017,7 +43017,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2863",
@@ -43092,7 +43092,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_2868",
@@ -43122,7 +43122,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2870",
@@ -43152,7 +43152,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_2872",
@@ -43167,7 +43167,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_155_2873",
@@ -43647,7 +43647,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_155_2905",
@@ -43692,7 +43692,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_155_2908",
@@ -43797,7 +43797,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_2915",
@@ -43887,7 +43887,7 @@
    "anzahl": 2,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_2921",
@@ -43917,7 +43917,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_169_2923",
@@ -43947,7 +43947,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_2925",
@@ -43977,7 +43977,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_2927",
@@ -44007,7 +44007,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_2929",
@@ -44022,7 +44022,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_2930",
@@ -44037,7 +44037,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_169_2931",
@@ -44052,7 +44052,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_2932",
@@ -44082,7 +44082,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_2934",
@@ -44142,7 +44142,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_169_2938",
@@ -44217,7 +44217,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_2943",
@@ -44232,7 +44232,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_2944",
@@ -44247,7 +44247,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_2945",
@@ -44322,7 +44322,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_2950",
@@ -44367,7 +44367,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_2953",
@@ -44457,7 +44457,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_2959",
@@ -44547,7 +44547,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_2965",
@@ -44622,7 +44622,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_183_2970",
@@ -44742,7 +44742,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_183_2978",
@@ -44832,7 +44832,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_183_2984",
@@ -44997,7 +44997,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_2995",
@@ -45042,7 +45042,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_2998",
@@ -45057,7 +45057,7 @@
    "anzahl": 2,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_2999",
@@ -45072,7 +45072,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_3000",
@@ -45117,7 +45117,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_3003",
@@ -45132,7 +45132,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_183_3004",
@@ -45147,7 +45147,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordsaum_3005",
@@ -45222,7 +45222,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_3010",
@@ -45252,7 +45252,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_198_3012",
@@ -45282,7 +45282,7 @@
    "anzahl": 3,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_3014",
@@ -45297,7 +45297,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_graufurt_3015",
@@ -45327,7 +45327,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_3017",
@@ -45357,7 +45357,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_3019",
@@ -45372,7 +45372,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_3020",
@@ -45432,7 +45432,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_3024",
@@ -45447,7 +45447,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_3025",
@@ -45507,7 +45507,7 @@
    "anzahl": 2,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldweg_3029",
@@ -45537,7 +45537,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldweg_3031",
@@ -45567,7 +45567,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_graufurt_3033",
@@ -45612,7 +45612,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_3036",
@@ -45627,7 +45627,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_aschenwerth_3037",
@@ -45642,7 +45642,7 @@
    "anzahl": 3,
    "stufe": 12,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_rabenmoor_3038",
@@ -45717,7 +45717,7 @@
    "anzahl": 1,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_rabenmoor_3043",
@@ -45792,7 +45792,7 @@
    "anzahl": 1,
    "stufe": 12,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_rabenmoor_3048",
@@ -45867,7 +45867,7 @@
    "anzahl": 2,
    "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_weidenhain_3053",
@@ -45882,7 +45882,7 @@
    "anzahl": 1,
    "stufe": 3,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_weidenhain_3054",
@@ -45942,7 +45942,7 @@
    "anzahl": 1,
    "stufe": 12,
    "gelaende": "moor",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_aschenwerth_3058",
@@ -46002,7 +46002,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_3062",
@@ -46017,7 +46017,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_3063",
@@ -46047,7 +46047,7 @@
    "anzahl": 2,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_3065",
@@ -46107,7 +46107,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_3069",
@@ -46167,7 +46167,7 @@
    "anzahl": 1,
    "stufe": 26,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_3073",
@@ -46197,7 +46197,7 @@
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_3075",
@@ -46242,7 +46242,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_211_3078",
@@ -46257,7 +46257,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_211_3079",
@@ -46272,7 +46272,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_3080",
@@ -46317,7 +46317,7 @@
    "anzahl": 2,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_3083",
@@ -46332,7 +46332,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_3084",
@@ -46422,7 +46422,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_3090",
@@ -46452,7 +46452,7 @@
    "anzahl": 3,
    "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_211_3092",
@@ -46467,7 +46467,7 @@
    "anzahl": 1,
    "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_211_3093",
@@ -46542,7 +46542,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_3098",
@@ -46647,7 +46647,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_211_3105",
@@ -46707,7 +46707,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_3109",
@@ -46722,7 +46722,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_3110",
@@ -46797,7 +46797,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_3115",
@@ -46842,7 +46842,7 @@
    "anzahl": 1,
    "stufe": 22,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_3118",
@@ -46857,7 +46857,7 @@
    "anzahl": 2,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_3119",
@@ -46902,7 +46902,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_3122",
@@ -46932,7 +46932,7 @@
    "anzahl": 1,
    "stufe": 34,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_225_3124",
@@ -46992,7 +46992,7 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_3128",
@@ -47052,7 +47052,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_246_225_3132",
@@ -47067,7 +47067,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_3133",
@@ -47082,7 +47082,7 @@
    "anzahl": 3,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_3134",
@@ -47112,7 +47112,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_3136",
@@ -47127,7 +47127,7 @@
    "anzahl": 2,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_225_3137",
@@ -47187,7 +47187,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_3141",
@@ -47217,7 +47217,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_231_239_3143",
@@ -47247,7 +47247,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_239_3145",
@@ -47292,7 +47292,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_3148",
@@ -47322,7 +47322,7 @@
    "anzahl": 1,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_3150",
@@ -47367,7 +47367,7 @@
    "anzahl": 1,
    "stufe": 48,
    "gelaende": "wüste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_3153",
@@ -47397,7 +47397,7 @@
    "anzahl": 2,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_3155",
@@ -47442,128 +47442,16 @@
    "anzahl": 3,
    "stufe": 45,
    "gelaende": "küste",
-   "quelle": "fehlt"
+   "quelle": "vorhanden (Figuren)"
   }
  ],
  "fehlend": [
-  {
-   "gegner": "feldhase",
-   "stufe": 3,
-   "gelaende": "wiese",
-   "herkunft": "Süden #120",
-   "plaetze": 7
-  },
-  {
-   "gegner": "kraehenschwarm",
-   "stufe": 4,
-   "gelaende": "wiese",
-   "herkunft": "Süden #120",
-   "plaetze": 12
-  },
-  {
-   "gegner": "schilfkroete",
-   "stufe": 12,
-   "gelaende": "moor",
-   "herkunft": "Süden #120",
-   "plaetze": 7
-  },
-  {
-   "gegner": "fuchs",
-   "stufe": 14,
-   "gelaende": "wald",
-   "herkunft": "Süden #120",
-   "plaetze": 10
-  },
-  {
-   "gegner": "wildschwein",
-   "stufe": 18,
-   "gelaende": "wald",
-   "herkunft": "Süden #120",
-   "plaetze": 12
-  },
-  {
-   "gegner": "strandkrabbe",
-   "stufe": 22,
-   "gelaende": "küste",
-   "herkunft": "Phase 10",
-   "plaetze": 31
-  },
-  {
-   "gegner": "seevogel",
-   "stufe": 26,
-   "gelaende": "küste",
-   "herkunft": "Phase 10",
-   "plaetze": 30
-  },
-  {
-   "gegner": "steinschlucker",
-   "stufe": 26,
-   "gelaende": "fels",
-   "herkunft": "Süden #120",
-   "plaetze": 14
-  },
-  {
-   "gegner": "heidewolf",
-   "stufe": 32,
-   "gelaende": "heide",
-   "herkunft": "Phase 8",
-   "plaetze": 63
-  },
-  {
-   "gegner": "riesenkrabbe",
-   "stufe": 34,
-   "gelaende": "küste",
-   "herkunft": "Phase 10",
-   "plaetze": 41
-  },
-  {
-   "gegner": "wiedergaenger",
-   "stufe": 38,
-   "gelaende": "heide",
-   "herkunft": "Phase 8",
-   "plaetze": 12
-  },
-  {
-   "gegner": "mangrovenlurch",
-   "stufe": 38,
-   "gelaende": "moor",
-   "herkunft": "Phase 10",
-   "plaetze": 15
-  },
-  {
-   "gegner": "schlickkrebs",
-   "stufe": 45,
-   "gelaende": "küste",
-   "herkunft": "Phase 7",
-   "plaetze": 150
-  },
   {
    "gegner": "steppenwolf",
    "stufe": 46,
    "gelaende": "wiese",
    "herkunft": "neu (Ockerlande/Glutsande)",
    "plaetze": 137
-  },
-  {
-   "gegner": "grabwaechter",
-   "stufe": 48,
-   "gelaende": "fels",
-   "herkunft": "Phase 8",
-   "plaetze": 87
-  },
-  {
-   "gegner": "glutskorpion",
-   "stufe": 48,
-   "gelaende": "wüste",
-   "herkunft": "Phase 9",
-   "plaetze": 143
-  },
-  {
-   "gegner": "splitterreiher",
-   "stufe": 50,
-   "gelaende": "wiese",
-   "herkunft": "Phase 7",
-   "plaetze": 253
   },
   {
    "gegner": "ockerhyaene",
@@ -47592,13 +47480,6 @@
    "gelaende": "küste",
    "herkunft": "neu (Küsten der hohen Länder)",
    "plaetze": 319
-  },
-  {
-   "gegner": "glutgeist",
-   "stufe": 56,
-   "gelaende": "wüste",
-   "herkunft": "Phase 9",
-   "plaetze": 162
   },
   {
    "gegner": "bergtroll",
