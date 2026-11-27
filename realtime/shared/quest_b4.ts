@@ -66,7 +66,7 @@ export const QUEST_B4: QuestDef = {
     { id: "halle", text: "Die Versammlungshalle säubern", ereignis: { art: "erlegen", typ: "unterschlupf_welle" }, anzahl: 2, nach: ["schluessel"], wo: HALLE,
       log: "In der Versammlungshalle kommen die Banditen in zwei Wellen zu dritt. Halte stand ({n:halle} Wellen)." },
     { id: "rotmantel", text: "Hauptmann Rotmantel besiegen", ereignis: { art: "erlegen", typ: "rotmantel" }, nach: ["halle"], wo: KAMMER,
-      log: "Hinter dem roten Banner liegt die Kammer des Anführers. Besieg Hauptmann Rotmantel – du stehst ihm allein gegenüber. Weich dem Rundumschlag aus, wenn die Felder rot leuchten." },
+      log: "Hinter dem roten Banner liegt die Kammer des Anführers. Besieg Hauptmann Rotmantel – du stehst ihm allein gegenüber. Weich dem Rundumschlag aus, wenn die Felder rot leuchten, und lock ihn vom Thron weg." },
     { id: "brief", text: "Den Brief mit dem Rabensiegel an dich nehmen", ereignis: { art: "aufheben", g: "rabenbrief" }, nach: ["halle"], wo: KAMMER,
       log: "Rotmantel trug einen Brief bei sich. Nimm ihn an dich." },
     { id: "banner", text: "Das rote Banner abnehmen", ereignis: { art: "objekt", id: "b4_banner" }, nach: ["rotmantel"], wo: BANNER,
