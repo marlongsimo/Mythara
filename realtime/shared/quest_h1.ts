@@ -8,9 +8,10 @@
  * Stellen und Figuren: shared/quest_h_orte.ts. Liste: doku/quests/h-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
+import { H_QUESTS } from "./hochlande";
 import { WIGAND, MERIT, ODO, HILDE, ANSGAR, AFRA, PASS_TROLLE, STEINHAG } from "./quest_h_orte";
 
-export const H1 = "hochlande_ueber_den_pass";
+export const H1 = H_QUESTS.h1;
 const E4 = "grauwacht_grab_des_hauptmanns"; /* Wigand bietet vorher E4 an (figurQuest: die erste angebotene Quest spricht) */
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 const BOTEN = ["ansgar", "afra"];

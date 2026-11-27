@@ -24,10 +24,13 @@ export { QB, QUESTS, xpFuer, INSTANZEN };
 export const STARK = 11079266; /* Level 99 */
 export const roh = () => ({ geschlecht: "mann", frisur: "kurz", bart: "ohne", haarfarbe: "braun", hautfarbe: "hell", waffe: "schwert", skill_lp: 0, lp_stand: null, quests: { die_gesperrte_strasse: { s: "fertig" } } });
 /** Ein starker Held (alle Kampfskills 99, Ritterschwert) mit diesen Berufen (Level), Quests (fertig) und laufenden Quests (staende: id → Stand, z. B. aus standNach) */
-export function starkerHeld({ berufe = {}, fertig = [], rucksack = [], staende = {} } = {}) {
+/** Ausrüstung in passender Stufe (Systeme: das Ritterschwert ist das Trainingsschwert) – für Bosskämpfe in den Welt-Tests */
+export const LEGENDAER = { waffe: "eidschwert_legendaer", brust: "eisenwacht_legendaer", beine: "eisenbeinschienen_legendaer", kopf: "eisenwachthelm_legendaer", nebenhand: "sternenschild_legendaer" };
+export const MYTHISCH = { waffe: "eidschwert_mythisch", brust: "eisenwacht_mythisch", beine: "eisenbeinschienen_mythisch", kopf: "eisenwachthelm_mythisch", nebenhand: "sternenschild_mythisch" };
+export function starkerHeld({ berufe = {}, fertig = [], rucksack = [], staende = {}, angelegt = { waffe: "ritterschwert" } } = {}) {
   const B = Object.fromEntries(Object.entries(berufe).map(([k, l]) => [k, xpFuer(l)])), Q = { die_gesperrte_strasse: { s: "fertig" } }; for (const id of fertig) Q[id] = { s: "fertig" }; for (const [id, st] of Object.entries(staende)) Q[id] = { s: st }; /* laufende Quest mitten im Stand (QB.stand) */
   return { ...roh(), quests: Q, skill_geschick: STARK, skill_staerke: STARK, skill_lp: STARK, skill_defense: STARK, skill_fernkampf: STARK, skill_magie: STARK,
-    inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: [{ g: "splitter", n: 5000 }, ...rucksack], v: 2, berufe: B } }; }
+    inventar: { angelegt: { ...angelegt }, rucksack: [{ g: "splitter", n: 5000 }, ...rucksack], v: 2, berufe: B } }; }
 
 export async function starte({ sb: SB, srv: SRV, helden, env = {} }) {
   let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; return ok; };

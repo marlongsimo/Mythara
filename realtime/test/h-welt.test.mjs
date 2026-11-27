@@ -17,7 +17,7 @@ const W = await starte({ sb: 8855, srv: 8856, helden: { /* localhost:8855 · loc
   tom: starkerHeld({ fertig: ["ostufer_das_gruene_licht"] }) } });
 const { check, spieler, sprich, objekt, stand, erl, fertig, kampf, kampfBis, stelle, anzahl, schlaf } = W;
 const Q = (id) => QUESTS.find((q) => q.id === id);
-const H1 = Q("hochlande_ueber_den_pass"), HE = Q("hochlande_einsiedler_vom_spiegelsee");
+const H1 = Q("hochlande_ueber_den_pass"), HE = Q("hochlande_der_einsiedler");
 const K0 = { hat: () => false, verloren: () => false };
 const an = (q, s, id) => [].concat(q.schalter[id]).some((b) => QB.gilt(q, s.b[q.id] || "", b, K0));
 const fig = (q, id) => q.figuren.find((x) => x.id === id);

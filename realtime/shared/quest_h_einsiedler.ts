@@ -3,13 +3,14 @@
  * Grundlage: doku/konzepte/phase-11.md (Block H, #161). Der Einsiedler sammelt Bergkräuter und schreibt die Geschichte der Hochlande.
  * Drei Eisenhut und drei Nebelkraut von den Schattenhängen bringen; am Grauhorn drei Steinmänner aufsuchen und ihre Inschriften lesen (Erkunden).
  * QUER: Mira Kräuterlieb in der Waldmark – der Einsiedler war einmal ihr Lehrer und hat das Tal verlassen, ohne Abschied. Mira schickt einen Gruß zurück.
- * Lohn: Kräuterkunde 2.500 XP, 300 Splitter, 1 Questpunkt; Schalter kessel_spiegelsee (der Kessel des Einsiedlers steht jedem offen, Welt #118).
+ * Lohn: Kräuterkunde 2.500 XP, 300 Splitter, 1 Questpunkt; Schalter kessel_spiegelsee (der Kessel an der Einsiedelei, Welt d344565a).
  */
 import type { QuestDef, Bed } from "./questbau";
 import { EINSIEDLER, MIRA, GRAUHORN } from "./quest_h_orte";
+import { H_QUESTS } from "./hochlande";
 import { H1 } from "./quest_h1";
 
-export const H_EINSIEDLER = "hochlande_einsiedler_vom_spiegelsee";
+export const H_EINSIEDLER = H_QUESTS.einsiedler;
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 const STEINE = ["stein_1", "stein_2", "stein_3"];
 const INSCHRIFT = [

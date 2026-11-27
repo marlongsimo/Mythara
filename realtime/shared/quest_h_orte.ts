@@ -2,7 +2,7 @@
  * Riftmere – Stellen und Figuren der Quests im Block H (Phase 11, die Hochlande), doku/konzepte/phase-11.md.
  * Orte aus der Welt (welt/hochlande_orte.json, #147), Bewohner aus shared/laeden.ts (#148). Eine Figur, die schon ein Bewohner ist,
  * steht in der Quest mit demselben Namen, Modell und Platz; der Bewohner bekommt dafür „questFigur“ (Inhalt der Integration, #118).
- * Gegnerplätze aus shared/weltzonen.ts (Lager, Weltfelder). Die Hüter-Kammern (Trollhalle, Horst, Eishöhle) baut die Welt noch (#118).
+ * Gegnerplätze aus shared/weltzonen.ts (Lager, Weltfelder). Hüter-Instanzen: shared/bosse.ts (Trollhalle im Bergwerk; Horst und Eishöhle baut die Welt, #162).
  * Das Bergwerk am Erzberg ist eine Unterwelt-Region (hochlande_bergwerk, Weltfelder ab 11584 | 9600).
  */
 import type { QuestFigur } from "./questbau";
@@ -28,8 +28,8 @@ export const EINSIEDLER: QuestFigur = { id: "einsiedler", name: "Der Einsiedler"
 
 /* ───── Stellen ───── */
 export const STEINHAG: Feld = [6990, 5892];
-/** Bergtrolle am Hochpass (Lager 6952 | 5626 und 6975 | 5587) */
-export const PASS_TROLLE: Feld = [6960, 5612];
+/** Bergtrolle am Hochpass: Lager 6952 | 5626 (drei, westlich der Mauer unterhalb der Passwacht) und 6970 | 5590 */
+export const PASS_TROLLE: Feld = [6946, 5624];
 /** Hohe Alm: entlaufene Ziegen auf den Wiesen rings um die Käserei, das Gatter am Pferch (bei den Schafen) */
 export const ALM = {
   ziegen: [[7158.5, 5984.5], [7228.5, 5990.5], [7216.5, 6040.5], [7150.5, 6028.5]] as Feld[],
@@ -48,12 +48,12 @@ export const BERGWERK = {
 /** Grauhorn und Hochpass: Federn auf dem Weg zum Horst der Sturmschwinge, Eisrunen am Hochpass, Steinmänner am Grauhorn (Nebenquest) */
 export const GRAUHORN = {
   federn: [[6975.5, 5590.5], [6985.5, 5578.5], [6995.5, 5566.5]] as Feld[],
-  /** Aufstieg zum Horst (Region sturmschwinge_horst, Welt #118) */ horst: [6990.5, 5560.5] as Feld,
+  /** Aufstieg zum Horst (Instanz horst_grauhorn, Welt #162) */ horst: [6990.5, 5560.5] as Feld,
   steinmaenner: [[7010.5, 5585.5], [7030.5, 5560.5], [6960.5, 5545.5]] as Feld[],
 };
 export const HOCHPASS = {
   runen: [6948.5, 5600.5] as Feld,
-  /** Eingang der Eishöhle (Region frostwitwe_hoehle, Welt #118) */ hoehle: [6944.5, 5596.5] as Feld,
+  /** Eingang der Eishöhle (Instanz eishoehle_hochpass, Welt #162) */ hoehle: [6944.5, 5596.5] as Feld,
 };
-/** Eingang der Trollhalle unter dem Bergwerk (Region grumhold_halle, Welt #118): hinter dem Geröll aus H3 */
-export const TROLLHALLE: Feld = [11631.5, 9661.5];
+/** Trollhalle im Bergwerk (Instanz trollhalle, shared/bosse.ts: Feld 11595–11618 × 9602–9624, Grumhold bei 11607,5 | 9611,5) */
+export const TROLLHALLE: Feld = [11607.5, 9614.5];

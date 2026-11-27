@@ -14,7 +14,7 @@ export const YSOLDE: Feld = [10994, 9617.2];         /* Turmdach am Ostufer (D2)
 export const SARKOPHAG: Feld = [11216, 9616.4];      /* hauptmann_gruft (E4) */
 /* ── Glutsande ── */
 export const GRASENDE: Feld = [6915.5, 6743.4];      /* Wegmarke ende_des_grases hinter dem Pass im Südosten des Ostufers */
-export const KANAL: Feld = [7046, 6852];             /* Lager der Karawanenräuber lager_west am ausgetrockneten Kanal */
+export const KANAL: Feld = [7114, 6852];             /* Karawanenräuber am ausgetrockneten Kanal (Lager 7112 | 6850 mit Bogen, 7132 | 6884; das alte lager_west ist seit #155 ausgedünnt) */
 export const GLUTBRUNN = { selma: [7142, 6970] as Feld, herd: [7119, 6954.4] as Feld };   /* Karawanenrast; Werkstatt mit glutbrunn_herd */
 export const STROM = { nalia: [7114, 6985.4] as Feld, fischplatz: [7112.5, 6986.3] as Feld };
 export const SALZPFANNE = { ruwen: [7331.5, 6625.5] as Feld, pfanne: [7315, 6644] as Feld, skorpione: [7330, 6646] as Feld };
