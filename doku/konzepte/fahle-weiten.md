@@ -22,7 +22,7 @@ Kleiner als Steinhag und Kielmund (80–120), größer als ein Dorf. Detailstufe
 | **Hügelgrund** | Westen, beim Kernbaum-Tal und den Hügelgräbern (≈ 6258 \| 5780) | Dorf (8–12 Gebäude): Bank, Laden, Herd, Kräuterbeet; schließt die 430-Felder-Lücke |
 | **Reifbach** | Norden, Richtung Frostkrone, an einem Bach | Weiler (4–6): Fischerkate, Räucherfeuer |
 | **Heidrast** (gibt es) | Mitte | von 5 auf ~8 Gebäude, Bank-Kiste |
-| **Mittlerer Bereich** (Wunsch des Nutzers: deutlich mehr) | zwischen Grauwacht, Heidrast und Hügelgrund | **3–4 weitere Dörfer/Weiler** (je 4–10 Gebäude) mit eigenem Beruf: z. B. Köhlerdorf (Holz), Steinbrecher-Weiler (Erz), Schäferei (Wolle/Fleisch), Weiherhof (Fischen) – je mit Bankkiste oder Bank, Laden, Station; Namen schlägt Welt vor (nicht doppelt) |
+| **Mittlerer Bereich** (Wunsch des Nutzers: deutlich mehr) | zwischen Grauwacht, Heidrast und Hügelgrund | **3–4 weitere Dörfer/Weiler** (je 4–10 Gebäude) mit eigenem Beruf: z. B. Köhlerdorf (Holz), Steinbrecher-Weiler (Erz), Schäferei (Wolle/Fleisch), Weiherhof (Fischen) – je mit Bankkiste oder Bank, Laden, Station; Namen schlägt Welt vor (nicht doppelt). **Gebaut und vom Nutzer bestätigt (27.11.): Kohlstatt (Köhler), Brechstein (Steinbrecher), Wollhag (Schäferei), Weiherhof (Fischer)** |
 | Rastplätze | an den langen Wegen | 3–4 mit Feuer |
 
 ## Arbeitsplätze (alle Stufen, nur vorhandene Arten)
