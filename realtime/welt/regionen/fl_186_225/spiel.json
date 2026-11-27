@@ -12,60 +12,60 @@
   "sperren": [
    {
     "art": "rechteck",
-    "x0": 473,
+    "x0": 470,
     "y0": 44.5,
-    "x1": 476,
+    "x1": 478,
     "y1": 48.5,
     "schalter": "lehmfurt_trittsteine"
    },
    {
     "art": "rechteck",
-    "x0": 472,
-    "y0": 76,
-    "x1": 473,
-    "y1": 77
+    "x0": 404,
+    "y0": 116,
+    "x1": 405,
+    "y1": 117
    },
    {
     "art": "rechteck",
-    "x0": 467,
-    "y0": 76,
-    "x1": 468,
-    "y1": 77
+    "x0": 399,
+    "y0": 115,
+    "x1": 400,
+    "y1": 116
    },
    {
     "art": "rechteck",
-    "x0": 468,
-    "y0": 71,
-    "x1": 469,
-    "y1": 72
+    "x0": 399,
+    "y0": 110,
+    "x1": 400,
+    "y1": 111
    },
    {
     "art": "rechteck",
-    "x0": 472,
-    "y0": 72,
-    "x1": 473,
-    "y1": 73
+    "x0": 404,
+    "y0": 111,
+    "x1": 405,
+    "y1": 112
    },
    {
     "art": "rechteck",
-    "x0": 445,
-    "y0": 137,
-    "x1": 446,
-    "y1": 138
+    "x0": 439,
+    "y0": 48,
+    "x1": 440,
+    "y1": 49
    },
    {
     "art": "rechteck",
-    "x0": 441,
-    "y0": 137,
-    "x1": 442,
-    "y1": 138
+    "x0": 434,
+    "y0": 49,
+    "x1": 435,
+    "y1": 50
    },
    {
     "art": "rechteck",
-    "x0": 442,
-    "y0": 133,
-    "x1": 443,
-    "y1": 134
+    "x0": 436,
+    "y0": 45,
+    "x1": 437,
+    "y1": 46
    }
   ],
   "freigeben": [
@@ -85,20 +85,6 @@
    },
    {
     "art": "rechteck",
-    "x0": 463.1,
-    "y0": 174,
-    "x1": 471,
-    "y1": 176.6
-   },
-   {
-    "art": "rechteck",
-    "x0": 463.1,
-    "y0": 176.6,
-    "x1": 471,
-    "y1": 179.2
-   },
-   {
-    "art": "rechteck",
     "x0": 432.5,
     "y0": 98.7,
     "x1": 441.5,
@@ -113,17 +99,52 @@
    },
    {
     "art": "rechteck",
-    "x0": 429.1,
+    "x0": 430.2,
     "y0": 150.7,
-    "x1": 437,
+    "x1": 438.1,
     "y1": 153.3
    },
    {
     "art": "rechteck",
-    "x0": 421.2,
+    "x0": 423.4,
     "y0": 150.7,
-    "x1": 429.1,
+    "x1": 431.3,
     "y1": 153.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 421,
+    "y0": 135.7,
+    "x1": 428.9,
+    "y1": 138.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 414.2,
+    "y0": 135.7,
+    "x1": 422.1,
+    "y1": 138.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 407.4,
+    "y0": 135.7,
+    "x1": 415.3,
+    "y1": 138.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 400.6,
+    "y0": 135.7,
+    "x1": 408.5,
+    "y1": 138.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 394.6,
+    "y0": 133.3,
+    "x1": 403.2,
+    "y1": 140.3
    }
   ]
  },
@@ -215,24 +236,13 @@
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
-    "text": "Ein Bindestein am Fuß der Mole, im Schein des Leuchtfeuers."
-   }
-  },
-  {
-   "id": "mole",
-   "art": "lesen",
-   "x": 468,
-   "y": 175.2,
-   "radius": 1.8,
-   "abgleich": "keiner",
-   "daten": {
-    "text": "Die Mole. Am Ende brennt das Leuchtfeuer, das die Boote heimholt."
+    "text": "Ein Bindestein am Südplatz von Kielmund. Von hier sieht man das Leuchtfeuer auf der Mole."
    }
   },
   {
    "id": "fischerzunft_fang_1",
    "art": "lesen",
-   "x": 433.5,
+   "x": 434.5,
    "y": 151.5,
    "radius": 1.8,
    "abgleich": "keiner",
@@ -245,7 +255,7 @@
   {
    "id": "fischerzunft_fang_2",
    "art": "lesen",
-   "x": 431.5,
+   "x": 432.5,
    "y": 152.5,
    "radius": 1.8,
    "abgleich": "keiner",
@@ -258,7 +268,7 @@
   {
    "id": "fischerzunft_fang_3",
    "art": "lesen",
-   "x": 429.5,
+   "x": 430.5,
    "y": 151.5,
    "radius": 1.8,
    "abgleich": "keiner",
@@ -271,7 +281,7 @@
   {
    "id": "fischerzunft_fang_4",
    "art": "lesen",
-   "x": 427.5,
+   "x": 428.5,
    "y": 152.5,
    "radius": 1.8,
    "abgleich": "keiner",
@@ -284,7 +294,7 @@
   {
    "id": "fischerzunft_fang_5",
    "art": "lesen",
-   "x": 425.5,
+   "x": 426.5,
    "y": 151.5,
    "radius": 1.8,
    "abgleich": "keiner",
@@ -297,7 +307,7 @@
   {
    "id": "fischerzunft_fang_6",
    "art": "lesen",
-   "x": 423.5,
+   "x": 425.5,
    "y": 152.5,
    "radius": 1.8,
    "abgleich": "keiner",
@@ -354,9 +364,42 @@
    }
   },
   {
+   "id": "kielmund_mole",
+   "art": "lesen",
+   "x": 422,
+   "y": 137,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Leuchtturm-Mole von Kielmund. Am Ende brennt das Feuer, das die Boote heimholt – man sieht es bis zur Möwenbucht."
+   }
+  },
+  {
+   "id": "kielmund_leuchtturm",
+   "art": "lesen",
+   "x": 399.2,
+   "y": 137,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Leuchtturm am Ende der Mole. Der Wärter hat Salz in den Bart und Rost an den Händen."
+   }
+  },
+  {
+   "id": "kielmund_hafenbank_tuer",
+   "art": "lesen",
+   "x": 462,
+   "y": 132.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Hafenbank von Kielmund. Kapitäne zahlen hier ihre Heuer aus."
+   }
+  },
+  {
    "id": "furt",
    "art": "lesen",
-   "x": 476.5,
+   "x": 478.5,
    "y": 46.5,
    "radius": 1.8,
    "abgleich": "keiner",
@@ -380,8 +423,8 @@
  ],
  "senken": [
   {
-   "x": 443.1,
-   "y": 136.1,
+   "x": 436.7,
+   "y": 47.8,
    "r": 5,
    "tiefe": 1.1
   }

@@ -415,29 +415,29 @@
     {
      "id": "geholz_bei_kielmund_eiche_1",
      "art": "eiche",
-     "x": 6424.5,
-     "y": 7276.5,
+     "x": 6356.5,
+     "y": 7316.5,
      "region": "fl_186_225"
     },
     {
      "id": "geholz_bei_kielmund_tanne_2",
      "art": "tanne",
-     "x": 6419.5,
-     "y": 7276.5,
+     "x": 6351.5,
+     "y": 7315.5,
      "region": "fl_186_225"
     },
     {
      "id": "geholz_bei_kielmund_tanne_3",
      "art": "tanne",
-     "x": 6420.5,
-     "y": 7271.5,
+     "x": 6351.5,
+     "y": 7310.5,
      "region": "fl_186_225"
     },
     {
      "id": "geholz_bei_kielmund_eibe_4",
      "art": "eibe",
-     "x": 6424.5,
-     "y": 7272.5,
+     "x": 6356.5,
+     "y": 7311.5,
      "region": "fl_186_225"
     }
    ]
@@ -2187,36 +2187,36 @@
   {
    "name": "Lehmgrube bei Lehmfurt",
    "ort": "lehmfurt",
-   "x": 6464.3,
-   "y": 7259.9,
+   "x": 6456.2,
+   "y": 7226.6,
    "r": 5,
    "adern": [
     {
      "id": "lehmgrube_bei_lehmfurt_kupfer_1",
      "art": "kupfer",
-     "x": 6466.5,
-     "y": 7260.5,
+     "x": 6458.5,
+     "y": 7227.5,
      "region": "fl_201_225"
     },
     {
      "id": "lehmgrube_bei_lehmfurt_kupfer_2",
      "art": "kupfer",
-     "x": 6463.5,
-     "y": 7262.5,
+     "x": 6455.5,
+     "y": 7228.5,
      "region": "fl_201_225"
     },
     {
      "id": "lehmgrube_bei_lehmfurt_eisen_3",
      "art": "eisen",
-     "x": 6461.5,
-     "y": 7258.5,
+     "x": 6453.5,
+     "y": 7225.5,
      "region": "fl_201_225"
     },
     {
      "id": "lehmgrube_bei_lehmfurt_eisen_4",
      "art": "eisen",
-     "x": 6465.5,
-     "y": 7257.5,
+     "x": 6457.5,
+     "y": 7224.5,
      "region": "fl_201_225"
     }
    ]
@@ -2314,29 +2314,29 @@
   {
    "name": "Senke bei Kielmund",
    "ort": "kielmund",
-   "x": 6395.1,
-   "y": 7336.1,
+   "x": 6388.7,
+   "y": 7247.8,
    "r": 5,
    "adern": [
     {
      "id": "senke_bei_kielmund_eisen_1",
      "art": "eisen",
-     "x": 6397.5,
-     "y": 7337.5,
+     "x": 6391.5,
+     "y": 7248.5,
      "region": "fl_186_225"
     },
     {
      "id": "senke_bei_kielmund_schwarzeisen_2",
      "art": "schwarzeisen",
-     "x": 6393.5,
-     "y": 7337.5,
+     "x": 6386.5,
+     "y": 7249.5,
      "region": "fl_186_225"
     },
     {
      "id": "senke_bei_kielmund_schwarzeisen_3",
      "art": "schwarzeisen",
-     "x": 6394.5,
-     "y": 7333.5,
+     "x": 6388.5,
+     "y": 7245.5,
      "region": "fl_186_225"
     }
    ]

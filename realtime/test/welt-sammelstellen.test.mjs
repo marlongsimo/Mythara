@@ -38,7 +38,7 @@ check(zg.includes("kernbaum") && zg.includes("weltenbaum") && zg.every((a) => ["
 const falsch = gruppen.filter((g) => !g.einzeln && !ZUNFT.test(g.name)).flatMap((g) => g.pts.filter((p) => !(imHoch(p) || imUnter(p) ? HOCHL : imOst(p) ? GLUT : g.typ === "holz" ? SUED_HOLZ : SUED_ERZ).includes(p.art)).map((p) => `${g.name}: ${p.art}`));
 check(!falsch.length, "Stufen passen: Süden/Westen Holz 1–35 und Erz 1–35, Glutsande ab 35 (bis Ureisen/Weltenbaum 65), Hochlande 40–65", falsch);
 const pflicht = ["heckenhof", "summweide", "halber_weg", "erlengrund", "kreuzstein", "schilfsee", "lehmfurt", "distelhof", "faehrtenlager", "laemmerhang", "kielmund", "moewenbucht", "haferstedt", "netzbucht", "sandquell", "glutbrunn", "salzpfanne", "nordstrand"];
-const RADIUS = { haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 34 };
+const RADIUS = { haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 80 };   /* Kielmund ist seit #174 Hauptstadt mit Mauer */
 const fern = pflicht.filter((o) => !gruppen.some((g) => g.ort === o && g.pts.every((p) => Math.hypot(p.x - ORTE[o][0], p.y - ORTE[o][1]) < (RADIUS[o] ?? 12) + 20)));
 check(!fern.length, `jeder der ${pflicht.length} Orte hat eine Gruppe in der Nähe (höchstens 20 Felder hinter dem Ortsrand)`, fern);
 const halb = pflicht.filter((o) => !["holz", "erz"].every((t) => gruppen.some((g) => g.ort === o && g.typ === t))); check(!halb.length, "jeder dieser Orte hat Bäume und Erz", halb);

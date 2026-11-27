@@ -315,7 +315,7 @@
  {"id":"fwf_huette_holz_24","objekt":"dorf_huette_holz_01","x":284.1,"y":388,"s":1.05,"ausbau":"burg"},
  {"id":"fwf_steinhaus_25","objekt":"graufurt_steinhaus_01","x":272.5,"y":390,"s":1,"ausbau":"burg"},
  {"id":"fwf_huette_holz_26","objekt":"dorf_huette_holz_01","x":264.9,"y":323,"s":0.95,"ausbau":"burg"},
- {"id":"fwf_steinhaus_27","objekt":"graufurt_steinhaus_02","x":263.58,"y":340,"s":1.03,"ausbau":"burg"},
+ {"id":"fwf_steinhaus_27","objekt":"graufurt_steinhaus_01","x":263.45,"y":341,"s":0.98,"ausbau":"burg"},
  {"id":"fwf_fachwerk_28","objekt":"weidenhain_fachwerk_02","x":267.94,"y":358,"s":0.97,"ausbau":"burg"},
  {"id":"fwf_steinhaus_29","objekt":"graufurt_steinhaus_02","x":291.38,"y":384,"s":0.95,"ausbau":"burg"},
  {"id":"fwf_haus_holz_30","objekt":"dorf_haus_holz_03","x":299.5,"y":384,"s":1,"ausbau":"burg"},

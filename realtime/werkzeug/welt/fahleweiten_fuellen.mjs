@@ -62,7 +62,8 @@ const kraut = (id, art, x, y) => { for (let r = 0; r < 8; r++) for (let a = 0; a
 
 /* Bauplatz suchen: nächster Platz um (x, y), an dem das Objekt frei auf festem Boden steht (1 Feld Abstand zu allem, nicht auf Wegen, nicht an Lesestellen) */
 const BODEN = new Set([..."., fTagys"].filter((c) => c !== " "));
-const passt = (objekt, x, y, s = 1, mehr = {}) => { const [r] = koerperVon({ objekt, x, y, s }); if (!r) return true; const rand = mehr.rand ?? 1;
+const passt = (objekt, x, y, s = 1, mehr = {}) => { const rs = koerperVon({ objekt, x, y, s }); if (!rs.length) return true; return rs.every((r) => passt1(r, mehr)); };
+const passt1 = (r, mehr) => { const rand = mehr.rand ?? 1;
   if (regionVon(r[0], r[1] - 0.5) !== regionVon(r[2], r[3] + 0.5)) return false;   /* nicht über eine Gebietsgrenze bauen */
   for (let v = Math.floor(r[1]) - rand; v < Math.ceil(r[3]) + rand; v++) for (let u = Math.floor(r[0]) - rand; u < Math.ceil(r[2]) + rand; u++) if (!BODEN.has(jetzt(u + 0.5, v + 0.5))) return false;
   if (koerper.some((q) => r[0] - 1.4 < q[2] && q[0] < r[2] + 1.4 && r[1] - 1.4 < q[3] && q[1] < r[3] + 1.4)) return false;

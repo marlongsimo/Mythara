@@ -61,7 +61,7 @@ npc.push({ id: "wache_suedstrasse", rolle: "Wache an der Südstraße (keine Sper
   { const [x, y] = kaiAn(cy - 4); lies("kai", x + 1.5, y, "Der Kai an der Kiel. Fässer, Taue, Möwen – und der Geruch von Hering."); fischplatz("fischplatz_kai", "hering", 20, x + 0.5, y + 0.5, -1, 0, "Am Kai beißen die Heringe."); }
   /* Häuser und Einrichtungen */
   ding("dorf_taverne_01", cx + 10, cy - 18, { id: "taverne_ankerkraut" }); lies("taverne_ankerkraut", cx + 11.5, cy - 17.4, "Die Taverne „Zum Ankerkraut“. Drinnen singt jemand von einem Schiff, das nie zurückkam.");
-  ding("graufurt_steinhaus_01", cx - 12, cy - 18, { id: "kuestenhaus", s: 1.3 }); lies("kuestenhaus", cx - 12, cy - 17.2, "Das Haus der Küstenhäuser – hier sitzen die Familien, die den Hafen verwalten.");
+  ding("waldmark_rathaus_01", cx - 12, cy - 18, { id: "kuestenhaus" });   /* Haus der Küstenhäuser mit Ratssaal (#174) */ lies("kuestenhaus", cx - 12, cy - 17.2, "Das Haus der Küstenhäuser – hier sitzen die Familien, die den Hafen verwalten.");
   ding("waldmark_bank_01", cx + 26, cy - 18, { id: "kielmund_bank" }); lies("kielmund_bank_tuer", cx + 26, cy - 17.4, "Die Bank von Kielmund.");
   male(cx + 18, cy + 4, cx + 34, cy + 14, () => "p"); ding("dorf_schmiede_01", cx + 23, cy + 10, { id: "kielmund_schmiede" }); ding("hand_werkbank_01", cx + 30, cy + 12, { id: "kielmund_werkbank" });
   lies("kielmund_werkstatt", cx + 26, cy + 13.4, "Die Werkstatt von Kielmund: Esse, Amboss, Werkbank – und ein Haufen rostiger Anker.");
@@ -71,10 +71,9 @@ npc.push({ id: "wache_suedstrasse", rolle: "Wache an der Südstraße (keine Sper
   ding("dorf_brunnen_01", cx, cy + 0.6, { id: "kielmund_brunnen" }); lies("kielmund", cx, cy + 2.4, "Kielmund, wo die Kiel ins Meer fällt. Möwen über den Dächern, Salz in der Luft.");
   /* Mole hinaus ins Meer mit Leuchtfeuer, Wegstein und Bindestein */
   let mx = cx - 6, my = cy + 20; for (let i = 0; i < 40 && !meer(mx, my + 1); i++) my++;
-  weg([[cx, cy + 4], [cx - 2, my - 1]], 2.2, "p"); steg(mx, my + 2.6, "mole_1"); steg(mx, my + 5.2, "mole_2");
-  ding("turm_signalfeuer_01", mx - 1, my + 3.6, { id: "mole_leuchtfeuer" }); ding("moor_menhir_02", cx - 6, my - 3, { id: "kielmund_wegstein" }); ding("wz_bindestein", cx + 2, my - 3, { id: "kielmund_bindestein" });
-  lies("kielmund_wegstein", cx - 6, my - 1.4, "Der Wegstein von Kielmund."); lies("kielmund_bindestein", cx + 2, my - 1.4, "Ein Bindestein am Fuß der Mole, im Schein des Leuchtfeuers.");
-  lies("mole", mx, my + 1.2, "Die Mole. Am Ende brennt das Leuchtfeuer, das die Boote heimholt.");
+  weg([[cx, cy + 4], [cx - 2, my - 1]], 2.2, "p");   /* die Mole mit dem Leuchtfeuer baut kielmund.mjs an der Küste (#174); hier lag sie auf dem Land */
+  ding("moor_menhir_02", cx - 6, my - 3, { id: "kielmund_wegstein" }); ding("wz_bindestein", cx + 2, my - 3, { id: "kielmund_bindestein" });
+  lies("kielmund_wegstein", cx - 6, my - 1.4, "Der Wegstein von Kielmund."); lies("kielmund_bindestein", cx + 2, my - 1.4, "Ein Bindestein am Südplatz von Kielmund. Von hier sieht man das Leuchtfeuer auf der Mole.");
   /* Brücke über die Kiel nach Westen */
   { let y = cy - 14, x0 = cx; while (!"~".includes(zeichen(x0 - 1, y))) x0--; let x1 = x0; while ("~".includes(zeichen(x1 - 1, y)) && x1 > x0 - 12) x1--; const bx = (x0 + x1) / 2 + 1; ding("dorf_bruecke_01", bx, y + 1.3, { id: "kiel_bruecke" }); freigeben.push({ art: "rechteck", x0: x1 - 1.5, y0: y - 1.3, x1: x0 + 1.5, y1: y + 1.3 }); }
   /* Fischerzunft (#168, ab Fischen 60): Privatsteg am Strand südwestlich der Stadt mit vielen Fangstellen (Seeaal, Klippenbarsch, Hering), Räucherhütte, Bankkiste;
@@ -83,8 +82,8 @@ npc.push({ id: "wache_suedstrasse", rolle: "Wache an der Südstraße (keine Sper
     let land = 6400; while (land > 6360 && !meer(land - 1 + 0.5, PY - 1.3)) land--;   /* erstes Meerfeld westlich: dort setzt der Steg an */
     for (const [y, yy] of [[Y0 + 0.96, Y0 + 0.5], [Y1, Y1 - 0.5]]) { let a = X1 - 1.2; while (a > 6360 && !meer(a - 1.2, yy)) a -= 2.2; for (let x = a; x <= X1 - 1.2 + 0.01; x += 2.2) ding("k_hecke", x, y, { id: hid() }); }
     let lo = -Infinity, hi = Infinity; for (let y = Y0 + 1.7; y < Y1 + 0.01; y += 0.8) { const yy = Math.min(y, Y1 - 0.8); if (yy - 0.96 > TOR + 1.5 || yy < TOR - 1.5) { ding("k_hecke", X1 - 1.2, yy, { id: hid() }); if (yy < TOR) lo = Math.max(lo, yy); else hi = Math.min(hi, yy - 0.96); } }
-    for (let i = 0; i < 3; i++) steg(land + 4.9 - i * 7.9, PY, "fischerzunft_steg_" + (i + 1));
-    const fang = [["seeaal", 45, 4], ["seeaal", 45, 6], ["klippenbarsch", 35, 8], ["seeaal", 45, 10], ["seeaal", 45, 12], ["hering", 20, 14]];
+    for (let i = 0; i < 3; i++) steg(land + 4.9 - i * 6.8, PY, "fischerzunft_steg_" + (i + 1));   /* 6,8 Felder: ohne Lücke */
+    const fang = [["seeaal", 45, 3], ["seeaal", 45, 5], ["klippenbarsch", 35, 7], ["seeaal", 45, 9], ["seeaal", 45, 11], ["hering", 20, 12]];
     fang.forEach(([f, st, dx], i) => fischplatz("fischerzunft_fang_" + (i + 1), f, st, land - dx + 0.5, i % 2 ? PY - 0.8 : PY - 1.8, 0, i % 2 ? 1 : -1, "Vom Privatsteg der Fischerzunft aus beißen " + { seeaal: "Seeaale", klippenbarsch: "Klippenbarsche", hering: "Heringe" }[f] + "."));
     for (const f of vorschlag.fischplaetze.filter((f) => f.id.startsWith("fischerzunft_fang_"))) if (Math.abs(f.stehplatz[1] - PY) > 2) throw new Error("Fischerzunft: Fangstelle nicht am Steg " + f.id);
     ding("kueste_raeucherhuette", 6396, 7349.5, { id: "fischerzunft_raeucherhuette" }); ding("kueste_netze", 6393, 7357.5, { id: "fischerzunft_netze" }); ding("steinhag_bankkiste", 6399, 7357.6, { id: "fischerzunft_bankkiste" });

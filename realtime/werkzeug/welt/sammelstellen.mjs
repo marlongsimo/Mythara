@@ -39,8 +39,8 @@ const FWO = lies("fahleweiten_orte.json");
 const ORTE = { ...(FWO.orte || {}), ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, ...lies("hochlande_orte.json").orte };
 const HL = lies("hochlande_orte.json");
 for (const r of HL.reisende || []) for (const [x, y] of r.punkte) hinder.push([x, y, 3]);   /* Wege der Reisenden (Bergleute Steinhag → Erzberg) frei halten */
-const STADT = HL.hauptstadt?.mauer, inStadt = (x, y, r = 0) => STADT && x > STADT[0] - r && x < STADT[2] + r && y > STADT[1] - r && y < STADT[3] + r;   /* Hauptstadt Steinhag (#167): in den Mauern keine Sammelstellen */
-const ORTSRADIUS = { grauwacht: 70, huegelgrund: 30, kohlstatt: 22, brechstein: 20, wollhag: 22, weiherhof: 26, haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 34, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
+const KMO = lies("kielmund_orte.json"), STAEDTE = [HL.hauptstadt?.mauer, KMO.mauer && [6370, ...KMO.mauer.slice(1)]].filter(Boolean), STADT = STAEDTE[0], inStadt = (x, y, r = 0) => STAEDTE.some((S) => x > S[0] - r && x < S[2] + r && y > S[1] - r && y < S[3] + r);   /* Steinhag (#167), Kielmund (#174) */   /* Hauptstadt Steinhag (#167): in den Mauern keine Sammelstellen */
+const ORTSRADIUS = { grauwacht: 70, huegelgrund: 30, kohlstatt: 22, brechstein: 20, wollhag: 22, weiherhof: 26, haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 80, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
 
 /* ───── Gruppen: Ort, Art (holz/erz), Arten der Bäume bzw. Adern, Name ───── */
 const fest = (liste) => liste.filter((p) => p.x !== undefined).map((p) => ({ id: p.id, art: p.art, x: p.x, y: p.y }));
