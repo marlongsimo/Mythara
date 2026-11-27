@@ -16,7 +16,7 @@ check(Object.keys(S).flatMap((t) => MONSTER[t].drops.flatMap((R) => R.wurf.map((
 check(Object.keys(S).every((t) => MONSTER[t].drops.every((R) => R.wurf.reduce((a, w) => a + w.chance, 0) <= 100.0001)), "je Wurf höchstens 100 %");
 check(!/flieg|schweb/i.test(MONSTER.drakling.info) && MONSTER.drakling.angriff.art === "magie", "der Drakling ist ein Bodengegner (fliegt nicht)");
 check(GEGENSTAENDE.wildbret && rezept("wildbretbraten")?.level === 50 && VERBRAUCH.wildbretbraten.heilt.fest === 12, "neu nur Wildbret (Fleisch) und der Wildbretbraten (Kochen 50, heilt 12)");
-{ const n = (t) => WELTKAMPF.reduce((a, z) => a + z.lager.filter((l) => l.art === t).length, 0), da = Object.keys(S).filter((t) => t !== "drakling");
-  check(!n("drakling") && (!WELTKAMPF.some((z) => z.lager.some((l) => l.gp)) || da.every((t) => n(t) > 0)), `#138: mit den Gegnerplätzen stehen die neun mit Modell in der Welt (${da.map((t) => t + " " + n(t)).join(", ")}), der Drakling noch nicht`); }
+{ const n = (t) => WELTKAMPF.reduce((a, z) => a + z.lager.filter((l) => l.art === t).length, 0), da = Object.keys(S);
+  check(!WELTKAMPF.some((z) => z.lager.some((l) => l.gp)) || da.every((t) => n(t) > 0), `#138: mit den Gegnerplätzen stehen alle zehn in der Welt (${da.map((t) => t + " " + n(t)).join(", ")})`); }
 console.log(f ? `\nVorbereitete Gegner: ${f} FEHLER` : "\nVorbereitete Gegner: alles in Ordnung");
 process.exit(f ? 1 : 0);

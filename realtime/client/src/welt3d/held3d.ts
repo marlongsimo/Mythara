@@ -288,6 +288,7 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   bergtroll: { datei: "bergtroll3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 },
   tundraelch: { datei: "tundraelch3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   frostwolf: { datei: "frostwolf3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
-  eisgolem: { datei: "eisgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
+  eisgolem: { datei: "eisgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  drakling: { datei: "drakling3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 } /* Bodengegner (Figuren 7cd8342fd) */ }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }

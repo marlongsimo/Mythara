@@ -120,7 +120,7 @@ for rid, l in SUEDEN.items(): BESONDERS.setdefault(rid, {"leine": 12, "wandern":
 # Frostkrone, Drachenarm) vorerst ausgelassen, die des Südens stehen schon oben. Namen der Welt → Gegner (abwechselnd bei Gruppen); unbekannte Gegner fallen weg.
 GP_DATEI = os.path.join(WURZEL, "realtime", "welt", "gegnerplaetze.json")
 # #138: Modelle des Nutzers sind da (Figuren 8c2ed9b25) – deren Plätze mit quelle „fehlt“ gelten jetzt; der Drakling erst, wenn er als Bodengegner da ist
-GP_MODELL_DA = {"steppenwolf", "ockerhyaene", "hochlandwidder", "hochlandbaer", "klippenadler", "bergtroll", "tundraelch", "frostwolf", "eisgolem"}
+GP_MODELL_DA = {"steppenwolf", "ockerhyaene", "hochlandwidder", "hochlandbaer", "klippenadler", "bergtroll", "tundraelch", "frostwolf", "eisgolem", "drakling"}  # Drakling als Bodengegner: Figuren 7cd8342fd
 GP_ALIAS = {"wolf": ["heidewolf"], "strandraeuber": ["strandraeuber_saebel", "strandraeuber_armbrust"], "karawanenraeuber": ["karawanenraeuber_saebel", "karawanenraeuber_bogen"],
             "wegelagerer": ["wegelagerer_knueppel", "wegelagerer_schleuder"]}
 import re as _re
