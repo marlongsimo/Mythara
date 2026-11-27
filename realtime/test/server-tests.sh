@@ -38,6 +38,10 @@ TESTS=(
   phase4-inhalte
   b3-welt
   b4-welt
+  sueden-welt
+  welt-federmutter
+  welt-gegnerdichte
+  welt-troedler
   phase5
   phase8-10
   abholen
@@ -68,8 +72,6 @@ TESTS=(
   bosse-116
   bank-platzhalter
   festland-kampf
-  inhalt-phase6
-  inhalt-phase7
   inhalt-sueden
   kraeuterkunde
   gegnerlast

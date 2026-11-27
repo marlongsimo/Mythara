@@ -34,7 +34,8 @@ const platz = (cx, cy, rx, ry, f) => male(cx - rx - 1, cy - ry - 1, cx + rx + 1,
 const kat = (x, y) => kachel(x, y)?.n;
 
 export const ORTE = { heckenhof: [6490, 6812], summweide: [6418, 6904], schilfsee: [6450, 7188], erlengrund: [6392, 7004], lehmfurt: [6466, 7244], kreuzstein: [6476, 7098], halber_weg: [6474, 7010],
-  lager_nord: [6432, 6950], lager_sued: [6496, 7166], steinbruch: [6500, 7236], waldsenke: [6342, 6968] };
+  lager_nord: [6432, 6950], lager_sued: [6496, 7166], steinbruch: [6500, 7236], waldsenke: [6342, 6968],
+  faehrtenlager: [6608, 6834], laemmerhang: [6292, 7096], distelhof: [6560, 6966] };   /* #130: kleine Orte abseits der Südstraße */
 
 /* ───── Heckenhof: Gehöft mit Feldern (Hanf, Flachs), Weiden, Pferch, Herd ───── */
 { const [x, y] = ORTE.heckenhof; platz(x, y, 22, 16, (u, v) => (v > y + 2 && u < x + 2 ? "a" : v > y + 2 ? (welle(u, v) > 0.5 ? "," : ".") : welle(u, v) > 1.1 ? "," : "."));
@@ -115,6 +116,22 @@ export const ORTE = { heckenhof: [6490, 6812], summweide: [6418, 6904], schilfse
 for (const [k, [x, y]] of [["nord", ORTE.lager_nord], ["sued", ORTE.lager_sued]]) { platz(x, y, 7, 5, (u, v) => (welle(u, v) > 0.4 ? "t" : "."));
   ding(`wegelager_${k}_zelt`, "welt_zelt_01", x - 2, y - 1); ding(`wegelager_${k}_feuer`, "moor_feuerkorb_01", x + 2, y + 1); ding(`wegelager_${k}_kiste`, "k_kiste", x + 4, y - 2);
   lies("wegelager_" + k, x, y + 2.4, "Ein Lager im Gebüsch, gut versteckt neben der Straße. Wegelagerer."); V.gegner.push({ id: "wegelager_" + k, gegner: ["wegelagerer_knueppel", "wegelagerer_schleuder"], stufe: k === "nord" ? 20 : 22, x, y, r: 7, fliehen: true }); }
+
+/* ───── #130: kleine Orte abseits der Südstraße ───── */
+{ const [x, y] = ORTE.faehrtenlager; platz(x, y, 10, 7, (u, v) => (welle(u, v) > 0.6 ? "t" : "."));   /* Jägerlager im Südosten, Richtung Osthang/Graufurt */
+  ding("faehrtenlager_zelt_1", "welt_zelt_01", x - 3, y - 2); ding("faehrtenlager_zelt_2", "welt_zelt_01", x + 3, y - 3, { spiegeln: true }); ding("faehrtenlager_feuer", "dorf_festfeuer_01", x, y + 1);
+  ding("faehrtenlager_holz", "dorf_holzstapel_01", x + 6, y); ding("faehrtenlager_kiste", "k_kiste", x - 6, y + 1);
+  lies("faehrtenlager", x, y + 3.4, "Das Fährtenlager. Jäger aus Graufurt trocknen hier Felle und lesen die Spuren der Wölfe.", { station: "feuer" }); V.npc.push({ id: "jaegerin_faehrtenlager", rolle: "Jägerin", x: x + 2, y: y + 2 }); }
+{ const [x, y] = ORTE.laemmerhang; platz(x, y, 14, 10, (u, v) => (welle(u, v) > 0.7 ? "," : "."));   /* Schäferei im Westen zwischen Erlengrund und Möwenbucht */
+  ding("laemmerhang_kate", "moor_kate_01", x - 4, y - 3); ding("laemmerhang_stall", "dorf_huette_holz_01", x + 5, y - 4);
+  const P = [x - 9, y + 1, x + 9, y + 8]; for (let u = P[0] + 1.2; u < P[2]; u += 2.4) { ding("laemmerhang_zaun_n" + Math.round(u), "k_zaun", u, P[1]); if (Math.abs(u - x) > 2) ding("laemmerhang_zaun_s" + Math.round(u), "k_zaun", u, P[3]); }
+  lies("laemmerhang", x, y - 0.4, "Der Lämmerhang, eine Schäferei. Im Pferch blöken die Lämmer, der Hund schläft in der Sonne."); V.npc.push({ id: "schaeferin_laemmerhang", rolle: "Schäferin", x: x + 1, y: y - 1 }); }
+{ const [x, y] = ORTE.distelhof; platz(x, y, 12, 9, (u, v) => (v > y + 1 ? "a" : welle(u, v) > 1 ? "," : "."));   /* kleiner Hof östlich der Südstraße */
+  ding("distelhof_haus", "weidenhain_kate_01", x - 2, y - 2); ding("distelhof_holz", "dorf_holzstapel_01", x + 5, y - 2); for (let u = x - 9; u <= x + 9; u += 2.4) ding("distelhof_zaun_" + Math.round(u + 20), "k_zaun", u, y + 1.2);
+  lies("distelhof", x, y + 0.4, "Der Distelhof. Mehr Disteln als Korn – aber die Bäuerin gibt nicht auf."); V.npc.push({ id: "baeuerin_distelhof", rolle: "Bäuerin", x: x + 1, y: y }); }
+weg([[6672, 6770], [6640, 6800], [ORTE.faehrtenlager[0] + 4, ORTE.faehrtenlager[1] - 2]]);
+weg([[ORTE.erlengrund[0] - 14, ORTE.erlengrund[1] + 6], [6340, 7050], [ORTE.laemmerhang[0] + 8, ORTE.laemmerhang[1] - 3]]);
+weg([[6464, 6966], [ORTE.distelhof[0] - 10, ORTE.distelhof[1]]]);
 
 /* ───── Wege und Anschlüsse an die Südstraße ───── */
 weg([[6458, 6812], [ORTE.heckenhof[0] - 6, ORTE.heckenhof[1]]]);

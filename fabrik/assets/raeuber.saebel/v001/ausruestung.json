@@ -1,0 +1,28 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "raeuber.saebel – Karawanenräuber mit Krummsäbel (St. 50), Phase 9 Glutsande: Körper des Banditen (bandit3d); danach Rot → Sandocker mit fabrik/textur_ton.py.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "angriff",
+    "block",
+    "treffer",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.krummsaebel",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffen/schwert/waffe.krummsaebel/v001/quelle/krummsaebel.glb",
+      "griff": 0.08
+    }
+  ]
+}

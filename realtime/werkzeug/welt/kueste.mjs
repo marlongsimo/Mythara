@@ -106,7 +106,7 @@ const HOEHLE_U = [357, 300], KAPITAEN_U = [359, 300];
 /* ───── Kräuterhof im Küstenwald, Eiben ───── */
 { const [kx, ky] = ORTE.kraeuterhof; male(kx - 14, ky - 10, kx + 14, ky + 10, (x, y) => (Math.hypot((x - kx) / 13, (y - ky) / 9) < 1 ? (Math.abs(x - kx) < 8 && y > ky + 1 && y < ky + 7 ? "a" : welle(x, y) > 0.6 ? "," : ".") : null));
   ding("dorf_kraeuterhaus_01", kx - 4, ky - 1, { id: "kraeuterhof_haus" }); ding("hand_kessel_01", kx + 4, ky - 2, { id: "kraeuterhof_kessel" }); ding("dorf_zaun_01", kx - 8, ky + 8); ding("dorf_zaun_01", kx + 8, ky + 8);
-  lies("kraeuterhof", kx, ky + 0.6, "Der Kräuterhof. Beete voller Salzkraut, Strandflieder und Meerfenchel – ein zweites Kräutergebiet.");
+  lies("kraeuterhof", kx, ky + 0.6, "Der Kräuterhof. Beete voller Ringelblumen, Moorglöckchen, Eisenhut und Nebelkraut – ein zweites Kräutergebiet.");
   npc.push({ id: "kraeuterbaeuerin", rolle: "Kräuterhof", x: kx + 1, y: ky + 1 });
   for (const [i, [x, y]] of [[6372, 7040], [6382, 7030], [6392, 7046], [6366, 7056], [6380, 7062]].entries()) { male(x - 2, y - 2, x + 2, y + 2, () => "."); ding("holz_eibe_01", x, y, { id: "eibe_kueste_" + (i + 1) }); vorschlag.eiben.push({ id: "eibe_kueste_" + (i + 1), art: "eibe", x, y }); }
   weg([[kx, ky + 8], [kx + 20, ky + 20], [6468, 7100]], 1.6); }

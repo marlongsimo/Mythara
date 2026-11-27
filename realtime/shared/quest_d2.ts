@@ -3,7 +3,6 @@
  * Grundlage: doku/konzepte/phase-7.md. Beginnt am Ostanleger bei Kord Weller („Seit die Kette riss, brennt da drüben dieses Licht.“), Abgabe bei Merit Stahl.
  * Wappentür des Turms, Turmwächter auf Ebene 1 und 2, das Wächterbuch auf Ebene 3, das Grünlicht auf dem Dach, der Splitterkern im Signalfeuer,
  * der Geist der Wächterin Ysolde. Lohn: je 1.000 XP Stärke, Geschick, Defense, 500 LP-XP, 600 Splitter, 2 Questpunkte, Wegstein-Ziel Ostufer (Turm).
- * Alle neuen Namen sind Vorschläge (doku/KANON.md).
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Ostufer und Turm aus #36, Ysolde und Gegner aus #37, Spiel nach Phase 6).
  * Stellen aus der Welt (#36): Ostanleger in graufurt, Wappentür in ostufer (Ursprung 6784 | 6400), Turm turm_ebene1–3 und turm_dach (Ursprung 10880 … 10976 | 9600). Liste: doku/quests/d-bausteine.md.
@@ -20,16 +19,16 @@ const HILFE = ["Der Turm steht oben auf der Anhöhe. Die Tür hat das Wappen –
   "Drinnen sollen Wächter stehen. Steinerne. Die alten Leute sagen, die haben nie aufgehört zu wachen.", "Ganz oben brennt das Licht. Bring der Hauptfrau, was du findest."];
 
 export const QUEST_D2: QuestDef = {
-  id: D2, titel: "Das grüne Licht", ort: "Ostufer · Turm · Graufurt", start: "Sprich mit Kord Weller am Ostanleger, wenn er dich übergesetzt hat.",
+  id: D2, titel: "Das grüne Licht", ort: "Ostufer · Turm · Graufurt", start: "Sprich mit Kord Weller am Ostanleger, gegenüber von Graufurt.",
   logNeu: "Am Ostufer steht auf einer Anhöhe ein Turm. In seinem obersten Fenster brennt ein grünes Licht – jede Nacht, seit die Fährkette riss.",
   logAngeboten: "Kord Weller am Ostanleger hat dir vom grünen Licht im Turm erzählt.",
   logAbgabe: "Bring den Splitterkern aus dem Signalfeuer zu Hauptfrau Merit Stahl in den Bergfried von Graufurt.",
   logFertig: "Das grüne Licht ist erloschen. Ysolde hat gewartet, dass Grauwacht antwortet – niemand antwortete. Der Weg nach Grauwacht im Nordsaum ist zugewachsen. Noch.",
   geber: "kord_ost", abgabe: "merit",
   figuren: [
-    { id: "kord_ost", name: "Kord Weller", modell: "npcmann3d", x: OSTANLEGER[0], y: OSTANLEGER[1], blick: [1, 0] },
+    { id: "kord_ost", name: "Kord Weller", modell: "npc.kord", x: OSTANLEGER[0], y: OSTANLEGER[1], blick: [1, 0] },
     { id: "ysolde", name: "Ysolde", modell: "npc.ysolde", x: DACH[0] + 2, y: DACH[1], blick: [-1, 0] },
-    { id: "merit", name: "Merit Stahl", modell: "stadtwache3d", x: MERIT[0], y: MERIT[1], blick: [0, 1] },
+    { id: "merit", name: "Merit Stahl", modell: "npc.merit", x: MERIT[0], y: MERIT[1], blick: [0, 1] },
   ],
   voraussetzungen: [{ text: "„Die Fährkette“ abgeschlossen", wenn: { quest: { id: D1, phase: ["fertig"] } } }],
   schritte: [
@@ -66,7 +65,7 @@ export const QUEST_D2: QuestDef = {
     kord_ost: {
       reden: [
         { wenn: { ...NEU, voraussetzungen: true }, zeilen: ["Da. Siehst du's? Seit die Kette riss, brennt da drüben dieses Licht.", "Ich fahr dich her. Weiter geh ich nicht."], antworten: ["annehmen", "spaeter"] },
-        { wenn: NEU, zeilen: ["Hier fährt keiner rüber. Noch nicht."], antworten: ["tschuess"] },
+        { wenn: NEU, zeilen: ["Zu Fuß hergekommen? Über den Pass? Respekt. Ich fahr dich zurück, wenn du willst."], antworten: ["tschuess"] },
         { wenn: FERTIG, zeilen: ["Dunkel da oben. Endlich. Ich schlaf wieder."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["kern"] }, zeilen: ["Das Licht ist aus! Ich hab's gesehen, vom Boot aus.", "Was hast du da oben gefunden? …Nein. Sag's der Hauptfrau, nicht mir."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["tuer"] }, zeilen: ["Du warst drin? Und kommst wieder raus? Respekt."], antworten: ["hilfe", "tschuess"] },
@@ -108,6 +107,8 @@ export const QUEST_D2: QuestDef = {
       ],
     },
   },
+  /* Die Wappentür (shared/bosse.ts, TUEREN „turm_wappentuer“) ist offen ab dem Schritt „tuer“ und nach der Quest */
+  schalter: { wappentuer_offen: [{ erledigt: ["tuer"] }, FERTIG] },
   belohnungText: "Belohnung: je 1.000 XP Stärke, Geschick und Defense, 500 LP-XP, 600 Splitter · danach: Wegstein-Ziel Ostufer (Turm)",
   belohnung: { xp: { staerke: 1000, geschick: 1000, defense: 1000, lp: 500 }, splitter: 600 },
   punkte: 2,

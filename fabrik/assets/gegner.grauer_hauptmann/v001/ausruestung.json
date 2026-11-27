@@ -1,0 +1,20 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "gegner.grauer_hauptmann – Der Graue Hauptmann: Mini-Boss (Stufe 52): Geist in Wacht-Rüstung, durchscheinend grau (fabrik/geist.py); ruft Wiedergänger (ruf), Rundumschlag. Aus stadtwache3d v002 (Meshy „Azure Lionguard“).",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "stich2h",
+    "rundumschlag",
+    "ruf",
+    "treffer",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": []
+}

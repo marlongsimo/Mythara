@@ -59,8 +59,8 @@ try {
   let menueLv = null;
   const balken = () => anna.evaluate(() => [...document.querySelectorAll(".ez-balken3d")].filter((e) => !e.hidden && e.getBoundingClientRect().width > 0 && !e.classList.contains("eigen")).length);
   { let n = 1; for (let i = 0; i < 10 && n; i++) { n = await balken(); if (n) await anna.waitForTimeout(300); } check(n === 0, "Gegner außerhalb des Kampfes: kein Lebensbalken"); } /* beim Aufbau kurz sichtbar möglich */
-  /* #66: Lebensbalken anderer Spieler nur im Kampf – Ben kommt dazu und steht nur herum */
-  const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6537, 6583, "waldweg"]); ben.setDefaultTimeout(90000); await ben.goto(B + S + "&vorwaermen=0"); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
+  /* #66: Lebensbalken anderer Spieler nur im Kampf – Ben kommt dazu und steht nur herum (#113: etwas weiter westlich, außer Reichweite der Banditen-Lichtung) */
+  const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6530, 6584, "waldweg"]); ben.setDefaultTimeout(90000); await ben.goto(B + S + "&vorwaermen=0"); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   const benBalken = () => anna.evaluate(() => { const K = window.EZK; return [...K.figuren.values()].filter((g) => g.held && !g.tot).map((g) => { const b = K.bilder.get(g); return b ? !b.lb.hidden : null; }); });
   await anna.waitForFunction(() => [...window.EZK.figuren.values()].some((g) => g.held && !g.tot), null, { timeout: 30000 }).catch(() => {}); await anna.waitForTimeout(5000);
   { const bb = await benBalken(); check(bb.length >= 1 && bb.every((x) => x === false), "Mitspieler außerhalb des Kampfes: nur Name, kein Lebensbalken " + JSON.stringify(bb)); }

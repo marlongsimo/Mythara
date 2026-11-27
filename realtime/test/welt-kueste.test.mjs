@@ -34,4 +34,6 @@ const innen = ["klippenhoehlen_hinaus", "gezeitenbecken", "schmugglerlager", "re
 check(R.begehbar(...e.daten.ziel) && !innen.length && greifbar(K, ...IA.get("klippenhoehlen_hinaus").daten.ziel), "Eingang führt hinein, alles erreichbar, und wieder hinaus", innen);
 const kt = IA.get("kajuete_tuer").daten.ziel, [KX, KY] = ur("wrack_kajuete"), KJ = flut(kt[0], kt[1], [KX - 2, KY - 2, KX + 34, KY + 34]);
 check(greifbar(KJ, IA.get("logbuch_seite").x, IA.get("logbuch_seite").y) && greifbar(H, ...IA.get("kajuete_hinaus").daten.ziel), "Kajüte des Kapitäns (eigenes Gebiet, Instanz): Logbuchseite erreichbar, zurück in die Höhle");
+const KR = JSON.parse(readFileSync(join(WELT, "kraeuter_standorte.json"), "utf8")), kh = KR.stellen.filter((s) => s.id.startsWith("kraeuterhof_")), khk = KR.kessel.find((k) => k.id === "kessel_kraeuterhof");
+check(new Set(kh.map((s) => s.art)).size >= 4 && kh.every((s) => greifbar(K, s.x, s.y, 1.2)) && khk && greifbar(K, ...khk.stehen, 1.2), `Kräuterhof (#133): ${kh.length} Kräuterstellen (Stufe 20–45 und Ringelblume) und Kessel erreichbar`, kh.filter((s) => !greifbar(K, s.x, s.y, 1.2)).map((s) => s.id));
 console.log(ok ? "\nKüste: alles in Ordnung" : "\nKüste: FEHLER"); process.exit(ok ? 0 : 1);

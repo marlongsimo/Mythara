@@ -6,7 +6,7 @@
  * Lohn: Fernkampf 500, Geschick 300, LP 200, 10 Äpfel, 120 Splitter, 1 Questpunkt. Danach verkauft Gisbert Äpfel.
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Issue #15 (Gegner bandit_spaeher, bedingte Beute b3_karrenbrief, Gegenstände, Schalter)
- * und darauf, dass eine Figur in mehreren Quests sprechen kann (Othmar gehört heute Quest 1). Liste: doku/quests/b3-b4-bausteine.md.
+ * Othmar spricht in Quest 1, B3 und B4 (Figur in mehreren Quests, questbau.figurQuest, #48). Liste: doku/quests/b3-b4-bausteine.md.
  * Orte: Issue #21 (Welt, 81778e67).
  */
 import type { QuestDef, Bed } from "./questbau";

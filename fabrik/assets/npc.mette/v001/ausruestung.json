@@ -1,0 +1,34 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.mette – Mette Heider, Hirtin in den Fahlen Weiten (aus npcfrau3d): wilder blonder Zopf, Hirtenstab.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.hirtenstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.staken/v001/quelle/staken.glb",
+      "griff": 0.62,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.zopf_wild",
+      "platz": "haar",
+      "glb": "npc.mette/v001/quelle/teile/kopf.haar.zopf_wild.glb"
+    }
+  ]
+}

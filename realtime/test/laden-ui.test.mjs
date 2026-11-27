@@ -52,7 +52,7 @@ try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6448.5, 6444.5, "waldmark"]);
   await anna.goto(B + S); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && i.rucksack && i.rucksack.includes("splitter"); }, null, { timeout: 30000 }).catch(() => {}); await anna.waitForTimeout(2500);
-  const H = await anna.evaluate(() => window.EZW.welt3d.haendler && window.EZW.welt3d.haendler.liste);
+  const H = await anna.evaluate(() => window.EZW.welt3d.haendler && window.EZW.welt3d.haendler.liste.filter((h) => !String(h.id).startsWith("troedler_"))); /* die Trödler (#88) stehen nicht am Marktplatz */
   check(H && H.length === 3, `Drei Händler am Marktplatz: ${JSON.stringify(H)}`);
   /* Kamera über den Markt */
   await anna.evaluate(() => { const W = window.EZW.welt3d; W.versetzen(6448.5, 6444.5); const M = W.motor; M.gieren = 0; M.neigen = 0.9; M.abstand = 18; }); await anna.waitForTimeout(3000);
@@ -67,6 +67,10 @@ try {
   await anna.click("#ez-gespraech"); await anna.waitForTimeout(400);
   const aw = await anna.evaluate(() => [...document.querySelectorAll("#ez-gespraech [data-a]")].filter((b) => b.dataset.a !== "__zu").map((b) => b.textContent.trim()));
   check(aw.length === 2 && /Nein danke/.test(aw[0]) && /Laden ansehen/.test(aw[1]), `Antworten: ${JSON.stringify(aw)}`);
+  /* #100: im Gespräch dreht sich Mira zum Helden */
+  const dreh = () => anna.evaluate(() => { const W = window.EZW.welt3d, H = W.haendler.alle.find((h) => h.l.id === "traenke"); return { ist: H.npc.zielDreh, zumHelden: Math.atan2(W.ort.x - H.l.x, W.ort.y - H.l.y), grund: Math.atan2(H.l.blick[0], H.l.blick[1]), zu: Boolean(H.zugewandt) }; });
+  const winkel = (a, b) => Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b)));
+  { const d = await dreh(); check(d.zu && winkel(d.ist, d.zumHelden) < 0.05, `Mira dreht sich zum Helden (${d.ist.toFixed(2)} ≈ ${d.zumHelden.toFixed(2)})`); }
   if (BILD) await anna.screenshot({ path: BILD + "haendler-dialog.png" });
   await anna.click('#ez-gespraech [data-a="laden"]'); await anna.waitForTimeout(600);
   check(await anna.evaluate(() => /Schluck auf!/.test(document.querySelector("#ez-konto .tafel.laden")?.textContent || "") && document.querySelectorAll("#ez-konto .lware").length === 2), "„Laden ansehen“: Ladenfenster „Schluck auf!“ mit zwei Waren");
@@ -83,6 +87,7 @@ try {
   check(await anna.evaluate(() => /Kleiner Heiltrank/.test(document.querySelector("#ez-konto .tafel.untersuchen")?.textContent || "") && /Heilung/.test(document.querySelector("#ez-konto .tafel.untersuchen").textContent)), "Untersuchen: Werte des Tranks");
   await anna.click('#ez-konto [data-t="zurueck"]'); await anna.waitForTimeout(400); check(await anna.evaluate(() => Boolean(document.querySelector("#ez-konto .tafel.laden"))), "Zurück: wieder im Laden");
   await anna.keyboard.press("Escape"); await anna.waitForTimeout(300);
+  { const d = await dreh(); check(!d.zu && winkel(d.ist, d.grund) < 0.05, `Nach dem Gespräch: wieder in der Grundhaltung (${d.ist.toFixed(2)} ≈ ${d.grund.toFixed(2)})`); }
   /* Rechtsklick auf Brann (Waffen): Menü „Sprechen“, „Laden ansehen“ */
   await hin(6439.2, 6439.2);
   if (BILD) await anna.screenshot({ path: BILD + "markt-vorn.png" });
