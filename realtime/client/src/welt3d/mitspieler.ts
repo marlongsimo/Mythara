@@ -3,6 +3,7 @@
  * Blick, Laufen, Stufe, Leben, Aussehen), dieselben Bilder (FigurLeinwand), Namen, Lebensbalken und Sprechblasen als HTML über der Szene.
  * Schnittstelle wie welt.ts Mitspieler: liste, weg, blase, schritt – dazu unter(px, py) fürs Antippen.
  */
+import { ArbeitAnzeige } from "./arbeit3d";
 import { heldenFigur3D, FigurArt } from "./held3d";
 import type { Welt3D } from "./motor";
 import type { Fremder } from "../welt";
@@ -10,7 +11,7 @@ import { heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
 import { FELD_PX } from "../../../shared/welt/typen";
 
 const HOEHE = 2.0, MODUL: Record<string, string> = { schildwaechter: "held.krieger" };
-interface Figur { f: FigurArt; nm: HTMLElement; lb: HTMLElement; d: Fremder; x: number; y: number; /** Weltfelder (weich nachgeführt) */ wx?: number; wy?: number; held: string; a: string; /** zuletzt gemeldetes Leben und Ende des Kampfs (Lebensbalken nur im Kampf, #66) */ lpAlt?: number; kampfBis?: number }
+interface Figur { /** #67 */ ar?: ArbeitAnzeige; f: FigurArt; nm: HTMLElement; lb: HTMLElement; d: Fremder; x: number; y: number; /** Weltfelder (weich nachgeführt) */ wx?: number; wy?: number; held: string; a: string; /** zuletzt gemeldetes Leben und Ende des Kampfs (Lebensbalken nur im Kampf, #66) */ lpAlt?: number; kampfBis?: number }
 
 /** Ein HTML-Schild, das einem Punkt der 3D-Welt folgt */
 export function schildAn(el: HTMLElement, m: Welt3D, x: number, y: number, z: number): boolean {
@@ -31,6 +32,8 @@ export class Mitspieler3D {
   unterPunkt(px: number, py: number): Fremder | null { let best: Fremder | null = null, bd = 1e9;
     for (const f of this.figuren.values()) { const w = this.feld(f), h = this.m.hoehe(w.x, w.z), a = this.m.bildschirm(w.x, h, w.z), b = this.m.bildschirm(w.x, h + HOEHE, w.z); if (!a || !b) continue;
       const breit = Math.max(18, Math.abs(a.y - b.y) * 0.35), dx = Math.abs(px - a.x), innen = py <= a.y + 6 && py >= b.y - 6 && dx <= breit; if (innen && dx < bd) { bd = dx; best = f.d; } } return best; }
+  /** Folgen (#54): Stelle eines Mitspielers in Weltfeldern, nach Namen */
+  ortVon(name: string): { x: number; y: number } | null { for (const f of this.figuren.values()) if (f.d.n === name) { const w = this.feld(f.d.wx !== undefined && f.d.wy !== undefined ? { x: f.d.x, y: f.d.y, wx: f.d.wx, wy: f.d.wy } : f.d); return { x: w.x, y: w.z }; } return null; }
   blase(id: number, text: string): void { const f = this.figuren.get(id); if (!f) return; blase3d(this.m, () => { if (this.figuren.get(id) !== f) return null; const w = this.feld(f); return { x: w.x, y: this.m.hoehe(w.x, w.z) + HOEHE + 0.9, z: w.z }; }, text); }
   liste(l: Fremder[]): void { const da = new Set<number>();
     for (const d of l) { da.add(d.i); let f = this.figuren.get(d.i); const a = d.a ? heldPruefen(d.a) : null, k = a ? aussehenSchluessel(a) : "";
@@ -43,7 +46,7 @@ export class Mitspieler3D {
   /** Jedes Bild: weich zur gemeldeten Stelle, Name mit Stufe, Lebensbalken nur im Kampf (wenn er gerade Leben verloren hat), Punkt auf der Minikarte */
   schritt(dt: number): void { for (const f of this.figuren.values()) { const d = f.d, k = Math.min(1, dt * 10); f.x += (d.x - f.x) * k; f.y += (d.y - f.y) * k;
     if (d.wx !== undefined && d.wy !== undefined) { f.wx = f.wx === undefined || Math.hypot(d.wx - f.wx, (d.wy) - (f.wy ?? d.wy)) > 6 ? d.wx : f.wx + (d.wx - f.wx) * k; f.wy = f.wy === undefined || Math.abs(d.wy - f.wy) > 6 ? d.wy : f.wy + (d.wy - f.wy) * k; } /* Sprünge (Teleport) nicht nachziehen */
-    const w = this.feld(f), h = this.m.hoehe(w.x, w.z); f.f.stelle(w.x, h, w.z); f.f.blick(Math.cos(d.b), Math.sin(d.b)); f.f.setze(d.l ? "laufen" : "ruhe"); f.f.schritt(dt * 1000, this.m.gieren);
+    const w = this.feld(f), h = this.m.hoehe(w.x, w.z); f.f.stelle(w.x, h, w.z); f.f.blick(Math.cos(d.b), Math.sin(d.b)); f.f.setze(d.l ? "laufen" : "ruhe"); if (d.w || f.ar) (f.ar || (f.ar = new ArbeitAnzeige())).schritt(f.f as never, d.l ? undefined : d.w, w.x, w.z); /* #67 */ f.f.schritt(dt * 1000, this.m.gieren);
     const text = d.s ? `${d.n} · Lv ${d.s}` : d.n; if (f.nm.textContent !== text) f.nm.textContent = text; schildAn(f.nm, this.m, w.x, h + HOEHE + 0.35, w.z);
     if (d.lp !== undefined && f.lpAlt !== undefined && d.lp < f.lpAlt) f.kampfBis = performance.now() + 7000; f.lpAlt = d.lp; /* Leben verloren = im Kampf (#66) */
     if (d.max && d.lp !== undefined && (f.kampfBis || 0) > performance.now()) { const a = Math.max(0, Math.min(1, d.lp / d.max)), i = f.lb.firstChild as HTMLElement; i.style.width = Math.round(a * 100) + "%"; i.className = a > 0.5 ? "" : a > 0.25 ? "mittel" : "wenig"; schildAn(f.lb, this.m, w.x, h + HOEHE + 0.12, w.z); } else f.lb.hidden = true;

@@ -4,6 +4,7 @@
  *   · Werkstatt antippen: hingehen, Rezeptfenster (nach Gruppe, Level, Zutaten im Rucksack; 1 / 5 / 10 / Alle).
  *   · Beim Herstellen schlägt der Held mit dem Hammer (Amboss, Werkbank). Glut: kurz „Glut!“ antippen – eine Zutat gespart, 50 % mehr XP.
  */
+import { arbeitMelden } from "../arbeit";
 import { berufAn, beruf } from "../../../shared/berufe";
 import * as THREE from "three";
 import { gltfLader } from "./gltf";
@@ -18,8 +19,11 @@ import { benutzt, benutzen } from "../benutzen";
 import type { Welt3D } from "./motor";
 /** Ergebnis eines Rezepts zum Anzeigen: „ladung:wegstein“ (Splitterbinden) ist kein Gegenstand, sondern eine Ladung für ihn */
 const ladungVon = (r: { ergebnis: string }): string => (r.ergebnis.startsWith("ladung:") ? r.ergebnis.slice(7) : "");
-const ergName = (r: { ergebnis: string }): string => { const l = ladungVon(r), G = GEGENSTAENDE[l || r.ergebnis]; return G ? (l ? `Ladung für den ${G.name}` : G.name) : r.ergebnis; };
-const ergBild = (r: { ergebnis: string }): string => ladungVon(r) || r.ergebnis;
+/* Phase 5b: „ladung:@waffe“ / „entladen:@waffe“ meinen die angelegte Waffe (Rezept.fuer: ihre Seltenheit) */
+const SELTEN_TEXT: Record<string, string> = { selten: "seltene", episch: "epische", legendaer: "legendäre", mythisch: "mythische" };
+const ergName = (r: { ergebnis: string; fuer?: string }): string => { if (r.ergebnis === "entladen:@waffe") return "Waffe entladen (die Splitter verfallen)"; if (r.ergebnis === "ladung:@waffe") return `Ladung für die ${SELTEN_TEXT[r.fuer || ""] || ""} Waffe`.replace("  ", " ");
+  const l = ladungVon(r), G = GEGENSTAENDE[l || r.ergebnis]; return G ? (l ? `Ladung für den ${G.name}` : G.name) : r.ergebnis; };
+const ergBild = (r: { ergebnis: string }): string => (r.ergebnis.endsWith(":@waffe") ? inventar().angelegt.waffe || "splitter" : ladungVon(r) || r.ergebnis);
 
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number }; figur: unknown }
 interface Werkzeugfigur { beilHieb(url: string, clip?: string): number; beilWeg(): void; blick(x: number, z: number): void; werken?(wahl: string[], url?: string): number }
@@ -69,10 +73,10 @@ export class HandwerkWelt {
   /** Solange gearbeitet wird: die Werk-Bewegung immer wieder (Ofen, Hämmern, Weben, Schnitzen, Zusammenfügen; fabrik/werk_bewegungen.py) */
   private werkZeit: ReturnType<typeof setTimeout> | null = null;
   private werkLos(r: Rezept) { this.werkHalt(); const w = WERK[werkTat(r)], o = this.u.ort, S = r.station !== "hand" ? WERKSTAETTEN.filter((W) => W.station === r.station).sort((a, b) => Math.hypot(a.x - o.x, a.y - o.y) - Math.hypot(b.x - o.x, b.y - o.y))[0] || null : null; /* die nächste Werkstatt dieser Art */
-    const eins = () => { const f = this.figur; let ms = 1200; if (f && this.aktiv) { if (S) f.blick(S.x - this.u.ort.x, S.y - this.u.ort.y); ms = (typeof f.werken === "function" ? f.werken(w.clips, w.werkzeug) : w.werkzeug ? f.beilHieb(w.werkzeug, "") : 0) || 1200; }
+    const eins = () => { const f = this.figur; let ms = 1200; if (f && this.aktiv) { if (S) f.blick(S.x - this.u.ort.x, S.y - this.u.ort.y); arbeitMelden({ a: "werken", ...(w.werkzeug ? { u: w.werkzeug } : {}), ...(w.clips[0] ? { c: w.clips[0] } : {}), ...(S ? { x: S.x, y: S.y } : {}) }); /* #67 */ ms = (typeof f.werken === "function" ? f.werken(w.clips, w.werkzeug) : w.werkzeug ? f.beilHieb(w.werkzeug, "") : 0) || 1200; }
       if (this.aktiv) this.werkZeit = setTimeout(eins, ms); };
     eins(); }
-  private werkHalt() { if (this.werkZeit) clearTimeout(this.werkZeit); this.werkZeit = null; }
+  private werkHalt() { if (this.werkZeit) clearTimeout(this.werkZeit); this.werkZeit = null; arbeitMelden(null); }
   private hinweis(text: string, ms: number) { const el = document.getElementById("ez-dorf-hilfe"); if (!el) return; el.textContent = text; el.style.display = ""; setTimeout(() => { if (el.textContent === text) { el.textContent = ""; el.style.display = "none"; } }, ms); }
 
   /** Das Herstellfenster einer Werkstatt (wie in OSRS: Bilder nach Gruppe; antippen → Zutaten und Menge). nur: nur Rezepte mit diesem Gegenstand („Benutzen“) */

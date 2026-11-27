@@ -31,7 +31,7 @@ export const BERUFE: Beruf[] = [
   { id: "fischen", name: "Fischen", symbol: S + "fischen.webp", symbolKlein: S + "fischen_klein.webp", stationen: [],
     wofuer: "Fische zum Kochen: gebraten heilen sie, in der Suppe stärken sie. Jeder Fang bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.",
     aufstieg: "Eine Stelle im Wasser antippen, wo sich Wellen kräuseln – mit Angelrute und Würmern im Rucksack. Die Fische ziehen weiter, dann such die nächste Stelle. Bachling ab Level 1 (20 XP) im Mühlgraben von Weidenhain und im Bach der Obstwiesen, Mühlbarsch ab 10 (35) weiter unten im Mühlgraben, Moorhecht ab 20 (60) im Rabenmoor mit der Reuse. Würmer gräbst du auf dem Acker im Osthof. Schäumt das Wasser (Strömung lesen), tipp schnell: zwei Fische." },
-  { id: "kochen", name: "Kochen", symbol: S + "kochen.webp", symbolKlein: S + "kochen_klein.webp", stationen: ["feuer", "backofen", "herd", "kessel", "brunnen"],
+  { id: "kochen", name: "Kochen", symbol: S + "kochen.webp", symbolKlein: S + "kochen_klein.webp", stationen: ["feuer", "backofen", "herd", "kessel", "brunnen", "raeucherhuette"],
     wofuer: "Essen, das heilt – und manches stärkt dich eine Weile (Fischsuppe: Defense +2 für 5 Minuten). Feuer stehen in Weidenhain, am Rastplatz Osthang und im Rabenmoor; Wasser schöpfst du am Brunnen in einen Krug.",
     aufstieg: "Am Feuer ein Rezept wählen (oder einen rohen Fisch benutzen und das Feuer antippen): Bachling ab Level 1 (30 XP), Mühlbarsch ab 10 (50), Moorhecht ab 20 (80); Fischsuppe ab 15 im Kessel, Bauerneintopf ab 25 am Herd. Anfangs brennt manches an – je höher dein Level, desto seltener. Glüht der Garpunkt, tipp schnell: das Stück gelingt sicher, mit 50 % mehr XP." },
 ];

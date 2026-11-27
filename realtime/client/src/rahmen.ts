@@ -8,6 +8,7 @@ import { skillPlus } from "../../shared/wirkungen";
 import { BERUFE } from "../../shared/berufe";
 import { questStandB, questpunkte, questVerfolgt, questVerfolgen, handwerkBitten, wegsteinReiben } from "./welt";
 import { QUESTS as QUESTS_B, wegzieleFrei } from "../../shared/quests";
+import { REISEKARTE } from "../../shared/wegstein";
 import * as QB from "../../shared/questbau";
 import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
 import { aktionsMenue, langDruecken, Aktion, menueZu } from "./aktionsmenue";
@@ -169,14 +170,16 @@ function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a:
   if (imRucksack && G.platz) a.push({ text: "Ausrüsten", sym: "🛡️", tat: () => anlegen(g) });
   if (imRucksack && G.trank) a.push(G.art === "Essen" ? { text: "Essen", sym: "🍞", tat: () => trinken(Number(wo.slice(1))) } : { text: "Trinken", sym: "🧪", tat: () => trinken(Number(wo.slice(1))) });
   /* Benutzen wie in OSRS: bei Dingen ohne eigenen Zweck (Stämme, Erze, Leder …) die erste Aktion; danach Werkstatt oder anderen Gegenstand antippen */
+  if (g === REISEKARTE) a.push({ text: "Reisen", sym: "🗺", tat: () => setTimeout(() => wegsteinMenue(true), 0) }); /* Phase 9 (#102): einmal am Tag frei – der Server weiß, ob heute noch */
   if (imRucksack && g === "wegstein") a.push({ text: "Reiben", sym: "✨", tat: () => setTimeout(wegsteinMenue, 0) /* erst nach dem Schließen dieses Menüs */ });   /* Phase 3a: Ziele wählen, der Server reist */
   if (imRucksack && !G.platz && !G.trank && g !== "splitter" && g !== "wegstein") a.push({ text: "Benutzen", sym: "✋", tat: () => { benutzen({ wo, g }); chatSystem(`${G.name} benutzen mit … (Werkstatt oder Gegenstand antippen)`); } });
   a.push({ text: "Untersuchen", sym: "🔍", tat: () => untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }) });
   if (imRucksack && inventarAmServer()) a.push({ text: "Fallen lassen", sym: "⬇️", tat: () => fallenLassen(Number(wo.slice(1))) });
   return { kopf: G.name + (n > 1 ? ` ×${n}` : ""), farbe: SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, a }; }
 /** Wegstein reiben: die freigeschalteten Ziele (shared/wegstein.ts) zur Wahl – oder warum es nicht geht */
-function wegsteinMenue(): void { const l = (inventar().ladungen || {}).wegstein || 0, ziele = wegzieleFrei((id) => questStandB(id));
+function wegsteinMenue(karte = false): void { const l = (inventar().ladungen || {}).wegstein || 0, ziele = wegzieleFrei((id) => questStandB(id));
   if (!ziele.length) { chatSystem("Der Stein bleibt kalt – er kennt noch keinen Ort. Agnes an der Linde in Weidenhain weiß mehr."); return; }
+  if (karte) { aktionsMenue(innerWidth / 2, innerHeight / 2, [{ kopf: "Reisekarte · einmal am Tag frei", farbe: SELTENHEITEN.selten.farbe, aktionen: ziele.map((z) => ({ text: z.name, sym: "🗺", tat: () => wegsteinReiben(z.id) })) }]); return; }
   if (!l) { chatSystem("Der Wegstein ist leer. Lade ihn am Bindestein an der Linde in Weidenhain – 2 Splitter je Ladung."); return; }
   aktionsMenue(innerWidth / 2, innerHeight / 2, [{ kopf: `Wegstein · ${l} Ladung${l === 1 ? "" : "en"}`, farbe: SELTENHEITEN.selten.farbe, aktionen: ziele.map((z) => ({ text: z.name, sym: "🧭", tat: () => wegsteinReiben(z.id) })) }]); }
 /** Benutzen: Gegenstand a auf b im Rucksack (z. B. Bogensehne auf ungespannten Bogen) – ein Rezept „im Rucksack“ (shared/handwerk.ts), so oft es geht; der Server prüft Level und Zutaten */

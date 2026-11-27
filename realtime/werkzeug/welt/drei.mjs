@@ -40,7 +40,7 @@ for (const E of ebenen) {
   const boden = Array.from({ length: H }, () => Array(B).fill(unten ? "F" : innen ? "X" : " ")), dinge = [];
   for (const r of E.regs) { const [ux, uy] = r.region.ursprung, ox = ux * C - X0, oy = uy * C - Y0;
     r.gelaende.forEach((z, y) => { for (let x = 0; x < z.length; x++) boden[oy + y][ox + x] = z[x]; });
-    for (const p of r.objekte) { const o = OBJ.get(p.objekt); if (o) dinge.push([typVon(o), +(p.x + ux * C).toFixed(2), +(p.y + uy * C).toFixed(2), p.s || 1, p.spiegeln ? 1 : 0]); }
+    for (const p of r.objekte) { const o = OBJ.get(p.objekt); if (o) dinge.push([typVon(o), +(p.x + ux * C).toFixed(2), +(p.y + uy * C).toFixed(2), p.s || 1, p.spiegeln ? 1 : 0, ...(p.ausbau || p.ausbau_bis ? [`${p.ausbau || ""}|${p.ausbau_bis || ""}`] : [])]); } /* Stadtstufen (#102): Marke „ab|bis“ – der Browser zeigt je Spieler */
     gebiete.push({ id: r.region.id, name: r.region.name, untertitel: r.region.untertitel || "", ebene: r.region.ebene || "oberwelt", biom: r.region.biom || "", x: ux * C, y: uy * C, b: r.region.chunks[0] * C, h: r.region.chunks[1] * C });
     if (r.region.id === "waldmark" && r.spiel.start && r.spiel.start[0]) start = [r.spiel.start[0][0] + ux * C, r.spiel.start[0][1] + uy * C]; }
   /* Höhen über das ganze Rechteck der Ebene */

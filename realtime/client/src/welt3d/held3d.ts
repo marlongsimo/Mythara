@@ -20,6 +20,7 @@ import { gltfLader } from "./gltf";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { FigurLeinwand } from "./figurleinwand";
 import { Held, HAARFARBEN, HAUTFARBEN, STARTWAFFEN, STANDARD } from "../../../shared/aussehen";
+import { FIGUR_MOBIL } from "../figurstufe";
 
 const MODELLE = "../img/figuren-echt3d/", P = new URLSearchParams(location.search);
 /* ausgelagerte Teile (Rüstungen, Helme): eigene Dateien <figur>.teile/<id>.glb (Figuren-Fabrik, wie echt3d/darsteller.ts) – erst beim Anlegen geladen */
@@ -30,7 +31,11 @@ const werkzeugTeil = (url: string): string => { const m = /((?:holzbeil|spitzhac
 export const RUHE_TEMPO = 0.5;
 /** Welches Werkzeug der eigene Held angelegt hat (Modell-Adresse oder "") – gesetzt von spielwelt.ts */
 const AUSGELAGERT = /^(ruestung|kopf\.helm|waffe|schild)\./, teilVorlagen = new Map<string, Promise<THREE.Object3D>>();
-const teilVorlage = (url: string): Promise<THREE.Object3D> => { let p = teilVorlagen.get(url); if (!p) { p = gltfLader().loadAsync(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p; };
+const teilVorlage = (url: string): Promise<THREE.Object3D> => { let p = teilVorlagen.get(url); if (!p) { p = glbStufe(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p; };
+/** #112: bei Grafik „flüssig“ (Handy) die einfache Fassung <name>.mobil.glb (gleiches Skelett, rund 5.000 statt 35.000 Dreiecke); fehlt sie, die volle */
+function glbStufe(url: string): Promise<{ scene: THREE.Object3D; animations: THREE.AnimationClip[] }> {
+  if (!FIGUR_MOBIL || !/\.glb$/.test(url)) return gltfLader().loadAsync(url);
+  return gltfLader().loadAsync(url.replace(/\.glb$/, ".mobil.glb")).catch(() => gltfLader().loadAsync(url)); }
 /** Farbe, in der Haare und Bärte gebaut sind (fabrik/frisuren.py, fabrik/bart.py) und Bezugshelligkeit der Haut (img/figuren-fabrik/held.*: bezug.haut) */
 const GEBAUT: Record<string, [number, number, number]> = { mann: [59, 38, 24], frau: [110, 69, 41] }, HAUT_BEZUG: Record<string, number> = { mann: 203, frau: 210.3 };
 const teil = (id: string) => id.replace(/[.[\]:/]/g, ""); /* three.js entfernt diese Zeichen aus Knotennamen */
@@ -42,7 +47,7 @@ export function held3dAn(): boolean { try { if (P.get("held3d") === "0") localSt
 export interface Vorlage { szene: THREE.Object3D; clips: Map<string, THREE.AnimationClip> }
 const vorlagen = new Map<string, Promise<Vorlage>>();
 export function vorlage(g: string): Promise<Vorlage> { let p = vorlagen.get(g);
-  if (!p) { p = gltfLader().loadAsync(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g));
+  if (!p) { p = glbStufe(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g));
     /* Grundfiguren: die Werk-Bewegungen des Handwerks (fabrik/werk_bewegungen.py) liegen in einer eigenen kleinen Datei – danach nachladen, sie kommen in dieselbe Liste */
     if (WERK_BEWEGUNGEN.has(g)) for (const datei of ["werk_", "angeln_"]) /* Angeln (Phase 3b): angeln, angeln_warten, angeln_einholen – fabrik/angel_bewegungen.py */
       void p.then((v) => gltfLader().loadAsync(MODELLE + datei + g + ".glb").then((x) => { for (const c of x.animations) v.clips.set(c.name, c); })).catch(() => { /* ohne: Ersatzbewegungen */ }); }

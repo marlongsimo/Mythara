@@ -9,11 +9,19 @@
  * Die Figuren bleiben die bisherigen Bilder (welt3d/figurleinwand.ts), als Aufsteller in der 3D-Welt.
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
-import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch } from "../welt";
+import { arbeitMelden, arbeitVon } from "../arbeit";
+import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch, questGeladen, questStandB } from "../welt";
+import { markeDa, stufenSchluessel } from "../../../shared/stadtstufen";
+import { schalterAn } from "../../../shared/quests";
+/** Stadtstufen: Schalter dieses Spielers (vor dem Laden der Quests: die erste Stufe) */
+const stufenAn = (s: string): boolean => questGeladen() && schalterAn((id) => questStandB(id), s);
 /** eigenes Heldenlevel (für die Levelfarbe der Gegner im Menü) */
 const eigenesLv = (): number => { const i = weltIch(); return i && i.stufe ? i.stufe : 1; };
 import { MONSTER } from "../../../shared/config";
 import { aktionsMenue, menueZu, FARBE, Gruppe } from "../aktionsmenue";
+import { Folger, folgeEndeText, folgePunkt } from "../../../shared/folgen";
+import { handelAnfragen, handelAnfrageAnnehmen, hatGefragt } from "../handel";
+import { kampfZuletzt } from "../kampfzeit";
 import { freundHinzufuegen } from "../freunde";
 import { gegenstandUntersuchen } from "../rahmen";
 import { SPRINT_MIN } from "../../../shared/sprint";
@@ -121,6 +129,7 @@ export class Spielwelt3D implements WeltKern {
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
     this.motor.r.compile(this.motor.szene, this.motor.kamera); await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null))));
     if (new URLSearchParams(location.search).get("vorwaermen") !== "0") setTimeout(() => void this.vorwaermen(), 2500); /* Gegner- und Wachenmodelle im Hintergrund laden und ihre Shader übersetzen: kein Haken beim ersten Gegner */
+    this.motor.ausbauDa = (m) => markeDa(m, stufenAn); addEventListener("ez-quest", () => this.stufenPruefen());
     this.quest = new QuestWelt(this); this.sperrenNeu(); /* Quest 01 (shared/quest01.ts) */
     this.haendler = new HaendlerWelt(this); /* Händler am Marktplatz (shared/laeden.ts) */
     this.bank = new BankWelt(this); /* Bankmitarbeiter hinter den Bankschaltern (shared/bank.ts) */
@@ -131,7 +140,8 @@ export class Spielwelt3D implements WeltKern {
     addEventListener("keydown", (e) => { if (e.key === "Shift" && !e.repeat && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) this.sprint(); }); /* Umschalt: Sprint an/aus */
     addEventListener("ez-zurueck", (e) => { const m = (e as CustomEvent).detail as { x: number; y: number }; if (typeof m.x === "number" && typeof m.y === "number") this.springen(m.x, m.y); }); /* ohne Freigabe hinter der Sperre: zurück */
     this.profil(); anschluss3D.betreten(this); musikStarten(); /* Hintergrundmusik (musik.ts) */
-    (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y) });
+    (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y),
+      /* #67, für Prüfungen */ arbeit: { melden: arbeitMelden, von: arbeitVon, zeigt: (n: string) => { const z = anschluss3D.kampfArbeitZeigt(n); if (z) return z; const m = (this as unknown as { mit?: { figuren?: Map<number, { d: { n: string }; ar?: { zeigt: string } }> } }).mit; for (const f of (m && m.figuren ? m.figuren.values() : [])) if (f.d.n === n) return f.ar ? f.ar.zeigt : ""; return ""; } } });
     /* den Ladebildschirm erst wegnehmen, wenn der eigene Held samt Ausrüstung dasteht – sonst sieht man ihn ein paar Sekunden nicht und die Ausrüstung springt später dazu (höchstens 8 s warten) */
     await new Promise<void>((ok) => { const t0 = performance.now(), pruefen = () => { const f = this.figur as { vollstaendig?: boolean; geladen: boolean };
       const konto = mitKonto(), ausruestungBekannt = konto === false || (konto === true && inventarVomServerDa()); /* mit Konto: erst wenn der Server das Inventar geschickt hat, steht fest, was angelegt ist */
@@ -176,7 +186,12 @@ export class Spielwelt3D implements WeltKern {
     await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null)))); /* einmal mitzeichnen (auch in die Schattenkarte) */ M.szene.remove(g); }
   /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
   quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null; bank: BankWelt | null = null; holz: HolzWelt | null = null; berg: BergWelt | null = null; pflanzen: PflanzenWelt | null = null; lichter: LichterWelt | null = null; fische: FischWelt | null = null; wuermer: WurmWelt | null = null; handwerk: HandwerkWelt | null = null;
-  alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : [])]; }
+  alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : []), ...this.ausbauSperren()]; }
+  /** Stadtstufen (#102): Felder der Stufen-Objekte, die für diesen Spieler gerade dastehen */
+  private ausbauSperren(): number[][] { const aus: number[][] = []; for (const d of this.daten.values()) if (d !== "holt" && d.ausbau) for (const A of d.ausbau) if (markeDa(A.m, stufenAn)) for (const [i, j] of A.f) aus.push([i, j, i + 1, j + 1]); return aus; }
+  private stufenSchl = "";
+  /** Queststand geändert: hat sich eine Stadtstufe geändert, Dinge und Gehraster neu */
+  private stufenPruefen() { const k = stufenSchluessel(stufenAn); if (k === this.stufenSchl) return; const erst = !this.stufenSchl; this.stufenSchl = k; if (erst && k === stufenSchluessel(() => false)) return; this.motor.ausbauNeu(); this.sperrenNeu(); }
   /** Sperren haben sich geändert (die Wachen lassen den Spieler durch): Gehraster der geladenen Chunks neu aufbauen */
   sperrenNeu() { for (const d of this.daten.values()) if (d !== "holt") this.raster.dazu(d); for (const [x0, y0, x1, y1] of this.alleSperren()) this.raster.sperren(x0, y0, x1, y1); }
   /* ───────────── Gehraster: die Daten der Chunks um den Helden ───────────── */
@@ -237,8 +252,35 @@ export class Spielwelt3D implements WeltKern {
   /** Ein fernes Ziel (Minikarte): ganz hin, wenn der Weg in der geladenen Umgebung liegt – sonst so weit wie möglich in seine Richtung */
   geheWeit(x: number, y: number) { const o = this.ort, d = Math.hypot(x - o.x, y - o.y); if (d < 0.5) return;
     for (const weit of [d, 48, 32, 20, 12]) { if (weit > d) continue; const zx = o.x + (x - o.x) * weit / d, zy = o.y + (y - o.y) * weit / d; const w = this.raster.weg(o, { x: zx, y: zy }, RADIUS, 24, true); if (w.length) { this.gehe(zx, zy); return; } } }
-  gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS, 24, true); this.pfad = w; this.naechst = Infinity; this.stillstand = 0;
-    if (w.length) { const z = w[w.length - 1]; this.marke.position.set(z.x, this.motor.hoehe(z.x, z.y) + 0.06, z.y); this.marke.visible = true; } else this.marke.visible = false; }
+  /** Selbst irgendwohin gehen (Antippen, Minikarte, Hingehen und Handeln): beendet das Folgen */
+  gehe(x: number, y: number) { this.folgenEnde("selbst"); this.handelZiel = null; this.laufen(x, y); }
+  /** Den Weg zu (x, y) suchen und loslaufen; true: es gibt einen Weg */
+  private laufen(x: number, y: number): boolean { if (this.gesperrt) return false; const w = this.raster.weg(this.ort, { x, y }, RADIUS, 24, true); this.pfad = w; this.naechst = Infinity; this.stillstand = 0;
+    if (w.length) { const z = w[w.length - 1]; this.marke.position.set(z.x, this.motor.hoehe(z.x, z.y) + 0.06, z.y); this.marke.visible = true; } else this.marke.visible = false; return w.length > 0 || Math.hypot(x - this.ort.x, y - this.ort.y) < 1; }
+  /* ───── Folgen (#54, shared/folgen.ts): einem anderen Spieler hinterherlaufen; endet bei eigener Eingabe, Kampf, Gebietswechsel oder Teleport des anderen ───── */
+  private folge: { name: string; f: Folger; seit: number; weg: boolean } | null = null; private folgeEl: HTMLElement | null = null;
+  /** Einem Spieler folgen (Name wie im Aktionsmenü) */
+  folgen(name: string) { this.folgenEnde(); if (!anschluss3D.spielerOrt(name)) { chatSystem(folgeEndeText(name, "weg")); return; } this.folge = { name, f: new Folger(name), seit: Date.now(), weg: true };
+    const el = this.folgeEl || (this.folgeEl = document.createElement("div")); el.id = "ez-folgen"; el.className = "ez-folgen"; el.innerHTML = `<span></span><button type="button" aria-label="Folgen beenden">✕</button>`;
+    (el.querySelector("span") as HTMLElement).textContent = `Du folgst ${name}`; (el.querySelector("button") as HTMLElement).onclick = (e) => { e.stopPropagation(); this.folgenEnde("selbst"); };
+    el.style.cssText = "position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:60;display:flex;gap:8px;align-items:center;padding:4px 10px;border-radius:8px;background:rgba(30,20,8,.82);color:#f3e3b5;font:600 13px Georgia,serif";
+    if (!el.parentElement) document.body.appendChild(el); el.hidden = false; }
+  /* ───── Handeln (#65): bis auf ein Feld an den anderen heranlaufen, dann anfragen (oder seine Anfrage annehmen) ───── */
+  private handelZiel: { name: string; bis: number } | null = null;
+  handeln(name: string) { const p = anschluss3D.spielerOrt(name); if (!p) { chatSystem(`${name} ist nicht hier.`); return; } this.folgenEnde(); this.handelZiel = { name, bis: performance.now() + 15000 }; this.handelSchritt(true); }
+  private handelSchritt(start = false) { const H = this.handelZiel; if (!H) return; const p = anschluss3D.spielerOrt(H.name); if (!p || performance.now() > H.bis) { this.handelZiel = null; if (!p) chatSystem(`${H.name} ist nicht mehr hier.`); return; }
+    const d = Math.hypot(p.x - this.ort.x, p.y - this.ort.y); if (d <= 1.6) { this.handelZiel = null; this.pfad = []; this.marke.visible = false; if (hatGefragt(H.name)) handelAnfrageAnnehmen(H.name); else handelAnfragen(H.name); return; }
+    if (start || (!this.pfad.length && d > 1.6)) { const t = folgePunkt(this.ort, p, 1) || p; if (!this.laufen(t.x, t.y)) { this.handelZiel = null; chatSystem(`Kein Weg zu ${H.name}.`); } } }
+  /** Wo steht dieser Spieler gerade (Weltfelder; Mitspieler oder Held im Kampfgebiet)? */
+  spielerOrt(name: string): { x: number; y: number } | null { return anschluss3D.spielerOrt(name); }
+  /** Wem folgt der Held gerade (für Prüfungen)? */
+  folgtWem(): string | null { return this.folge ? this.folge.name : null; }
+  /** Folgen beenden; grund: Text im Chat (ohne grund: still) */
+  folgenEnde(grund?: "weg" | "weit" | "sprung" | "kein_weg" | "selbst") { const F = this.folge; if (!F) return; this.folge = null; if (this.folgeEl) this.folgeEl.hidden = true; if (grund) chatSystem(folgeEndeText(F.name, grund)); }
+  private folgenSchritt(dt: number) { const F = this.folge; if (!F) return; if (this.gesperrt) return;
+    if (kampfZuletzt() > F.seit) { this.folgenEnde("selbst"); return; } /* angegriffen oder selbst angegriffen */
+    const t = F.f.schritt(dt, this.ort, anschluss3D.spielerOrt(F.name), F.weg); if (t.tun === "ende") { this.folgenEnde(t.grund); return; }
+    if (t.tun === "gehen") F.weg = this.laufen(t.x, t.y); }
   halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; if (this.marke) this.marke.visible = false; this.stickWeg(); }
   teleportAbreise(): number { const f = this.figur as { teleport?: () => number }; return f.teleport ? f.teleport() : 0; }
   abblenden(ms: number, dann: () => void) { this.blende.style.transitionDuration = ms + "ms"; this.blende.classList.add("an"); setTimeout(dann, ms + 20); }
@@ -339,7 +381,8 @@ export class Spielwelt3D implements WeltKern {
     const d = anschluss3D.spielerBei(px, py);
     if (d) gr.push({ kopf: d.n, ...(d.s ? { lv: { text: `(Level ${d.s})`, farbe: "#f3ead2" } } : {}), farbe: FARBE.spieler, aktionen: [
       ...(konto && d.s ? [{ text: "Flüstern", sym: "✉️", tat: () => fluestern(d.i, d.n) }, { text: "Freund hinzufügen", sym: "➕", tat: () => { void freundHinzufuegen(d.n).then((t) => { if (t) chatSystem(t); }); } }] : []),
-      { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) }] });
+      { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) },
+      ...(d.n && d.n !== ichName() ? [{ text: "Folgen", sym: "👣", tat: () => this.folgen(d.n) }, ...(konto ? [{ text: "Handeln", sym: "🤝", tat: () => this.handeln(d.n) }] : [])] : [])] });
     { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) { const M = t.typ && !t.held ? (MONSTER[t.typ] as { info?: string } | undefined) : undefined; /* Untersuchen (Bestiarium): Text zum Wesen; der Mooshocker zählt für Quest 02 */
         gr.push({ kopf: t.name, lv: { text: `(Level ${t.stufe})`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angreifen: ${t.name}`); anschluss3D.kampfAntippenSchirm(px, py); } },
           ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${t.name}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${t.name}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
@@ -396,8 +439,8 @@ export class Spielwelt3D implements WeltKern {
     const R = rund.clientWidth, f = k.offsetWidth / (r.region.chunks[0] * C); if (!R || !f) return; const c = this.karteLeinwand, g = this.motor.gieren;
     /* Neu zeichnen nur, wenn nötig: nach Bewegung (> 1 Feld) oder Drehung, höchstens alle 500 ms (Handy 700 ms) – dazwischen gleitet das Bild mit; sonst spätestens alle 2 s (Mitspieler, Marken) */
     const alt = this.karteStand, seit = performance.now() - this.karteZeit, bewegt = !alt || Math.hypot(this.ort.x - alt.x, this.ort.y - alt.y) > 1 || Math.abs(g - alt.g) > 0.03 || alt.massstab !== f;
-    if (!alt || (bewegt && seit > (HANDY_KARTE ? 700 : 500)) || seit > 2000) { this.karteZeit = performance.now();
-      const n = Math.min(320, Math.round(R * KARTE_RAND * Math.min(1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
+    if (!alt || (bewegt && seit > (HANDY_KARTE ? 1200 : 500)) || seit > (HANDY_KARTE ? 4000 : 2000)) { this.karteZeit = performance.now(); /* #103: auf dem Handy seltener (ein zweites Bild der ganzen Szene kostet) */
+      const n = Math.min(HANDY_KARTE ? 200 : 320, Math.round(R * KARTE_RAND * Math.min(HANDY_KARTE ? 1 : 1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
       const stand = { x: this.ort.x, y: this.ort.y, g, massstab: f }, felder = (R * KARTE_RAND) / f;
       this.motor.karteZeichnen(c, felder, () => { this.symboleMalen(c, felder, stand, g); if (this.quest) this.quest.karteMarke(c, felder, stand, g); this.karteStand = stand; }); }
     if (!this.karteStand) return;
@@ -437,6 +480,7 @@ export class Spielwelt3D implements WeltKern {
     return bewegt; }
   private bild(dt: number) { this.simZeit += dt; if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
     const o = this.ort; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry); const direkt = Math.hypot(rx, ry) > 0.05, richtung: [number, number] | null = direkt ? [rx, ry] : null;
+    if (direkt) { this.folgenEnde("selbst"); this.handelZiel = null; } else { this.folgenSchritt(dt); this.handelSchritt(); } /* selbst steuern: Folgen endet; sonst das nächste Laufziel hinter dem anderen */
     if (direkt) { this.pfad = []; this.marke.visible = false; }
     else if (this.imKampf && this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy);
       if (l < this.naechst - 0.03) { this.naechst = l; this.stillstand = 0; } else this.stillstand += dt;

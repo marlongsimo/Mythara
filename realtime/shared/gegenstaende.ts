@@ -23,7 +23,7 @@ export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf
 export interface WaffenWerte { art: Art; /** Mehr Schaden gegen eine Gegnerfamilie (MONSTER.familie), z. B. { wald: 0.15 } = +15 % Max Hit */ gegen?: Record<string, number>; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
 export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number }; text: string;
-  /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
+  /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; /** Grundwert in Splittern für den Trödler (#88), wenn kein Laden ihn führt */ wert?: number; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
 
 const KAMPFART: Record<Art, string> = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie" };
 const zahl = (v: number) => String(v).replace(".", ",");
@@ -438,10 +438,26 @@ export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> 
   return w === "schwert" ? { waffe: "ritterschwert", nebenhand: "rundschild" } : w === "bogen" ? { waffe: "jagdbogen", brust: "lederpanzer" } : { waffe: "hirtenstab", brust: "magiepanzer" };
 }
 export const RUCKSACK_PLAETZE = 24;
-/** Ein Rucksackfach: eine Gegenstands-id oder ein Stapel { g, n } (stapelbare Gegenstände) */
-export type Fach = string | { g: string; n: number };
+/** Daten je Exemplar (Phase 5a): ladungen = Ladungen einer Waffe (Splitterbinden, Phase 5b); gebunden = Questlohn, gehört dem Spieler (nicht handelbar, #65) */
+export interface Daten { ladungen?: number; gebunden?: boolean }
+/** Ein Rucksackfach: eine Gegenstands-id oder ein Stapel { g, n }, mit Daten { g, n, d } (stapeln nur mit gleichen Daten; Geladenes nie) */
+export type Fach = string | { g: string; n: number; d?: Daten };
 export const fachG = (f: Fach): string => (typeof f === "string" ? f : f.g);
 export const fachN = (f: Fach): number => (typeof f === "string" ? 1 : f.n);
+export const fachD = (f: Fach): Daten | undefined => (typeof f === "string" ? undefined : f.d);
+/** Daten aus unbekannter Quelle prüfen (Speicherstand, Bank, Boden): nur bekannte Felder, Ladungen 1 … 1000; leer = undefined */
+export function datenPruefen(roh: unknown): Daten | undefined { if (!roh || typeof roh !== "object") return undefined; const o = roh as Record<string, unknown>, d: Daten = {};
+  const l = Math.floor(Number(o.ladungen)); if (l > 0) d.ladungen = Math.min(1000, l); if (o.gebunden === true) d.gebunden = true; return Object.keys(d).length ? d : undefined; }
+/** Gleiche Daten (beide ohne = gleich) */
+export const datenGleich = (a?: Daten, b?: Daten): boolean => (a?.ladungen || 0) === (b?.ladungen || 0) && Boolean(a?.gebunden) === Boolean(b?.gebunden);
+/** Geladen (Splitterbinden): Ladungen > 0 */
+export const geladen = (d?: Daten): boolean => Boolean(d && d.ladungen && d.ladungen > 0);
+/** Darf das gehandelt werden? Nicht: Questgegenstände (untauschbar), gebundener Questlohn, geladene Waffen */
+export const handelbar = (g: string, d?: Daten): boolean => Boolean(GEGENSTAENDE[g]) && !GEGENSTAENDE[g].untauschbar && !(d && (d.gebunden || geladen(d)));
+/** Darf das auf den Boden? Geladene Waffen nicht (Kanon) */
+export const ablegbar = (_g: string, d?: Daten): boolean => !geladen(d);
+/** Name zum Anzeigen: geladene Waffen heißen „… (s)“ */
+export const anzeigeName = (g: string, d?: Daten): string => (GEGENSTAENDE[g] ? GEGENSTAENDE[g].name : g) + (geladen(d) ? " (s)" : "");
 
 /* ---------- Verbrauchsgegenstände (Tränke) ----------
  * Noch nicht im Rucksack und noch ohne Wirkung im Kampf: das Leben im Kampf rechnet der Spielserver (shared/sim.ts) – das Trinken braucht dort einen eigenen Befehl.

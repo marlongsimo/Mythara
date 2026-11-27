@@ -116,9 +116,24 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
+  /** Glocke (#102): friedlich gegen Helden, für die dieser Schalter an ist (der Server setzt „glocke_laeutet“ eine Minute nach jeder vollen Stunde) – greift sie nicht an und lässt von ihnen ab */
+  friedlichBei?: string;
+  /** Gift (#102): nach einem Treffer mit dieser Chance Schaden über Zeit (jeSek Leben je Sekunde, dauer Sekunden) */
+  gift?: { chance: number; jeSek: number; dauer: number };
+  /** Flackern (#102): im Kampf alle alle Sekunden für dauer Sekunden unangreifbar */
+  flackern?: { alle: number; dauer: number };
+  /** Sand-Auftauchen (#102): liegt eingegraben (unsichtbar, unangreifbar); kommt ein Held auf weit Felder heran, leuchtet sein Feld vorlauf Kampf-Ticks (Standard 2), dann taucht er auf und trifft, wer noch dort steht */
+  eingegraben?: { weit: number; schaden: [number, number]; vorlauf?: number; name?: string };
+  /** Verkleidung (#49): wer einen dieser Gegenstände angelegt hat, wird nicht von selbst angegriffen (Rabenkapuze → Novizen friedlich) – wer angreift, bekommt Gegenwehr */
+  friedlichMit?: string[];
+  /** Stilwechsel (#49): im Kampf reihum diese Stile, je sek Sekunden (Federmutter: Schwerter, dann Federn) – angriff und v2 ersetzen die Grundwerte, v2 Feld für Feld */
+  stile?: { sek: number; name?: string; angriff?: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number }; v2?: Partial<GegnerV3>; text?: string }[];
+  /** flieht einmal je Leben unter diesem Anteil seines Lebens zum nächsten Lagerkumpan und kämpft dort weiter (Banditen-Späher: 0,25) – shared/sim.ts fliehen */
+  fliehen?: number;
   /** Offene Welt: greift von selbst an (Standard ja) und ab welcher Entfernung in Feldern (Standard: aggro des Gebiets, sonst 5). Nach AGGRO_DAUER greift er einen Helden nicht mehr von selbst an. */
   /** gemeinsame Welt: Sekunden, bis er nach dem Besiegen wieder dasteht (sonst WELT_WIEDERKEHR) */ wiederkehr?: number; /** Gegnerfamilie (Waffen mit „gegen“ treffen sie härter): wald = Waldgolem, Mooshocker */ familie?: string;
-  aggressiv?: boolean; aggroReich?: number; /** greift nur Helden unter diesem Heldenlevel von selbst an (stärkere lässt er in Ruhe, bis sie angreifen) */ aggroBisLevel?: number;
+  aggressiv?: boolean; aggroReich?: number;
+  /** sonst friedlich, aber gegen Helden, für die dieser Schalter an ist (QuestDef.schalter, setzt der Server), im Umkreis von weit Feldern aggressiv – z. B. Mooshocker nach ihrer Quest (#81) */ aggressivNach?: { schalter: string; weit: number }; /** greift nur Helden unter diesem Heldenlevel von selbst an (stärkere lässt er in Ruhe, bis sie angreifen) */ aggroBisLevel?: number;
   /** Drop-Tabelle (offene Welt) als Rolls: jeder Roll wählt höchstens einen Eintrag (Chancen in Prozent, zusammen ≤ 100; der Rest ist „nichts“).
    *  anzahl [min, max] (Standard 1). nur: der Roll zählt nur, wenn der Bezwinger diese Bedingung erfüllt (z. B. „einsteigerquest“ begonnen) – sonst fällt nichts. */
   drops?: { nur?: string; wurf: { g: string; chance: number; anzahl?: [number, number] }[] }[];

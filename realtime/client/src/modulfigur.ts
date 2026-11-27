@@ -12,6 +12,7 @@
  */
 import Phaser from "phaser";
 import { Figur3D, figur3dAn } from "./echt3d/figur";
+import { figurFaktor, stufeEndung } from "./figurstufe";
 
 interface Anim { bilder: number; rate: number; schleife: boolean; halten?: number }
 interface Meta { id: string; angriff?: string; bezug?: { haut: number; haar: number; bart: number }; feld: number; fuss: [number, number]; sichtbar_px: number; animationen: Record<string, Anim>; tiefe: Record<string, Record<string, number[][]>>; ebenen: string[]; waffen: string[] }
@@ -25,6 +26,8 @@ const ALLE_WAFFEN = [...new Set(Object.values(STARTWAFFEN).flatMap((w) => w.waff
 const waffenVon = (h: Held & { ich?: boolean }) => (h.ich ? ALLE_WAFFEN : STARTWAFFEN[h.waffe].waffen);
 import { Held, ebenenVon, farbeVon, farbMatrix, figurVon, STARTWAFFEN } from "../../shared/aussehen";
 const laden = new WeakMap<Phaser.Scene, Map<string, Promise<Meta>>>();
+/** #105: Faktor der geladenen Atlanten je Figur (0,5 = Mobil-Fassung, die Bilder werden doppelt so groß gezeichnet) */
+const faktorJe = new Map<string, number>();
 
 /** Bilder und Angaben einer Figur in eine Szene laden (einmal je Szene und Figur) */
 function figurLaden(scene: Phaser.Scene, figur: string, nur?: string[]): Promise<Meta> {
@@ -32,7 +35,8 @@ function figurLaden(scene: Phaser.Scene, figur: string, nur?: string[]): Promise
   const p = new Promise<Meta>((fertig, fehler) => {
     const metaKey = "modul:" + figur, lade = (dann: () => void) => { if (scene.load.isLoading()) { scene.load.once("complete", () => lade(dann)); return; } dann(); };
     const atlanten = (M: Meta) => { const fehlt = (nur || [...M.ebenen, ...M.waffen.flatMap((w) => [w + ".hinten", w + ".vorn"])]).filter((e) => !scene.textures.exists(metaKey + ":" + e)); /* nur: beim eigenen Helden nur die gewählten Ebenen */
-      if (!fehlt.length) { fertig(M); return; } lade(() => { for (const e of fehlt) scene.load.atlas(metaKey + ":" + e, BASIS + figur + "/" + e + ".webp", BASIS + figur + "/" + e + ".json"); scene.load.once("complete", () => fertig(M)); scene.load.start(); }); };
+      if (!fehlt.length) { fertig(M); return; } void figurFaktor(figur, M.ebenen[0]).then((k) => { faktorJe.set(figur, k); const x = stufeEndung(k); /* #105: Handy lädt die Mobil-Atlanten (halbe Auflösung) */
+        lade(() => { for (const e of fehlt) scene.load.atlas(metaKey + ":" + e, BASIS + figur + "/" + e + x + ".webp", BASIS + figur + "/" + e + x + ".json"); scene.load.once("complete", () => fertig(M)); scene.load.start(); }); }); };
     if (scene.cache.json.exists(metaKey)) { atlanten(scene.cache.json.get(metaKey)); return; }
     lade(() => { scene.load.json(metaKey, BASIS + figur + "/" + figur + ".json"); scene.load.once("complete", () => { const M = scene.cache.json.get(metaKey) as Meta | undefined; if (M) atlanten(M); else fehler(new Error("Figur " + figur + " fehlt")); }); scene.load.start(); });
   });
@@ -58,7 +62,8 @@ export class ModulFigur extends Phaser.GameObjects.Container {
     const farbe = new Map<string, number[]>(), M: Meta = H ? { ...M0, ebenen: ebenenVon(H.aussehen).map((e) => e.ebene), waffen: waffenVon(H), angriff: STARTWAFFEN[H.waffe].angriff } : M0;
     if (H && M0.bezug) for (const e of ebenenVon(H.aussehen)) if (e.faerben) farbe.set(e.ebene, farbMatrix(farbeVon(H.aussehen, e.faerben), M0.bezug[e.faerben]));
     this.meta = M;
-    for (const e of [...M.waffen.map((w) => w + ".hinten"), ...M.ebenen, ...M.waffen.map((w) => w + ".vorn")]) { const s = this.scene.add.sprite(0, 0, key + e).setOrigin(fx, fy); this.add(s); this.teile.set(e, s);
+    const k = faktorJe.get(this.figur) || 1;
+    for (const e of [...M.waffen.map((w) => w + ".hinten"), ...M.ebenen, ...M.waffen.map((w) => w + ".vorn")]) { const s = this.scene.add.sprite(0, 0, key + e).setOrigin(fx, fy).setScale(1 / k); this.add(s); this.teile.set(e, s);
       const f = farbe.get(e); if (f && s.preFX) s.preFX.addColorMatrix().set(f); }
     super.setScale(this.ziel / M.sichtbar_px); this.setSize(M.feld * 0.4, M.sichtbar_px); this.zeigen();
   }
