@@ -258,14 +258,14 @@ const ADERN = [], ARENA = [], ZIEGENWEGE = [], BWQUEST = [];
   [[38, 26], [42, 22], [58, 16]].forEach(([x, y], i) => ader("bergwerk_splittereisen_" + (i + 1), "splittereisen", x + 0.5, y + 0.5));
   [[84, 8], [90, 12], [86, 16]].forEach(([x, y], i) => ader("bergwerk_ureisen_" + (i + 1), "ureisen", x + 0.5, y + 0.5));
   const iaU = (id, x, y, text, mehr = {}) => ({ id, art: mehr.tat ? "eingang" : "lesen", x, y, radius: mehr.tat ? 2.0 : 1.6, abgleich: "keiner", daten: { text, ...mehr } });
-  /* H3 „Tiefer als erlaubt“: eingestürzter Stollen vor der Urkammer (bis zur Quest gesperrt, Schalter bergwerk_stollen_frei – Tür „bergwerk_stollen“ in shared/bosse.ts), verletzte Bergleute, morsches Grubenholz */
+  /* H3 „Tiefer als erlaubt“: eingestürzter Stollen vor der Urkammer (bis zur Quest gesperrt, Schalter urkammer_offen – Tür „bergwerk_stollen“ in shared/bosse.ts), verletzte Bergleute, morsches Grubenholz */
   dinge.push(o("k_truemmer", 80, 22.4, { id: "bergwerk_geroell_1" }), o("k_truemmer", 83, 21.6, { id: "bergwerk_geroell_2", spiegeln: true }), o("hochland_grubenholz", 75.5, 25.6, { id: "bergwerk_grubenholz_gebrochen" }));
-  const sperreH3 = { art: "rechteck", x0: 77, y0: 20, x1: 87, y1: 23, schalter: "bergwerk_stollen_frei" };   /* wie die Tür „bergwerk_stollen“ in shared/bosse.ts (H_SCHALTER.stollen) */
+  const sperreH3 = { art: "rechteck", x0: 77, y0: 20, x1: 87, y1: 23, schalter: "urkammer_offen" };   /* dieselbe Sperre wie die Tür „bergwerk_stollen“ in shared/bosse.ts (H_SCHALTER.stollen = urkammer_offen) */
   const H3IA = [iaU("eingestuerzter_stollen", 80.5, 25.4, "Hier ist der Stollen eingestürzt. Dahinter, gedämpft, ein Klopfen – und ein schwarzer Schimmer im Gestein.", { questobjekt: "eingestuerzter_stollen" }),
     iaU("morsches_grubenholz", 31.5, 37, "Das Grubenholz hier ist morsch und knackt. Es muss ersetzt werden, bevor noch mehr einstürzt.", { questobjekt: "morsches_grubenholz" }),
     ...[[74, 32], [68, 37], [61, 41]].map(([x, y], i) => iaU("verletzter_bergmann_" + (i + 1), x, y, "Ein verletzter Bergmann lehnt am Fels. „Wasser … und etwas für die Wunde.“", { questobjekt: "verletzter_bergmann_" + (i + 1) })),
     iaU("trollhalle_eingang", HALLE.x - 3, HALLE.y + HALLE.r - 3, "Der Eingang zur Trollhalle. Knochen, abgenagte Grubenhölzer – und tiefe Kratzspuren im Fels.", { questobjekt: "trollhalle" })];
-  BWQUEST.push({ sperre: { ...sperreH3, x0: BW_U[0] * 32 + 77, y0: BW_U[1] * 32 + 20, x1: BW_U[0] * 32 + 87, y1: BW_U[1] * 32 + 23 }, schalter: "bergwerk_stollen_frei", verletzte: [[74, 32], [68, 37], [61, 41]].map(([x, y]) => [BW_U[0] * 32 + x, BW_U[1] * 32 + y]) });
+  BWQUEST.push({ sperre: { ...sperreH3, x0: BW_U[0] * 32 + 77, y0: BW_U[1] * 32 + 20, x1: BW_U[0] * 32 + 87, y1: BW_U[1] * 32 + 23 }, schalter: "urkammer_offen", verletzte: [[74, 32], [68, 37], [61, 41]].map(([x, y]) => [BW_U[0] * 32 + x, BW_U[1] * 32 + y]) });
   npc.push(...[[74, 32], [68, 37], [61, 41]].map(([x, y], i) => ({ id: "verletzter_bergmann_" + (i + 1), rolle: "Verletzter Bergmann (H3)", x: BW_U[0] * 32 + x - 1.2, y: BW_U[1] * 32 + y })));
   const dir = join(WELT, "regionen", "hochlande_bergwerk"); mkdirSync(dir, { recursive: true });
   for (const p of dinge) { if (!BIB.has(p.objekt)) throw new Error("unbekanntes Objekt " + p.objekt); if (g[Math.floor(p.y)][Math.floor(p.x)] === "F") throw new Error("bergwerk: im Fels " + p.id); }
