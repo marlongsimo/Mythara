@@ -4,7 +4,13 @@
  * Server und Browser lesen diese Liste NICHT. Ist alles da: Quest hier austragen und in shared/quests.ts eintragen.
  */
 import type { QuestDef } from "./questbau";
+import { QUEST_H2 } from "./quest_h2";
+import { QUEST_H3 } from "./quest_h3";
+import { QUEST_H4 } from "./quest_h4";
 
 /** Entwurf → worauf er wartet (Issue) */
 export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
+  { q: QUEST_H2, wartet: "#118: ziegenmilch, lab, kaeselaib, Rezept kaeselaib, Herd an der Alm" },
+  { q: QUEST_H3, wartet: "#118: grubenstempel, erzprobe_leuchtend, Rezept grubenstempel" },
+  { q: QUEST_H4, wartet: "#118: Hüter grumhold, sturmschwinge, frostwitwe (Systeme), Regionen grumhold_halle, sturmschwinge_horst, frostwitwe_hoehle (Welt), splitterkern, eisrunen_abschrift" },
 ];
