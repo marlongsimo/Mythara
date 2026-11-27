@@ -70,15 +70,17 @@ export interface InstanzDef { id: string; name: string;
 /** #116: In der Quest kämpft man den Boss allein und gegen eine schwächere Fassung */
 export const QUEST_STAERKE = { leben: 0.7, schaden: 0.85 };
 /** #116: Fassung einer Kopie – quest (allein, schwächer) oder stark (nach der Quest, eigene Instanz, normale Werte) */
-export type BossFassung = "quest" | "stark";
+export type BossFassung = "quest" | "stark" | "leer";
 /** #116: Wahl am Eingang nach der Quest (Standard öffentlich) */
 export type BossWahl = "oeffentlich" | "instanz";
 export const BOSS_WAHL_STANDARD: BossWahl = "oeffentlich";
 /** #116: Öffentlich bekommt jeder einen eigenen Wurf, der mindestens diesen Anteil des Lebens als Schaden gemacht hat */
 export const BOSS_BEUTE_ANTEIL = 0.1;
-/** Welche Kopie gilt für einen Spieler in dieser Instanz? null: keine (gemeinsame Welt – vor der Quest oder öffentlich gewählt) */
+/** Welche Kopie gilt für einen Spieler in dieser Instanz? null: keine (gemeinsame Welt – öffentlich gewählt).
+ *  #116 (Klarstellung des Nutzers): vor der Quest gibt es keinen Boss – wer weder Quest-Schalter noch danach hat, steht in einer leeren Kopie des Raums
+ *  (nur bei Instanzen mit danach; sonst wie bisher die gemeinsame Welt) */
 export function instanzFassung(d: InstanzDef, an: (schalter: string) => boolean, wahl: BossWahl = BOSS_WAHL_STANDARD): BossFassung | null {
-  if (d.danach && an(d.danach)) return wahl === "instanz" ? "stark" : null; return an(d.schalter) ? "quest" : null; }
+  if (d.danach && an(d.danach)) return wahl === "instanz" ? "stark" : null; if (an(d.schalter)) return "quest"; return d.danach ? "leer" : null; }
 
 export interface Tuer { id: string; /** gesperrte Felder in Weltfeldern: x0, y0, x1, y1 (Ecken eingeschlossen) */ feld: [number, number, number, number];
   /** offen, wenn dieser Schalter für den Spieler an ist */ schalter: string; /** Text, wenn man davor steht */ zu: string;

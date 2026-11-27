@@ -9,5 +9,9 @@ export const HEILSTELLEN: Heilstelle[] = [
   { id: "kapelle_waldmark", name: "Kapelle der Waldmark", x: 6457, y: 6422.6, weit: 3, schalter: "kapelle_offen", abkling: 10 * 60_000,
     zu: "Die Kapelle ist verschlossen. Bruder Anselm hat andere Sorgen.",
     geheilt: "Du kniest vor dem Altar. Die Stille füllt dich – deine Wunden schließen sich.", voll: "Du betest still. Dir fehlt nichts." },
+  /* Süden (#126, S7 „Licht am Kreuzstein“): die Wegkapelle am Kreuzstein heilt nach der Weihe (Schalter kreuzstein_heil) */
+  { id: "kreuzstein", name: "Wegkapelle am Kreuzstein", x: 6477, y: 7098.5, weit: 3, schalter: "kreuzstein_heil", abkling: 10 * 60_000,
+    zu: "Die Schale am Kreuzstein ist leer und kalt. Hier betet niemand mehr.",
+    geheilt: "Du kniest am Kreuzstein. Das Licht in der Schale wärmt dich – deine Wunden schließen sich.", voll: "Du ruhst einen Moment am Kreuzstein. Dir fehlt nichts." },
 ];
 export const heilstelle = (id: string): Heilstelle | undefined => HEILSTELLEN.find((h) => h.id === id);

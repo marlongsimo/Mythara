@@ -46,6 +46,9 @@ export const SPRUENGE: Record<string, { schalter: string; zu: string }> = {
   kammer_tuer: { schalter: "rotmantel_kammer_offen", zu: "Hinter dem roten Banner liegt die Kammer des Anführers. Erst die Versammlungshalle – sonst hast du die ganze Bande im Rücken." },
 };
 
+/* Süden (#126, S5 „Die Furt“): die Trittsteine durch die Kiel bei Lehmfurt – gehbar mit dem Schalter lehmfurt_trittsteine (Sperre der Welt, plan_sueden.json) */
+TUEREN.push({ id: "lehmfurt_furt", feld: [6422, 7244, 6430, 7248], schalter: "lehmfurt_trittsteine", zu: "Die Kiel ist hier zu tief. Mit ein paar Trittsteinen käme man trocken hinüber." });
+
 /* Phase 7 (#40, D2): die Wappentür des Turms am Ostufer – offen mit dem Schalter wappentuer_offen (D2 setzt ihn ab dem Schritt „tuer“) */
 TUEREN.push({ id: "turm_wappentuer", feld: [6840, 6519, 6840, 6519], schalter: "wappentuer_offen", eingang: "turm_wappentuer",
   zu: "Die Tür trägt ein Wappen – ein Turm über drei Wellen. Sie ist verschlossen. Vielleicht weiß jemand in Graufurt, wer hier hineindarf." });

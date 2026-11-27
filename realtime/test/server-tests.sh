@@ -70,6 +70,7 @@ TESTS=(
   festland-kampf
   inhalt-phase6
   inhalt-phase7
+  inhalt-sueden
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

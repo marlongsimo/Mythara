@@ -102,6 +102,19 @@ BESONDERS = {
                # Kuhgehege (Handwerk, 25.11.2026): zehn friedliche Kühe hinter Zaun (shared/handwerk_welt.json), Kuhhaut für die Werkbank
                + [("kuh", 6522, 6409), ("kuh", 6527, 6408), ("kuh", 6533, 6409), ("kuh", 6539, 6408), ("kuh", 6524, 6412), ("kuh", 6530, 6412), ("kuh", 6536, 6413), ("kuh", 6521, 6416), ("kuh", 6528, 6416), ("kuh", 6538, 6417)]},
 }
+# Süden (#126, welt/sueden_orte.json): Gegnerplätze von Heckenhof bis Lehmfurt (Stufe 2–30), Tiere zur Stimmung; zu den Gebieten oben dazu
+SUEDEN = {
+    "fl_201_211": [("feldhase", 6480, 6821), ("feldhase", 6478, 6819), ("kraehenschwarm", 6480, 6819), ("kraehenschwarm", 6482, 6819),
+                   ("schaf", 6504, 6818), ("schaf", 6502, 6816), ("schaf", 6504, 6816),
+                   ("schilfkroete", 6458, 7198), ("schilfkroete", 6456, 7196), ("ente", 6455, 7194),
+                   ("wegelagerer_knueppel", 6432, 6950), ("wegelagerer_knueppel", 6432, 6948), ("wegelagerer_schleuder", 6434, 6948),
+                   ("wegelagerer_knueppel", 6496, 7166), ("wegelagerer_schleuder", 6496, 7164), ("wegelagerer_schleuder", 6498, 7164)],
+    "fl_186_211": [("wildbienen_schwarm", 6414, 6916), ("wildbienen_schwarm", 6412, 6914),
+                   ("fuchs", 6366, 6998), ("fuchs", 6364, 6996), ("wildschwein", 6366, 6996), ("wildschwein", 6368, 6996),
+                   ("graupelz", 6342, 6968), ("heidewolf", 6340, 6966), ("heidewolf", 6342, 6966)],
+    "fl_201_225": [("steinschlucker", 6500, 7237), ("steinschlucker", 6498, 7235), ("steinschlucker", 6500, 7235)],
+}
+for rid, l in SUEDEN.items(): BESONDERS.setdefault(rid, {"leine": 12, "wandern": 3, "lager": []})["lager"] += l
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",
        "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; /** Gehraster je Zeile in Lauflängen („12.3T.“ = 12 frei, 3 gesperrt, 1 frei; #122) */ lauf: string[]; /** dieselben Zeilen ausgeschrieben (erst beim ersten Gebrauch) */ zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",
        "const ROH: Omit<WeltKampfGebiet, \"zeilen\">[] = ["]

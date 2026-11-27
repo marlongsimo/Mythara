@@ -17,6 +17,13 @@ const held = (s, U, wx, wy) => { const id = s.beitreten("schildwaechter", 0, { x
 const K = INSTANZEN.find((d) => d.id === "wrack_kajuete"), T = INSTANZEN.find((d) => d.id === "thronsaal");
 check(["thronsaal", "hauptmann_gruft", "tempel_kammer", "wrack_kajuete"].every((id) => INSTANZEN.find((d) => d.id === id)?.danach), "die vier Boss-Instanzen aus Phase 6–10 kennen den Schalter „danach“");
 
+console.log("\n0 · Vor der Quest: kein Boss (leerer Raum)");
+{ const { s, U } = neueWelt(), { id } = held(s, U, 11504.5, 9620.5);
+  const b0 = s["neu"](false, "wrackkapitaen", 1, { x: 11504.5 - U[0], y: 9614.5 - U[1] }, true, 7); /* der öffentliche Boss in der gemeinsamen Welt */
+  const t = weltJeSpieler(s, id, "otto", 11504.5, 9620.5, () => false), key = s.nach(id).instanz;
+  check(key === "wrack_kajuete:otto:leer" && !s.wesen.some((w) => !w.held && w.instanz === key) && !t, "ohne Quest: eine leere Kopie des Raums, kein Boss, kein Text");
+  check(!s.wesen.some((w) => w.id === b0.id && (w.instanz || "") === key), "den öffentlichen Boss sieht er nicht (andere Kopie)"); }
+
 console.log("\n1 · In der Quest: allein und schwächer");
 { const { s, U } = neueWelt(), { id, h } = held(s, U, 11504.5, 9620.5);
   const t = weltJeSpieler(s, id, "anna", 11504.5, 9620.5, (x) => x === K.schalter), b = s.wesen.find((w) => w.typ === "wrackkapitaen");
