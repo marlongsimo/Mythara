@@ -43,7 +43,7 @@ try {
     const tj = () => z && z.w.find((w) => w[2] === "tjark");
     check(ok && Boolean(tj()), "„Ergib dich“: Tjark wird zum Gegner (Folge.angriff)"); 
     const s = z ? await kaempfen(z, ["tjark"], () => erl(tom, E3, "tjark"), 180000) : 0;
-    await schlaf(1500);
+    { const t0 = Date.now(); while (!erl(tom, E3, "tjark") && Date.now() - t0 < 10000) await schlaf(250); } /* #178: als Boss bucht der Server erst den Bosszähler – der Schritt kommt ein paar Sekunden später */
     check(erl(tom, E3, "tjark") && anzahl(tom, "tjarks_eid") === 0, `Tjark besiegt, sein Tod erledigt den Schritt (${s} Siege)`);
     if (z) { z.ws.close(); await schlaf(2500); } }
   check(await sprich(tom, E3, "wigand", "bericht") && fertig(tom, E3) && an(tom, E3, "grauwacht_burg"), "Tom: E3 über „Bericht erstatten“ fertig; grauwacht_burg an");
