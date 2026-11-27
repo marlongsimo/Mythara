@@ -549,7 +549,7 @@ export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math
 /* ───────── #151 Waffen der Stufe 70 (doku/konzepte/waffen-70.md, Entscheidung des Nutzers): Echoschneide, Seelenbogen, Seelenfokus ─────────
    Mythisch mit Anforderung 70 (Rahmen wie Mythisch). Am Bindestein mit 1 Splitter je Ladung laden (höchstens 1.000), Laden bindet die Waffe, jeder Angriff kostet 1 Ladung;
    solange Ladung da ist: 15 % je Treffer die Passive (sim.ts treffen). Geladen wirkt nur die Passive (kein × 1,1 wie bei den anderen geladenen Waffen).
-   Herkunft: Mini-Boss der Hochlande (Block H) – vorbereitet in STUFE70_BEUTE, noch in keiner Drop-Tabelle. Modelle und Bilder: vorerst die der mythischen Stufe (Figuren baut sie). */
+   Herkunft: Mini-Boss der Hochlande (Block H) – vorbereitet in STUFE70_BEUTE, noch in keiner Drop-Tabelle. Modelle aus den Vorlagen des Nutzers (Figuren d50193d6e): Teile waffe.<name>, Bilder img/objekte3d/ausruestung/stufe70/. */
 export type PassivId = "nachhall" | "seelenzug" | "seelenbrand";
 export interface Passiv { id: PassivId; name: string; chance: number; text: string }
 export const PASSIVE: Record<PassivId, Passiv> = {
@@ -560,14 +560,14 @@ export const PASSIVE: Record<PassivId, Passiv> = {
 /** Seelenbrand: Schaden je Sekunde und Dauer (der Dauerschaden der Simulation zahlt in Stößen zu 3 aus – alle 2 s) */
 export const SEELENBRAND = { jeSek: 1.5, dauer: 6 };
 export const WAFFEN_STUFE70 = ["echoschneide", "seelenbogen", "seelenfokus"];
-{ const B = "img/objekte3d/ausruestung/bilder/", T = "Mit Splittern geladen erwacht in ihr eine Kraft – solange die Ladung reicht.";
-  GEGENSTAENDE.echoschneide = { id: "echoschneide", name: "Echoschneide", platz: "waffe", art: "Einhandschwert", seltenheit: "mythisch", ebenen: ["waffe.eidschwert.mythisch"], bild: B + "eidschwert_mythisch.webp",
+{ const B = "img/objekte3d/ausruestung/stufe70/", T = "Mit Splittern geladen erwacht in ihr eine Kraft – solange die Ladung reicht.";
+  GEGENSTAENDE.echoschneide = { id: "echoschneide", name: "Echoschneide", platz: "waffe", art: "Einhandschwert", seltenheit: "mythisch", ebenen: ["waffe.echoschneide"], bild: B + "echoschneide.webp",
     anforderung: { skill: "geschick", level: 70 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 75, staerke: 77 }, passiv: PASSIVE.nachhall,
     text: "Eine Klinge, die nachklingt. Jeder Hieb hallt in ihr wider. " + T };
-  GEGENSTAENDE.seelenbogen = { id: "seelenbogen", name: "Seelenbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "mythisch", ebenen: ["waffe.mondbogen.kurz.mythisch"], bild: B + "mondkurzbogen_mythisch.webp", zweihand: true,
+  GEGENSTAENDE.seelenbogen = { id: "seelenbogen", name: "Seelenbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "mythisch", ebenen: ["waffe.seelenbogen"], bild: B + "seelenbogen.webp", zweihand: true,
     anforderung: { skill: "fernkampf", level: 70 }, waffe: { art: "fern", ticks: 4, reich: 5, flug: 18, fernAngriff: 75, fernStaerke: 66 }, passiv: PASSIVE.seelenzug,
     text: "Die Sehne summt wie ein Atemzug. Was der Pfeil nimmt, gibt er dem Schützen zurück. " + T };
-  GEGENSTAENDE.seelenfokus = { id: "seelenfokus", name: "Seelenfokus", platz: "waffe", art: "Stab", seltenheit: "mythisch", ebenen: ["waffe.sternenszepter.mythisch"], bild: B + "sternenszepter_mythisch.webp",
+  GEGENSTAENDE.seelenfokus = { id: "seelenfokus", name: "Seelenfokus", platz: "waffe", art: "Stab", seltenheit: "mythisch", ebenen: ["waffe.seelenfokus"], bild: B + "seelenfokus.webp", zweihand: true /* Zweihand-Stab (Figuren) */,
     anforderung: { skill: "magie", level: 70 }, waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 30, magieStaerke: 216 }, passiv: PASSIVE.seelenbrand,
     text: "Ein Stab mit einem Herz aus kaltem Feuer. Wen er trifft, der brennt von innen. " + T }; }
 /** Vorbereitet für den Mini-Boss der Hochlande (Block H): je Waffe 1 : 100 in der starken Fassung, keine in der Quest-Fassung – noch nicht eingetragen */
