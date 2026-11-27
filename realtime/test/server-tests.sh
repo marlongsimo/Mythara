@@ -53,6 +53,7 @@ TESTS=(
   kielmund-welt
   ockerlande-welt
   drops-selten
+  waffen-welt
   phase5
   phase8-10
   abholen
