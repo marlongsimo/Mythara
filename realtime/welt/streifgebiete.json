@@ -94,14 +94,14 @@
    "land": "Die Ockerlande",
    "region": "fl_216_225",
    "mitte": [
-    7292.5,
-    7510.5
+    7192.5,
+    7312.5
    ],
    "rechteck": [
-    7232,
-    7450,
-    7351,
-    7569
+    7132,
+    7252,
+    7251,
+    7371
    ],
    "meiden": [],
    "modell": "vorhanden"

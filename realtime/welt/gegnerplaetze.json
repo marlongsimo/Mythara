@@ -9813,7 +9813,7 @@
    "id": "gp_fl_216_169_649",
    "region": "fl_216_169",
    "land": "Die Hochlande",
-   "x": 7112.5,
+   "x": 7108.5,
    "y": 5830.5,
    "gegner": [
     "steppenwolf"
@@ -10488,8 +10488,8 @@
    "id": "gp_fl_216_183_694",
    "region": "fl_216_183",
    "land": "Die Hochlande",
-   "x": 7094.5,
-   "y": 5864.5,
+   "x": 7099.5,
+   "y": 5863.5,
    "gegner": [
     "steppenwolf"
    ],
@@ -43755,7 +43755,22 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_169_2912",
+   "id": "gp_fl_216_169_2912",
+   "region": "fl_216_169",
+   "land": "Die Hochlande",
+   "x": 7130.5,
+   "y": 5840.5,
+   "gegner": [
+    "steppenwolf"
+   ],
+   "modell": "steppenwolf",
+   "anzahl": 1,
+   "stufe": 46,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_201_169_2913",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6672.5,
@@ -43770,22 +43785,22 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2913",
+   "id": "gp_fl_216_169_2914",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 6913.5,
    "y": 5855.5,
    "gegner": [
-    "hochlandwidder"
+    "steppenwolf"
    ],
-   "modell": "hochlandwidder",
-   "anzahl": 1,
-   "stufe": 52,
+   "modell": "steppenwolf",
+   "anzahl": 2,
+   "stufe": 46,
    "gelaende": "wiese",
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_183_2914",
+   "id": "gp_fl_231_183_2915",
    "region": "fl_231_183",
    "land": "Die Hochlande",
    "x": 7792.5,
@@ -43794,13 +43809,13 @@
     "klippenadler"
    ],
    "modell": "klippenadler",
-   "anzahl": 2,
+   "anzahl": 1,
    "stufe": 56,
    "gelaende": "küste",
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_183_2915",
+   "id": "gp_fl_231_183_2916",
    "region": "fl_231_183",
    "land": "Die Hochlande",
    "x": 7832.5,
@@ -43815,26 +43830,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2916",
+   "id": "gp_fl_186_183_2917",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6090.5,
    "y": 5888.5,
-   "gegner": [
-    "strandraeuber"
-   ],
-   "modell": "bandit_armbrust",
-   "anzahl": 1,
-   "stufe": 30,
-   "gelaende": "küste",
-   "quelle": "vorhanden (bandit_armbrust)"
-  },
-  {
-   "id": "gp_fl_201_183_2917",
-   "region": "fl_201_183",
-   "land": "Die Fahlen Weiten",
-   "x": 6818.5,
-   "y": 5905.5,
    "gegner": [
     "seevogel"
    ],
@@ -43848,8 +43848,8 @@
    "id": "gp_fl_201_183_2918",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6826.5,
-   "y": 5912.5,
+   "x": 6818.5,
+   "y": 5905.5,
    "gegner": [
     "riesenkrabbe"
    ],
@@ -43863,8 +43863,8 @@
    "id": "gp_fl_201_183_2919",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6856.5,
-   "y": 5968.5,
+   "x": 6826.5,
+   "y": 5912.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -43878,23 +43878,23 @@
    "id": "gp_fl_201_183_2920",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6648.5,
-   "y": 5976.5,
+   "x": 6856.5,
+   "y": 5968.5,
    "gegner": [
-    "heidewolf"
+    "strandraeuber"
    ],
-   "modell": "heidewolf",
+   "modell": "bandit_armbrust",
    "anzahl": 2,
-   "stufe": 32,
-   "gelaende": "wald",
-   "quelle": "vorhanden (Figuren)"
+   "stufe": 30,
+   "gelaende": "küste",
+   "quelle": "vorhanden (bandit_armbrust)"
   },
   {
    "id": "gp_fl_201_183_2921",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6645.5,
-   "y": 5979.5,
+   "x": 6648.5,
+   "y": 5976.5,
    "gegner": [
     "heidewolf"
    ],
@@ -43908,8 +43908,8 @@
    "id": "gp_fl_201_183_2922",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6638.5,
-   "y": 5984.5,
+   "x": 6645.5,
+   "y": 5979.5,
    "gegner": [
     "hochlandbaer"
    ],
@@ -43923,8 +43923,8 @@
    "id": "gp_fl_201_183_2923",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6634.5,
-   "y": 5986.5,
+   "x": 6638.5,
+   "y": 5984.5,
    "gegner": [
     "heidewolf"
    ],
@@ -43935,7 +43935,22 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_183_2924",
+   "id": "gp_fl_201_183_2924",
+   "region": "fl_201_183",
+   "land": "Die Fahlen Weiten",
+   "x": 6634.5,
+   "y": 5986.5,
+   "gegner": [
+    "hochlandbaer"
+   ],
+   "modell": "hochlandbaer",
+   "anzahl": 1,
+   "stufe": 54,
+   "gelaende": "wald",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_231_183_2925",
    "region": "fl_231_183",
    "land": "Die Hochlande",
    "x": 7644.5,
@@ -43950,26 +43965,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2925",
+   "id": "gp_fl_246_183_2926",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8172.5,
    "y": 6020.5,
-   "gegner": [
-    "klippenadler"
-   ],
-   "modell": "klippenadler",
-   "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_246_183_2926",
-   "region": "fl_246_183",
-   "land": "Der Drachenarm",
-   "x": 7922.5,
-   "y": 6022.5,
    "gegner": [
     "klippenadler"
    ],
@@ -43980,26 +43980,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2927",
-   "region": "fl_186_183",
-   "land": "Die Fahlen Weiten",
-   "x": 6169.5,
-   "y": 6025.5,
-   "gegner": [
-    "seevogel"
-   ],
-   "modell": "seevogel",
-   "anzahl": 1,
-   "stufe": 26,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_216_183_2928",
-   "region": "fl_216_183",
-   "land": "Die Hochlande",
-   "x": 6930.5,
-   "y": 6024.5,
+   "id": "gp_fl_246_183_2927",
+   "region": "fl_246_183",
+   "land": "Der Drachenarm",
+   "x": 7922.5,
+   "y": 6022.5,
    "gegner": [
     "klippenadler"
    ],
@@ -44010,22 +43995,52 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2929",
+   "id": "gp_fl_186_183_2928",
+   "region": "fl_186_183",
+   "land": "Die Fahlen Weiten",
+   "x": 6169.5,
+   "y": 6025.5,
+   "gegner": [
+    "riesenkrabbe"
+   ],
+   "modell": "riesenkrabbe",
+   "anzahl": 1,
+   "stufe": 34,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_fl_216_183_2929",
+   "region": "fl_216_183",
+   "land": "Die Hochlande",
+   "x": 6930.5,
+   "y": 6024.5,
+   "gegner": [
+    "klippenadler"
+   ],
+   "modell": "klippenadler",
+   "anzahl": 3,
+   "stufe": 56,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_186_183_2930",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6168.5,
    "y": 6032.5,
    "gegner": [
-    "schlickkrebs"
+    "strandraeuber"
    ],
-   "modell": "schlickkrebs",
-   "anzahl": 3,
-   "stufe": 45,
+   "modell": "bandit_armbrust",
+   "anzahl": 1,
+   "stufe": 30,
    "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
+   "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_186_183_2930",
+   "id": "gp_fl_186_183_2931",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6168.5,
@@ -44040,26 +44055,11 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_246_183_2931",
+   "id": "gp_fl_246_183_2932",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8216.5,
    "y": 6047.5,
-   "gegner": [
-    "klippenadler"
-   ],
-   "modell": "klippenadler",
-   "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_246_183_2932",
-   "region": "fl_246_183",
-   "land": "Der Drachenarm",
-   "x": 8221.5,
-   "y": 6052.5,
    "gegner": [
     "klippenadler"
    ],
@@ -44071,6 +44071,21 @@
   },
   {
    "id": "gp_fl_246_183_2933",
+   "region": "fl_246_183",
+   "land": "Der Drachenarm",
+   "x": 8221.5,
+   "y": 6052.5,
+   "gegner": [
+    "klippenadler"
+   ],
+   "modell": "klippenadler",
+   "anzahl": 1,
+   "stufe": 56,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_246_183_2934",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8029.5,
@@ -44085,26 +44100,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2934",
-   "region": "fl_246_183",
-   "land": "Der Drachenarm",
-   "x": 8230.5,
-   "y": 6070.5,
-   "gegner": [
-    "klippenadler"
-   ],
-   "modell": "klippenadler",
-   "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
    "id": "gp_fl_246_183_2935",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8230.5,
-   "y": 6075.5,
+   "y": 6070.5,
    "gegner": [
     "klippenadler"
    ],
@@ -44115,37 +44115,52 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2936",
+   "id": "gp_fl_246_183_2936",
+   "region": "fl_246_183",
+   "land": "Der Drachenarm",
+   "x": 8230.5,
+   "y": 6075.5,
+   "gegner": [
+    "klippenadler"
+   ],
+   "modell": "klippenadler",
+   "anzahl": 1,
+   "stufe": 56,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_186_183_2937",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6150.5,
    "y": 6078.5,
    "gegner": [
-    "strandraeuber"
+    "seevogel"
    ],
-   "modell": "bandit_armbrust",
+   "modell": "seevogel",
    "anzahl": 1,
-   "stufe": 30,
+   "stufe": 26,
    "gelaende": "küste",
-   "quelle": "vorhanden (bandit_armbrust)"
+   "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_246_183_2937",
+   "id": "gp_fl_246_183_2938",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8127.5,
    "y": 6106.5,
    "gegner": [
-    "bergtroll"
+    "drakling"
    ],
-   "modell": "bergtroll",
-   "anzahl": 1,
-   "stufe": 58,
+   "modell": "drakling",
+   "anzahl": 2,
+   "stufe": 66,
    "gelaende": "fels",
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_183_2938",
+   "id": "gp_fl_216_183_2939",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 7132.5,
@@ -44154,13 +44169,13 @@
     "klippenadler"
    ],
    "modell": "klippenadler",
-   "anzahl": 2,
+   "anzahl": 1,
    "stufe": 56,
    "gelaende": "küste",
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2939",
+   "id": "gp_fl_246_183_2940",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8067.5,
@@ -44175,26 +44190,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2940",
+   "id": "gp_fl_246_183_2941",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8066.5,
    "y": 6128.5,
-   "gegner": [
-    "klippenadler"
-   ],
-   "modell": "klippenadler",
-   "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_216_183_2941",
-   "region": "fl_216_183",
-   "land": "Die Hochlande",
-   "x": 6955.5,
-   "y": 6148.5,
    "gegner": [
     "klippenadler"
    ],
@@ -44205,26 +44205,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2942",
-   "region": "fl_186_183",
-   "land": "Die Fahlen Weiten",
-   "x": 6111.5,
-   "y": 6149.5,
-   "gegner": [
-    "seevogel"
-   ],
-   "modell": "seevogel",
-   "anzahl": 1,
-   "stufe": 26,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_216_183_2943",
+   "id": "gp_fl_216_183_2942",
    "region": "fl_216_183",
    "land": "Die Hochlande",
-   "x": 7391.5,
-   "y": 6152.5,
+   "x": 6955.5,
+   "y": 6148.5,
    "gegner": [
     "klippenadler"
    ],
@@ -44235,10 +44220,25 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
+   "id": "gp_fl_186_183_2943",
+   "region": "fl_186_183",
+   "land": "Die Fahlen Weiten",
+   "x": 6111.5,
+   "y": 6149.5,
+   "gegner": [
+    "riesenkrabbe"
+   ],
+   "modell": "riesenkrabbe",
+   "anzahl": 1,
+   "stufe": 34,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
    "id": "gp_fl_216_183_2944",
    "region": "fl_216_183",
    "land": "Die Hochlande",
-   "x": 6950.5,
+   "x": 7391.5,
    "y": 6152.5,
    "gegner": [
     "klippenadler"
@@ -44250,7 +44250,22 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2945",
+   "id": "gp_fl_216_183_2945",
+   "region": "fl_216_183",
+   "land": "Die Hochlande",
+   "x": 6950.5,
+   "y": 6152.5,
+   "gegner": [
+    "klippenadler"
+   ],
+   "modell": "klippenadler",
+   "anzahl": 1,
+   "stufe": 56,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_246_183_2946",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 7971.5,
@@ -44265,26 +44280,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2946",
+   "id": "gp_fl_246_183_2947",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8093.5,
    "y": 6160.5,
-   "gegner": [
-    "klippenadler"
-   ],
-   "modell": "klippenadler",
-   "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_216_183_2947",
-   "region": "fl_216_183",
-   "land": "Die Hochlande",
-   "x": 6981.5,
-   "y": 6181.5,
    "gegner": [
     "klippenadler"
    ],
@@ -44296,6 +44296,21 @@
   },
   {
    "id": "gp_fl_216_183_2948",
+   "region": "fl_216_183",
+   "land": "Die Hochlande",
+   "x": 6981.5,
+   "y": 6181.5,
+   "gegner": [
+    "klippenadler"
+   ],
+   "modell": "klippenadler",
+   "anzahl": 1,
+   "stufe": 56,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_216_183_2949",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 7290.5,
@@ -44310,26 +44325,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2949",
+   "id": "gp_fl_246_183_2950",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8211.5,
    "y": 6186.5,
-   "gegner": [
-    "bergtroll"
-   ],
-   "modell": "bergtroll",
-   "anzahl": 1,
-   "stufe": 58,
-   "gelaende": "fels",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_246_183_2950",
-   "region": "fl_246_183",
-   "land": "Der Drachenarm",
-   "x": 8216.5,
-   "y": 6188.5,
    "gegner": [
     "drakling"
    ],
@@ -44343,8 +44343,8 @@
    "id": "gp_fl_246_183_2951",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
-   "x": 8207.5,
-   "y": 6189.5,
+   "x": 8216.5,
+   "y": 6188.5,
    "gegner": [
     "drakling"
    ],
@@ -44358,8 +44358,8 @@
    "id": "gp_fl_246_183_2952",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
-   "x": 8206.5,
-   "y": 6190.5,
+   "x": 8207.5,
+   "y": 6189.5,
    "gegner": [
     "bergtroll"
    ],
@@ -44373,8 +44373,8 @@
    "id": "gp_fl_246_183_2953",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
-   "x": 8204.5,
-   "y": 6191.5,
+   "x": 8206.5,
+   "y": 6190.5,
    "gegner": [
     "drakling"
    ],
@@ -44388,8 +44388,8 @@
    "id": "gp_fl_246_183_2954",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
-   "x": 8202.5,
-   "y": 6192.5,
+   "x": 8204.5,
+   "y": 6191.5,
    "gegner": [
     "bergtroll"
    ],
@@ -44400,7 +44400,22 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_183_2955",
+   "id": "gp_fl_246_183_2955",
+   "region": "fl_246_183",
+   "land": "Der Drachenarm",
+   "x": 8202.5,
+   "y": 6192.5,
+   "gegner": [
+    "drakling"
+   ],
+   "modell": "drakling",
+   "anzahl": 1,
+   "stufe": 66,
+   "gelaende": "fels",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_231_183_2956",
    "region": "fl_231_183",
    "land": "Die Hochlande",
    "x": 7436.5,
@@ -44409,32 +44424,17 @@
     "klippenadler"
    ],
    "modell": "klippenadler",
-   "anzahl": 1,
+   "anzahl": 2,
    "stufe": 56,
    "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_246_183_2956",
-   "region": "fl_246_183",
-   "land": "Der Drachenarm",
-   "x": 8144.5,
-   "y": 6193.5,
-   "gegner": [
-    "drakling"
-   ],
-   "modell": "drakling",
-   "anzahl": 2,
-   "stufe": 66,
-   "gelaende": "fels",
    "quelle": "vorhanden (Systeme)"
   },
   {
    "id": "gp_fl_246_183_2957",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
-   "x": 8197.5,
-   "y": 6194.5,
+   "x": 8144.5,
+   "y": 6193.5,
    "gegner": [
     "bergtroll"
    ],
@@ -44448,8 +44448,8 @@
    "id": "gp_fl_246_183_2958",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
-   "x": 8148.5,
-   "y": 6195.5,
+   "x": 8197.5,
+   "y": 6194.5,
    "gegner": [
     "drakling"
    ],
@@ -44463,19 +44463,34 @@
    "id": "gp_fl_246_183_2959",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
+   "x": 8148.5,
+   "y": 6195.5,
+   "gegner": [
+    "bergtroll"
+   ],
+   "modell": "bergtroll",
+   "anzahl": 3,
+   "stufe": 58,
+   "gelaende": "fels",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_246_183_2960",
+   "region": "fl_246_183",
+   "land": "Der Drachenarm",
    "x": 8033.5,
    "y": 6219.5,
    "gegner": [
     "klippenadler"
    ],
    "modell": "klippenadler",
-   "anzahl": 3,
+   "anzahl": 1,
    "stufe": 56,
    "gelaende": "küste",
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2960",
+   "id": "gp_fl_186_183_2961",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6152.5,
@@ -44490,26 +44505,11 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_183_2961",
+   "id": "gp_fl_186_183_2962",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6163.5,
    "y": 6248.5,
-   "gegner": [
-    "bandit_armbrust"
-   ],
-   "modell": "bandit_armbrust",
-   "anzahl": 1,
-   "stufe": 24,
-   "gelaende": "wiese",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_fl_186_183_2962",
-   "region": "fl_186_183",
-   "land": "Die Fahlen Weiten",
-   "x": 6134.5,
-   "y": 6228.5,
    "gegner": [
     "hochlandwidder"
    ],
@@ -44520,22 +44520,37 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_183_2963",
+   "id": "gp_fl_186_183_2963",
+   "region": "fl_186_183",
+   "land": "Die Fahlen Weiten",
+   "x": 6134.5,
+   "y": 6228.5,
+   "gegner": [
+    "splitterreiher"
+   ],
+   "modell": "splitterreiher",
+   "anzahl": 1,
+   "stufe": 50,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_fl_201_183_2964",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6775.5,
    "y": 6228.5,
    "gegner": [
-    "riesenkrabbe"
+    "schlickkrebs"
    ],
-   "modell": "riesenkrabbe",
+   "modell": "schlickkrebs",
    "anzahl": 1,
-   "stufe": 34,
+   "stufe": 45,
    "gelaende": "küste",
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_246_183_2964",
+   "id": "gp_fl_246_183_2965",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8047.5,
@@ -44544,13 +44559,13 @@
     "klippenadler"
    ],
    "modell": "klippenadler",
-   "anzahl": 1,
+   "anzahl": 3,
    "stufe": 56,
    "gelaende": "küste",
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2965",
+   "id": "gp_fl_186_183_2966",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6136.5,
@@ -44559,13 +44574,13 @@
     "bandit_armbrust"
    ],
    "modell": "bandit_armbrust",
-   "anzahl": 3,
+   "anzahl": 1,
    "stufe": 24,
    "gelaende": "wiese",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_246_183_2966",
+   "id": "gp_fl_246_183_2967",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8137.5,
@@ -44580,26 +44595,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2967",
+   "id": "gp_fl_186_183_2968",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6142.5,
    "y": 6252.5,
-   "gegner": [
-    "hochlandwidder"
-   ],
-   "modell": "hochlandwidder",
-   "anzahl": 1,
-   "stufe": 52,
-   "gelaende": "wiese",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_186_183_2968",
-   "region": "fl_186_183",
-   "land": "Die Fahlen Weiten",
-   "x": 6144.5,
-   "y": 6253.5,
    "gegner": [
     "splitterreiher"
    ],
@@ -44610,7 +44610,22 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_183_2969",
+   "id": "gp_fl_186_183_2969",
+   "region": "fl_186_183",
+   "land": "Die Fahlen Weiten",
+   "x": 6144.5,
+   "y": 6253.5,
+   "gegner": [
+    "steppenwolf"
+   ],
+   "modell": "steppenwolf",
+   "anzahl": 1,
+   "stufe": 46,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_216_183_2970",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 6947.5,
@@ -44625,26 +44640,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2970",
+   "id": "gp_fl_246_183_2971",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8082.5,
    "y": 6288.5,
-   "gegner": [
-    "klippenadler"
-   ],
-   "modell": "klippenadler",
-   "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_246_183_2971",
-   "region": "fl_246_183",
-   "land": "Der Drachenarm",
-   "x": 8210.5,
-   "y": 6290.5,
    "gegner": [
     "klippenadler"
    ],
@@ -44655,26 +44655,26 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_183_2972",
-   "region": "fl_201_183",
-   "land": "Die Fahlen Weiten",
-   "x": 6808.5,
-   "y": 6315.5,
+   "id": "gp_fl_246_183_2972",
+   "region": "fl_246_183",
+   "land": "Der Drachenarm",
+   "x": 8210.5,
+   "y": 6290.5,
    "gegner": [
-    "seevogel"
+    "klippenadler"
    ],
-   "modell": "seevogel",
+   "modell": "klippenadler",
    "anzahl": 1,
-   "stufe": 26,
+   "stufe": 56,
    "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
+   "quelle": "vorhanden (Systeme)"
   },
   {
    "id": "gp_fl_201_183_2973",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6819.5,
-   "y": 6317.5,
+   "x": 6808.5,
+   "y": 6315.5,
    "gegner": [
     "riesenkrabbe"
    ],
@@ -44688,8 +44688,8 @@
    "id": "gp_fl_201_183_2974",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6822.5,
-   "y": 6318.5,
+   "x": 6819.5,
+   "y": 6317.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -44701,6 +44701,21 @@
   },
   {
    "id": "gp_fl_201_183_2975",
+   "region": "fl_201_183",
+   "land": "Die Fahlen Weiten",
+   "x": 6822.5,
+   "y": 6318.5,
+   "gegner": [
+    "strandraeuber"
+   ],
+   "modell": "bandit_armbrust",
+   "anzahl": 1,
+   "stufe": 30,
+   "gelaende": "küste",
+   "quelle": "vorhanden (bandit_armbrust)"
+  },
+  {
+   "id": "gp_fl_201_183_2976",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6799.5,
@@ -44715,26 +44730,11 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_201_183_2976",
+   "id": "gp_fl_201_183_2977",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6824.5,
    "y": 6319.5,
-   "gegner": [
-    "strandraeuber"
-   ],
-   "modell": "bandit_armbrust",
-   "anzahl": 1,
-   "stufe": 30,
-   "gelaende": "küste",
-   "quelle": "vorhanden (bandit_armbrust)"
-  },
-  {
-   "id": "gp_fl_201_183_2977",
-   "region": "fl_201_183",
-   "land": "Die Fahlen Weiten",
-   "x": 6798.5,
-   "y": 6320.5,
    "gegner": [
     "seevogel"
    ],
@@ -44748,7 +44748,7 @@
    "id": "gp_fl_201_183_2978",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6826.5,
+   "x": 6798.5,
    "y": 6320.5,
    "gegner": [
     "riesenkrabbe"
@@ -44763,8 +44763,8 @@
    "id": "gp_fl_201_183_2979",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6793.5,
-   "y": 6323.5,
+   "x": 6826.5,
+   "y": 6320.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -44778,7 +44778,7 @@
    "id": "gp_fl_201_183_2980",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6830.5,
+   "x": 6793.5,
    "y": 6323.5,
    "gegner": [
     "strandraeuber"
@@ -44793,7 +44793,7 @@
    "id": "gp_fl_201_183_2981",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6752.5,
+   "x": 6830.5,
    "y": 6323.5,
    "gegner": [
     "strandraeuber"
@@ -44808,7 +44808,7 @@
    "id": "gp_fl_201_183_2982",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
-   "x": 6789.5,
+   "x": 6752.5,
    "y": 6323.5,
    "gegner": [
     "seevogel"
@@ -44820,26 +44820,26 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_nordsaum_2983",
-   "region": "nordsaum",
-   "land": "nordsaum",
-   "x": 6455.5,
-   "y": 6388.5,
+   "id": "gp_fl_201_183_2983",
+   "region": "fl_201_183",
+   "land": "Die Fahlen Weiten",
+   "x": 6789.5,
+   "y": 6323.5,
    "gegner": [
-    "wildschwein"
+    "riesenkrabbe"
    ],
-   "modell": "wildschwein",
+   "modell": "riesenkrabbe",
    "anzahl": 3,
-   "stufe": 18,
-   "gelaende": "wald",
+   "stufe": 34,
+   "gelaende": "küste",
    "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_nordsaum_2984",
    "region": "nordsaum",
    "land": "nordsaum",
-   "x": 6714.5,
-   "y": 6398.5,
+   "x": 6455.5,
+   "y": 6388.5,
    "gegner": [
     "waldgolem"
    ],
@@ -44850,7 +44850,22 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_graufurt_2985",
+   "id": "gp_nordsaum_2985",
+   "region": "nordsaum",
+   "land": "nordsaum",
+   "x": 6714.5,
+   "y": 6398.5,
+   "gegner": [
+    "bandit_spaeher"
+   ],
+   "modell": "bandit_spaeher",
+   "anzahl": 1,
+   "stufe": 18,
+   "gelaende": "wald",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_graufurt_2986",
    "region": "graufurt",
    "land": "graufurt",
    "x": 6715.5,
@@ -44859,47 +44874,32 @@
     "bandit_schlaeger"
    ],
    "modell": "bandit_schlaeger",
-   "anzahl": 1,
+   "anzahl": 2,
    "stufe": 22,
    "gelaende": "wiese",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_waldmark_2986",
+   "id": "gp_waldmark_2987",
    "region": "waldmark",
    "land": "waldmark",
    "x": 6488.5,
    "y": 6450.5,
    "gegner": [
-    "bandit_dolch"
+    "mooshocker"
    ],
-   "modell": "bandit_dolch",
-   "anzahl": 2,
+   "modell": "mooshocker",
+   "anzahl": 1,
    "stufe": 1,
    "gelaende": "wald",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_2987",
+   "id": "gp_fl_216_198_2988",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7074.5,
    "y": 6458.5,
-   "gegner": [
-    "klippenadler"
-   ],
-   "modell": "klippenadler",
-   "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_231_198_2988",
-   "region": "fl_231_198",
-   "land": "Die Glutsande",
-   "x": 7472.5,
-   "y": 6459.5,
    "gegner": [
     "riesenkrabbe"
    ],
@@ -44913,8 +44913,8 @@
    "id": "gp_fl_231_198_2989",
    "region": "fl_231_198",
    "land": "Die Glutsande",
-   "x": 7473.5,
-   "y": 6460.5,
+   "x": 7472.5,
+   "y": 6459.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -44925,7 +44925,22 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_nordwald_2990",
+   "id": "gp_fl_231_198_2990",
+   "region": "fl_231_198",
+   "land": "Die Glutsande",
+   "x": 7473.5,
+   "y": 6460.5,
+   "gegner": [
+    "klippenadler"
+   ],
+   "modell": "klippenadler",
+   "anzahl": 1,
+   "stufe": 56,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_nordwald_2991",
    "region": "nordwald",
    "land": "nordwald",
    "x": 6350.5,
@@ -44940,26 +44955,11 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_231_198_2991",
+   "id": "gp_fl_231_198_2992",
    "region": "fl_231_198",
    "land": "Die Glutsande",
    "x": 7393.5,
    "y": 6461.5,
-   "gegner": [
-    "schlickkrebs"
-   ],
-   "modell": "schlickkrebs",
-   "anzahl": 1,
-   "stufe": 45,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_231_198_2992",
-   "region": "fl_231_198",
-   "land": "Die Glutsande",
-   "x": 7392.5,
-   "y": 6462.5,
    "gegner": [
     "klippenadler"
    ],
@@ -44970,11 +44970,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_198_2993",
-   "region": "fl_216_198",
+   "id": "gp_fl_231_198_2993",
+   "region": "fl_231_198",
    "land": "Die Glutsande",
-   "x": 7071.5,
-   "y": 6463.5,
+   "x": 7392.5,
+   "y": 6462.5,
    "gegner": [
     "riesenkrabbe"
    ],
@@ -44988,8 +44988,8 @@
    "id": "gp_fl_216_198_2994",
    "region": "fl_216_198",
    "land": "Die Glutsande",
-   "x": 7390.5,
-   "y": 6464.5,
+   "x": 7071.5,
+   "y": 6463.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -45000,7 +45000,22 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_waldweg_2995",
+   "id": "gp_fl_216_198_2995",
+   "region": "fl_216_198",
+   "land": "Die Glutsande",
+   "x": 7390.5,
+   "y": 6464.5,
+   "gegner": [
+    "klippenadler"
+   ],
+   "modell": "klippenadler",
+   "anzahl": 3,
+   "stufe": 56,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_waldweg_2996",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6394.5,
@@ -45009,61 +45024,46 @@
     "bandit_dolch"
    ],
    "modell": "bandit_dolch",
-   "anzahl": 3,
+   "anzahl": 1,
    "stufe": 1,
    "gelaende": "wald",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_graufurt_2996",
+   "id": "gp_graufurt_2997",
    "region": "graufurt",
    "land": "graufurt",
    "x": 6717.5,
    "y": 6466.5,
    "gegner": [
-    "bandit_schlaeger"
+    "bandit_spaeher"
    ],
-   "modell": "bandit_schlaeger",
+   "modell": "bandit_spaeher",
    "anzahl": 1,
-   "stufe": 22,
+   "stufe": 18,
    "gelaende": "wiese",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_waldweg_2997",
+   "id": "gp_waldweg_2998",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6397.5,
    "y": 6485.5,
    "gegner": [
-    "mooshocker"
+    "bandit_dolch"
    ],
-   "modell": "mooshocker",
-   "anzahl": 1,
+   "modell": "bandit_dolch",
+   "anzahl": 2,
    "stufe": 1,
    "gelaende": "wald",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_ostufer_2998",
+   "id": "gp_ostufer_2999",
    "region": "ostufer",
    "land": "ostufer",
    "x": 6911.5,
-   "y": 6486.5,
-   "gegner": [
-    "schlickkrebs"
-   ],
-   "modell": "schlickkrebs",
-   "anzahl": 2,
-   "stufe": 45,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_216_198_2999",
-   "region": "fl_216_198",
-   "land": "Die Glutsande",
-   "x": 6918.5,
    "y": 6486.5,
    "gegner": [
     "schlickkrebs"
@@ -45078,8 +45078,8 @@
    "id": "gp_fl_216_198_3000",
    "region": "fl_216_198",
    "land": "Die Glutsande",
-   "x": 6982.5,
-   "y": 6487.5,
+   "x": 6918.5,
+   "y": 6486.5,
    "gegner": [
     "klippenadler"
    ],
@@ -45093,8 +45093,8 @@
    "id": "gp_fl_216_198_3001",
    "region": "fl_216_198",
    "land": "Die Glutsande",
-   "x": 6924.5,
-   "y": 6489.5,
+   "x": 6982.5,
+   "y": 6487.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -45108,8 +45108,8 @@
    "id": "gp_fl_216_198_3002",
    "region": "fl_216_198",
    "land": "Die Glutsande",
-   "x": 7133.5,
-   "y": 6492.5,
+   "x": 6924.5,
+   "y": 6489.5,
    "gegner": [
     "klippenadler"
    ],
@@ -45120,25 +45120,25 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_waldweg_3003",
-   "region": "waldweg",
-   "land": "waldweg",
-   "x": 6404.5,
-   "y": 6490.5,
+   "id": "gp_fl_216_198_3003",
+   "region": "fl_216_198",
+   "land": "Die Glutsande",
+   "x": 7133.5,
+   "y": 6492.5,
    "gegner": [
-    "bandit_dolch"
+    "riesenkrabbe"
    ],
-   "modell": "bandit_dolch",
+   "modell": "riesenkrabbe",
    "anzahl": 1,
-   "stufe": 1,
-   "gelaende": "wald",
-   "quelle": "vorhanden"
+   "stufe": 34,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldweg_3004",
    "region": "waldweg",
    "land": "waldweg",
-   "x": 6510.5,
+   "x": 6404.5,
    "y": 6490.5,
    "gegner": [
     "mooshocker"
@@ -45150,7 +45150,22 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_osthang_3005",
+   "id": "gp_waldweg_3005",
+   "region": "waldweg",
+   "land": "waldweg",
+   "x": 6510.5,
+   "y": 6490.5,
+   "gegner": [
+    "bandit_dolch"
+   ],
+   "modell": "bandit_dolch",
+   "anzahl": 1,
+   "stufe": 1,
+   "gelaende": "wald",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_osthang_3006",
    "region": "osthang",
    "land": "osthang",
    "x": 6632.5,
@@ -45165,26 +45180,11 @@
    "quelle": "vorhanden (bandit_spaeher)"
   },
   {
-   "id": "gp_fl_216_198_3006",
+   "id": "gp_fl_216_198_3007",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 6978.5,
    "y": 6490.5,
-   "gegner": [
-    "schlickkrebs"
-   ],
-   "modell": "schlickkrebs",
-   "anzahl": 1,
-   "stufe": 45,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_216_198_3007",
-   "region": "fl_216_198",
-   "land": "Die Glutsande",
-   "x": 7171.5,
-   "y": 6492.5,
    "gegner": [
     "klippenadler"
    ],
@@ -45195,26 +45195,26 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_waldweg_3008",
-   "region": "waldweg",
-   "land": "waldweg",
-   "x": 6406.5,
-   "y": 6491.5,
+   "id": "gp_fl_216_198_3008",
+   "region": "fl_216_198",
+   "land": "Die Glutsande",
+   "x": 7171.5,
+   "y": 6492.5,
    "gegner": [
-    "bandit_dolch"
+    "riesenkrabbe"
    ],
-   "modell": "bandit_dolch",
+   "modell": "riesenkrabbe",
    "anzahl": 1,
-   "stufe": 1,
-   "gelaende": "wald",
-   "quelle": "vorhanden"
+   "stufe": 34,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_waldweg_3009",
    "region": "waldweg",
    "land": "waldweg",
-   "x": 6473.5,
-   "y": 6490.5,
+   "x": 6406.5,
+   "y": 6491.5,
    "gegner": [
     "mooshocker"
    ],
@@ -45225,41 +45225,41 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3010",
-   "region": "fl_216_198",
-   "land": "Die Glutsande",
-   "x": 6972.5,
-   "y": 6493.5,
-   "gegner": [
-    "klippenadler"
-   ],
-   "modell": "klippenadler",
-   "anzahl": 2,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_waldweg_3011",
+   "id": "gp_waldweg_3010",
    "region": "waldweg",
    "land": "waldweg",
-   "x": 6409.5,
-   "y": 6494.5,
+   "x": 6473.5,
+   "y": 6490.5,
    "gegner": [
     "bandit_dolch"
    ],
    "modell": "bandit_dolch",
-   "anzahl": 1,
+   "anzahl": 2,
    "stufe": 1,
    "gelaende": "wald",
    "quelle": "vorhanden"
   },
   {
+   "id": "gp_fl_216_198_3011",
+   "region": "fl_216_198",
+   "land": "Die Glutsande",
+   "x": 6972.5,
+   "y": 6493.5,
+   "gegner": [
+    "schlickkrebs"
+   ],
+   "modell": "schlickkrebs",
+   "anzahl": 1,
+   "stufe": 45,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
    "id": "gp_waldweg_3012",
    "region": "waldweg",
    "land": "waldweg",
-   "x": 6471.5,
-   "y": 6491.5,
+   "x": 6409.5,
+   "y": 6494.5,
    "gegner": [
     "mooshocker"
    ],
@@ -45273,8 +45273,8 @@
    "id": "gp_waldweg_3013",
    "region": "waldweg",
    "land": "waldweg",
-   "x": 6454.5,
-   "y": 6500.5,
+   "x": 6471.5,
+   "y": 6491.5,
    "gegner": [
     "bandit_dolch"
    ],
@@ -45288,7 +45288,7 @@
    "id": "gp_waldweg_3014",
    "region": "waldweg",
    "land": "waldweg",
-   "x": 6492.5,
+   "x": 6454.5,
    "y": 6500.5,
    "gegner": [
     "mooshocker"
@@ -45300,7 +45300,22 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_osthang_3015",
+   "id": "gp_waldweg_3015",
+   "region": "waldweg",
+   "land": "waldweg",
+   "x": 6492.5,
+   "y": 6500.5,
+   "gegner": [
+    "bandit_dolch"
+   ],
+   "modell": "bandit_dolch",
+   "anzahl": 1,
+   "stufe": 1,
+   "gelaende": "wald",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_osthang_3016",
    "region": "osthang",
    "land": "osthang",
    "x": 6614.5,
@@ -45309,73 +45324,73 @@
     "wegelagerer"
    ],
    "modell": "bandit_spaeher",
-   "anzahl": 1,
+   "anzahl": 2,
    "stufe": 20,
    "gelaende": "wiese",
    "quelle": "vorhanden (bandit_spaeher)"
   },
   {
-   "id": "gp_fl_231_198_3016",
+   "id": "gp_fl_231_198_3017",
    "region": "fl_231_198",
    "land": "Die Glutsande",
    "x": 7492.5,
    "y": 6526.5,
    "gegner": [
-    "schlickkrebs"
+    "klippenadler"
    ],
-   "modell": "schlickkrebs",
-   "anzahl": 2,
-   "stufe": 45,
+   "modell": "klippenadler",
+   "anzahl": 1,
+   "stufe": 56,
    "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
+   "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_waldweg_3017",
+   "id": "gp_waldweg_3018",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6434.5,
    "y": 6534.5,
    "gegner": [
-    "mooshocker"
+    "bandit_dolch"
    ],
-   "modell": "mooshocker",
+   "modell": "bandit_dolch",
    "anzahl": 1,
    "stufe": 1,
    "gelaende": "wald",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_ostufer_3018",
+   "id": "gp_ostufer_3019",
    "region": "ostufer",
    "land": "ostufer",
    "x": 6909.5,
    "y": 6534.5,
    "gegner": [
-    "hochlandwidder"
+    "steppenwolf"
    ],
-   "modell": "hochlandwidder",
-   "anzahl": 1,
-   "stufe": 52,
+   "modell": "steppenwolf",
+   "anzahl": 3,
+   "stufe": 46,
    "gelaende": "wiese",
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_waldweg_3019",
+   "id": "gp_waldweg_3020",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6434.5,
    "y": 6554.5,
    "gegner": [
-    "mooshocker"
+    "bandit_dolch"
    ],
-   "modell": "mooshocker",
-   "anzahl": 3,
+   "modell": "bandit_dolch",
+   "anzahl": 1,
    "stufe": 1,
    "gelaende": "wald",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_ostufer_3020",
+   "id": "gp_ostufer_3021",
    "region": "ostufer",
    "land": "ostufer",
    "x": 6909.5,
@@ -45388,28 +45403,13 @@
    "stufe": 45,
    "gelaende": "küste",
    "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_graufurt_3021",
-   "region": "graufurt",
-   "land": "graufurt",
-   "x": 6694.5,
-   "y": 6565.5,
-   "gegner": [
-    "bandit_schlaeger"
-   ],
-   "modell": "bandit_schlaeger",
-   "anzahl": 1,
-   "stufe": 22,
-   "gelaende": "wiese",
-   "quelle": "vorhanden"
   },
   {
    "id": "gp_graufurt_3022",
    "region": "graufurt",
    "land": "graufurt",
-   "x": 6693.5,
-   "y": 6566.5,
+   "x": 6694.5,
+   "y": 6565.5,
    "gegner": [
     "bandit_spaeher"
    ],
@@ -45420,7 +45420,22 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_198_3023",
+   "id": "gp_graufurt_3023",
+   "region": "graufurt",
+   "land": "graufurt",
+   "x": 6693.5,
+   "y": 6566.5,
+   "gegner": [
+    "wegelagerer"
+   ],
+   "modell": "bandit_spaeher",
+   "anzahl": 1,
+   "stufe": 20,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (bandit_spaeher)"
+  },
+  {
+   "id": "gp_fl_186_198_3024",
    "region": "fl_186_198",
    "land": "Grenzland",
    "x": 6054.5,
@@ -45435,11 +45450,41 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_waldweg_3024",
+   "id": "gp_waldweg_3025",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6495.5,
    "y": 6586.5,
+   "gegner": [
+    "bandit_dolch"
+   ],
+   "modell": "bandit_dolch",
+   "anzahl": 3,
+   "stufe": 1,
+   "gelaende": "wald",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_fl_216_198_3026",
+   "region": "fl_216_198",
+   "land": "Die Glutsande",
+   "x": 7009.5,
+   "y": 6587.5,
+   "gegner": [
+    "splitterreiher"
+   ],
+   "modell": "splitterreiher",
+   "anzahl": 1,
+   "stufe": 50,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_waldweg_3027",
+   "region": "waldweg",
+   "land": "waldweg",
+   "x": 6512.5,
+   "y": 6597.5,
    "gegner": [
     "mooshocker"
    ],
@@ -45450,86 +45495,41 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3025",
-   "region": "fl_216_198",
-   "land": "Die Glutsande",
-   "x": 7009.5,
-   "y": 6587.5,
-   "gegner": [
-    "hochlandwidder"
-   ],
-   "modell": "hochlandwidder",
-   "anzahl": 3,
-   "stufe": 52,
-   "gelaende": "wiese",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_waldweg_3026",
-   "region": "waldweg",
-   "land": "waldweg",
-   "x": 6512.5,
-   "y": 6597.5,
-   "gegner": [
-    "bandit_dolch"
-   ],
-   "modell": "bandit_dolch",
-   "anzahl": 1,
-   "stufe": 1,
-   "gelaende": "wald",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_aschenwerth_3027",
+   "id": "gp_aschenwerth_3028",
    "region": "aschenwerth",
    "land": "aschenwerth",
    "x": 6151.5,
    "y": 6628.5,
    "gegner": [
-    "schilfkroete"
+    "schlammkroete"
    ],
-   "modell": "schilfkroete",
-   "anzahl": 1,
-   "stufe": 12,
+   "modell": "schlammkroete",
+   "anzahl": 2,
+   "stufe": 8,
    "gelaende": "moor",
-   "quelle": "vorhanden (Figuren)"
+   "quelle": "vorhanden"
   },
   {
-   "id": "gp_weidenhain_3028",
+   "id": "gp_weidenhain_3029",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6452.5,
    "y": 6662.5,
    "gegner": [
-    "bandit_dolch"
+    "mooshocker"
    ],
-   "modell": "bandit_dolch",
-   "anzahl": 2,
+   "modell": "mooshocker",
+   "anzahl": 1,
    "stufe": 1,
    "gelaende": "wald",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3029",
+   "id": "gp_fl_216_198_3030",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7090.5,
    "y": 6663.5,
-   "gegner": [
-    "bergtroll"
-   ],
-   "modell": "bergtroll",
-   "anzahl": 1,
-   "stufe": 58,
-   "gelaende": "fels",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_216_198_3030",
-   "region": "fl_216_198",
-   "land": "Die Glutsande",
-   "x": 7132.5,
-   "y": 6664.5,
    "gegner": [
     "grabwaechter"
    ],
@@ -45543,8 +45543,8 @@
    "id": "gp_fl_216_198_3031",
    "region": "fl_216_198",
    "land": "Die Glutsande",
-   "x": 7097.5,
-   "y": 6666.5,
+   "x": 7132.5,
+   "y": 6664.5,
    "gegner": [
     "grabwaechter"
    ],
@@ -45555,55 +45555,55 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_weidenhain_3032",
+   "id": "gp_fl_216_198_3032",
+   "region": "fl_216_198",
+   "land": "Die Glutsande",
+   "x": 7097.5,
+   "y": 6666.5,
+   "gegner": [
+    "bergtroll"
+   ],
+   "modell": "bergtroll",
+   "anzahl": 1,
+   "stufe": 58,
+   "gelaende": "fels",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_weidenhain_3033",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6452.5,
    "y": 6662.5,
    "gegner": [
-    "mooshocker"
+    "bandit_dolch"
    ],
-   "modell": "mooshocker",
+   "modell": "bandit_dolch",
    "anzahl": 1,
    "stufe": 1,
    "gelaende": "wald",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3033",
+   "id": "gp_fl_216_198_3034",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7084.5,
    "y": 6665.5,
    "gegner": [
-    "glutskorpion"
+    "ockerhyaene"
    ],
-   "modell": "glutskorpion",
-   "anzahl": 1,
-   "stufe": 48,
-   "gelaende": "wüste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_216_198_3034",
-   "region": "fl_216_198",
-   "land": "Die Glutsande",
-   "x": 7099.5,
-   "y": 6667.5,
-   "gegner": [
-    "bergtroll"
-   ],
-   "modell": "bergtroll",
+   "modell": "ockerhyaene",
    "anzahl": 2,
-   "stufe": 58,
-   "gelaende": "fels",
+   "stufe": 50,
+   "gelaende": "wüste",
    "quelle": "vorhanden (Systeme)"
   },
   {
    "id": "gp_fl_216_198_3035",
    "region": "fl_216_198",
    "land": "Die Glutsande",
-   "x": 7124.5,
+   "x": 7099.5,
    "y": 6667.5,
    "gegner": [
     "grabwaechter"
@@ -45618,23 +45618,23 @@
    "id": "gp_fl_216_198_3036",
    "region": "fl_216_198",
    "land": "Die Glutsande",
-   "x": 7081.5,
+   "x": 7124.5,
    "y": 6667.5,
    "gegner": [
-    "karawanenraeuber"
+    "grabwaechter"
    ],
-   "modell": "bandit_schlaeger",
+   "modell": "grabwaechter",
    "anzahl": 1,
-   "stufe": 50,
-   "gelaende": "wüste",
-   "quelle": "vorhanden (bandit_schlaeger)"
+   "stufe": 48,
+   "gelaende": "fels",
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_198_3037",
    "region": "fl_216_198",
    "land": "Die Glutsande",
-   "x": 7146.5,
-   "y": 6671.5,
+   "x": 7081.5,
+   "y": 6667.5,
    "gegner": [
     "glutgeist"
    ],
@@ -45648,8 +45648,8 @@
    "id": "gp_fl_216_198_3038",
    "region": "fl_216_198",
    "land": "Die Glutsande",
-   "x": 7079.5,
-   "y": 6669.5,
+   "x": 7146.5,
+   "y": 6671.5,
    "gegner": [
     "glutskorpion"
    ],
@@ -45660,86 +45660,11 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_rabenmoor_3039",
-   "region": "rabenmoor",
-   "land": "rabenmoor",
-   "x": 6350.5,
-   "y": 6670.5,
-   "gegner": [
-    "moorleiche"
-   ],
-   "modell": "moorleiche",
-   "anzahl": 1,
-   "stufe": 12,
-   "gelaende": "moor",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_weidenhain_3040",
-   "region": "weidenhain",
-   "land": "weidenhain",
-   "x": 6427.5,
-   "y": 6663.5,
-   "gegner": [
-    "mooshocker"
-   ],
-   "modell": "mooshocker",
-   "anzahl": 2,
-   "stufe": 1,
-   "gelaende": "wiese",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_weidenhain_3041",
-   "region": "weidenhain",
-   "land": "weidenhain",
-   "x": 6469.5,
-   "y": 6672.5,
-   "gegner": [
-    "mooshocker"
-   ],
-   "modell": "mooshocker",
-   "anzahl": 1,
-   "stufe": 1,
-   "gelaende": "wiese",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_fl_216_198_3042",
+   "id": "gp_fl_216_198_3039",
    "region": "fl_216_198",
    "land": "Die Glutsande",
-   "x": 7075.5,
-   "y": 6670.5,
-   "gegner": [
-    "glutgeist"
-   ],
-   "modell": "glutgeist",
-   "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "wüste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_weidenhain_3043",
-   "region": "weidenhain",
-   "land": "weidenhain",
-   "x": 6465.5,
-   "y": 6673.5,
-   "gegner": [
-    "feldhase"
-   ],
-   "modell": "feldhase",
-   "anzahl": 3,
-   "stufe": 3,
-   "gelaende": "wiese",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_216_198_3044",
-   "region": "fl_216_198",
-   "land": "Die Glutsande",
-   "x": 7149.5,
-   "y": 6681.5,
+   "x": 7079.5,
+   "y": 6669.5,
    "gegner": [
     "ockerhyaene"
    ],
@@ -45750,7 +45675,97 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_aschenwerth_3045",
+   "id": "gp_rabenmoor_3040",
+   "region": "rabenmoor",
+   "land": "rabenmoor",
+   "x": 6350.5,
+   "y": 6670.5,
+   "gegner": [
+    "irrlicht"
+   ],
+   "modell": "irrlicht",
+   "anzahl": 2,
+   "stufe": 10,
+   "gelaende": "moor",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_weidenhain_3041",
+   "region": "weidenhain",
+   "land": "weidenhain",
+   "x": 6427.5,
+   "y": 6663.5,
+   "gegner": [
+    "mooshocker"
+   ],
+   "modell": "mooshocker",
+   "anzahl": 1,
+   "stufe": 1,
+   "gelaende": "wiese",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_weidenhain_3042",
+   "region": "weidenhain",
+   "land": "weidenhain",
+   "x": 6469.5,
+   "y": 6672.5,
+   "gegner": [
+    "kraehenschwarm"
+   ],
+   "modell": "kraehenschwarm",
+   "anzahl": 1,
+   "stufe": 4,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_fl_216_198_3043",
+   "region": "fl_216_198",
+   "land": "Die Glutsande",
+   "x": 7075.5,
+   "y": 6670.5,
+   "gegner": [
+    "glutskorpion"
+   ],
+   "modell": "glutskorpion",
+   "anzahl": 3,
+   "stufe": 48,
+   "gelaende": "wüste",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_weidenhain_3044",
+   "region": "weidenhain",
+   "land": "weidenhain",
+   "x": 6465.5,
+   "y": 6673.5,
+   "gegner": [
+    "bandit_dolch"
+   ],
+   "modell": "bandit_dolch",
+   "anzahl": 1,
+   "stufe": 1,
+   "gelaende": "wiese",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_fl_216_198_3045",
+   "region": "fl_216_198",
+   "land": "Die Glutsande",
+   "x": 7149.5,
+   "y": 6681.5,
+   "gegner": [
+    "karawanenraeuber"
+   ],
+   "modell": "bandit_schlaeger",
+   "anzahl": 1,
+   "stufe": 50,
+   "gelaende": "wüste",
+   "quelle": "vorhanden (bandit_schlaeger)"
+  },
+  {
+   "id": "gp_aschenwerth_3046",
    "region": "aschenwerth",
    "land": "aschenwerth",
    "x": 6236.5,
@@ -45759,84 +45774,69 @@
     "moorleiche"
    ],
    "modell": "moorleiche",
-   "anzahl": 1,
+   "anzahl": 2,
    "stufe": 12,
    "gelaende": "moor",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_weidenhain_3046",
+   "id": "gp_weidenhain_3047",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6426.5,
    "y": 6687.5,
    "gegner": [
-    "mooshocker"
+    "kraehenschwarm"
    ],
-   "modell": "mooshocker",
-   "anzahl": 2,
-   "stufe": 1,
+   "modell": "kraehenschwarm",
+   "anzahl": 1,
+   "stufe": 4,
    "gelaende": "wiese",
-   "quelle": "vorhanden"
+   "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_3047",
+   "id": "gp_fl_216_198_3048",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7150.5,
    "y": 6690.5,
    "gegner": [
-    "glutgeist"
+    "glutskorpion"
    ],
-   "modell": "glutgeist",
+   "modell": "glutskorpion",
    "anzahl": 1,
-   "stufe": 56,
+   "stufe": 48,
    "gelaende": "wüste",
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_aschenwerth_3048",
+   "id": "gp_aschenwerth_3049",
    "region": "aschenwerth",
    "land": "aschenwerth",
    "x": 6250.5,
    "y": 6696.5,
    "gegner": [
-    "schlammkroete"
+    "irrlicht"
    ],
-   "modell": "schlammkroete",
-   "anzahl": 1,
-   "stufe": 8,
+   "modell": "irrlicht",
+   "anzahl": 3,
+   "stufe": 10,
    "gelaende": "moor",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_weidenhain_3049",
+   "id": "gp_weidenhain_3050",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6498.5,
    "y": 6705.5,
    "gegner": [
-    "bandit_dolch"
+    "mooshocker"
    ],
-   "modell": "bandit_dolch",
-   "anzahl": 3,
+   "modell": "mooshocker",
+   "anzahl": 1,
    "stufe": 1,
    "gelaende": "wiese",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_rabenmoor_3050",
-   "region": "rabenmoor",
-   "land": "rabenmoor",
-   "x": 6370.5,
-   "y": 6706.5,
-   "gegner": [
-    "irrlicht"
-   ],
-   "modell": "irrlicht",
-   "anzahl": 1,
-   "stufe": 10,
-   "gelaende": "moor",
    "quelle": "vorhanden"
   },
   {
@@ -45888,8 +45888,8 @@
    "id": "gp_rabenmoor_3054",
    "region": "rabenmoor",
    "land": "rabenmoor",
-   "x": 6366.5,
-   "y": 6716.5,
+   "x": 6370.5,
+   "y": 6706.5,
    "gegner": [
     "moorleiche"
    ],
@@ -45900,7 +45900,22 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_231_198_3055",
+   "id": "gp_rabenmoor_3055",
+   "region": "rabenmoor",
+   "land": "rabenmoor",
+   "x": 6366.5,
+   "y": 6716.5,
+   "gegner": [
+    "irrlicht"
+   ],
+   "modell": "irrlicht",
+   "anzahl": 3,
+   "stufe": 10,
+   "gelaende": "moor",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_fl_231_198_3056",
    "region": "fl_231_198",
    "land": "Die Glutsande",
    "x": 7407.5,
@@ -45909,47 +45924,32 @@
     "grabwaechter"
    ],
    "modell": "grabwaechter",
-   "anzahl": 3,
+   "anzahl": 1,
    "stufe": 48,
    "gelaende": "fels",
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_rabenmoor_3056",
+   "id": "gp_rabenmoor_3057",
    "region": "rabenmoor",
    "land": "rabenmoor",
    "x": 6370.5,
    "y": 6724.5,
    "gegner": [
-    "irrlicht"
+    "kroetchen"
    ],
-   "modell": "irrlicht",
+   "modell": "kroetchen",
    "anzahl": 1,
-   "stufe": 10,
+   "stufe": 2,
    "gelaende": "moor",
    "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_weidenhain_3057",
-   "region": "weidenhain",
-   "land": "weidenhain",
-   "x": 6484.5,
-   "y": 6726.5,
-   "gegner": [
-    "kraehenschwarm"
-   ],
-   "modell": "kraehenschwarm",
-   "anzahl": 1,
-   "stufe": 4,
-   "gelaende": "wiese",
-   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_weidenhain_3058",
    "region": "weidenhain",
    "land": "weidenhain",
-   "x": 6483.5,
-   "y": 6727.5,
+   "x": 6484.5,
+   "y": 6726.5,
    "gegner": [
     "feldhase"
    ],
@@ -45963,8 +45963,8 @@
    "id": "gp_weidenhain_3059",
    "region": "weidenhain",
    "land": "weidenhain",
-   "x": 6480.5,
-   "y": 6729.5,
+   "x": 6483.5,
+   "y": 6727.5,
    "gegner": [
     "bandit_dolch"
    ],
@@ -45978,8 +45978,8 @@
    "id": "gp_weidenhain_3060",
    "region": "weidenhain",
    "land": "weidenhain",
-   "x": 6477.5,
-   "y": 6731.5,
+   "x": 6480.5,
+   "y": 6729.5,
    "gegner": [
     "mooshocker"
    ],
@@ -45993,8 +45993,8 @@
    "id": "gp_weidenhain_3061",
    "region": "weidenhain",
    "land": "weidenhain",
-   "x": 6472.5,
-   "y": 6733.5,
+   "x": 6477.5,
+   "y": 6731.5,
    "gegner": [
     "mooshocker"
    ],
@@ -46005,26 +46005,26 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_aschenwerth_3062",
-   "region": "aschenwerth",
-   "land": "aschenwerth",
-   "x": 6184.5,
-   "y": 6737.5,
+   "id": "gp_weidenhain_3062",
+   "region": "weidenhain",
+   "land": "weidenhain",
+   "x": 6472.5,
+   "y": 6733.5,
    "gegner": [
-    "schilfkroete"
+    "kraehenschwarm"
    ],
-   "modell": "schilfkroete",
+   "modell": "kraehenschwarm",
    "anzahl": 1,
-   "stufe": 12,
-   "gelaende": "moor",
+   "stufe": 4,
+   "gelaende": "wiese",
    "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_aschenwerth_3063",
    "region": "aschenwerth",
    "land": "aschenwerth",
-   "x": 6188.5,
-   "y": 6739.5,
+   "x": 6184.5,
+   "y": 6737.5,
    "gegner": [
     "schlammkroete"
    ],
@@ -46035,22 +46035,37 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_graufurt_3064",
+   "id": "gp_aschenwerth_3064",
+   "region": "aschenwerth",
+   "land": "aschenwerth",
+   "x": 6188.5,
+   "y": 6739.5,
+   "gegner": [
+    "irrlicht"
+   ],
+   "modell": "irrlicht",
+   "anzahl": 2,
+   "stufe": 10,
+   "gelaende": "moor",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_graufurt_3065",
    "region": "graufurt",
    "land": "graufurt",
    "x": 6715.5,
    "y": 6739.5,
    "gegner": [
-    "bandit_armbrust"
+    "bandit_schlaeger"
    ],
-   "modell": "bandit_armbrust",
-   "anzahl": 2,
-   "stufe": 24,
+   "modell": "bandit_schlaeger",
+   "anzahl": 1,
+   "stufe": 22,
    "gelaende": "wiese",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3065",
+   "id": "gp_fl_216_198_3066",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7354.5,
@@ -46065,56 +46080,116 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_216_211_3066",
+   "id": "gp_fl_216_211_3067",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7359.5,
    "y": 6758.5,
    "gegner": [
-    "karawanenraeuber"
+    "glutgeist"
    ],
-   "modell": "bandit_schlaeger",
-   "anzahl": 1,
-   "stufe": 50,
+   "modell": "glutgeist",
+   "anzahl": 3,
+   "stufe": 56,
    "gelaende": "wüste",
-   "quelle": "vorhanden (bandit_schlaeger)"
+   "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3067",
+   "id": "gp_fl_186_211_3068",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6116.5,
    "y": 6754.5,
    "gegner": [
-    "strandkrabbe"
+    "riesenkrabbe"
    ],
-   "modell": "strandkrabbe",
-   "anzahl": 3,
-   "stufe": 22,
+   "modell": "riesenkrabbe",
+   "anzahl": 1,
+   "stufe": 34,
    "gelaende": "küste",
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_211_3068",
+   "id": "gp_fl_201_211_3069",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6715.5,
    "y": 6757.5,
    "gegner": [
-    "steppenwolf"
+    "splitterreiher"
    ],
-   "modell": "steppenwolf",
+   "modell": "splitterreiher",
    "anzahl": 1,
-   "stufe": 46,
+   "stufe": 50,
    "gelaende": "wiese",
-   "quelle": "vorhanden (Systeme)"
+   "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3069",
+   "id": "gp_fl_186_211_3070",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6113.5,
    "y": 6760.5,
+   "gegner": [
+    "strandraeuber"
+   ],
+   "modell": "bandit_armbrust",
+   "anzahl": 2,
+   "stufe": 30,
+   "gelaende": "küste",
+   "quelle": "vorhanden (bandit_armbrust)"
+  },
+  {
+   "id": "gp_fl_186_211_3071",
+   "region": "fl_186_211",
+   "land": "Süden",
+   "x": 6292.5,
+   "y": 6763.5,
+   "gegner": [
+    "bandit_spaeher"
+   ],
+   "modell": "bandit_spaeher",
+   "anzahl": 1,
+   "stufe": 18,
+   "gelaende": "wald",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_fl_186_211_3072",
+   "region": "fl_186_211",
+   "land": "Küste",
+   "x": 6112.5,
+   "y": 6762.5,
+   "gegner": [
+    "strandkrabbe"
+   ],
+   "modell": "strandkrabbe",
+   "anzahl": 1,
+   "stufe": 22,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_fl_216_211_3073",
+   "region": "fl_216_211",
+   "land": "Die Glutsande",
+   "x": 7365.5,
+   "y": 6763.5,
+   "gegner": [
+    "glutskorpion"
+   ],
+   "modell": "glutskorpion",
+   "anzahl": 3,
+   "stufe": 48,
+   "gelaende": "wüste",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_fl_186_211_3074",
+   "region": "fl_186_211",
+   "land": "Küste",
+   "x": 6111.5,
+   "y": 6763.5,
    "gegner": [
     "seevogel"
    ],
@@ -46125,10 +46200,25 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3070",
+   "id": "gp_fl_186_211_3075",
    "region": "fl_186_211",
    "land": "Süden",
-   "x": 6292.5,
+   "x": 6253.5,
+   "y": 6765.5,
+   "gegner": [
+    "bandit_spaeher"
+   ],
+   "modell": "bandit_spaeher",
+   "anzahl": 1,
+   "stufe": 18,
+   "gelaende": "wald",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_fl_186_211_3076",
+   "region": "fl_186_211",
+   "land": "Süden",
+   "x": 6337.5,
    "y": 6763.5,
    "gegner": [
     "bandit_spaeher"
@@ -46140,26 +46230,11 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_211_3071",
-   "region": "fl_186_211",
-   "land": "Küste",
-   "x": 6112.5,
-   "y": 6762.5,
-   "gegner": [
-    "strandraeuber"
-   ],
-   "modell": "bandit_armbrust",
-   "anzahl": 1,
-   "stufe": 30,
-   "gelaende": "küste",
-   "quelle": "vorhanden (bandit_armbrust)"
-  },
-  {
-   "id": "gp_fl_216_211_3072",
+   "id": "gp_fl_216_211_3077",
    "region": "fl_216_211",
    "land": "Die Glutsande",
-   "x": 7365.5,
-   "y": 6763.5,
+   "x": 7369.5,
+   "y": 6766.5,
    "gegner": [
     "glutgeist"
    ],
@@ -46170,112 +46245,52 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3073",
-   "region": "fl_186_211",
-   "land": "Küste",
-   "x": 6111.5,
-   "y": 6763.5,
-   "gegner": [
-    "riesenkrabbe"
-   ],
-   "modell": "riesenkrabbe",
-   "anzahl": 3,
-   "stufe": 34,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_186_211_3074",
-   "region": "fl_186_211",
-   "land": "Süden",
-   "x": 6253.5,
-   "y": 6765.5,
-   "gegner": [
-    "waldgolem"
-   ],
-   "modell": "waldgolem",
-   "anzahl": 1,
-   "stufe": 15,
-   "gelaende": "wald",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_fl_186_211_3075",
-   "region": "fl_186_211",
-   "land": "Süden",
-   "x": 6337.5,
-   "y": 6763.5,
-   "gegner": [
-    "bandit_spaeher"
-   ],
-   "modell": "bandit_spaeher",
-   "anzahl": 1,
-   "stufe": 18,
-   "gelaende": "wald",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_fl_216_211_3076",
-   "region": "fl_216_211",
-   "land": "Die Glutsande",
-   "x": 7369.5,
-   "y": 6766.5,
-   "gegner": [
-    "karawanenraeuber"
-   ],
-   "modell": "bandit_schlaeger",
-   "anzahl": 2,
-   "stufe": 50,
-   "gelaende": "wüste",
-   "quelle": "vorhanden (bandit_schlaeger)"
-  },
-  {
-   "id": "gp_fl_186_211_3077",
+   "id": "gp_fl_186_211_3078",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6110.5,
    "y": 6764.5,
    "gegner": [
-    "strandkrabbe"
+    "riesenkrabbe"
    ],
-   "modell": "strandkrabbe",
+   "modell": "riesenkrabbe",
    "anzahl": 1,
-   "stufe": 22,
+   "stufe": 34,
    "gelaende": "küste",
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3078",
+   "id": "gp_fl_186_211_3079",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6332.5,
    "y": 6765.5,
    "gegner": [
-    "bandit_dolch"
+    "waldgolem"
    ],
-   "modell": "bandit_dolch",
-   "anzahl": 1,
-   "stufe": 1,
+   "modell": "waldgolem",
+   "anzahl": 3,
+   "stufe": 15,
    "gelaende": "wald",
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_211_3079",
+   "id": "gp_fl_186_211_3080",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6049.5,
    "y": 6772.5,
    "gegner": [
-    "seevogel"
+    "strandraeuber"
    ],
-   "modell": "seevogel",
-   "anzahl": 3,
-   "stufe": 26,
+   "modell": "bandit_armbrust",
+   "anzahl": 1,
+   "stufe": 30,
    "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
+   "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_186_211_3080",
+   "id": "gp_fl_186_211_3081",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6094.5,
@@ -46290,56 +46305,41 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_246_211_3081",
+   "id": "gp_fl_246_211_3082",
    "region": "fl_246_211",
    "land": "Das Splittermeer",
    "x": 7895.5,
    "y": 6791.5,
    "gegner": [
-    "strandraeuber"
+    "seevogel"
    ],
-   "modell": "bandit_armbrust",
-   "anzahl": 1,
-   "stufe": 30,
+   "modell": "seevogel",
+   "anzahl": 2,
+   "stufe": 26,
    "gelaende": "küste",
-   "quelle": "vorhanden (bandit_armbrust)"
+   "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3082",
+   "id": "gp_fl_186_211_3083",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6027.5,
    "y": 6823.5,
    "gegner": [
-    "strandkrabbe"
+    "riesenkrabbe"
    ],
-   "modell": "strandkrabbe",
-   "anzahl": 2,
-   "stufe": 22,
+   "modell": "riesenkrabbe",
+   "anzahl": 1,
+   "stufe": 34,
    "gelaende": "küste",
    "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_201_211_3083",
-   "region": "fl_201_211",
-   "land": "Die Glutsande",
-   "x": 6594.5,
-   "y": 6823.5,
-   "gegner": [
-    "steppenwolf"
-   ],
-   "modell": "steppenwolf",
-   "anzahl": 1,
-   "stufe": 46,
-   "gelaende": "wiese",
-   "quelle": "vorhanden (Systeme)"
   },
   {
    "id": "gp_fl_201_211_3084",
    "region": "fl_201_211",
    "land": "Die Glutsande",
-   "x": 6592.5,
-   "y": 6826.5,
+   "x": 6594.5,
+   "y": 6823.5,
    "gegner": [
     "splitterreiher"
    ],
@@ -46350,7 +46350,22 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_211_3085",
+   "id": "gp_fl_201_211_3085",
+   "region": "fl_201_211",
+   "land": "Die Glutsande",
+   "x": 6592.5,
+   "y": 6826.5,
+   "gegner": [
+    "hochlandwidder"
+   ],
+   "modell": "hochlandwidder",
+   "anzahl": 3,
+   "stufe": 52,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_231_211_3086",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7652.5,
@@ -46359,62 +46374,47 @@
     "klippenadler"
    ],
    "modell": "klippenadler",
-   "anzahl": 3,
+   "anzahl": 1,
    "stufe": 56,
    "gelaende": "küste",
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_211_3086",
+   "id": "gp_fl_246_211_3087",
    "region": "fl_246_211",
    "land": "Das Splittermeer",
    "x": 7872.5,
    "y": 6830.5,
    "gegner": [
-    "strandraeuber"
+    "seevogel"
    ],
-   "modell": "bandit_armbrust",
+   "modell": "seevogel",
    "anzahl": 1,
-   "stufe": 30,
+   "stufe": 26,
    "gelaende": "küste",
-   "quelle": "vorhanden (bandit_armbrust)"
+   "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_211_3087",
+   "id": "gp_fl_231_211_3088",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7614.5,
    "y": 6861.5,
    "gegner": [
-    "schlickkrebs"
+    "klippenadler"
    ],
-   "modell": "schlickkrebs",
-   "anzahl": 1,
-   "stufe": 45,
+   "modell": "klippenadler",
+   "anzahl": 2,
+   "stufe": 56,
    "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
+   "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_211_3088",
+   "id": "gp_fl_201_211_3089",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6872.5,
    "y": 6900.5,
-   "gegner": [
-    "glutskorpion"
-   ],
-   "modell": "glutskorpion",
-   "anzahl": 2,
-   "stufe": 48,
-   "gelaende": "wüste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_216_211_3089",
-   "region": "fl_216_211",
-   "land": "Die Glutsande",
-   "x": 6912.5,
-   "y": 6899.5,
    "gegner": [
     "ockerhyaene"
    ],
@@ -46425,11 +46425,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_211_3090",
-   "region": "fl_201_211",
+   "id": "gp_fl_216_211_3090",
+   "region": "fl_216_211",
    "land": "Die Glutsande",
-   "x": 6812.5,
-   "y": 6904.5,
+   "x": 6912.5,
+   "y": 6899.5,
    "gegner": [
     "karawanenraeuber"
    ],
@@ -46443,8 +46443,8 @@
    "id": "gp_fl_201_211_3091",
    "region": "fl_201_211",
    "land": "Die Glutsande",
-   "x": 6855.5,
-   "y": 6908.5,
+   "x": 6812.5,
+   "y": 6904.5,
    "gegner": [
     "karawanenraeuber"
    ],
@@ -46455,10 +46455,10 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_216_211_3092",
-   "region": "fl_216_211",
+   "id": "gp_fl_201_211_3092",
+   "region": "fl_201_211",
    "land": "Die Glutsande",
-   "x": 6928.5,
+   "x": 6855.5,
    "y": 6908.5,
    "gegner": [
     "glutgeist"
@@ -46473,8 +46473,8 @@
    "id": "gp_fl_216_211_3093",
    "region": "fl_216_211",
    "land": "Die Glutsande",
-   "x": 7050.5,
-   "y": 6909.5,
+   "x": 6928.5,
+   "y": 6908.5,
    "gegner": [
     "glutskorpion"
    ],
@@ -46488,8 +46488,8 @@
    "id": "gp_fl_216_211_3094",
    "region": "fl_216_211",
    "land": "Die Glutsande",
-   "x": 7210.5,
-   "y": 6908.5,
+   "x": 7050.5,
+   "y": 6909.5,
    "gegner": [
     "ockerhyaene"
    ],
@@ -46501,6 +46501,21 @@
   },
   {
    "id": "gp_fl_216_211_3095",
+   "region": "fl_216_211",
+   "land": "Die Glutsande",
+   "x": 7210.5,
+   "y": 6908.5,
+   "gegner": [
+    "karawanenraeuber"
+   ],
+   "modell": "bandit_schlaeger",
+   "anzahl": 1,
+   "stufe": 50,
+   "gelaende": "wüste",
+   "quelle": "vorhanden (bandit_schlaeger)"
+  },
+  {
+   "id": "gp_fl_216_211_3096",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7207.5,
@@ -46515,32 +46530,17 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_186_211_3096",
+   "id": "gp_fl_186_211_3097",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6208.5,
    "y": 6925.5,
    "gegner": [
-    "wegelagerer"
+    "bandit_armbrust"
    ],
-   "modell": "bandit_spaeher",
-   "anzahl": 1,
-   "stufe": 20,
-   "gelaende": "wiese",
-   "quelle": "vorhanden (bandit_spaeher)"
-  },
-  {
-   "id": "gp_fl_186_211_3097",
-   "region": "fl_186_211",
-   "land": "Küste",
-   "x": 6171.5,
-   "y": 6927.5,
-   "gegner": [
-    "bandit_spaeher"
-   ],
-   "modell": "bandit_spaeher",
+   "modell": "bandit_armbrust",
    "anzahl": 3,
-   "stufe": 18,
+   "stufe": 24,
    "gelaende": "wiese",
    "quelle": "vorhanden"
   },
@@ -46548,8 +46548,8 @@
    "id": "gp_fl_186_211_3098",
    "region": "fl_186_211",
    "land": "Küste",
-   "x": 6170.5,
-   "y": 6928.5,
+   "x": 6171.5,
+   "y": 6927.5,
    "gegner": [
     "wegelagerer"
    ],
@@ -46563,7 +46563,7 @@
    "id": "gp_fl_186_211_3099",
    "region": "fl_186_211",
    "land": "Küste",
-   "x": 6172.5,
+   "x": 6170.5,
    "y": 6928.5,
    "gegner": [
     "bandit_schlaeger"
@@ -46578,8 +46578,8 @@
    "id": "gp_fl_186_211_3100",
    "region": "fl_186_211",
    "land": "Küste",
-   "x": 6188.5,
-   "y": 6935.5,
+   "x": 6172.5,
+   "y": 6928.5,
    "gegner": [
     "bandit_armbrust"
    ],
@@ -46593,8 +46593,8 @@
    "id": "gp_fl_186_211_3101",
    "region": "fl_186_211",
    "land": "Küste",
-   "x": 6190.5,
-   "y": 6936.5,
+   "x": 6188.5,
+   "y": 6935.5,
    "gegner": [
     "bandit_armbrust"
    ],
@@ -46605,41 +46605,11 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_211_3102",
-   "region": "fl_216_211",
-   "land": "Die Glutsande",
-   "x": 7109.5,
-   "y": 6944.5,
-   "gegner": [
-    "glutgeist"
-   ],
-   "modell": "glutgeist",
-   "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "wüste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_216_211_3103",
-   "region": "fl_216_211",
-   "land": "Die Glutsande",
-   "x": 7117.5,
-   "y": 6962.5,
-   "gegner": [
-    "steppenwolf"
-   ],
-   "modell": "steppenwolf",
-   "anzahl": 3,
-   "stufe": 46,
-   "gelaende": "wiese",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_186_211_3104",
+   "id": "gp_fl_186_211_3102",
    "region": "fl_186_211",
-   "land": "Süden",
+   "land": "Küste",
    "x": 6190.5,
-   "y": 6964.5,
+   "y": 6936.5,
    "gegner": [
     "bandit_spaeher"
    ],
@@ -46650,26 +46620,56 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_211_3105",
+   "id": "gp_fl_216_211_3103",
+   "region": "fl_216_211",
+   "land": "Die Glutsande",
+   "x": 7109.5,
+   "y": 6944.5,
+   "gegner": [
+    "glutskorpion"
+   ],
+   "modell": "glutskorpion",
+   "anzahl": 3,
+   "stufe": 48,
+   "gelaende": "wüste",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_fl_216_211_3104",
+   "region": "fl_216_211",
+   "land": "Die Glutsande",
+   "x": 7117.5,
+   "y": 6962.5,
+   "gegner": [
+    "splitterreiher"
+   ],
+   "modell": "splitterreiher",
+   "anzahl": 1,
+   "stufe": 50,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_fl_186_211_3105",
+   "region": "fl_186_211",
+   "land": "Süden",
+   "x": 6190.5,
+   "y": 6964.5,
+   "gegner": [
+    "wegelagerer"
+   ],
+   "modell": "bandit_spaeher",
+   "anzahl": 1,
+   "stufe": 20,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (bandit_spaeher)"
+  },
+  {
+   "id": "gp_fl_216_211_3106",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7169.5,
    "y": 6994.5,
-   "gegner": [
-    "hochlandwidder"
-   ],
-   "modell": "hochlandwidder",
-   "anzahl": 1,
-   "stufe": 52,
-   "gelaende": "wiese",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_201_211_3106",
-   "region": "fl_201_211",
-   "land": "Die Glutsande",
-   "x": 6454.5,
-   "y": 6996.5,
    "gegner": [
     "splitterreiher"
    ],
@@ -46680,41 +46680,41 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_211_3107",
+   "id": "gp_fl_201_211_3107",
+   "region": "fl_201_211",
+   "land": "Die Glutsande",
+   "x": 6454.5,
+   "y": 6996.5,
+   "gegner": [
+    "hochlandwidder"
+   ],
+   "modell": "hochlandwidder",
+   "anzahl": 1,
+   "stufe": 52,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_231_211_3108",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7472.5,
    "y": 7003.5,
    "gegner": [
-    "schlickkrebs"
+    "klippenadler"
    ],
-   "modell": "schlickkrebs",
+   "modell": "klippenadler",
    "anzahl": 1,
-   "stufe": 45,
+   "stufe": 56,
    "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_216_211_3108",
-   "region": "fl_216_211",
-   "land": "Die Glutsande",
-   "x": 7195.5,
-   "y": 7029.5,
-   "gegner": [
-    "steppenwolf"
-   ],
-   "modell": "steppenwolf",
-   "anzahl": 1,
-   "stufe": 46,
-   "gelaende": "wiese",
    "quelle": "vorhanden (Systeme)"
   },
   {
    "id": "gp_fl_216_211_3109",
    "region": "fl_216_211",
    "land": "Die Glutsande",
-   "x": 7211.5,
-   "y": 7038.5,
+   "x": 7195.5,
+   "y": 7029.5,
    "gegner": [
     "splitterreiher"
    ],
@@ -46726,6 +46726,21 @@
   },
   {
    "id": "gp_fl_216_211_3110",
+   "region": "fl_216_211",
+   "land": "Die Glutsande",
+   "x": 7211.5,
+   "y": 7038.5,
+   "gegner": [
+    "hochlandwidder"
+   ],
+   "modell": "hochlandwidder",
+   "anzahl": 1,
+   "stufe": 52,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_216_211_3111",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7308.5,
@@ -46740,41 +46755,26 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_201_211_3111",
+   "id": "gp_fl_201_211_3112",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6652.5,
    "y": 7068.5,
    "gegner": [
-    "splitterreiher"
+    "hochlandwidder"
    ],
-   "modell": "splitterreiher",
-   "anzahl": 1,
-   "stufe": 50,
-   "gelaende": "wiese",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_231_211_3112",
-   "region": "fl_231_211",
-   "land": "Die Ockerlande",
-   "x": 7532.5,
-   "y": 7068.5,
-   "gegner": [
-    "glutskorpion"
-   ],
-   "modell": "glutskorpion",
+   "modell": "hochlandwidder",
    "anzahl": 2,
-   "stufe": 48,
-   "gelaende": "wüste",
-   "quelle": "vorhanden (Figuren)"
+   "stufe": 52,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Systeme)"
   },
   {
    "id": "gp_fl_231_211_3113",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
-   "x": 7572.5,
-   "y": 7070.5,
+   "x": 7532.5,
+   "y": 7068.5,
    "gegner": [
     "glutgeist"
    ],
@@ -46785,116 +46785,26 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3114",
-   "region": "fl_186_211",
-   "land": "Süden",
-   "x": 6273.5,
-   "y": 7076.5,
+   "id": "gp_fl_231_211_3114",
+   "region": "fl_231_211",
+   "land": "Die Ockerlande",
+   "x": 7572.5,
+   "y": 7070.5,
    "gegner": [
-    "bandit_spaeher"
+    "ockerhyaene"
    ],
-   "modell": "bandit_spaeher",
+   "modell": "ockerhyaene",
    "anzahl": 1,
-   "stufe": 18,
-   "gelaende": "wiese",
-   "quelle": "vorhanden"
+   "stufe": 50,
+   "gelaende": "wüste",
+   "quelle": "vorhanden (Systeme)"
   },
   {
    "id": "gp_fl_186_211_3115",
    "region": "fl_186_211",
    "land": "Süden",
-   "x": 6274.5,
-   "y": 7077.5,
-   "gegner": [
-    "moorleiche"
-   ],
-   "modell": "moorleiche",
-   "anzahl": 3,
-   "stufe": 12,
-   "gelaende": "moor",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_fl_186_211_3116",
-   "region": "fl_186_211",
-   "land": "Süden",
-   "x": 6349.5,
-   "y": 7078.5,
-   "gegner": [
-    "bandit_spaeher"
-   ],
-   "modell": "bandit_spaeher",
-   "anzahl": 1,
-   "stufe": 18,
-   "gelaende": "wald",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_fl_201_211_3117",
-   "region": "fl_201_211",
-   "land": "Die Glutsande",
-   "x": 6669.5,
-   "y": 7078.5,
-   "gegner": [
-    "hochlandbaer"
-   ],
-   "modell": "hochlandbaer",
-   "anzahl": 1,
-   "stufe": 54,
-   "gelaende": "wald",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_231_211_3118",
-   "region": "fl_231_211",
-   "land": "Die Ockerlande",
-   "x": 7634.5,
-   "y": 7078.5,
-   "gegner": [
-    "klippenadler"
-   ],
-   "modell": "klippenadler",
-   "anzahl": 2,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_186_211_3119",
-   "region": "fl_186_211",
-   "land": "Süden",
-   "x": 6274.5,
-   "y": 7094.5,
-   "gegner": [
-    "bandit_spaeher"
-   ],
-   "modell": "bandit_spaeher",
-   "anzahl": 1,
-   "stufe": 18,
-   "gelaende": "wiese",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_fl_201_211_3120",
-   "region": "fl_201_211",
-   "land": "Die Glutsande",
-   "x": 6509.5,
-   "y": 7097.5,
-   "gegner": [
-    "hochlandwidder"
-   ],
-   "modell": "hochlandwidder",
-   "anzahl": 1,
-   "stufe": 52,
-   "gelaende": "wiese",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_186_211_3121",
-   "region": "fl_186_211",
-   "land": "Süden",
-   "x": 6349.5,
-   "y": 7098.5,
+   "x": 6273.5,
+   "y": 7076.5,
    "gegner": [
     "wegelagerer"
    ],
@@ -46905,52 +46815,157 @@
    "quelle": "vorhanden (bandit_spaeher)"
   },
   {
-   "id": "gp_fl_201_211_3122",
+   "id": "gp_fl_186_211_3116",
+   "region": "fl_186_211",
+   "land": "Süden",
+   "x": 6274.5,
+   "y": 7077.5,
+   "gegner": [
+    "moorleiche"
+   ],
+   "modell": "moorleiche",
+   "anzahl": 1,
+   "stufe": 12,
+   "gelaende": "moor",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_fl_186_211_3117",
+   "region": "fl_186_211",
+   "land": "Süden",
+   "x": 6349.5,
+   "y": 7078.5,
+   "gegner": [
+    "mooshocker"
+   ],
+   "modell": "mooshocker",
+   "anzahl": 1,
+   "stufe": 1,
+   "gelaende": "wald",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_fl_201_211_3118",
+   "region": "fl_201_211",
+   "land": "Die Glutsande",
+   "x": 6669.5,
+   "y": 7078.5,
+   "gegner": [
+    "hochlandbaer"
+   ],
+   "modell": "hochlandbaer",
+   "anzahl": 2,
+   "stufe": 54,
+   "gelaende": "wald",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_231_211_3119",
+   "region": "fl_231_211",
+   "land": "Die Ockerlande",
+   "x": 7634.5,
+   "y": 7078.5,
+   "gegner": [
+    "schlickkrebs"
+   ],
+   "modell": "schlickkrebs",
+   "anzahl": 1,
+   "stufe": 45,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_fl_186_211_3120",
+   "region": "fl_186_211",
+   "land": "Süden",
+   "x": 6274.5,
+   "y": 7094.5,
+   "gegner": [
+    "wegelagerer"
+   ],
+   "modell": "bandit_spaeher",
+   "anzahl": 1,
+   "stufe": 20,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (bandit_spaeher)"
+  },
+  {
+   "id": "gp_fl_201_211_3121",
+   "region": "fl_201_211",
+   "land": "Die Glutsande",
+   "x": 6509.5,
+   "y": 7097.5,
+   "gegner": [
+    "splitterreiher"
+   ],
+   "modell": "splitterreiher",
+   "anzahl": 3,
+   "stufe": 50,
+   "gelaende": "wiese",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
+   "id": "gp_fl_186_211_3122",
+   "region": "fl_186_211",
+   "land": "Süden",
+   "x": 6349.5,
+   "y": 7098.5,
+   "gegner": [
+    "bandit_armbrust"
+   ],
+   "modell": "bandit_armbrust",
+   "anzahl": 1,
+   "stufe": 24,
+   "gelaende": "wiese",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_fl_201_211_3123",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6492.5,
    "y": 7107.5,
    "gegner": [
-    "hochlandwidder"
+    "steppenwolf"
    ],
-   "modell": "hochlandwidder",
+   "modell": "steppenwolf",
    "anzahl": 1,
-   "stufe": 52,
+   "stufe": 46,
    "gelaende": "wiese",
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_211_3123",
+   "id": "gp_fl_186_211_3124",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6170.5,
    "y": 7112.5,
    "gegner": [
-    "riesenkrabbe"
+    "seevogel"
    ],
-   "modell": "riesenkrabbe",
-   "anzahl": 1,
-   "stufe": 34,
+   "modell": "seevogel",
+   "anzahl": 2,
+   "stufe": 26,
    "gelaende": "küste",
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_211_3124",
+   "id": "gp_fl_216_211_3125",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7253.5,
    "y": 7112.5,
    "gegner": [
-    "bergtroll"
+    "grabwaechter"
    ],
-   "modell": "bergtroll",
-   "anzahl": 2,
-   "stufe": 58,
+   "modell": "grabwaechter",
+   "anzahl": 1,
+   "stufe": 48,
    "gelaende": "fels",
-   "quelle": "vorhanden (Systeme)"
+   "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_211_3125",
+   "id": "gp_fl_231_211_3126",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7612.5,
@@ -46965,71 +46980,56 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_211_3126",
+   "id": "gp_fl_231_211_3127",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7611.5,
    "y": 7137.5,
    "gegner": [
-    "klippenadler"
+    "schlickkrebs"
    ],
-   "modell": "klippenadler",
-   "anzahl": 1,
-   "stufe": 56,
+   "modell": "schlickkrebs",
+   "anzahl": 3,
+   "stufe": 45,
    "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
+   "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3127",
+   "id": "gp_fl_186_211_3128",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6188.5,
    "y": 7145.5,
    "gegner": [
-    "strandkrabbe"
+    "riesenkrabbe"
    ],
-   "modell": "strandkrabbe",
-   "anzahl": 3,
-   "stufe": 22,
+   "modell": "riesenkrabbe",
+   "anzahl": 1,
+   "stufe": 34,
    "gelaende": "küste",
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_211_3128",
+   "id": "gp_fl_231_211_3129",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7596.5,
    "y": 7150.5,
    "gegner": [
-    "klippenadler"
+    "schlickkrebs"
    ],
-   "modell": "klippenadler",
+   "modell": "schlickkrebs",
    "anzahl": 1,
-   "stufe": 56,
+   "stufe": 45,
    "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_186_225_3129",
-   "region": "fl_186_225",
-   "land": "Süden",
-   "x": 6392.5,
-   "y": 7237.5,
-   "gegner": [
-    "bandit_spaeher"
-   ],
-   "modell": "bandit_spaeher",
-   "anzahl": 1,
-   "stufe": 18,
-   "gelaende": "wiese",
-   "quelle": "vorhanden"
+   "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_186_225_3130",
    "region": "fl_186_225",
    "land": "Süden",
-   "x": 6395.5,
-   "y": 7239.5,
+   "x": 6392.5,
+   "y": 7237.5,
    "gegner": [
     "wegelagerer"
    ],
@@ -47043,8 +47043,8 @@
    "id": "gp_fl_186_225_3131",
    "region": "fl_186_225",
    "land": "Süden",
-   "x": 6396.5,
-   "y": 7240.5,
+   "x": 6395.5,
+   "y": 7239.5,
    "gegner": [
     "wegelagerer"
    ],
@@ -47070,25 +47070,25 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_231_225_3133",
-   "region": "fl_231_225",
-   "land": "Die Ockerlande",
-   "x": 7805.5,
-   "y": 7268.5,
+   "id": "gp_fl_186_225_3133",
+   "region": "fl_186_225",
+   "land": "Süden",
+   "x": 6396.5,
+   "y": 7240.5,
    "gegner": [
-    "klippenadler"
+    "bandit_schlaeger"
    ],
-   "modell": "klippenadler",
+   "modell": "bandit_schlaeger",
    "anzahl": 3,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
+   "stufe": 22,
+   "gelaende": "wiese",
+   "quelle": "vorhanden"
   },
   {
    "id": "gp_fl_231_225_3134",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
-   "x": 7816.5,
+   "x": 7805.5,
    "y": 7268.5,
    "gegner": [
     "schlickkrebs"
@@ -47103,8 +47103,8 @@
    "id": "gp_fl_231_225_3135",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
-   "x": 7799.5,
-   "y": 7271.5,
+   "x": 7816.5,
+   "y": 7268.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47118,8 +47118,8 @@
    "id": "gp_fl_231_225_3136",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
-   "x": 7798.5,
-   "y": 7272.5,
+   "x": 7799.5,
+   "y": 7271.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47133,8 +47133,8 @@
    "id": "gp_fl_231_225_3137",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
-   "x": 7797.5,
-   "y": 7273.5,
+   "x": 7798.5,
+   "y": 7272.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -47145,26 +47145,26 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_225_3138",
-   "region": "fl_186_225",
-   "land": "Küste",
-   "x": 6307.5,
-   "y": 7282.5,
+   "id": "gp_fl_231_225_3138",
+   "region": "fl_231_225",
+   "land": "Die Ockerlande",
+   "x": 7797.5,
+   "y": 7273.5,
    "gegner": [
-    "riesenkrabbe"
+    "klippenadler"
    ],
-   "modell": "riesenkrabbe",
+   "modell": "klippenadler",
    "anzahl": 1,
-   "stufe": 34,
+   "stufe": 56,
    "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
+   "quelle": "vorhanden (Systeme)"
   },
   {
    "id": "gp_fl_186_225_3139",
    "region": "fl_186_225",
    "land": "Küste",
-   "x": 6342.5,
-   "y": 7314.5,
+   "x": 6307.5,
+   "y": 7282.5,
    "gegner": [
     "seevogel"
    ],
@@ -47175,7 +47175,22 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3140",
+   "id": "gp_fl_186_225_3140",
+   "region": "fl_186_225",
+   "land": "Küste",
+   "x": 6342.5,
+   "y": 7314.5,
+   "gegner": [
+    "strandraeuber"
+   ],
+   "modell": "bandit_armbrust",
+   "anzahl": 1,
+   "stufe": 30,
+   "gelaende": "küste",
+   "quelle": "vorhanden (bandit_armbrust)"
+  },
+  {
+   "id": "gp_fl_231_225_3141",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7808.5,
@@ -47190,25 +47205,10 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_225_3141",
+   "id": "gp_fl_246_225_3142",
    "region": "fl_246_225",
    "land": "Die Ockerlande",
    "x": 7872.5,
-   "y": 7343.5,
-   "gegner": [
-    "grabwaechter"
-   ],
-   "modell": "grabwaechter",
-   "anzahl": 1,
-   "stufe": 48,
-   "gelaende": "fels",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_231_225_3142",
-   "region": "fl_231_225",
-   "land": "Die Ockerlande",
-   "x": 7672.5,
    "y": 7343.5,
    "gegner": [
     "bergtroll"
@@ -47220,11 +47220,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_225_3143",
-   "region": "fl_216_225",
+   "id": "gp_fl_231_225_3143",
+   "region": "fl_231_225",
    "land": "Die Ockerlande",
-   "x": 6977.5,
-   "y": 7386.5,
+   "x": 7672.5,
+   "y": 7343.5,
    "gegner": [
     "grabwaechter"
    ],
@@ -47235,26 +47235,26 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3144",
+   "id": "gp_fl_216_225_3144",
+   "region": "fl_216_225",
+   "land": "Die Ockerlande",
+   "x": 6977.5,
+   "y": 7386.5,
+   "gegner": [
+    "bergtroll"
+   ],
+   "modell": "bergtroll",
+   "anzahl": 1,
+   "stufe": 58,
+   "gelaende": "fels",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_231_225_3145",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7769.5,
    "y": 7402.5,
-   "gegner": [
-    "schlickkrebs"
-   ],
-   "modell": "schlickkrebs",
-   "anzahl": 1,
-   "stufe": 45,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_246_225_3145",
-   "region": "fl_246_225",
-   "land": "Die Ockerlande",
-   "x": 7974.5,
-   "y": 7404.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47265,11 +47265,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_225_3146",
-   "region": "fl_231_225",
+   "id": "gp_fl_246_225_3146",
+   "region": "fl_246_225",
    "land": "Die Ockerlande",
-   "x": 7772.5,
-   "y": 7405.5,
+   "x": 7974.5,
+   "y": 7404.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47283,8 +47283,8 @@
    "id": "gp_fl_231_225_3147",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
-   "x": 7792.5,
-   "y": 7417.5,
+   "x": 7772.5,
+   "y": 7405.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -47295,37 +47295,52 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_246_225_3148",
+   "id": "gp_fl_231_225_3148",
+   "region": "fl_231_225",
+   "land": "Die Ockerlande",
+   "x": 7792.5,
+   "y": 7417.5,
+   "gegner": [
+    "klippenadler"
+   ],
+   "modell": "klippenadler",
+   "anzahl": 2,
+   "stufe": 56,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_246_225_3149",
    "region": "fl_246_225",
    "land": "Die Ockerlande",
    "x": 7912.5,
    "y": 7444.5,
    "gegner": [
-    "grabwaechter"
+    "bergtroll"
    ],
-   "modell": "grabwaechter",
-   "anzahl": 2,
-   "stufe": 48,
+   "modell": "bergtroll",
+   "anzahl": 1,
+   "stufe": 58,
    "gelaende": "fels",
-   "quelle": "vorhanden (Figuren)"
+   "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_225_3149",
+   "id": "gp_fl_216_225_3150",
    "region": "fl_216_225",
    "land": "Die Ockerlande",
    "x": 7294.5,
    "y": 7452.5,
    "gegner": [
-    "ockerhyaene"
+    "karawanenraeuber"
    ],
-   "modell": "ockerhyaene",
+   "modell": "bandit_schlaeger",
    "anzahl": 1,
    "stufe": 50,
    "gelaende": "wüste",
-   "quelle": "vorhanden (Systeme)"
+   "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_231_225_3150",
+   "id": "gp_fl_231_225_3151",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7852.5,
@@ -47334,47 +47349,32 @@
     "grabwaechter"
    ],
    "modell": "grabwaechter",
-   "anzahl": 1,
+   "anzahl": 3,
    "stufe": 48,
    "gelaende": "fels",
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_246_225_3151",
+   "id": "gp_fl_246_225_3152",
    "region": "fl_246_225",
    "land": "Die Ockerlande",
    "x": 7955.5,
    "y": 7487.5,
    "gegner": [
-    "klippenadler"
+    "schlickkrebs"
    ],
-   "modell": "klippenadler",
-   "anzahl": 3,
-   "stufe": 56,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_201_225_3152",
-   "region": "fl_201_225",
-   "land": "Die Glutsande",
-   "x": 6734.5,
-   "y": 7588.5,
-   "gegner": [
-    "glutgeist"
-   ],
-   "modell": "glutgeist",
+   "modell": "schlickkrebs",
    "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "wüste",
+   "stufe": 45,
+   "gelaende": "küste",
    "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_201_225_3153",
    "region": "fl_201_225",
    "land": "Die Glutsande",
-   "x": 6735.5,
-   "y": 7606.5,
+   "x": 6734.5,
+   "y": 7588.5,
    "gegner": [
     "glutskorpion"
    ],
@@ -47385,22 +47385,37 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3154",
+   "id": "gp_fl_201_225_3154",
+   "region": "fl_201_225",
+   "land": "Die Glutsande",
+   "x": 6735.5,
+   "y": 7606.5,
+   "gegner": [
+    "ockerhyaene"
+   ],
+   "modell": "ockerhyaene",
+   "anzahl": 2,
+   "stufe": 50,
+   "gelaende": "wüste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_231_225_3155",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7814.5,
    "y": 7608.5,
    "gegner": [
-    "bergtroll"
+    "grabwaechter"
    ],
-   "modell": "bergtroll",
-   "anzahl": 2,
-   "stufe": 58,
+   "modell": "grabwaechter",
+   "anzahl": 1,
+   "stufe": 48,
    "gelaende": "fels",
-   "quelle": "vorhanden (Systeme)"
+   "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_225_3155",
+   "id": "gp_fl_201_225_3156",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6739.5,
@@ -47415,86 +47430,71 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3156",
+   "id": "gp_fl_231_225_3157",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7835.5,
    "y": 7640.5,
    "gegner": [
-    "grabwaechter"
-   ],
-   "modell": "grabwaechter",
-   "anzahl": 1,
-   "stufe": 48,
-   "gelaende": "fels",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_201_239_3157",
-   "region": "fl_201_239",
-   "land": "Die Ockerlande",
-   "x": 6696.5,
-   "y": 7724.5,
-   "gegner": [
-    "schlickkrebs"
-   ],
-   "modell": "schlickkrebs",
-   "anzahl": 3,
-   "stufe": 45,
-   "gelaende": "küste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_231_239_3158",
-   "region": "fl_231_239",
-   "land": "Die Ockerlande",
-   "x": 7627.5,
-   "y": 7758.5,
-   "gegner": [
-    "glutgeist"
-   ],
-   "modell": "glutgeist",
-   "anzahl": 1,
-   "stufe": 56,
-   "gelaende": "wüste",
-   "quelle": "vorhanden (Figuren)"
-  },
-  {
-   "id": "gp_fl_216_239_3159",
-   "region": "fl_216_239",
-   "land": "Die Ockerlande",
-   "x": 7188.5,
-   "y": 7759.5,
-   "gegner": [
     "bergtroll"
    ],
    "modell": "bergtroll",
-   "anzahl": 1,
+   "anzahl": 3,
    "stufe": 58,
    "gelaende": "fels",
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_239_3160",
-   "region": "fl_231_239",
+   "id": "gp_fl_201_239_3158",
+   "region": "fl_201_239",
    "land": "Die Ockerlande",
-   "x": 7786.5,
-   "y": 7758.5,
+   "x": 6696.5,
+   "y": 7724.5,
    "gegner": [
     "klippenadler"
    ],
    "modell": "klippenadler",
-   "anzahl": 2,
+   "anzahl": 1,
    "stufe": 56,
    "gelaende": "küste",
    "quelle": "vorhanden (Systeme)"
   },
   {
+   "id": "gp_fl_231_239_3159",
+   "region": "fl_231_239",
+   "land": "Die Ockerlande",
+   "x": 7627.5,
+   "y": 7758.5,
+   "gegner": [
+    "ockerhyaene"
+   ],
+   "modell": "ockerhyaene",
+   "anzahl": 1,
+   "stufe": 50,
+   "gelaende": "wüste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_216_239_3160",
+   "region": "fl_216_239",
+   "land": "Die Ockerlande",
+   "x": 7188.5,
+   "y": 7759.5,
+   "gegner": [
+    "grabwaechter"
+   ],
+   "modell": "grabwaechter",
+   "anzahl": 2,
+   "stufe": 48,
+   "gelaende": "fels",
+   "quelle": "vorhanden (Figuren)"
+  },
+  {
    "id": "gp_fl_231_239_3161",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
-   "x": 7551.5,
-   "y": 7780.5,
+   "x": 7786.5,
+   "y": 7758.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47508,8 +47508,8 @@
    "id": "gp_fl_231_239_3162",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
-   "x": 7635.5,
-   "y": 7822.5,
+   "x": 7551.5,
+   "y": 7780.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -47520,11 +47520,11 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_239_3163",
-   "region": "fl_201_239",
+   "id": "gp_fl_231_239_3163",
+   "region": "fl_231_239",
    "land": "Die Ockerlande",
-   "x": 6884.5,
-   "y": 7823.5,
+   "x": 7635.5,
+   "y": 7822.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47538,8 +47538,8 @@
    "id": "gp_fl_201_239_3164",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
-   "x": 6882.5,
-   "y": 7824.5,
+   "x": 6884.5,
+   "y": 7823.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -47553,8 +47553,8 @@
    "id": "gp_fl_201_239_3165",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
-   "x": 6879.5,
-   "y": 7825.5,
+   "x": 6882.5,
+   "y": 7824.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47568,8 +47568,8 @@
    "id": "gp_fl_201_239_3166",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
-   "x": 6872.5,
-   "y": 7826.5,
+   "x": 6879.5,
+   "y": 7825.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47580,11 +47580,11 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3167",
-   "region": "fl_216_239",
+   "id": "gp_fl_201_239_3167",
+   "region": "fl_201_239",
    "land": "Die Ockerlande",
-   "x": 6991.5,
-   "y": 7852.5,
+   "x": 6872.5,
+   "y": 7826.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -47598,8 +47598,8 @@
    "id": "gp_fl_216_239_3168",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
-   "x": 6989.5,
-   "y": 7854.5,
+   "x": 6991.5,
+   "y": 7852.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47613,8 +47613,8 @@
    "id": "gp_fl_216_239_3169",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
-   "x": 7007.5,
-   "y": 7860.5,
+   "x": 6989.5,
+   "y": 7854.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -47626,6 +47626,21 @@
   },
   {
    "id": "gp_fl_216_239_3170",
+   "region": "fl_216_239",
+   "land": "Die Ockerlande",
+   "x": 7007.5,
+   "y": 7860.5,
+   "gegner": [
+    "klippenadler"
+   ],
+   "modell": "klippenadler",
+   "anzahl": 1,
+   "stufe": 56,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_216_239_3171",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7170.5,
@@ -47640,41 +47655,26 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_239_3171",
+   "id": "gp_fl_231_239_3172",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7454.5,
    "y": 7928.5,
    "gegner": [
-    "karawanenraeuber"
+    "glutskorpion"
    ],
-   "modell": "bandit_schlaeger",
-   "anzahl": 1,
-   "stufe": 50,
-   "gelaende": "wüste",
-   "quelle": "vorhanden (bandit_schlaeger)"
-  },
-  {
-   "id": "gp_fl_216_239_3172",
-   "region": "fl_216_239",
-   "land": "Die Ockerlande",
-   "x": 7154.5,
-   "y": 7990.5,
-   "gegner": [
-    "schlickkrebs"
-   ],
-   "modell": "schlickkrebs",
+   "modell": "glutskorpion",
    "anzahl": 2,
-   "stufe": 45,
-   "gelaende": "küste",
+   "stufe": 48,
+   "gelaende": "wüste",
    "quelle": "vorhanden (Figuren)"
   },
   {
    "id": "gp_fl_216_239_3173",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
-   "x": 7333.5,
-   "y": 8019.5,
+   "x": 7154.5,
+   "y": 7990.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47688,8 +47688,8 @@
    "id": "gp_fl_216_239_3174",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
-   "x": 7328.5,
-   "y": 8024.5,
+   "x": 7333.5,
+   "y": 8019.5,
    "gegner": [
     "schlickkrebs"
    ],
@@ -47703,8 +47703,8 @@
    "id": "gp_fl_216_239_3175",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
-   "x": 7188.5,
-   "y": 8029.5,
+   "x": 7328.5,
+   "y": 8024.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47718,8 +47718,8 @@
    "id": "gp_fl_216_239_3176",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
-   "x": 7315.5,
-   "y": 8030.5,
+   "x": 7188.5,
+   "y": 8029.5,
    "gegner": [
     "klippenadler"
    ],
@@ -47728,25 +47728,40 @@
    "stufe": 56,
    "gelaende": "küste",
    "quelle": "vorhanden (Systeme)"
+  },
+  {
+   "id": "gp_fl_216_239_3177",
+   "region": "fl_216_239",
+   "land": "Die Ockerlande",
+   "x": 7315.5,
+   "y": 8030.5,
+   "gegner": [
+    "schlickkrebs"
+   ],
+   "modell": "schlickkrebs",
+   "anzahl": 1,
+   "stufe": 45,
+   "gelaende": "küste",
+   "quelle": "vorhanden (Figuren)"
   }
  ],
  "fehlend": [],
  "je_region": {
+  "fl_216_211": {
+   "plaetze": 168,
+   "gegner": 255
+  },
   "fl_201_183": {
    "plaetze": 171,
    "gegner": 254
   },
-  "fl_216_211": {
-   "plaetze": 168,
-   "gegner": 252
-  },
   "fl_216_169": {
-   "plaetze": 166,
-   "gegner": 249
+   "plaetze": 167,
+   "gegner": 251
   },
   "fl_201_211": {
    "plaetze": 167,
-   "gegner": 247
+   "gegner": 251
   },
   "fl_216_225": {
    "plaetze": 157,
@@ -47754,11 +47769,11 @@
   },
   "fl_231_225": {
    "plaetze": 152,
-   "gegner": 227
+   "gegner": 230
   },
   "fl_201_225": {
    "plaetze": 148,
-   "gegner": 219
+   "gegner": 220
   },
   "fl_201_169": {
    "plaetze": 136,
@@ -47770,19 +47785,19 @@
   },
   "fl_186_211": {
    "plaetze": 130,
-   "gegner": 200
+   "gegner": 193
   },
   "fl_216_198": {
    "plaetze": 126,
-   "gegner": 190
+   "gegner": 191
   },
   "fl_216_183": {
    "plaetze": 124,
-   "gegner": 189
+   "gegner": 186
   },
   "fl_186_183": {
    "plaetze": 123,
-   "gegner": 184
+   "gegner": 182
   },
   "fl_216_239": {
    "plaetze": 118,
@@ -47790,7 +47805,7 @@
   },
   "fl_231_211": {
    "plaetze": 111,
-   "gegner": 167
+   "gegner": 166
   },
   "fl_201_155": {
    "plaetze": 106,
@@ -47798,7 +47813,7 @@
   },
   "fl_246_183": {
    "plaetze": 100,
-   "gegner": 150
+   "gegner": 156
   },
   "fl_216_155": {
    "plaetze": 95,
@@ -47806,7 +47821,7 @@
   },
   "fl_231_239": {
    "plaetze": 90,
-   "gegner": 128
+   "gegner": 130
   },
   "fl_231_183": {
    "plaetze": 83,
@@ -47822,11 +47837,7 @@
   },
   "fl_231_198": {
    "plaetze": 44,
-   "gegner": 70
-  },
-  "fl_201_239": {
-   "plaetze": 35,
-   "gegner": 57
+   "gegner": 67
   },
   "fl_186_198": {
    "plaetze": 36,
@@ -47838,31 +47849,35 @@
   },
   "ostufer": {
    "plaetze": 36,
-   "gegner": 52
+   "gegner": 53
+  },
+  "fl_201_239": {
+   "plaetze": 35,
+   "gegner": 53
   },
   "westried": {
    "plaetze": 24,
    "gegner": 35
   },
-  "weidenhain": {
-   "plaetze": 19,
-   "gegner": 34
-  },
-  "fl_246_225": {
-   "plaetze": 20,
-   "gegner": 34
-  },
   "fl_186_225": {
    "plaetze": 23,
-   "gegner": 33
+   "gegner": 35
   },
   "nordsaum": {
    "plaetze": 21,
-   "gegner": 32
+   "gegner": 30
   },
   "osthang": {
    "plaetze": 24,
-   "gegner": 29
+   "gegner": 30
+  },
+  "fl_246_225": {
+   "plaetze": 20,
+   "gegner": 30
+  },
+  "weidenhain": {
+   "plaetze": 19,
+   "gegner": 27
   },
   "fl_231_155": {
    "plaetze": 17,
@@ -47872,17 +47887,17 @@
    "plaetze": 15,
    "gegner": 24
   },
-  "westmark": {
-   "plaetze": 12,
-   "gegner": 19
-  },
   "aschenwerth": {
    "plaetze": 14,
-   "gegner": 17
+   "gegner": 22
   },
   "rabenmoor": {
    "plaetze": 13,
-   "gegner": 17
+   "gegner": 20
+  },
+  "westmark": {
+   "plaetze": 12,
+   "gegner": 19
   },
   "fl_246_169": {
    "plaetze": 11,
@@ -47906,11 +47921,11 @@
   },
   "fl_246_211": {
    "plaetze": 4,
-   "gegner": 6
+   "gegner": 7
   },
   "waldmark": {
    "plaetze": 3,
-   "gegner": 5
+   "gegner": 4
   },
   "fl_246_239": {
    "plaetze": 2,
@@ -49057,6 +49072,12 @@
    "y": 5377.9,
    "r": 8.863564212655525,
    "grund": "Sammelstelle Adern am Weg (Hochlande 30)"
+  },
+  {
+   "x": 7104.7,
+   "y": 5873.7,
+   "r": 8.912043955712432,
+   "grund": "Sammelstelle Adern am Weg (Hochlande 32)"
   },
   {
    "x": 6626.7,

@@ -228,7 +228,7 @@
   {
    "id": "lindenbluete_1",
    "art": "lindenbluete",
-   "x": 6452,
+   "x": 6452.0,
    "y": 6680.6,
    "region": "weidenhain"
   },
@@ -399,6 +399,69 @@
    "x": 7345.5,
    "y": 5671.5,
    "region": "fl_216_169"
+  },
+  {
+   "id": "kraeutergarten_wegerich_1",
+   "art": "wegerich",
+   "x": 6464.3,
+   "y": 6437.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_eisenhut_1",
+   "art": "eisenhut",
+   "x": 6466.3,
+   "y": 6437.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_nebelkraut_1",
+   "art": "nebelkraut",
+   "x": 6468.3,
+   "y": 6437.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_mondsalbei_1",
+   "art": "mondsalbei",
+   "x": 6464.3,
+   "y": 6439.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_glutwurz_1",
+   "art": "glutwurz",
+   "x": 6466.3,
+   "y": 6439.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_splitterlilie_1",
+   "art": "splitterlilie",
+   "x": 6468.3,
+   "y": 6439.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_mondsalbei_2",
+   "art": "mondsalbei",
+   "x": 6464.3,
+   "y": 6441.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_glutwurz_2",
+   "art": "glutwurz",
+   "x": 6466.3,
+   "y": 6441.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_splitterlilie_2",
+   "art": "splitterlilie",
+   "x": 6468.3,
+   "y": 6441.4,
+   "region": "waldmark"
   },
   {
    "id": "huegelgrund_wegerich_1",
@@ -581,69 +644,6 @@
    "x": 6411.5,
    "y": 7069.5,
    "region": "fl_186_211"
-  },
-  {
-   "id": "kraeutergarten_wegerich_1",
-   "art": "wegerich",
-   "x": 6464.3,
-   "y": 6437.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_eisenhut_1",
-   "art": "eisenhut",
-   "x": 6466.3,
-   "y": 6437.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_nebelkraut_1",
-   "art": "nebelkraut",
-   "x": 6468.3,
-   "y": 6437.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_mondsalbei_1",
-   "art": "mondsalbei",
-   "x": 6464.3,
-   "y": 6439.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_glutwurz_1",
-   "art": "glutwurz",
-   "x": 6466.3,
-   "y": 6439.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_splitterlilie_1",
-   "art": "splitterlilie",
-   "x": 6468.3,
-   "y": 6439.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_mondsalbei_2",
-   "art": "mondsalbei",
-   "x": 6464.3,
-   "y": 6441.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_glutwurz_2",
-   "art": "glutwurz",
-   "x": 6466.3,
-   "y": 6441.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_splitterlilie_2",
-   "art": "splitterlilie",
-   "x": 6468.3,
-   "y": 6441.4,
-   "region": "waldmark"
   }
  ],
  "kessel": [
@@ -672,10 +672,10 @@
   {
    "id": "kessel_kraeuterhof",
    "ort": "vor dem Kräuterhaus am Kräuterhof (Objekt kraeuterhof_kessel)",
-   "x": 6422,
-   "y": 7062,
+   "x": 6422.0,
+   "y": 7062.0,
    "stehen": [
-    6422,
+    6422.0,
     7063.4
    ],
    "region": "fl_186_211"

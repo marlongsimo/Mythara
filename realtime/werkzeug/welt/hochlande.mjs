@@ -140,8 +140,8 @@ const BW_U = [362, 300], [BX, BY] = ORTE.bergwerk;
   male(BX - 8, BY - 1, BX + 7, BY + 9, (x, y) => (Math.hypot((x - BX) / 7.5, (y - BY - 4) / 5.5) < 1 ? "h" : null)); male(BX - 6, BY + 4, BX + 2, BY + 16, (x, y) => (strecke(x, y, [[BX, BY + 4], [BX - 3, BY + 14]]) < 2.4 ? "g" : null));
   ding("hochland_stolleneingang", BX, BY - 1, { id: "bergwerk_eingang" }); ding("hochland_grubenholz", BX + 5, BY + 3, { id: "bergwerk_grubenholz_1" }); ding("hochland_grubenholz", BX + 6.5, BY + 5, { id: "bergwerk_grubenholz_2", spiegeln: true });
   ding("hochland_lore", BX - 1.5, BY + 6, { id: "bergwerk_lore" }); ding("hochland_schienen", BX - 1.5, BY + 3.5, { id: "bergwerk_schienen_1" }); ding("hochland_schienen", BX - 1.5, BY + 6, { id: "bergwerk_schienen_2" }); ding("dorf_holzstapel_01", BX + 4, BY + 6); ding("moor_feuerkorb_01", BX - 2, BY + 2);
-  ding("moor_kate_02", BX - 14, BY + 12, { id: "bergwerk_kaue" }); ding("steinhag_bankkiste", BX - 9.5, BY + 12.4, { id: "bergwerk_bankkiste" });
-  lies("bergwerk_bankkiste", BX - 9.5, BY + 13.8, "Die Bankkiste an der Kaue. Wer sein Erz nicht bis Steinhag schleppen will, legt es hier ein – es liegt auf demselben Konto.");
+  ding("moor_kate_02", BX - 14, BY + 12, { id: "bergwerk_kaue" }); ding("steinhag_bankkiste", BX - 17, BY + 13, { id: "bergwerk_bankkiste" });   /* links der Kaue, abseits vom Erzweg */
+  lies("bergwerk_bankkiste", BX - 17, BY + 14.4, "Die Bankkiste an der Kaue. Wer sein Erz nicht bis Steinhag schleppen will, legt es hier ein – es liegt auf demselben Konto.");
   lies("bergwerk_eingang", BX, BY + 1.2, "Der Stollen ins Erzberg-Bergwerk. Kalte Luft, das Klopfen von Hämmern – und tief drinnen etwas Schweres, das sich bewegt.", { tat: "bergwerk", knopf: "Hineingehen", ziel: [BW_U[0] * 32 + 48, BW_U[1] * 32 + 58] });
   npc.push({ id: "steiger", rolle: "Steiger (Bergwerk)", x: BX - 4, y: BY + 3 }, { id: "bergmann_1", rolle: "Bergmann", x: BX + 3, y: BY + 4 }, { id: "bergmann_2", rolle: "Bergfrau", x: BX - 12, y: BY + 13.5 }); }
 
@@ -174,7 +174,8 @@ const BW_U = [362, 300], [BX, BY] = ORTE.bergwerk;
 const MAUER_N = 5826;   /* Nordmauer der Hauptstadt (8c) – der Passweg beginnt am Nordwesttor */
 const W_FURT = [[6796, 5761], [6830, 5786], [6880, 5830], [6906, 5880], [6928, 5901]];   /* durchs Westtor der Hauptstadt (#167) */
 const W_PASS = [[6944, MAUER_N - 6], [6944, 5800], [6950, 5740], [6962, 5680], PASS, [6946, 5560], [6920, 5520]];   /* westlich am Steinhagsee vorbei */
-const W_ERZ = [[7082, 5901], [7100, 5884], [7112, 5850], [BX - 2, BY + 6]];
+const ERZWEG = [[6990, 5901], [7040, 5901], [7077, 5901], [7090, 5880], [7100, 5850], [7122.5, 5815.5]];   /* Weg der Bergleute wie shared/reisende.ts (Systeme, ERZWEG) – die Welt hält ihn frei */
+const W_ERZ = [[7077, 5901], ...ERZWEG.slice(3), [BX - 2, BY + 6]];
 const W_ALM = [[7082, 5901], [7092, 5926], [7100, 5960], [7120, 5984], [7100, 5980], [7150, 5996], [ORTE.alm[0] - 10, ORTE.alm[1] + 4]];
 const W_SIEDEL = [[BX + 2, BY + 6], [7200, 5780], [7270, 5720], [7320, 5680], [ORTE.einsiedelei[0] - 2, ORTE.einsiedelei[1] + 4]];
 const W_KLIPPEN = [[7200, 5780], [7230, 5660], [7250, 5560], [7270, 5440], [ORTE.nordklippen[0], ORTE.nordklippen[1] + 40]];
@@ -337,21 +338,8 @@ for (let i = 0; i < 9000 && (zaehl.Felsen || 0) < 140; i++) { const x = 6840 + w
 for (let i = 0; i < 9000 && (zaehl.Büsche || 0) < 180; i++) { const x = 6840 + wurf() * 780, y = 5440 + wurf() * 760;
   if (!".,g".includes(jetzt(x, y)) || imOrt(x, y) || wegNah(x, y, 2) || besetzt(x, y, 2)) continue; ding(wahl(["stil_busch_01", "stil_busch_02"]), x, y); z("Büsche"); }
 
-/* ═══════ 9b. Wege der Reisenden: kürzester begehbarer Weg (Gassen und Wege bevorzugt) über die fertige Fläche, Wegpunkte dicht genug für gerade Stücke ═══════ */
-const pfad = ([ax, ay], [bx, by]) => { const X0 = Math.floor(Math.min(ax, bx)) - 40, Y0 = Math.floor(Math.min(ay, by)) - 40, B = Math.ceil(Math.abs(ax - bx)) + 80, H = Math.ceil(Math.abs(ay - by)) + 80;
-  const zu = new Uint8Array(B * H); for (let y = 0; y < H; y++) for (let x = 0; x < B; x++) { const c = jetzt(X0 + x + 0.5, Y0 + y + 0.5); if (nass(c) || c === "F" || c === "?") zu[y * B + x] = 1; }
-  const SAMMEL = [join(WELT, "sammelstellen.json"), join(WELT, "..", "shared", "holz_standorte.json"), join(WELT, "..", "shared", "bergbau_standorte.json")].filter(existsSync).flatMap((f) => { const d = JSON.parse(readFileSync(f, "utf8")); return [...(d.lichtungen || []), ...(d.senken || [])].flatMap((l) => l.baeume || l.adern); });
-  for (const p of SAMMEL) for (let y = Math.floor(p.y) - 1; y <= Math.floor(p.y) + 1; y++) for (let x = Math.floor(p.x) - 1; x <= Math.floor(p.x) + 1; x++) if (x >= X0 && y >= Y0 && x < X0 + B && y < Y0 + H) zu[(y - Y0) * B + x - X0] = 1;   /* Bäume und Adern (auch aus früheren Läufen) */
-  for (const q of koerper) for (let y = Math.floor(q[1] - 0.4); y < Math.ceil(q[3] + 0.4); y++) for (let x = Math.floor(q[0] - 0.4); x < Math.ceil(q[2] + 0.4); x++) { const i = (y - Y0) * B + x - X0; if (x >= X0 && y >= Y0 && x < X0 + B && y < Y0 + H) zu[i] = 1; }
-  const kosten = new Float64Array(B * H).fill(Infinity), vor = new Int32Array(B * H).fill(-1), s0 = (Math.floor(ay) - Y0) * B + Math.floor(ax) - X0, z0 = (Math.floor(by) - Y0) * B + Math.floor(bx) - X0; kosten[s0] = 0;
-  const offen = [[0, s0]]; while (offen.length) { offen.sort((a, b) => b[0] - a[0]); const [k, i] = offen.pop(); if (i === z0) break; if (k > kosten[i]) continue; const x = i % B, y = (i / B) | 0;
-    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= B || ny >= H) continue; const j = ny * B + nx; if (zu[j]) continue;
-      const w = k + ("ekp".includes(jetzt(X0 + nx + 0.5, Y0 + ny + 0.5)) ? 1 : 4); if (w < kosten[j]) { kosten[j] = w; vor[j] = i; offen.push([w, j]); } } }
-  if (vor[z0] < 0) throw new Error(`kein Weg von ${ax}|${ay} nach ${bx}|${by}`); const zellen = []; for (let i = z0; i >= 0; i = vor[i]) zellen.push([X0 + (i % B) + 0.5, Y0 + ((i / B) | 0) + 0.5]); zellen.reverse();
-  const out = [zellen[0]]; let last = 0; for (let i = 1; i < zellen.length; i++) { const [px, py] = zellen[last], [qx, qy] = zellen[i]; let frei = i - last <= 6;
-    for (let t = 0; frei && t <= 1; t += 0.05) { const x = px + (qx - px) * t, y = py + (qy - py) * t; if (zu[(Math.floor(y) - Y0) * B + Math.floor(x) - X0]) frei = false; }
-    if (!frei) { out.push(zellen[i - 1]); last = i - 1; } } out.push(zellen.at(-1)); return out; };
-reisende.push({ id: "bergleute_steinhag_erzberg", rolle: "Bergleute auf dem Weg zur Schicht (Reisende nach der Uhr): vom Markt durchs Osttor zum Stolleneingang", punkte: pfad([6992.5, 5900.5], [BX + 0.5, BY + 4.5]) });
+/* ═══════ 9b. Wege der Reisenden: die Bergleute pendeln auf dem ERZWEG (Systeme); Bäume, Felsen und Sammelstellen halten ihn frei ═══════ */
+reisende.push({ id: "bergleute_steinhag_erzberg", rolle: "Bergleute auf dem Weg zur Schicht (shared/reisende.ts ERZWEG): vom Markt durchs Osttor zum Stolleneingang", punkte: ERZWEG });
 
 /* ═══════ 10. Kräuter an Schattenhängen (Nordseiten von Grauhorn und Erzberg) ═══════ */
 { let k = 0; for (let i = 0; i < 6000 && kraeuter.length < 10; i++) { const x = 6860 + wurf() * 340, y = 5460 + wurf() * 380; const art = kraeuter.length % 2 ? "nebelkraut" : "eisenhut";
