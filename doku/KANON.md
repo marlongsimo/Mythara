@@ -86,7 +86,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
 - **Die ganze Welt ist Kampfwelt** (auch Festland: Fahle Weiten, Glutsande, Smaragdküste, Süden). *(27.11.)*
 - **Vorhandenes zuerst:** Welt und Figuren (und alle Rollen) schauen **immer zuerst, was es schon gibt**, und bauen darauf auf (Modelle, Orte, Gegenstände wiederverwenden, umfärben, ergänzen), bevor Neues entsteht. *(27.11.)*
-- **Vorerst keine neuen Rohstoffe**; Beute und Lohn aus vorhandenen Gegenständen. *(27.11.)*
+- **Vorerst keine neuen Rohstoffe – außer Fleisch** (Hasen-, Wildschwein-, Wolfsfleisch) für mehr Kochen; sonst Beute und Lohn aus vorhandenen Gegenständen. *(27.11.)*
 - **Süden beleben** (`doku/konzepte/sueden.md`): freigegeben, Namen passen (keine Doppelungen). *(27.11.)*
 - **Bank:** Platzhalter (Feld bleibt stehen, wenn alles herausgenommen ist) und Umsortieren per Ziehen wie im Rucksack. **Nirgends seitlich scrollen**, höchstens von oben nach unten. *(27.11.)*
 - **Bosse** (27.11., präzisiert): **In der Quest** kämpft man den Boss **immer allein** in einer Instanz, in einer **gut machbaren, schwächeren Fassung** (Leben angepasst). **Nach der Quest** gibt es den Boss dauerhaft in der **stärkeren Fassung**, wählbar **öffentlich** (offene Welt, wer da ist, macht mit) oder als **eigene Instanz**. **Vorerst** ist die Instanz bei den jetzigen Bossen **nur allein**; Gruppen-Instanzen (bis 4, Boss wächst mit der Gruppe) sind für später vorgesehen. Beute bekommt jeder für sich.

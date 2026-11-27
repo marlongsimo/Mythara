@@ -25,12 +25,23 @@ Heute ist dort nach den Grenzland-Regionen vor allem leeres Festland mit der Str
 | Heckenhof-Felder | **Feldhase**, **Krähenschwarm** | 2–5 | Anfänger-Ziele, Krähen stehlen Saat (kleines Quest-Ziel) |
 | Summweide-Rand | **Wildbienen-Schwarm** | 8 | greift nur an, wenn man zu nah an die Stöcke geht |
 | Schilfsee-Ufer | **Schilfkröte** | 12 | langsam, zäh – Trainingsgegner wie der Mooshocker, für Stufe 10–15 |
-| Erlengrund-Wald | **Fuchs**, **Wildschwein** | 14 / 18 | Beute nur aus vorhandenen Gegenständen (z. B. Kuhfleisch-Ersatz: vorhandenes Fleisch) |
+| Erlengrund-Wald | **Fuchs**, **Wildschwein** | 14 / 18 | Wildschwein lässt Wildschweinfleisch fallen |
 | Südstraße (zwei Lager) | **Wegelagerer** (Knüppel/Schleuder) | 20 / 22 | fliehen (Baustein aus Phase 4), Splitter und kleine Beute |
 | Steinbruch Lehmfurt | **Steinschlucker** (kleiner Golem) | 26 | eigene Gegnerfamilie „Stein“ |
 | Waldsenke bei Erlengrund | **Der Graupelz** (Alpha-Wolf, Mini-Gegner) | 30 | erscheint selten (alle 15 min), mit zwei Wölfen; eigene Beute |
 
-Beute nach den Grundsätzen in `beute.md` (Splitter, Rohstoffe der Stufe, Selten nur sehr selten). **Keine neuen Rohstoffe** (Entscheidung des Nutzers, 27.11.): Beute und Lohn nur aus vorhandenen Gegenständen.
+Beute nach den Grundsätzen in `beute.md` (Splitter, Rohstoffe der Stufe, Selten nur sehr selten). **Keine neuen Rohstoffe – außer Fleisch** (Entscheidung des Nutzers, 27.11.): Fleisch darf rein, damit Kochen wächst. Sonst Beute und Lohn nur aus vorhandenen Gegenständen.
+
+**Fleisch und Gerichte (Kochen-Erweiterung):**
+
+| Fleisch | von | Gericht | Kochen | Station | heilt | Wirkung |
+|---|---|---|---|---|---|---|
+| Hasenfleisch | Feldhase (2–5) | Hasenbraten | 5 | Feuer | 3 | – |
+| Kuhfleisch (vorhanden) | Kuh | Rinderbraten | 12 | Herd | 5 | – |
+| Wildschweinfleisch | Wildschwein (18) | Wildschweinbraten | 22 | Feuer/Herd | 7 | Stärke +1 · 5 min |
+| Wolfsfleisch | Heidewolf (32), Graupelz-Rudel | Wolfsgulasch (mit Kräutern) | 32 | Kessel | 9 | Defense +2 · 5 min |
+
+Werte vor dem Einbau mit den Fischgerichten abstimmen (gleiche Heil-Staffel je Stufe).
 
 ## Kurze Quests (Block S, „Süden“)
 
