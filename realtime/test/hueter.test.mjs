@@ -15,19 +15,21 @@ const M = await import(datei);
 const { Sim, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, INSTANZEN, BOSSE, HUETER, MONSTER, ansageFelder, GEGENSTAENDE: G, SETS, RUESTUNG_STUFE70, beuteAufloesen, weltJeSpieler, bossWahlSetzen, wahlenVergessen, H_QUESTS, H_SCHALTER, rezept, TUEREN, WEGSTEIN_ZIELE, VERBRAUCH, begehbar } = M;
 setzeKarte(KARTEN.welt, FEIN);
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
-const HALLE = INSTANZEN.find((d) => d.id === "trollhalle");
-/* Probe-Räume für Sturmschwinge und Frostwitwe: Kopien der Trollhalle mit eigenem Schalter */
-for (const typ of ["sturmschwinge", "frostwitwe"]) INSTANZEN.unshift({ ...HALLE, id: "probe_" + typ, schalter: "probe_" + typ, danach: "probe_" + typ + "_danach", gegner: [{ ...HALLE.gegner[0], art: typ }] });
-const raum = (typ) => INSTANZEN.find((d) => d.gegner && d.gegner[0].art === typ);
+/* Die Räume der Hüter (Welt a897bc23). Fehlt ein Raum noch in der Kampfwelt (Welt noch nicht eingemischt), kämpft der Hüter zur Probe in einer Kopie der Bergwerkshalle */
+const frei = (x, y) => begehbar(x - KARTEN.welt.ursprung[0], y - KARTEN.welt.ursprung[1]);
+const raum = (typ) => { const D = INSTANZEN.find((d) => d.gegner && d.gegner[0].art === typ && !d.id.startsWith("probe_")); if (frei(D.gegner[0].x, D.gegner[0].y)) return D;
+  let P = INSTANZEN.find((d) => d.id === "probe_" + typ); if (!P) { P = { ...D, id: "probe_" + typ, feld: [11595, 9602, 11618, 9624], gegner: [{ art: typ, x: 11607.5, y: 9611.5 }] }; INSTANZEN.unshift(P); } return P; };
+const ECHT = HUETER.filter((H) => { const D = INSTANZEN.find((d) => d.id === H.instanz); return D && frei(D.gegner[0].x, D.gegner[0].y); }).map((H) => H.typ);
 const L = (n) => { const X = { ...NULL_XP }; for (const k of Object.keys(NULL_XP)) X[k] = xpFuer(n); return X; };
 const AUS = { nah: { waffe: "eidschwert_mythisch", nebenhand: "sternenschild_mythisch", brust: "eisenwacht_mythisch", kopf: "eisenwachthelm_mythisch", beine: "eisenbeinschienen_mythisch" },
   fern: { waffe: "mondkurzbogen_mythisch", brust: "jaegerwams_mythisch", kopf: "jaegerkapuze_mythisch", beine: "jaegerhose_mythisch" },
   magie: { waffe: "sternenszepter_mythisch", brust: "magierrobe_mythisch", kopf: "magierkapuze_mythisch", beine: "magierrock_mythisch" } };
 /** Eine Kampfwelt mit einem Helden in der Kopie des Hüters (fassung: quest = Schalter an, stark = danach mit eigener Instanz) */
 function kampf(typ, stil = "nah", level = 75, an = (D) => (x) => x === D.schalter) {
-  const D = raum(typ); INSTANZEN.splice(INSTANZEN.indexOf(D), 1); INSTANZEN.unshift(D); /* gleicher Raum: dieser zuerst */
+  const D = raum(typ); INSTANZEN.splice(INSTANZEN.indexOf(D), 1); INSTANZEN.unshift(D); /* gleicher Raum (Probe): dieser zuerst */
   const s = Sim.welt(16, undefined, true), U = KARTEN.welt.ursprung; s.ursprung = [U[0], U[1]]; s.wesen = s.wesen.filter((w) => w.held);
   const g = D.gegner[0], hx = g.x, hy = g.y + 6, id = s.beitreten("schildwaechter", 0, { x: hx - U[0], y: hy - U[1] }, kampfwerte(L(level), AUS[stil], 1)), h = s.nach(id);
+  h.schalterAn = [D.schalter, D.danach].filter((x) => an(D)(x)); /* die Hüter sind öffentlich friedlich – gegen wen ihr Schalter an ist, greifen sie an (setzt sonst der Server) */
   wahlenVergessen(); bossWahlSetzen("probe", D.id, "instanz", an(D)); /* nach der Quest: eigene Instanz (starke Fassung) */
   weltJeSpieler(s, id, "probe", hx, hy, an(D), { hat: () => true, abgeben: () => true });
   const b = s.wesen.find((w) => w.typ === typ && w.instanz && w.instanz === h.instanz); return { s, U, id, h, b, D };
@@ -40,7 +42,11 @@ check(HUETER.length === 3 && HUETER.every((H) => MONSTER[H.typ] && MONSTER[H.typ
 const W = (t) => MONSTER[t].widerstand || {};
 check(W("grumhold").nah === 0.5 && W("grumhold").magie > 1 && W("sturmschwinge").magie === 0.5 && W("sturmschwinge").fern > 1 && W("frostwitwe").fern === 0.5 && W("frostwitwe").nah > 1,
   "Dreieck: Grumhold stark gegen Nahkampf, schwach gegen Magie · Sturmschwinge stark gegen Magie, schwach gegen Fernkampf · Frostwitwe stark gegen Fernkampf, schwach gegen Nahkampf");
-check(HALLE && HALLE.schalter === "grumhold_halle" && HALLE.danach === "grumhold_danach" && HALLE.gegner[0].art === "grumhold", "Grumholds Trollhalle: Instanz mit Schalter grumhold_halle (H4) und grumhold_danach");
+check(HUETER.every((H) => { const D = INSTANZEN.find((d) => d.id === H.instanz); return D && D.schalter === H.schalter && D.danach === H.danach && D.gegner[0].art === H.typ; }),
+  "drei Instanzen in Welts Räumen (trollhalle, horst_sturmschwinge, eishoehle_frostwitwe) mit den Schaltern für H4 und danach");
+console.log(ECHT.length === 3 ? "  (alle drei Räume sind in der Kampfwelt)" : `  (Räume fehlen noch in der Kampfwelt – Probe in der Bergwerkshalle für: ${HUETER.map((H) => H.typ).filter((t) => !ECHT.includes(t)).join(", ")})`);
+check(["grumhold", "sturmschwinge", "frostwitwe"].every((t) => MONSTER[t].aggressiv === false && MONSTER[t].aggressivNach && MONSTER[t].aggressivNach.schalter === t + "_danach"),
+  "öffentlich friedlich gegen alle, die H4 noch nicht abgeschlossen haben (aggressivNach *_danach)");
 check(HUETER.every((H) => H.schalter && H.danach && H.danach !== H.schalter), "jeder Hüter hat seinen Schalter für H4 und für danach (" + HUETER.map((H) => H.schalter + "/" + H.danach).join(", ") + ")");
 
 console.log("\nStark und schwach (60 s Schaden, Held 75, mythische Ausrüstung, starke Fassung)");
@@ -122,11 +128,11 @@ console.log("\nQuest-Bausteine H1–H4");
 { const st = WEGSTEIN_ZIELE.find((z) => z.id === "steinhag");
   check(st && st.quest === H_QUESTS.h1, `H1: Wegstein-Ziel Steinhag nach ${H_QUESTS.h1}`);
   const K = rezept("kaeserad"), Gh = rezept("grubenholz");
-  check(K && K.station === "herd" && K.quest === H_QUESTS.h2 && K.zutaten[0].g.includes("ziegenmilch") && G.ziegenmilch && G.kaeserad && VERBRAUCH.kaeserad, `H2: Almkäse aus Ziegenmilch am Herd (Kochen ${K && K.level}, über ${H_QUESTS.h2})`);
+  check(K && K.station === "kessel" && K.quest === H_QUESTS.h2 && K.zutaten[0].g.includes("ziegenmilch") && G.ziegenmilch && G.kaeserad && VERBRAUCH.kaeserad, `H2: Almkäse aus Ziegenmilch am Käsekessel (Kochen ${K && K.level}, über ${H_QUESTS.h2})`);
   check(Gh && Gh.station === "werkbank" && Gh.quest === H_QUESTS.h3 && G.grubenholz && G.grubenholz.untauschbar && G.erzprobe_splitterlicht, `H3: Grubenholz an der Werkbank (Handwerk ${Gh && Gh.level}), Erzprobe mit Splitterlicht`);
-  const T = TUEREN.find((x) => x.id === "urkammer"), U = KARTEN.welt.ursprung, zellen = [];
+  const T = TUEREN.find((x) => x.id === "bergwerk_stollen"), U = KARTEN.welt.ursprung, zellen = [];
   if (T) for (let x = T.feld[0]; x <= T.feld[2]; x++) for (let y = T.feld[1]; y <= T.feld[3]; y++) zellen.push(begehbar(x + 0.5 - U[0], y + 0.5 - U[1]));
-  check(T && T.schalter === H_SCHALTER.urkammer && zellen.length && zellen.every(Boolean), `H3: Tür im Gang zur Urkammer (${zellen.length} Felder, Schalter ${T && T.schalter})`);
+  check(T && T.schalter === H_SCHALTER.stollen && zellen.filter(Boolean).length >= 3, `H3: eingestürzter Stollen vor der Urkammer (${zellen.filter(Boolean).length} gangbare Felder im Raster – die Tür sperrt je Spieler, Schalter ${T && T.schalter})`);
   check(HUETER.map((H) => H.schalter).join() === [H_SCHALTER.grumhold, H_SCHALTER.sturmschwinge, H_SCHALTER.frostwitwe].join(), "H4: Schalter der drei Hüter wie in shared/hochlande.ts"); }
 
 console.log(f ? `\nHüter (#160): ${f} FEHLER` : "\nHüter (#160): alles in Ordnung");

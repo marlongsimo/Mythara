@@ -14,6 +14,7 @@
  * ziehen = Kamera drehen und neigen · Mausrad/zwei Finger = Zoom.
  */
 import * as THREE from "three";
+import GELAENDE from "../../../welt/bibliothek/gelaende.json";
 import { bauen, gebaeudeDrehen, type Bauplan, type Gebaeude } from "./bauten";
 import { modell, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
@@ -68,6 +69,8 @@ function wasserMaterial(farbe: number, deck: number, tempo: number) {
       #include <opaque_fragment>`); };
   return m; }
 const WASSER = wasserMaterial(0x2c6680, 0.9, 1), MOORWASSER = wasserMaterial(0x26342c, 0.94, 0.35);
+FARBE.i = FARBE.i || "#c7e5f6"; FARBE.I = FARBE.I || "#8cbbe0"; /* #164: Eisboden der Frostwitwe */
+for (const A of (GELAENDE as { arten: { zeichen: string; farbe?: string }[] }).arten) if (A.farbe && !FARBE[A.zeichen]) FARBE[A.zeichen] = A.farbe; /* #164: neue Geländearten der Welt ohne Code-Änderung (eigene Farben oben gehen vor) */
 const FARBEN = new Map<string, THREE.Color>(Object.entries(FARBE).map(([k, v]) => [k, new THREE.Color(v)]));
 const farbe = (z: string) => FARBEN.get(z) || FARBEN.get(".")!;
 
@@ -296,8 +299,8 @@ export class Welt3D {
       this.zurueck.style.opacity = anders ? "1" : "0"; this.zurueck.style.pointerEvents = anders ? "auto" : "none"; } }
   /** Licht und Himmel je Ebene: Oberwelt am Tag, Untergrund dunkel mit Fackelschein */
   art = "oberwelt";
-  stimmung(ebene: string, art: string) { if (ebene === this.ebene) return; this.ebene = ebene; this.art = art; const unten = art !== "oberwelt", f = this.szene.fog as THREE.Fog;
-    const himmel = new THREE.Color(art === "innen" ? "#0c0907" : unten ? "#0e0c0a" : "#b9cfe0"); this.szene.background = himmel; f.color.copy(himmel);
+  stimmung(ebene: string, art: string) { if (ebene === this.ebene) return; this.ebene = ebene; this.art = art; const unten = art !== "oberwelt" && art !== "draussen" /* #164: Horst unter freiem Himmel */, f = this.szene.fog as THREE.Fog;
+    const himmel = new THREE.Color(art === "innen" ? "#0c0907" : unten ? "#0e0c0a" : art === "draussen" ? "#cfdeea" : "#b9cfe0"); this.szene.background = himmel; f.color.copy(himmel);
     this.himmelLicht.intensity = unten ? 0.62 : 1.1; this.himmelLicht.color.set(unten ? 0xb09a82 : 0xc6dcff); this.licht.intensity = unten ? 0.35 : 2.9; this.fackel.intensity = unten ? 30 : 0; this.fackel.distance = 20;
     if (art === "innen") { this.himmelLicht.intensity = 1.0; this.himmelLicht.color.set(0xffe2c0); this.licht.intensity = 1.1; this.fackel.intensity = 10; }   /* Innenraum: warmes Licht wie durch Fenster und Kerzen */ }
 

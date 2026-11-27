@@ -605,7 +605,7 @@ Object.assign(MONSTER, {
   /* ───── #160 (Block H): die drei Hüter der Hochlande (Bosse nach #116, Mechaniken in shared/bosse.ts) und ihre Helfer – Dreieck aus stark und schwach (widerstand).
      Werte der starken Fassung (Stufe 72); die Quest-Fassung (H4) ist schwächer (QUEST_MILDE in bosse.ts). Rüstung der Stufe 70 nur in der starken Fassung: der letzte Wurf (stark) – insgesamt 1 : 75 je Sieg, welches Teil gleich verteilt (Entscheidung des Nutzers, #160). Modelle vorerst Platzhalter (#159). ───── */
   /** Grumhold: uralter Bergtroll in der Trollhalle – Steinhaut (Nahkampf −50 %), schwach gegen Magie; Stampf-Ring, Felsbrocken, bei halbem Leben zwei Felsbrocken-Wächter, die ihn heilen */
-  grumhold: { name: "Grumhold", stufe: 72, bild: "img/echtzeit/bandit.webp", hoehe: 230, lp: 450, tempo: 2.4, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 80, fern: 70, magie: 40 }, r: 1.0, boss: true, wiederkehr: 600,
+  grumhold: { name: "Grumhold", stufe: 72, bild: "img/echtzeit/bandit.webp", hoehe: 230, lp: 450, tempo: 2.4, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 80, fern: 70, magie: 40 }, r: 1.0, boss: true, wiederkehr: 600, aggressiv: false, aggressivNach: { schalter: "grumhold_danach", weit: 8 } /* öffentlich nur gegen die, die H4 abgeschlossen haben */,
     angriff: { name: "Keulenhieb", art: "nah", schaden: [1, 18], takt: 3, reich: 2.2, aushol: 0 }, widerstand: { nah: 0.5, magie: 1.5 },
     v2: { staerke: 130, geschick: 85, defense: 82, magie: 20, staerkeBonus: 35, ticks: 6, abwehr: { nah: 45, fern: 35, magie: -10 } },
     info: "Der älteste Troll des Erzbergs, mit Steinplatten statt Haut. Klingen prallen an ihm ab – Zauber nicht.",
@@ -616,13 +616,13 @@ Object.assign(MONSTER, {
     v2: { fernkampf: 70, defense: 60, magie: 10, ticks: 6, abwehr: { nah: 30, fern: 30, magie: -20 } },
     info: "Ein Felsbrocken mit glühenden Adern. Solange er steht, wachsen Grumhold die Platten nach.", drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [10, 20] }] }] },
   /** Die Sturmschwinge: Riesenadler auf dem Grauhorn – Wind lenkt Zauber ab (Magie −50 %), schwach gegen Fernkampf; kreist außer Nahkampf-Reichweite, Sturzflug, danach 4 s am Boden, Sturmböen schieben */
-  sturmschwinge: { name: "Die Sturmschwinge", stufe: 72, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 400, tempo: 4.5, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 55, magie: 75 }, r: 0.9, boss: true, wiederkehr: 600,
+  sturmschwinge: { name: "Die Sturmschwinge", stufe: 72, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 400, tempo: 4.5, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 55, magie: 75 }, r: 0.9, boss: true, wiederkehr: 600, aggressiv: false, aggressivNach: { schalter: "sturmschwinge_danach", weit: 8 } /* öffentlich nur gegen die, die H4 abgeschlossen haben */,
     angriff: { name: "Krallen", art: "nah", schaden: [1, 16], takt: 2.4, reich: 1.6, aushol: 0 }, widerstand: { magie: 0.5, fern: 1.5 },
     v2: { geschick: 90, staerke: 115, defense: 72, magie: 40, staerkeBonus: 30, ticks: 4, abwehr: { nah: 30, fern: -5, magie: 45 } },
     info: "Ein Adler, so groß wie eine Hütte. Wer auf dem Grauhorn steht, sieht zuerst ihren Schatten.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [400, 800] }] }, { wurf: [{ g: "federn", chance: 100, anzahl: [10, 20] }] }, { wurf: [{ g: "@episch", chance: 100 / 20 }, { g: "@legendaer", chance: 100 / 120 }] }, { stark: true, wurf: [{ g: "sturmfeder_haube", chance: 100 / 75 / 3 }, { g: "sturmfeder_wams", chance: 100 / 75 / 3 }, { g: "sturmfeder_hose", chance: 100 / 75 / 3 }] }] },
   /** Die Frostwitwe: Eismagierin in der Eishöhle am Hochpass – Eiswand (Fernkampf −50 %), schwach gegen Nahkampf; Eisfelder (verlangsamen, Erstarren), Eissplitter-Wächter, Frostnova */
-  frostwitwe: { name: "Die Frostwitwe", stufe: 72, bild: "img/echtzeit/bandit.webp", hoehe: 150, lp: 380, tempo: 2.8, angriffswert: { nah: 0, fern: 0, magie: 75 }, abwehr: { nah: 55, fern: 80, magie: 80 }, r: 0.6, boss: true, wiederkehr: 600,
+  frostwitwe: { name: "Die Frostwitwe", stufe: 72, bild: "img/echtzeit/bandit.webp", hoehe: 150, lp: 380, tempo: 2.8, angriffswert: { nah: 0, fern: 0, magie: 75 }, abwehr: { nah: 55, fern: 80, magie: 80 }, r: 0.6, boss: true, wiederkehr: 600, aggressiv: false, aggressivNach: { schalter: "frostwitwe_danach", weit: 8 } /* öffentlich nur gegen die, die H4 abgeschlossen haben */,
     angriff: { name: "Eislanze", art: "magie", schaden: [1, 16], takt: 3, reich: 6, aushol: 0 }, widerstand: { fern: 0.5, nah: 1.5 },
     v2: { magie: 120, defense: 70, staerkeBonus: 30, ticks: 5, abwehr: { nah: -10, fern: 50, magie: 50 } },
     info: "Sie wartet seit dem letzten Winter, der nie zu Ende ging. Pfeile zerspringen an ihrer Eiswand – eine Klinge nicht.",

@@ -27,7 +27,14 @@ BESONDERS = {
     "tempel_kammer": {"leine": 14, "wandern": 0, "mehrkampf": [[11360, 9600, 11391, 9631]], "lager": [("sandmutter", 11376, 9612)]},
     "wrack_kajuete": {"leine": 14, "wandern": 0, "mehrkampf": [[11488, 9600, 11519, 9631]], "lager": [("wrackkapitaen", 11504, 9614)]},
     # #147 (Welt c51186c7): das Erzberg-Bergwerk unter den Hochlanden (Untergrund) – Stollen, Trollhalle, Urkammer; vorerst ohne Gegner und ohne Boss (die Trollhalle für den Mini-Boss später)
-    "hochlande_bergwerk": {"leine": 10, "wandern": 2, "mehrkampf": [[11595, 9602, 11618, 9624]], "lager": []},  # #160: Trollhalle (Grumhold mit Felsbrocken-Wächtern) als Mehrkampf
+    # #160 (Block H, Welt a897bc23): die Halle im Bergwerk ist Grumholds öffentliche Arena (nach H4, Wahl „öffentlich“; friedlich gegen alle ohne grumhold_danach)
+    "hochlande_bergwerk": {"leine": 10, "wandern": 2, "mehrkampf": [[11595, 9602, 11618, 9624]], "lager": [("grumhold", 11607, 9611)]},
+    # die Räume der Hüter als eigene Gebiete (Instanzen in shared/bosse.ts): Mehrkampf (Boss mit Helfern); die Eishöhle ist zugleich der öffentliche Ort der Frostwitwe
+    "trollhalle": {"leine": 14, "wandern": 0, "mehrkampf": [[11680, 9600, 11711, 9631]], "lager": []},
+    "horst_sturmschwinge": {"leine": 20, "wandern": 0, "mehrkampf": [[11712, 9600, 11775, 9663]], "lager": []},
+    "eishoehle_frostwitwe": {"leine": 14, "wandern": 0, "mehrkampf": [[11776, 9600, 11807, 9631]], "lager": [("frostwitwe", 11792, 9611)]},
+    # öffentlich auf dem Gipfel des Grauhorns (Nest, Welt a897bc23): die Sturmschwinge nach H4
+    "fl_216_169": {"leine": 14, "wandern": 4, "mehrkampf": [[7016, 5522, 7044, 5550]], "lager": [("sturmschwinge", 7030, 5536)]},
     # Phase 10 (#92): Klippenhöhlen (Untergrund, Welt #82) – Strandräuber im Schmugglerversteck, Krabben im Gezeitenbecken; der Wrackkapitän in der Kajüte (Instanz wrack_kajuete)
     "klippenhoehlen": {"leine": 10, "wandern": 2,
                        "lager": [("strandraeuber_saebel", 11442, 9618), ("strandraeuber_armbrust", 11444, 9614), ("strandraeuber_saebel", 11470, 9616), ("strandraeuber_armbrust", 11468, 9614),

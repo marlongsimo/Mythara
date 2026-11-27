@@ -37,8 +37,8 @@ export const INSTANZEN: InstanzDef[] = [
 /* Die Tür im Gang zum Beutelager (TUER_LAGER in werkzeug/welt/unterschlupf.mjs: Gebietsfelder 30–36 | 44–45) */
 export const TUEREN: Tuer[] = [
   { id: "beutelager", feld: [10270, 9644, 10276, 9645], schalter: "beutelager_offen", zu: "Die Tür ist verschlossen. Jemand in der Wachstube hat den Schlüsselbund." },
-  /* #160 (H3): der Gang zur Urkammer im Erzberg (Welt d344565a) – erst offen, wenn H3 die Urkammer freigibt */
-  { id: "urkammer", feld: [11664, 9620, 11667, 9620], schalter: "urkammer_offen", zu: "Grubenholz und Geröll versperren den Gang. Die Bergvögtin hat ihn sperren lassen – hier unten ist etwas aufgewacht." },
+  /* #160 (H3): der eingestürzte Stollen vor der Urkammer (Welt a897bc23, bergwerk_quest.sperre) – erst offen, wenn H3 ihn freilegt */
+  { id: "bergwerk_stollen", feld: [11661, 9620, 11671, 9623], schalter: "bergwerk_stollen_frei", zu: "Grubenholz und Geröll versperren den Gang. Die Bergvögtin hat ihn sperren lassen – hier unten ist etwas aufgewacht." },
 ];
 
 /** Sprünge (Interaktionen mit ziel: Leiter, Loch, Kammertür) nur mit Schalter (Phase 4): sonst steht der Text da, statt dass man hinabsteigt.
@@ -124,19 +124,27 @@ BOSSE.frostwitwe = { typ: "frostwitwe", phasen: [
   { ab: 0.6, text: "Die Frostwitwe haucht – das Eis erwacht!", ruf: { art: "eissplitter_waechter", n: 2, weite: 3, text: "Eissplitter wachsen aus dem Boden!" },
     ansagen: [{ name: "Eisfeld", bewegung: "zauber", sek: 4, felder: "ziel", weite: 1, vorlauf: 2, schaden: [6, 10], art: "magie", wirkung: { langsam: [0.5, 4], erstarren: 2 } },
       { name: "Frostnova", bewegung: "nova", alle: 4, felder: "rundum", weite: 3, vorlauf: 3, schaden: [14, 22], art: "magie" }] } ] };
-/* Die Räume: die Trollhalle steht (Welt d344565a, Bergwerk); Horst und Eishöhle baut Welt noch (Issue an rolle:welt) – bis dahin nur die Bossdaten.
+/* Die Räume (Welt a897bc23, #162): je Hüter ein eigenes Gebiet als Instanz (vor der Quest leer, in H4 allein und schwächer, danach wählbar) –
+   trollhalle (Tor trollhalle_tor in der Halle des Bergwerks), horst_sturmschwinge (horst_aufstieg auf dem Grauhorn), eishoehle_frostwitwe (eishoehle_eingang am Hochpass).
+   Öffentlich (nach H4, Wahl „öffentlich“) stehen sie in der offenen Welt: Grumhold in der Halle des Bergwerks, die Sturmschwinge auf dem Gipfel des Grauhorns,
+   die Frostwitwe in ihrer Eishöhle (werkzeug/weltzonen.py) – friedlich gegen alle, die H4 noch nicht abgeschlossen haben (aggressivNach *_danach, config.ts).
    Schalter je Hüter: <hüter>_<raum> solange H4 läuft und er noch steht, <hüter>_danach nach H4. */
 export const HUETER: { typ: string; instanz: string; schalter: string; danach: string; ort: string }[] = [
   { typ: "grumhold", instanz: "trollhalle", schalter: "grumhold_halle", danach: "grumhold_danach", ort: "Trollhalle im Bergwerk" },
-  { typ: "sturmschwinge", instanz: "horst_grauhorn", schalter: "sturmschwinge_horst", danach: "sturmschwinge_danach", ort: "Horst auf dem Grauhorn" },
-  { typ: "frostwitwe", instanz: "eishoehle_hochpass", schalter: "frostwitwe_hoehle", danach: "frostwitwe_danach", ort: "Eishöhle am Hochpass" } ];
-INSTANZEN.push({ id: "trollhalle", name: "Die Trollhalle", feld: [11595, 9602, 11618, 9624], schalter: "grumhold_halle", danach: "grumhold_danach",
-  gegner: [{ art: "grumhold", x: 11607.5, y: 9611.5 }], text: "Hinter dir knirscht Geröll. In der Halle steht ein Fels auf – und hat Augen." });
+  { typ: "sturmschwinge", instanz: "horst_sturmschwinge", schalter: "sturmschwinge_horst", danach: "sturmschwinge_danach", ort: "Horst auf dem Grauhorn" },
+  { typ: "frostwitwe", instanz: "eishoehle_frostwitwe", schalter: "frostwitwe_hoehle", danach: "frostwitwe_danach", ort: "Eishöhle am Hochpass" } ];
+INSTANZEN.push({ id: "trollhalle", name: "Die Trollhalle", feld: [11680, 9600, 11711, 9631], schalter: "grumhold_halle", danach: "grumhold_danach",
+  gegner: [{ art: "grumhold", x: 11696.5, y: 9614.5 }], text: "Hinter dir knirscht Geröll. In der Halle steht ein Fels auf – und hat Augen." });
+INSTANZEN.push({ id: "horst_sturmschwinge", name: "Der Horst der Sturmschwinge", feld: [11712, 9600, 11775, 9663], schalter: "sturmschwinge_horst", danach: "sturmschwinge_danach",
+  gegner: [{ art: "sturmschwinge", x: 11744.5, y: 9630.5 }], text: "Der Wind reißt an dir. Über dem Gipfel zieht ein Schatten seine Kreise." });
+INSTANZEN.push({ id: "eishoehle_frostwitwe", name: "Die Eishöhle der Frostwitwe", feld: [11776, 9600, 11807, 9631], schalter: "frostwitwe_hoehle", danach: "frostwitwe_danach",
+  gegner: [{ art: "frostwitwe", x: 11792.5, y: 9611.5 }], text: "Der Atem gefriert dir vor dem Mund. Am Altar dreht sich jemand langsam zu dir um." });
 
 /* #156: Stärke der Quest-Fassungen (allein, schwächer – #116), gemessen mit test/boss-quest-machbar.test.mjs: ein Held der empfohlenen Stufe mit passender
    Ausrüstung bleibt stehen und isst bei halbem Leben (höchstens 15 Mahlzeiten) – jeder Boss fällt in rund 1,5–2,5 Minuten mit 5–11 Mahlzeiten, wie die Federmutter
    (Standard QUEST_STAERKE). Der Rabenpriester ist Stufe 55 bei empfohlenem Heldenlevel 40, daher am stärksten gemindert. Die gerufenen Helfer teilen die
    Schadensminderung (shared/sim.ts rufen). Die starke Fassung danach bleibt unverändert. */
 const QUEST_MILDE: Record<string, { leben: number; schaden: number; abwehr?: number }> = {
-  thronsaal: { leben: 0.25, schaden: 0.2 }, trollhalle: { leben: 0.2, schaden: 0.25, abwehr: 0.5 } /* H4, Grumhold: auch mit Nahkampf (gegen den er stark ist) in rund 3,5 Minuten */, hauptmann_gruft: { leben: 0.4, schaden: 0.5 }, tempel_kammer: { leben: 0.35, schaden: 0.4 }, wrack_kajuete: { leben: 0.4, schaden: 0.4 } };
+  thronsaal: { leben: 0.25, schaden: 0.2 }, trollhalle: { leben: 0.2, schaden: 0.25, abwehr: 0.5 } /* H4, Grumhold: auch mit Nahkampf (gegen den er stark ist) in rund 3,5 Minuten */,
+  horst_sturmschwinge: { leben: 0.25, schaden: 0.3, abwehr: 0.5 }, eishoehle_frostwitwe: { leben: 0.25, schaden: 0.3, abwehr: 0.5 }, hauptmann_gruft: { leben: 0.4, schaden: 0.5 }, tempel_kammer: { leben: 0.35, schaden: 0.4 }, wrack_kajuete: { leben: 0.4, schaden: 0.4 } };
 for (const D of INSTANZEN) if (QUEST_MILDE[D.id] && !D.questStaerke) D.questStaerke = QUEST_MILDE[D.id];
