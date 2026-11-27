@@ -96,6 +96,24 @@
      6609
     ]
    ]
+  },
+  {
+   "name": "Südstraße: Weidenhain → Kielmund (Phase 10, #82; weiter im Festland: kueste.mjs)",
+   "breite": 2.0,
+   "punkte": [
+    [
+     6444.5,
+     6737
+    ],
+    [
+     6444.5,
+     6745
+    ],
+    [
+     6444,
+     6753
+    ]
+   ]
   }
  ],
  "flaechen": [
@@ -492,6 +510,20 @@
    "objekt": "hand_kessel_01",
    "x": 6291.6,
    "y": 6677.8
+  },
+  {
+   "id": "ort_p5_bindestein_obelisk",
+   "objekt": "wz_bindestein",
+   "x": 6371,
+   "y": 6372.4,
+   "hinweis": "Phase 5b: Bindestein am Obelisk im Nordwald (Station, nach A2)"
+  },
+  {
+   "id": "ort_p3_fanggrund_wehrkolk",
+   "objekt": "fanggrund_kolk",
+   "x": 6465.5,
+   "y": 6705.5,
+   "hinweis": "Fanggrund Wehrkolk (Mühlbarsch, nach B2 mit Schalter wehr_heil) – #64"
   }
  ],
  "lichtungen": [

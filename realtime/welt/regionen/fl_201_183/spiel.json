@@ -12,5 +12,89 @@
   "sperren": [],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "grenzposten",
+   "art": "lesen",
+   "x": 206,
+   "y": 259.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Grenzposten der alten Wacht. Die Mauern sind eingefallen, aber jemand hat Zelte aufgeschlagen und das Feuer brennt noch."
+   }
+  },
+  {
+   "id": "grenzposten_wappen",
+   "art": "lesen",
+   "x": 219,
+   "y": 265.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Auf dem Turmstumpf ist ein Wappen in den Stein geschlagen: ein Turm über drei Wellen – jemand hat es mit dem Messer zerkratzt."
+   }
+  },
+  {
+   "id": "heidrast",
+   "art": "lesen",
+   "x": 165.5,
+   "y": 18.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Heidrast. Ein paar Katen im Wind, ein Brunnen, ein Pferch. Der Rauch steigt schräg auf, so stark weht es hier."
+   }
+  },
+  {
+   "id": "heidrast_wegstein",
+   "art": "lesen",
+   "x": 160,
+   "y": 18.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wegstein mit eingeritzten Splitterlinien. Hier kann man später den Wegstein binden."
+   }
+  },
+  {
+   "id": "schafpferch",
+   "art": "lesen",
+   "x": 184.8,
+   "y": 16,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Schafpferch. Im Zaun hängen Wollfetzen – und an einer Stelle ist er von außen eingedrückt."
+   }
+  },
+  {
+   "id": "wegweiser_heidrast_lesen",
+   "x": 171,
+   "y": 25.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Grauwacht ↗ · Nach Hügelgräber ↖ · Nach Graufurt ↓",
+    "ziele": [
+     "Nach Grauwacht ↗",
+     "Nach Hügelgräber ↖",
+     "Nach Graufurt ↓"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "rast_nordsaumweg",
+   "art": "lesen",
+   "x": 258,
+   "y": 378.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
+   }
+  }
+ ]
 }

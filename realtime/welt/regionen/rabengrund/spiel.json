@@ -31,6 +31,23 @@
    }
   },
   {
+   "id": "kerker_treppe",
+   "art": "eingang",
+   "x": 97.5,
+   "y": 10.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Leiter in einem Schacht, durch den Moorluft hereinzieht. Oben schimmert Tageslicht: der alte Fluchtweg der Wächter, hinauf zur Gruft.",
+    "tat": "aufstieg",
+    "knopf": "Hinauf zur Gruft",
+    "ziel": [
+     6188,
+     6727.6
+    ]
+   }
+  },
+  {
    "id": "kerker",
    "art": "lesen",
    "x": 85,

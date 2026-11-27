@@ -1,0 +1,392 @@
+{
+ "hinweis": "Den Süden beleben (#120): Orte, NPC-Plätze, Gegnerplätze, Fischplätze, Kräuter-, Erz-, Holz- und Seelenlicht-Stellen als Vorschlag (Weltfelder). Keine neuen Rohstoffe.",
+ "orte": {
+  "heckenhof": [
+   6490,
+   6812
+  ],
+  "summweide": [
+   6418,
+   6904
+  ],
+  "schilfsee": [
+   6450,
+   7188
+  ],
+  "erlengrund": [
+   6392,
+   7004
+  ],
+  "lehmfurt": [
+   6466,
+   7244
+  ],
+  "kreuzstein": [
+   6476,
+   7098
+  ],
+  "halber_weg": [
+   6474,
+   7010
+  ],
+  "lager_nord": [
+   6432,
+   6950
+  ],
+  "lager_sued": [
+   6496,
+   7166
+  ],
+  "steinbruch": [
+   6500,
+   7236
+  ],
+  "waldsenke": [
+   6342,
+   6968
+  ]
+ },
+ "npc": [
+  {
+   "id": "baeuerin_heckenhof",
+   "rolle": "Bäuerin (S1)",
+   "x": 6491,
+   "y": 6813
+  },
+  {
+   "id": "schaefer_heckenhof",
+   "rolle": "Schäfer (S6)",
+   "x": 6504,
+   "y": 6815
+  },
+  {
+   "id": "imkerin_summweide",
+   "rolle": "Imkerin (S2)",
+   "x": 6419,
+   "y": 6907
+  },
+  {
+   "id": "fischerin_schilfsee",
+   "rolle": "Fischerin (S3)",
+   "x": 6437,
+   "y": 7187
+  },
+  {
+   "id": "saegemueller",
+   "rolle": "Sägemüller (S4)",
+   "x": 6393,
+   "y": 7005
+  },
+  {
+   "id": "schmied_lehmfurt",
+   "rolle": "Schmied (S5)",
+   "x": 6469,
+   "y": 7244
+  }
+ ],
+ "gegner": [
+  {
+   "id": "heckenhof_felder",
+   "gegner": [
+    "feldhase",
+    "kraehenschwarm"
+   ],
+   "stufe": "2–5",
+   "x": 6480,
+   "y": 6821,
+   "r": 9
+  },
+  {
+   "id": "summweide_rand",
+   "gegner": [
+    "wildbienen_schwarm"
+   ],
+   "stufe": 8,
+   "x": 6414,
+   "y": 6916,
+   "r": 6
+  },
+  {
+   "id": "schilfsee_ufer",
+   "gegner": [
+    "schilfkroete"
+   ],
+   "stufe": 12,
+   "x": 6458,
+   "y": 7198,
+   "r": 6
+  },
+  {
+   "id": "erlengrund_wald",
+   "gegner": [
+    "fuchs",
+    "wildschwein"
+   ],
+   "stufe": "14 / 18",
+   "x": 6366,
+   "y": 6998,
+   "r": 10
+  },
+  {
+   "id": "waldsenke_graupelz",
+   "gegner": [
+    "graupelz",
+    "wolf",
+    "wolf"
+   ],
+   "stufe": 30,
+   "x": 6342,
+   "y": 6968,
+   "r": 6,
+   "selten": "alle 15 min"
+  },
+  {
+   "id": "steinbruch",
+   "gegner": [
+    "steinschlucker"
+   ],
+   "stufe": 26,
+   "x": 6500,
+   "y": 7237,
+   "r": 6
+  },
+  {
+   "id": "wegelager_nord",
+   "gegner": [
+    "wegelagerer_knueppel",
+    "wegelagerer_schleuder"
+   ],
+   "stufe": 20,
+   "x": 6432,
+   "y": 6950,
+   "r": 7,
+   "fliehen": true
+  },
+  {
+   "id": "wegelager_sued",
+   "gegner": [
+    "wegelagerer_knueppel",
+    "wegelagerer_schleuder"
+   ],
+   "stufe": 22,
+   "x": 6496,
+   "y": 7166,
+   "r": 7,
+   "fliehen": true
+  }
+ ],
+ "fischplaetze": [
+  {
+   "id": "schilfsee_fisch_1",
+   "fische": [
+    "bachling",
+    "muehlbarsch"
+   ],
+   "stufe": "1–10",
+   "x": 6449,
+   "y": 7188,
+   "stehplatz": [
+    6447.7,
+    7188
+   ]
+  },
+  {
+   "id": "schilfsee_fisch_2",
+   "fische": [
+    "bachling",
+    "muehlbarsch"
+   ],
+   "stufe": "1–10",
+   "x": 6451.5,
+   "y": 7181.5,
+   "stehplatz": [
+    6451.5,
+    7179.6
+   ]
+  },
+  {
+   "id": "schilfsee_fisch_3",
+   "fische": [
+    "bachling",
+    "muehlbarsch"
+   ],
+   "stufe": "1–10",
+   "x": 6459,
+   "y": 7188.5,
+   "stehplatz": [
+    6460.8,
+    7188.5
+   ]
+  }
+ ],
+ "kraeuter": [
+  {
+   "id": "sueden_wegerich_1",
+   "art": "wegerich",
+   "x": 6406.5,
+   "y": 6894.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6410.5,
+   "y": 6914.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_wegerich_2",
+   "art": "wegerich",
+   "x": 6412.5,
+   "y": 6894.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_ringelblume_2",
+   "art": "ringelblume",
+   "x": 6416.5,
+   "y": 6914.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_wegerich_3",
+   "art": "wegerich",
+   "x": 6418.5,
+   "y": 6894.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "sueden_ringelblume_3",
+   "art": "ringelblume",
+   "x": 6422.5,
+   "y": 6914.5,
+   "region": "fl_186_211"
+  }
+ ],
+ "erze": [
+  {
+   "id": "lehmfurt_kupfer_1",
+   "art": "kupfer",
+   "x": 6494.5,
+   "y": 7230.5
+  },
+  {
+   "id": "lehmfurt_kupfer_2",
+   "art": "kupfer",
+   "x": 6498.5,
+   "y": 7229.5
+  },
+  {
+   "id": "lehmfurt_eisen_1",
+   "art": "eisen",
+   "x": 6503.5,
+   "y": 7229.5
+  },
+  {
+   "id": "lehmfurt_eisen_2",
+   "art": "eisen",
+   "x": 6507.5,
+   "y": 7231.5
+  },
+  {
+   "id": "lehmfurt_schwarzeisen_1",
+   "art": "schwarzeisen",
+   "x": 6509.5,
+   "y": 7234.5
+  }
+ ],
+ "holz": [
+  {
+   "id": "erlengrund_eiche_1",
+   "art": "eiche",
+   "x": 6378.5,
+   "y": 6992.5
+  },
+  {
+   "id": "erlengrund_eiche_2",
+   "art": "eiche",
+   "x": 6384.5,
+   "y": 6990.5
+  },
+  {
+   "id": "erlengrund_tanne_3",
+   "art": "tanne",
+   "x": 6392.5,
+   "y": 6989.5
+  },
+  {
+   "id": "erlengrund_tanne_4",
+   "art": "tanne",
+   "x": 6398.5,
+   "y": 6990.5
+  },
+  {
+   "id": "erlengrund_eiche_5",
+   "art": "eiche",
+   "x": 6376.5,
+   "y": 7014.5
+  },
+  {
+   "id": "eibe_kueste_1",
+   "art": "eibe",
+   "vorhanden": true
+  },
+  {
+   "id": "eibe_kueste_2",
+   "art": "eibe",
+   "vorhanden": true
+  },
+  {
+   "id": "eibe_kueste_3",
+   "art": "eibe",
+   "vorhanden": true
+  },
+  {
+   "id": "eibe_kueste_4",
+   "art": "eibe",
+   "vorhanden": true
+  },
+  {
+   "id": "eibe_kueste_5",
+   "art": "eibe",
+   "vorhanden": true
+  }
+ ],
+ "seelenlichter": [
+  {
+   "id": "kreuzstein_licht_1",
+   "art": "wiese",
+   "x": 6480.1,
+   "y": 7100.3,
+   "region": "fl_201_211"
+  },
+  {
+   "id": "kreuzstein_licht_2",
+   "art": "wiese",
+   "x": 6471.5,
+   "y": 7099.7,
+   "region": "fl_201_211"
+  },
+  {
+   "id": "kreuzstein_licht_3",
+   "art": "wiese",
+   "x": 6476.4,
+   "y": 7094,
+   "region": "fl_201_211"
+  }
+ ],
+ "troedler": [
+  {
+   "id": "troedler_halber_weg",
+   "x": 6481.5,
+   "y": 7011.5,
+   "ort": "Rastplatz „Halber Weg“ an der Südstraße",
+   "variante": "karren"
+  }
+ ],
+ "furt": {
+  "x": 6425.5,
+  "y": 7246,
+  "schalter": "lehmfurt_trittsteine"
+ }
+}

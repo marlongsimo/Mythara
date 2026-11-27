@@ -25,7 +25,7 @@ check(gegner().filter((w) => w.typ === "mooshocker").every((w) => w.lagerAggro =
 check(gegner().filter((w) => imGebiet(w, "unterschlupf")).every((w) => w.lagerStufe === 4), "Banditen im Unterschlupf mit Stufe 4 (Splitter wie bisher)");
 check(new Set(gegner().map((w) => w.gruppe)).size === gegner().length, "Jedes Lager hat eine eigene Gruppe (keine Verwechslung über Gebiete hinweg)");
 { const M = KARTEN.welt.mehrkampf; const u = gegner().filter((w) => imGebiet(w, "unterschlupf")).map(welt);
-  check(M.length === 1 && u.some((p) => p.x - WELTZONE.x0 >= M[0][0] && p.x - WELTZONE.x0 <= M[0][2] && p.y - WELTZONE.y0 >= M[0][1] && p.y - WELTZONE.y0 <= M[0][3]), "Die Mehrkampf-Halle des Unterschlupfs liegt in Weltfeldern an der richtigen Stelle"); }
+  check(M.length >= 1 && M.some((m) => u.some((p) => p.x - WELTZONE.x0 >= m[0] && p.x - WELTZONE.x0 <= m[2] && p.y - WELTZONE.y0 >= m[1] && p.y - WELTZONE.y0 <= m[3])), "Die Mehrkampf-Halle des Unterschlupfs liegt in Weltfeldern an der richtigen Stelle (dazu die öffentlichen Boss-Räume, #116)"); }
 check(weltRegionBei(6440, 6400) === "waldmark" && weltRegionBei(6544, 6578) === "waldweg" && weltRegionBei(6530, 6410) === "osthof", "Region nach Weltfeld: Waldmark, Kreuzwald, Osthof");
 
 /* Ein Held geht aus der Waldmark durchs Südtor in den Kreuzwald – in derselben Simulation */

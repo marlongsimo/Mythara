@@ -1,0 +1,16 @@
+{
+ "id": "grabkammer_2",
+ "name": "Grabkammer am Osthang",
+ "untertitel": "Ein Grabhügel in den Fahlen Weiten",
+ "ursprung": [
+  347,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 6,
+ "ebene": "untergrund"
+}

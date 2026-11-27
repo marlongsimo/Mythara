@@ -17,18 +17,17 @@ const flut = (start, box) => { const s = 2, seen = new Set(), q = [[Math.floor(s
   while (q.length) { const [x, y] = q.pop(); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy, k = nx + "," + ny; if (seen.has(k)) continue;
     if (nx / s < box[0] || ny / s < box[1] || nx / s > box[2] || ny / s > box[3] || !R.begehbar((nx + 0.5) / s, (ny + 0.5) / s)) continue; seen.add(k); q.push([nx, ny]); } }
   return (p) => p && seen.has(Math.floor(p.x * s) + "," + Math.floor(p.y * s)); };
-const [GX, GY] = ur("graufurt"), BOX = [GX - 120, GY - 60, GX + 400, GY + 400];
+const [GX, GY] = ur("graufurt"), BOX = [GX - 120, GY - 60, GX + 400, GY + 400], NAH = [GX - 120, GY - 60, GX + 256, GY + 352];   /* NAH: nur Graufurt und Ostufer – der lange Weg über die Glutsande zählt nicht */
 console.log("\nGraufurt");
-const west = nah({ x: GX + 3, y: GY + reg.graufurt.spiel.start[0][1] }), inStadt = flut(west, BOX);
+const west = nah({ x: GX + 3, y: GY + reg.graufurt.spiel.start[0][1] }), inStadt = flut(west, NAH);
 for (const id of ["markt", "bergfried_tuer", "kapelle_tuer", "bank_tuer", "taverne_tuer", "schmiede_tuer", "faehrhaus_tuer", "wegstein_markt", "winde_westanleger", "faehre", "fischplatz", "furtklamm"])
   check(inStadt(nah(ia("graufurt", id))), `vom Westtor zu Fuß erreichbar: ${id}`);
 const [OX, OY] = ur("ostufer"), ost = nah(ia("graufurt", "ostanleger"));
 check(Boolean(ost) && !inStadt(ost), "der Ostanleger ist vom Westufer aus NICHT zu Fuß erreichbar");
 for (const id of ["turm_wappentuer", "turm_ansehen_nah"]) check(!inStadt(nah(ia("ostufer", id))), `das Ostufer (${id}) ist zu Fuß nicht erreichbar`);
-const vomFestland = flut(nah({ x: OX + 140, y: OY + 100 }) || nah({ x: OX + 150, y: OY + 100 }), BOX);
-for (const [dx, dy, wo] of [[110, 345, "Süden (Graufurts Ostufer unterhalb des Riegels)"], [110, 8, "Norden (Graufurts Ostufer oberhalb des Riegels)"]]) { const f = flut(nah({ x: GX + dx, y: GY + dy }), BOX);
-  check(!f(ost) && !f(nah(ia("ostufer", "turm_wappentuer"))), `vom Festland im ${wo} führt kein Weg aufs Ostufer`); }
-check(!vomFestland(ost) && !vomFestland(nah(ia("ostufer", "turm_wappentuer"))), "auch vom Festland im Osten führt kein Weg aufs Ostufer");
+/* Phase 9 (#74, offene Welt): über den Pass im Südosten ist das Ostufer vom Festland (Glutsande) aus zu Fuß erreichbar – nur nicht direkt über den Fluss */
+const vomFestland = flut(nah({ x: 6920, y: 6746 }), BOX);   /* an der Wegmarke „Ende des Grases“ (Glutsande) */
+check(vomFestland(nah(ia("ostufer", "turm_wappentuer"))), "offener Übergang: von den Glutsanden führt der Weg über den Pass aufs Ostufer");
 console.log("\nOstufer");
 const amOst = flut(ost, BOX);
 check(amOst(nah(ia("ostufer", "turm_wappentuer"))), "vom Ostanleger zu Fuß bis zur Wappentür");

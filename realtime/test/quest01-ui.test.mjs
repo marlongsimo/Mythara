@@ -134,7 +134,7 @@ try {
   await ben.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && d.offsetHeight > 0; }, null, { timeout: 60000 }).catch(() => {});
   { const { gesehen, o } = await bisWahl(ben); check(gesehen.some((g) => /Bestätigung/.test(g.text)) && o && o.antworten.includes("durch"), "Raban: „Der Bote aus Waldmark hat uns die Bestätigung gebracht“ – Antwort „Nach Weidenhain weitergehen“");
     if (o) await ben.keyboard.press(String(o.antworten.indexOf("durch") + 1)); }
-  await ben.waitForFunction(() => !window.EZW.welt3d.quest.sperreZu, null, { timeout: 8000 }).catch(() => {}); await ben.waitForTimeout(500);
+  await ben.waitForFunction(() => !window.EZW.welt3d.quest.sperreZu, null, { timeout: 60000, polling: 250 }).catch(() => {}); /* die Antwort braucht unter Last (zwei Browser mit Software-Grafik) bis über 20 s (#99) */ await ben.waitForTimeout(500);
   check(await durch(ben) && await kreuzung(ben) && await ben.evaluate(() => !window.EZW.welt3d.quest.sperreZu), "Danach sind beide Wege für Ben frei (Baumstämme weg, Gehraster offen)");
   if (BILD) await ben.screenshot({ path: BILD + "quest-offen.png", timeout: 90000 }).catch(() => {});
   check(await anna.evaluate(() => window.EZW.welt3d.quest.sperreZu), "Für Anna bleibt die Sperre zu");

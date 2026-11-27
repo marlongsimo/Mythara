@@ -1,0 +1,108 @@
+{
+ "_hinweis": "Erzeugt von werkzeug/welt/wegenetz.mjs (#89): Wegstücke, Wegweiser und Lesestellen in den alten Gebieten – orte.mjs trägt sie ein.",
+ "wege": [
+  {
+   "name": "Glutstraße (Graufurt → Glutbrunn) (#89)",
+   "breite": 2.2,
+   "zeichen": "k",
+   "punkte": [
+    [
+     6662,
+     6512
+    ],
+    [
+     6660,
+     6560
+    ],
+    [
+     6659,
+     6640
+    ],
+    [
+     6660,
+     6720
+    ],
+    [
+     6662,
+     6740
+    ],
+    [
+     6662,
+     6762
+    ],
+    [
+     6684,
+     6776
+    ],
+    [
+     6716,
+     6788
+    ]
+   ]
+  }
+ ],
+ "objekte": [
+  {
+   "id": "ort_wegweiser_kreuzweg",
+   "objekt": "welt_wegweiser_01",
+   "x": 6506,
+   "y": 6508
+  },
+  {
+   "id": "ort_wegweiser_graufurt_westtor",
+   "objekt": "welt_wegweiser_01",
+   "x": 6656,
+   "y": 6516
+  },
+  {
+   "id": "ort_wegweiser_nordsaum_knick",
+   "objekt": "welt_wegweiser_01",
+   "x": 6711,
+   "y": 6384
+  }
+ ],
+ "interaktionen": [
+  {
+   "id": "ort_wegweiser_kreuzweg_lesen",
+   "x": 6506,
+   "y": 6509.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Waldmark ↖ · Nach Graufurt → · Nach Weidenhain ↓",
+    "ziele": [
+     "Nach Waldmark ↖",
+     "Nach Graufurt →",
+     "Nach Weidenhain ↓"
+    ]
+   }
+  },
+  {
+   "id": "ort_wegweiser_graufurt_westtor_lesen",
+   "x": 6656,
+   "y": 6517.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Waldmark ← · Nach Graufurt → · Nach Glutbrunn ↓",
+    "ziele": [
+     "Nach Waldmark ←",
+     "Nach Graufurt →",
+     "Nach Glutbrunn ↓"
+    ]
+   }
+  },
+  {
+   "id": "ort_wegweiser_nordsaum_knick_lesen",
+   "x": 6711,
+   "y": 6385.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Grauwacht ↑ · Nach Graufurt ↓ · Nach Waldmark ←",
+    "ziele": [
+     "Nach Grauwacht ↑",
+     "Nach Graufurt ↓",
+     "Nach Waldmark ←"
+    ]
+   }
+  }
+ ]
+}

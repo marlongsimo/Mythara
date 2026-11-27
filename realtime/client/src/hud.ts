@@ -215,11 +215,13 @@ const WELTEN = [{ id: "beta", name: "Riftmere 1" }];
 const aktuelleWelt = (): string => { try { return localStorage.getItem("rift_welt") || "beta"; } catch { return "beta"; } };
 function weltenFenster(tafel: HTMLElement): void {
   const alt = tafel.innerHTML; const jetzt = aktuelleWelt(); let zahlen: Record<string, number> = {};
+  let gezeichnet = ""; /* nur neu zeichnen, wenn sich etwas ändert: sonst ersetzt der Sekundentakt die Knöpfe zwischen Drücken und Loslassen, der Tipp geht verloren (#109) */
   const zeichnen = () => { const warten = wechselWarten();
-    tafel.innerHTML = `<i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-w="zurueck" aria-label="Zurück">‹</button>
+    const html = `<i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-w="zurueck" aria-label="Zurück">‹</button>
       <h2>Welt wechseln</h2><div class="zier"></div>
       <ul class="weltliste">${WELTEN.map((W) => `<li><button type="button" class="weltzeile${W.id === jetzt ? " an" : ""}" data-welt="${W.id}" ${W.id === jetzt ? 'aria-current="true"' : ""}><span class="punkt"></span><b>${W.name}</b><small>${zahlen[W.id] !== undefined ? zahlen[W.id] + " online" : "… online"}</small>${W.id === jetzt ? '<em>aktuell</em>' : `<em class="wechsel">Wechseln</em>`}</button></li>`).join("")}</ul>
-      <p class="klein weltnote">${warten > 0 ? `Im Kampf: wechseln erst in ${warten} s.` : WELTEN.length === 1 ? "Weitere Welten folgen. Dein Konto, Held, Inventar und Quests gelten in jeder Welt." : "Dein Konto, Held, Inventar und Quests gelten in jeder Welt."}</p>`; };
+      <p class="klein weltnote">${warten > 0 ? `Im Kampf: wechseln erst in ${warten} s.` : WELTEN.length === 1 ? "Weitere Welten folgen. Dein Konto, Held, Inventar und Quests gelten in jeder Welt." : "Dein Konto, Held, Inventar und Quests gelten in jeder Welt."}</p>`;
+    if (html !== gezeichnet || !tafel.querySelector(".weltliste")) { tafel.innerHTML = html; gezeichnet = html; } };
   zeichnen();
   const uhr = window.setInterval(() => { if (!tafel.isConnected || !tafel.querySelector(".weltliste")) { clearInterval(uhr); return; } zeichnen(); }, 1000);
   fetch(serverAdresse().replace(/^ws/, "http").replace(/\/$/, "") + "/").then((r) => r.json()).then((d: { welten?: { id: string; online: number }[] }) => { for (const x of d.welten || []) zahlen[x.id] = x.online; if (tafel.querySelector(".weltliste")) zeichnen(); }).catch(() => { zahlen = {}; });

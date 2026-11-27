@@ -63,7 +63,22 @@ export interface InstanzDef { id: string; name: string;
   /** Ereignis je gefallener Welle: { art: "erlegen", typ: welle } */ welle?: string;
   /** Sekunden zwischen zwei Wellen (Standard 3) */ pause?: number;
   /** Text beim Betreten der Kopie (Chat) */ text?: string;
-  /** Eintritt: dieser Gegenstand wird je Versuch verbraucht (Federsiegel); ohne ihn entsteht keine Kopie */ eintritt?: string; /** Text, wenn er fehlt */ ohne?: string }
+  /** Eintritt: dieser Gegenstand wird je Versuch verbraucht (Federsiegel); ohne ihn entsteht keine Kopie */ eintritt?: string; /** Text, wenn er fehlt */ ohne?: string;
+  /** #116: Schalter nach der Quest – dann der Boss in der stärkeren Fassung, wählbar öffentlich (offene Welt, kein Eintritt) oder eigene Instanz (allein) */ danach?: string;
+  /** #116: Stärke der Boss-Gegner in der Quest-Kopie (Anteil von Leben und Schaden, Standard QUEST_STAERKE) */ questStaerke?: { leben: number; schaden: number };
+  /** #116, später: so viele Spieler dürfen in eine Kopie (vorerst immer 1) */ gruppe?: number }
+/** #116: In der Quest kämpft man den Boss allein und gegen eine schwächere Fassung */
+export const QUEST_STAERKE = { leben: 0.7, schaden: 0.85 };
+/** #116: Fassung einer Kopie – quest (allein, schwächer) oder stark (nach der Quest, eigene Instanz, normale Werte) */
+export type BossFassung = "quest" | "stark";
+/** #116: Wahl am Eingang nach der Quest (Standard öffentlich) */
+export type BossWahl = "oeffentlich" | "instanz";
+export const BOSS_WAHL_STANDARD: BossWahl = "oeffentlich";
+/** #116: Öffentlich bekommt jeder einen eigenen Wurf, der mindestens diesen Anteil des Lebens als Schaden gemacht hat */
+export const BOSS_BEUTE_ANTEIL = 0.1;
+/** Welche Kopie gilt für einen Spieler in dieser Instanz? null: keine (gemeinsame Welt – vor der Quest oder öffentlich gewählt) */
+export function instanzFassung(d: InstanzDef, an: (schalter: string) => boolean, wahl: BossWahl = BOSS_WAHL_STANDARD): BossFassung | null {
+  if (d.danach && an(d.danach)) return wahl === "instanz" ? "stark" : null; return an(d.schalter) ? "quest" : null; }
 
 export interface Tuer { id: string; /** gesperrte Felder in Weltfeldern: x0, y0, x1, y1 (Ecken eingeschlossen) */ feld: [number, number, number, number];
   /** offen, wenn dieser Schalter für den Spieler an ist */ schalter: string; /** Text, wenn man davor steht */ zu: string;
@@ -87,13 +102,14 @@ export function ansageFelder(A: Ansage, bx: number, by: number, zx: number, zy: 
   else for (const [dx, dy] of A.felder) aus.push([bi + dx + 0.5, bj + dy + 0.5]);
   return aus; }
 /** In welcher Instanz steht ein Spieler an dieser Stelle (Weltfelder)? an: ist ein Schalter für ihn an */
-export function instanzBei(liste: InstanzDef[], x: number, y: number, an: (schalter: string) => boolean): InstanzDef | null {
-  return liste.find((d) => imFeld(d.feld, x, y) && an(d.schalter)) || null; }
+export function instanzBei(liste: InstanzDef[], x: number, y: number, an: (schalter: string) => boolean, wahl?: (id: string) => BossWahl): InstanzDef | null {
+  return liste.find((d) => imFeld(d.feld, x, y) && instanzFassung(d, an, wahl ? wahl(d.id) : undefined) !== null) || null; }
 /** Für Türen vor einer Instanz mit Eintritt: hat der Spieler den Gegenstand dabei, wo steht er (Weltfelder) */
-export interface TuerLage { hat: (g: string) => boolean; x: number; y: number }
+export interface TuerLage { hat: (g: string) => boolean; x: number; y: number; /** #116: Wahl am Eingang je Instanz (Standard öffentlich) */ wahl?: (id: string) => BossWahl }
 /** Ist die Tür für einen Spieler offen? */
 export function tuerOffen(t: Tuer, an: (schalter: string) => boolean, L?: TuerLage, instanzen: InstanzDef[] = []): boolean { if (!an(t.schalter)) return false;
-  const I = t.instanz ? instanzen.find((d) => d.id === t.instanz) : undefined; if (!I || !I.eintritt) return true; if (!L) return false;
+  const I = t.instanz ? instanzen.find((d) => d.id === t.instanz) : undefined; if (!I || !I.eintritt) return true;
+  if (I.danach && an(I.danach) && (L && L.wahl ? L.wahl(I.id) : BOSS_WAHL_STANDARD) === "oeffentlich") return true; /* #116: öffentlich ohne Eintritt */ if (!L) return false;
   return L.hat(I.eintritt) || imFeld(I.feld, L.x, L.y) || imFeld(t.feld, L.x, L.y); }
 /** Die Türen, die für einen Spieler zu sind */
 export const tuerenZu = (liste: Tuer[], an: (schalter: string) => boolean, L?: TuerLage, instanzen: InstanzDef[] = []): Tuer[] => liste.filter((t) => !tuerOffen(t, an, L, instanzen));

@@ -30,7 +30,7 @@ console.log("\nLager in der Kampfwelt");
 setzeKarte(KARTEN.welt, FEIN);
 { const s = Sim.welt(1, undefined, true), n = (t) => s.wesen.filter((w) => w.typ === t).length;
   check(n("rabenpriester_novize") === 3 && n("moorrabe") === 9 && n("federmutter") === 1 && n("rabenpriester_akoluth") + n("rabenpriester_akoluth_speer") === 7, `Aschenwerth und Rabengrund: 3 Novizen, 9 Moorraben, 7 Akoluthen, die Federmutter`);
-  check(n("oberster_rabenpriester") === 0, "der Oberste steht nicht in der offenen Welt (nur in der Kopie des Thronsaals)"); }
+  check(n("oberster_rabenpriester") === 1, "der Oberste steht öffentlich im Thronsaal (nach der Quest, #116; in der Quest kämpft man in einer Kopie)"); }
 
 console.log("\nBeute über viele Würfe");
 function beute(typ, n) { const s = Sim.welt(7, 99999, true); s.wesen = s.wesen.filter((w) => w.held); const id = s.beitreten("schildwaechter", 0, { x: 100, y: 100 }), h = s.nach(id); const zaehl = {}; let kills = 0;

@@ -1,0 +1,20 @@
+[
+ {"id":"leiter_1","objekt":"hoehle_leiter_01","x":48.5,"y":61.5},
+ {"id":"saeule_gross_2","objekt":"k_saeule_gross","x":39.5,"y":47.5},
+ {"id":"saeule_gross_3","objekt":"k_saeule_gross","x":57.5,"y":47.5},
+ {"id":"saeule_gross_4","objekt":"k_saeule_gross","x":39.5,"y":57.5},
+ {"id":"saeule_gross_5","objekt":"k_saeule_gross","x":57.5,"y":57.5},
+ {"id":"truemmer_6","objekt":"k_truemmer","x":44.5,"y":52.5,"spiegeln":true},
+ {"id":"splitter_obelisk_7","objekt":"wz_splitter_obelisk","x":20.5,"y":26.5},
+ {"id":"steinsaeule_8","objekt":"hoehle_steinsaeule_01","x":13,"y":18.5},
+ {"id":"steinsaeule_9","objekt":"hoehle_steinsaeule_01","x":27,"y":18.5},
+ {"id":"steinsaeule_10","objekt":"hoehle_steinsaeule_01","x":13,"y":32.5},
+ {"id":"steinsaeule_11","objekt":"hoehle_steinsaeule_01","x":27,"y":32.5},
+ {"id":"altar_stein_12","objekt":"k_altar_stein","x":74,"y":16.79},
+ {"id":"ruine_saeule_ganz_13","objekt":"k_ruine_saeule_ganz","x":66.5,"y":20.5},
+ {"id":"ruine_saeule_ganz_14","objekt":"k_ruine_saeule_ganz","x":82.5,"y":20.5},
+ {"id":"ruine_saeule_ganz_15","objekt":"k_ruine_saeule_ganz","x":66.5,"y":30.5},
+ {"id":"ruine_saeule_ganz_16","objekt":"k_ruine_saeule_ganz","x":82.5,"y":30.5},
+ {"id":"feuerkorb_17","objekt":"moor_feuerkorb_01","x":46.5,"y":8.5},
+ {"id":"feuerkorb_18","objekt":"moor_feuerkorb_01","x":50.5,"y":8.5}
+]

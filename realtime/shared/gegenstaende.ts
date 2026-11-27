@@ -316,6 +316,22 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
     text: "Ein Span vom Totholz der alten Linde in Weidenhain. Er riecht nach Honig." };
   GEGENSTAENDE.geweihter_splitter = { id: "geweihter_splitter", name: "Geweihter Splitter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
     text: "Einer der 250 Splitter, die Agnes in die Wurzeln der Linde gelegt hat – er schimmert jetzt grünlich." };
+  /* Phase 4 „Westmark & erster Boss“: Beute und Questgegenstände aus B3 „Fallobst“ und B4 „Das rote Banner“ (Bilder von Figuren & 3D, #24) */
+  const P4 = "img/objekte3d/beute/symbole/";
+  GEGENSTAENDE.karrenbrief = { id: "karrenbrief", name: "Karrenbrief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P4 + "karrenbrief.webp",
+    text: "Ein zerknitterter Zettel: Äpfel, Silberleuchter, Stoffballen aus Graufurt. Unten: „An R., Westmark, bei den Fässern.“" };
+  GEGENSTAENDE.apfelkisten = { id: "apfelkisten", name: "Gisberts Apfelkisten", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: P4 + "apfelkorb.webp",
+    text: "Drei Kisten, auf jeder ein eingebranntes „A“. Halb leer, aber es sind die vom Großvater." };
+  GEGENSTAENDE.apfel = { id: "apfel", name: "Apfel", art: "Essen", seltenheit: "anfaenger", stapel: 1000, bild: P4 + "apfel.webp", trank: "apfel", wert: 1,
+    text: "Ein Apfel aus Gisberts Obstwiesen. Heilt 2 Lebenspunkte." };
+  GEGENSTAENDE.schluesselbund = { id: "schluesselbund", name: "Schlüsselbund", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P4 + "schluesselbund.webp",
+    text: "Ein Ring mit fünf schweren Schlüsseln. Einer davon passt zur Tür des Beutelagers im Unterschlupf." };
+  GEGENSTAENDE.silberleuchter = { id: "silberleuchter", name: "Silberleuchter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "silberleuchter.webp",
+    text: "Zwei silberne Kerzenleuchter, in Sackleinen gewickelt. Die aus Gisberts Karrenbrief – Othmar wird sie zurückhaben wollen." };
+  GEGENSTAENDE.rabenbrief = { id: "rabenbrief", name: "Brief mit Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "karrenbrief.webp",
+    text: "Schwarzes Wachs, ein Rabe darin, das Siegel gebrochen. „Für jeden Splitter, den ihr bringt, eine Feder. Die Insel wartet. – Der Oberste.“" };
+  GEGENSTAENDE.rotes_banner = { id: "rotes_banner", name: "Rotes Banner", art: "Zierde", seltenheit: "episch", bild: P4 + "rotes_banner.webp",
+    text: "Rotmantels Banner, schwerer roter Stoff, an den Rändern verbrannt. Ein Sammelstück – irgendwann hängt es in deinem Haus." };
   /* Phase 3b Fischen und Kochen (shared/fischen.ts, Kochen in shared/handwerk.ts). Bilder von Figuren & 3D (#39) */
   const A = "img/objekte3d/skilling/angeln/symbole/", K = "img/objekte3d/skilling/kochen/symbole/", U = "img/objekte3d/skilling/utensilien/";
   GEGENSTAENDE.angelrute = { id: "angelrute", name: "Angelrute", art: "Werkzeug", seltenheit: "anfaenger", bild: A + "angelrute.webp", modell3d: U + "angelrute.glb",
@@ -465,6 +481,8 @@ export const anzeigeName = (g: string, d?: Daten): string => (GEGENSTAENDE[g] ? 
 /** Verbrauchsgegenstand. stapelbar: mehrere liegen in einem Rucksackfeld (false = jeder belegt ein eigenes Feld). Heilung nie über das maximale Leben hinaus */
 export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; /** Wirkung beim Essen (shared/wirkungen.ts) */ wirkung?: string; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
 export const VERBRAUCH: Record<string, Verbrauch> = {
+  apfel: { id: "apfel", name: "Apfel", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 2, anteil: 0 }, stapelbar: true, modell: "",
+    werte: [["Heilung", "2 (nicht über das maximale Leben)"], ["Stapelbar", "ja"]], text: "Ein Apfel aus Gisberts Obstwiesen." },
   kleiner_heiltrank: { id: "kleiner_heiltrank", name: "Kleiner Heiltrank", art: "Trank", seltenheit: "gewoehnlich", heilt: { fest: 5, anteil: 0 }, stapelbar: false, modell: "img/objekte3d/heiltrank-klein.glb",
     werte: [["Heilung", "5 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
     text: "Ein Fläschchen grüner Kräutersud. Lindert Kratzer – für mehr reicht es nicht." },
@@ -545,7 +563,7 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
 { const G8 = "img/objekte3d/grauwacht/symbole/";
   GEGENSTAENDE.kloeppel = { id: "kloeppel", name: "Klöppel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G8 + "kloeppel.webp",
     text: "Ein Klöppel aus Kernbaum, schwer und gerade. Er gehört in die Glocke von Grauwacht." };
-  GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
+  GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
     anforderung: { skill: "geschick", level: 25 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 22, staerke: 22 },
     text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }
 
@@ -587,3 +605,11 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
     werte: [["Heilung", "8 (nicht über das maximale Leben)"], ["Wirkung", "Ausdauer erholt sich 20 Minuten lang 15 % schneller (ersetzt anderes Essen)"], ["Stapelbar", "nein"]], text: "Goldbraun geräuchert." };
   VERBRAUCH.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "In der Glut gegart." };
   VERBRAUCH.aalsuppe = { id: "aalsuppe", name: "Aalsuppe", art: "Essen", seltenheit: "selten", heilt: { fest: 13, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "13 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Die Suppe der Hafenleute." }; }
+
+/* ───────── Beute Phase 7–10 (doku/konzepte/beute.md, 27.11.): neue Rohstoffe – vorerst nur zum Verkauf an den Trödler (Verwendung kommt mit den Berufen); Bilder folgen (Figuren) ───────── */
+{ const R = (id: string, name: string, wert: number, text: string) => { GEGENSTAENDE[id] = { id, name, art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, wert, symbol: "kristall", text }; };
+  R("federn", "Federn", 3, "Weiße und graue Federn von Reihern und Seevögeln. Leicht, aber zu irgendetwas gut.");
+  R("wolfsfell", "Wolfsfell", 10, "Das graue Fell eines Heidewolfs, dicht und rau.");
+  R("chitin", "Chitin", 14, "Panzerplatten eines Sandkriechers, hart wie Horn.");
+  R("giftdruese", "Giftdrüse", 18, "Die Drüse aus dem Stachel eines Glutskorpions. Vorsichtig anfassen."); }
+GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /* Grundwert für den Trödler (#88) */

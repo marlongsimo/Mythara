@@ -10,7 +10,226 @@
  "ausgaenge": [],
  "kollision": {
   "sperren": [],
-  "freigeben": []
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 8.1,
+    "y0": 434.7,
+    "x1": 16.4,
+    "y1": 437.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 294.5,
+    "y0": 35.7,
+    "x1": 316.5,
+    "y1": 38.3
+   }
+  ]
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "kiel_quelle",
+   "art": "lesen",
+   "x": 28,
+   "y": 442,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein stiller See zwischen Binsen. Hier entspringt die Kiel."
+   }
+  },
+  {
+   "id": "suedstrasse_schild",
+   "art": "lesen",
+   "x": 16.6,
+   "y": 19.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Schild der Wacht: „Südstraße nach Kielmund. Ab hier ohne Geleit – Gefahrenstufe 20.“"
+   }
+  },
+  {
+   "id": "heckenhof",
+   "art": "lesen",
+   "x": 58,
+   "y": 60.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Heckenhof. Hanf und Flachs auf den Feldern, Kühe und Schafe auf der Weide – und Krähen überall."
+   }
+  },
+  {
+   "id": "heckenhof_herd",
+   "art": "lesen",
+   "x": 61,
+   "y": 60.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Herd vor dem Haus. Hier kocht die Bäuerin für die Knechte.",
+    "station": "herd"
+   }
+  },
+  {
+   "id": "schilfsee",
+   "art": "lesen",
+   "x": 7,
+   "y": 434.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Schilfsee. Hier entspringt die Kiel; im Schilf ziehen Bachlinge, weiter draußen Mühlbarsche."
+   }
+  },
+  {
+   "id": "wegkapelle",
+   "art": "lesen",
+   "x": 45,
+   "y": 347.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Wegkapelle am Kreuzstein. Das Licht darin ist erloschen.",
+    "questobjekt": "wegkapelle"
+   }
+  },
+  {
+   "id": "halber_weg",
+   "art": "lesen",
+   "x": 46,
+   "y": 260.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Rastplatz „Halber Weg“. Bis Weidenhain ist es so weit wie bis Kielmund."
+   }
+  },
+  {
+   "id": "wegelager_nord",
+   "art": "lesen",
+   "x": 0,
+   "y": 200.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Lager im Gebüsch, gut versteckt neben der Straße. Wegelagerer."
+   }
+  },
+  {
+   "id": "wegelager_sued",
+   "art": "lesen",
+   "x": 64,
+   "y": 416.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Lager im Gebüsch, gut versteckt neben der Straße. Wegelagerer."
+   }
+  },
+  {
+   "id": "wegweiser_weidenhain_sued_lesen",
+   "x": 16,
+   "y": 11.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Kielmund ↓ · Nach Weidenhain ↑",
+    "ziele": [
+     "Nach Kielmund ↓",
+     "Nach Weidenhain ↑"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "wegweiser_glutstrasse_bruecke_lesen",
+   "x": 330,
+   "y": 43.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Glutbrunn → · Nach Graufurt ↖",
+    "ziele": [
+     "Nach Glutbrunn →",
+     "Nach Graufurt ↖"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "wegweiser_halber_weg_lesen",
+   "x": 38,
+   "y": 252.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Weidenhain ↑ · Nach Erlengrund ← · Nach Kielmund ↓",
+    "ziele": [
+     "Nach Weidenhain ↑",
+     "Nach Erlengrund ←",
+     "Nach Kielmund ↓"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "wegweiser_kreuzstein_lesen",
+   "x": 40,
+   "y": 341.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Weidenhain ↑ · Nach Kräuterhof ↖ · Nach Kielmund ↓",
+    "ziele": [
+     "Nach Weidenhain ↑",
+     "Nach Kräuterhof ↖",
+     "Nach Kielmund ↓"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "wegweiser_suedstrasse_nord_lesen",
+   "x": 30,
+   "y": 153.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Weidenhain ↑ · Nach Summweide ← · Nach Kielmund ↓",
+    "ziele": [
+     "Nach Weidenhain ↑",
+     "Nach Summweide ←",
+     "Nach Kielmund ↓"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "rast_glutstrasse",
+   "art": "lesen",
+   "x": 448,
+   "y": 116.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
+   }
+  },
+  {
+   "id": "rast_suedstrasse",
+   "art": "lesen",
+   "x": 42,
+   "y": 260.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
+   }
+  }
+ ]
 }

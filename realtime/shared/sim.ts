@@ -15,7 +15,7 @@ import { DT, HELDEN, MONSTER, type MonsterDef, K, HELDENREIHE, Modus, Schadensar
 const SB = (w: { held: boolean; typ: string; stufe?: number }) => STUFENBONUS(w.held ? w.stufe || HELDENSTUFE[w.typ] || 1 : 1); /* gemeinsame Welt: jeder Held hat seine eigene Stufe */
 import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, SCHUETZ, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar, fels, KB, KH } from "./karte";
 import { BOSSE } from "./bosse";
-import { ansageFelder, phaseBei, INSTANZ_LEER, ANSAGE_VORLAUF, type Ansage, type Ruf, type BossDef, type InstanzDef, type InstanzGegner } from "./boss";
+import { ansageFelder, phaseBei, INSTANZ_LEER, ANSAGE_VORLAUF, QUEST_STAERKE, BOSS_BEUTE_ANTEIL, type BossFassung, type Ansage, type Ruf, type BossDef, type InstanzDef, type InstanzGegner } from "./boss";
 
 /** Max Hit × (1 + Bonus); der Bruchteil wird zur Chance auf +1 (sonst verpufft der Bonus bei kleinen Max Hits: 3 × 1,15 → 3) */
 const mehrMax = (max: number, bonus: number, z: number): number => { const roh = max * (1 + bonus), g = Math.floor(roh); return g + (z < roh - g ? 1 : 0); };
@@ -45,7 +45,7 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   /** Schalter dieses Helden, die Gegner kennen (MonsterDef.aggressivNach, setzt der Server je Sekunde) */ schalterAn?: string[];
   /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** Bruchteile noch nicht gebuchter XP je Skill */ xpRest?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number;
   /** Fliehen (MonsterDef.fliehen): läuft gerade zu diesem Kumpan; geflohen = in diesem Leben schon einmal; heim0 = das eigene Lager (heim zieht zum Kumpan mit) */ flucht?: number; geflohen?: boolean; heim0?: Punkt;
-  /** Instanz (shared/boss.ts): die Kopie, zu der dieses Wesen gehört – es sieht und trifft nur Wesen derselben Kopie; welle: Nummer seiner Welle */ instanz?: string; welle?: number;
+  /** Instanz (shared/boss.ts): die Kopie, zu der dieses Wesen gehört – es sieht und trifft nur Wesen derselben Kopie; welle: Nummer seiner Welle */ instanz?: string; welle?: number; /** #116: Schaden mal (Boss in der Quest-Kopie) */ schadenMal?: number;
   /** vom Boss gerufen (Kennung des Bosses): kehrt nicht wieder; weg = verschwindet am Ende des Schritts */ helfer?: number; weg?: boolean;
   /** Boss-Baukasten: Stand des Kampfes; laufende Ansage (Rest in s, Felder, Angriff); Trinken am Heilort (Rest in s, Anteil des Lebens) */ boss?: BossLauf; ansage?: { t: number; felder: [number, number][]; a: Ansage }; trinkT?: number; trinkN?: number;
   /** #102: unangreifbar bis (Simulationszeit: Flackern, Eingraben des Bosses); Flackern-Takt; eingegraben (Sand-Auftauchen, nicht im Zustand) und die laufende Ansage dazu */ weg0?: number; flackerT?: number; /** Heiler: Zeit seit dem letzten Heilen */ heilT?: number; vergraben?: boolean; auftauchen?: { t: number; x: number; y: number };
@@ -105,7 +105,7 @@ export class Sim {
   /* ---------- Gemeinsame Welt (MMO): beliebig viele Spieler, Gegner kehren zurück, EP nach Schadensanteil ---------- */
   /** Ursprung der Karte in Weltfeldern: Instanzen, Türen und Heilorte stehen in Weltfeldern (der Server setzt ihn für die Kampfwelt) */ ursprung: [number, number] = [0, 0];
   /** Instanzen: je Kopie der Raum, die laufende Welle, ob sie steht, Pause bis zur nächsten, Sekunden ohne Spieler, alle Wellen gefallen */
-  private inst = new Map<string, { def: InstanzDef; welle: number; da: boolean; pause: number; leer: number; fertig: boolean }>();
+  private inst = new Map<string, { def: InstanzDef; welle: number; da: boolean; pause: number; leer: number; fertig: boolean; fassung: BossFassung }>();
   weltZeit = 0; private anteile = new Map<number, Map<number, number>>(); private wiederkehr: { w: Wesen; t: number; blinz: boolean }[] = []; private splitterJe = new Map<number, number>(); private blinzStart = new Set<number>();
   /** Eine gemeinsame Welt: die Karte mit ihren Lagern, ohne Helden. Spieler kommen mit beitreten() dazu. */
   /** eigeneWerte (Kampfregeln v1, Weltzonen): Gegner mit ihren eigenen Werten aus MONSTER – ohne die Stufen-Skalierung (STAERKE) */
@@ -212,7 +212,9 @@ export class Sim {
   private ohneBindung(a: Wesen, z: Wesen): boolean { const boss = (w: Wesen) => !w.held && Boolean(MONSTER[w.typ].boss || BOSSE[w.typ]); return Boolean(a.instanz || z.instanz || a.helfer || z.helfer || boss(a) || boss(z)); }
   darf(a: Wesen, z: Wesen): boolean { if (!this.gleich(a, z)) return false; if (a.team === z.team || this.mehrkampfBei(z) || this.ohneBindung(a, z)) return true; const ga = this.gebunden(a), gz = this.gebunden(z); return (!ga || ga === z) && (!gz || gz === a); }
   private binden(a: Wesen, z: Wesen): void { if (a.team === z.team || this.mehrkampfBei(z) || this.ohneBindung(a, z)) return; const bis = this.zeit + Sim.EINZEL_BINDUNG; a.kampfMit = z.id; z.kampfMit = a.id; a.kampfBis = bis; z.kampfBis = bis; }
-  private feinde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && !o.vergraben && o.team !== w.team && this.gleich(o, w)); }
+  private feinde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && !o.vergraben && o.team !== w.team && this.gleich(o, w) && !this.verborgen(w, o)); }
+  /** Zielscheibe (#55): für einen Helden ohne Freigabe gibt es sie nicht – kein Ziel, kein Treffer, kein Gegenangriff (der Browser blendet sie aus) */
+  private verborgen(w: Wesen, o: Wesen): boolean { return w.held && !w.zielscheibeFrei && !o.held && Boolean(MONSTER[o.typ] && MONSTER[o.typ].zielscheibe); }
   private freunde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && o.team === w.team && this.gleich(o, w)); }
   private untot(w: Wesen): boolean { return !w.held && Boolean(MONSTER[w.typ].untot); }
 
@@ -224,7 +226,7 @@ export class Sim {
     const zahl = (v: unknown) => typeof v === "number" && Number.isFinite(v);
     if (e.t === "richtung") { if (!zahl(e.x) || !zahl(e.y)) return; const l = Math.hypot(e.x, e.y); if (l < 0.05) { h.rx = 0; h.ry = 0; } else { const k = Math.min(1, l) / l; h.rx = e.x * k; h.ry = e.y * k; h.pfad = this.felder ? h.pfad.slice(0, 1) : []; } }
     else if (e.t === "lauf") { if (!zahl(e.x) || !zahl(e.y)) return; h.zielId = 0; h.rx = 0; h.ry = 0; h.pfad = this.wegZu(h, { x: e.x, y: e.y }); }
-    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot || !this.gleich(h, z)) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
+    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot || !this.gleich(h, z) || this.verborgen(h, z)) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
     else if (e.t === "modus") { if (!h.kw) this.wechsel(h); } /* v1: nur Angreifen – kein Waffenwechsel */
     else if (e.t === "auto") { h.auto = e.an !== false; }
     else if (e.t === "halt") { h.pfad = []; h.zielId = 0; h.rx = 0; h.ry = 0; }
@@ -239,7 +241,7 @@ export class Sim {
   private schutzGeben(z: Wesen, punkte: number, dauer: number): void { z.schutz = Math.max(z.schutz, punkte); z.schutzT = dauer; }
   /** Direkter Schaden ohne Würfe (Gift, Blutung, Brand, heiliges Licht): nur Schutzpunkte fangen ihn ab */
   private abziehen(z: Wesen, menge: number, von: Wesen | undefined, art?: string): void {
-    if (z.tot || menge <= 0) return; let m = Math.max(1, Math.round(menge));
+    if (z.tot || menge <= 0) return; if (von && von.schadenMal !== undefined && !von.held) menge *= von.schadenMal; let m = Math.max(1, Math.round(menge)); /* #116: Quest-Fassung */
     if (!z.held && MONSTER[z.typ].zielscheibe) { /* Zielscheibe (Phase 2): unverwundbar, keine Beute – nur Fernkampf-XP bis Fernkampf-Level 10, Treffer zählen für Quests */
       if (von && von.held && art !== "dauer") { const kampfart = von.kw ? von.kw.waffe.art : "nah"; this.ev.push({ a: "treffer", typ: z.typ, von: von.id, art: kampfart });
         if (von.kw && von.xpNeu && von.zielscheibeFrei && kampfart === "fern" && levelAus(von.kw.skills.fernkampf || 0, "fernkampf") < ZIELSCHEIBE_BIS) { const ziel = xpZiel("fern", von.kw.stil), rest = von.xpRest || (von.xpRest = { ...NULL_XP });
@@ -265,12 +267,14 @@ export class Sim {
     if (this.weltZeit) { /* Drop-Tabelle: die Beute gehört dem, der am meisten Schaden gemacht hat – bei Gleichstand dem, der den letzten Schlag gemacht hat (der Server legt sie auf den Boden) */
       const D = MONSTER[z.typ].drops, a = this.anteile.get(z.id); let besitzer = von && von.held ? von.id : 0, best = -1;
       if (a) for (const [id, n] of a) if (n > best || (n === best && von && id === von.id)) { best = n; besitzer = id; }
-      if (besitzer) this.ev.push({ a: "erlegt", typ: z.typ, besitzer });
+      const istBoss = Boolean(MONSTER[z.typ].boss || BOSSE[z.typ]); /* #116: beim Boss bekommt jeder einen eigenen Wurf (und den Sieg), der genug Schaden gemacht hat */
+      const alle = istBoss && a ? [...a].filter(([id, n]) => id !== besitzer && n >= z.max * BOSS_BEUTE_ANTEIL && Boolean(this.nach(id)?.held)).map(([id]) => id) : [], empf = besitzer ? [besitzer, ...alle] : alle;
+      for (const b of empf) this.ev.push({ a: "erlegt", typ: z.typ, besitzer: b });
       if ((MONSTER[z.typ].boss || BOSSE[z.typ]) && a) { const ids = [...a.keys()].filter((id) => { const h = this.nach(id); return Boolean(h && h.held); }); /* Bosszähler: alle, die Schaden gemacht haben, und wie lange der Kampf ging */
         if (ids.length) this.ev.push({ a: "boss", typ: z.typ, ids, sek: Math.round((this.zeit - (z.boss && z.boss.seit !== undefined ? z.boss.seit : this.zeit)) * 10) / 10 }); } /* Quests zählen Siege (wer am meisten Schaden gemacht hat) */
-      if (D && D.length) {
+      if (D && D.length) for (const b of empf.length ? empf : [besitzer]) {
         const g: [string, number, string?][] = []; for (const R of D) { let z = this.zf() * 100; for (const d of R.wurf) { if (z < d.chance) { const [lo, hi] = d.anzahl || [1, 1], n = lo + Math.floor(this.zf() * (hi - lo + 1)); g.push(R.nur ? [d.g, n, R.nur] : [d.g, n]); break; } z -= d.chance; } } /* je Roll höchstens ein Treffer */
-        if (g.length) this.ev.push({ a: "beute", x: z.x, y: z.y, besitzer, g }); } }
+        if (g.length) this.ev.push({ a: "beute", x: z.x, y: z.y, besitzer: b, g }); } }
     if (STAERKE.ep > 0) { const e = Math.max(1, Math.round(MONSTER[z.typ].lp * STAERKE.ep / 10)); if (this.weltZeit) this.epVerteilen(z, e); else { this.ev.push({ a: "ep", x: z.x, y: z.y, n: e }); this.erfahrung(e); } }
     if (this.weltZeit) { this.anteile.delete(z.id); if (z.helfer) z.weg = true; else if (!z.instanz) this.wiederkehr.push({ w: z, t: MONSTER[z.typ].wiederkehr ?? this.weltZeit, blinz: this.blinzStart.has(z.id) }); } /* Gerufene und Gegner einer Kopie kehren nicht wieder */ /* Schadensanteile gelten nur für dieses Leben */ /* kommt nach einer Weile zurück */
     if (B) this.beute.push({ id: this.lauf++, x: z.x, y: z.y, n }); /* bleibt liegen, bis ein Held darüberläuft */ else { this.splitter += n; this.ev.push({ a: "splitter", x: z.x, y: z.y, n }); }
@@ -278,7 +282,7 @@ export class Sim {
   }
   /** Ein Angriff trifft auf ein Ziel. Zurück: Schaden (0 = abgewehrt oder verfehlt). */
   treffen(von: Wesen, z: Wesen, s: Spec): number {
-    if (z.tot || !this.gleich(von, z)) return 0; if (this.unangreifbar(z)) { this.ev.push({ a: "text", id: z.id, t: "unerreichbar" }); return 0; } if (s.art === "nah" && this.schwebt(z)) { this.ev.push({ a: "text", id: z.id, t: "unerreichbar" }); return 0; } /* Schweben: Nahkampf reicht nicht hinauf */
+    if (z.tot || !this.gleich(von, z) || this.verborgen(von, z)) return 0; if (this.unangreifbar(z)) { this.ev.push({ a: "text", id: z.id, t: "unerreichbar" }); return 0; } if (s.art === "nah" && this.schwebt(z)) { this.ev.push({ a: "text", id: z.id, t: "unerreichbar" }); return 0; } /* Schweben: Nahkampf reicht nicht hinauf */
     if (this.weltZeit) { if (!this.darf(von, z)) return 0; this.binden(von, z); } /* Einzelkampf: kein Dritter dazwischen */
     // Schild und Bollwerk: von vorn wird Torvald seltener getroffen; Verbündete direkt hinter einem Bollwerk ebenso
     let minder = 0; const winkel = (a: number, b: number) => { let d = Math.abs(a - b) % (2 * Math.PI); if (d > Math.PI) d = 2 * Math.PI - d; return d; };
@@ -604,8 +608,8 @@ export class Sim {
   /* ---------- Instanzen (shared/boss.ts): eine Kopie eines Raums je Spieler ---------- */
   /** Einen Helden in eine Kopie setzen (key) oder zurück in die gemeinsame Welt (undefined). def: der Raum – beim ersten Betreten entstehen seine Gegner.
    *  Der Server entscheidet, wer in welcher Kopie steht (Raum + Schalter); hier gilt nur: verschiedene Kopien sehen und treffen einander nicht. */
-  instanzSetzen(id: number, key: string | undefined, def?: InstanzDef): void { const h = this.nach(id); if (!h || !h.held) return; key = key || undefined;
-    if (key && def && !this.inst.has(key)) { this.inst.set(key, { def, welle: 0, da: false, pause: 0, leer: 0, fertig: !(def.wellen && def.wellen.length) }); for (const g of def.gegner || []) this.instanzGegner(key, g); }
+  instanzSetzen(id: number, key: string | undefined, def?: InstanzDef, fassung: BossFassung = "quest"): void { const h = this.nach(id); if (!h || !h.held) return; key = key || undefined;
+    if (key && def && !this.inst.has(key)) { this.inst.set(key, { def, welle: 0, da: false, pause: 0, leer: 0, fertig: !(def.wellen && def.wellen.length), fassung }); for (const g of def.gegner || []) this.instanzGegner(key, g); }
     if (h.instanz === key) return; h.instanz = key; h.zielId = 0; h.kampfMit = 0; h.kampfBis = 0;
     for (const o of this.wesen) { if (o.zielId === h.id && !this.gleich(o, h)) { o.zielId = 0; o.pfad = []; } if (o.spottId === h.id) { o.spottId = 0; o.spottT = 0; } if (o.kampfMit === h.id) { o.kampfMit = 0; o.kampfBis = 0; } }
     this.geschosse = this.geschosse.filter((g) => g.zielId !== h.id && g.von !== h.id); }
@@ -619,7 +623,8 @@ export class Sim {
   private instanzGegner(key: string, g: InstanzGegner, welle?: number): Wesen | null { if (!MONSTER[g.art]) return null;
     const p0 = { x: g.x - this.ursprung[0], y: g.y - this.ursprung[1] }, p = this.felder ? mitte(p0) : p0, m = this.neu(false, g.art, 1, p, true, 0);
     if (this.eigeneWerte) m.lp = m.max = MONSTER[g.art].lp; m.instanz = key; m.heim = { x: p.x, y: p.y }; if (welle !== undefined) m.welle = welle;
-    { const I = this.inst.get(key); if (I) { const F = I.def.feld; m.lagerLeine = Math.max(14, Math.hypot(F[2] - F[0], F[3] - F[1]) + 2); } } /* in der Kopie: die Leine reicht durch den ganzen Raum (Boss im Thronsaal) */
+    { const I = this.inst.get(key); if (I) { const F = I.def.feld; m.lagerLeine = Math.max(14, Math.hypot(F[2] - F[0], F[3] - F[1]) + 2);
+      if (I.fassung === "quest" && (MONSTER[g.art].boss || BOSSE[g.art])) { const Q = I.def.questStaerke || QUEST_STAERKE; m.lp = m.max = Math.max(1, Math.round(m.max * Q.leben)); m.schadenMal = Q.schaden; } } } /* #116: in der Quest allein und schwächer */ /* in der Kopie: die Leine reicht durch den ganzen Raum (Boss im Thronsaal) */
     this.ev.push({ a: "auftauchen", id: m.id, x: m.x, y: m.y }); return m; }
   /** Je Kopie: Wellen nachschicken (die nächste, wenn die vorige gefallen ist), leere Kopien nach INSTANZ_LEER Sekunden abbauen */
   private instanzSchritt(): void {

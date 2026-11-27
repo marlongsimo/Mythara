@@ -96,7 +96,7 @@ die starke kommt später, wirkt kräftig – **Nebenwirkungen nur bei den starke
 
 **Quest „Miras Rezeptbuch“** (Mira Kräuterlieb, Trankladen Waldmark; Einführung, leicht). Mira hat ihr altes Rezeptheft an Mutter Hedda verliehen.
 Wegerich (5) sammeln → Kleiner Heiltrank am Kessel im Kräuterhaus → nach Rabenmoor zu Hedda (Heft holen; Hedda prüft dich mit 3 Moorglöckchen) → Heft zurück zu Mira.
-Lohn: Kräuterkunde-XP (über die Schritte ca. 600), 3 Heiltränke, 80 Splitter, 1 Questpunkt; danach kauft Mira deine Tränke an (halber Ladenpreis).
+Lohn: Kräuterkunde-XP (über die Schritte ca. 600), 3 Heiltränke, 80 Splitter, 1 Questpunkt; Mira kauft Tränke wie jeder Händler nach der allgemeinen Regel an (nur was sie führt, zu 80 %).
 *(Das Heft ist Erzählung, kein persönliches Rezeptbuch – Rezepte bleiben fest je Level.)*
 
 **Tests 5c:** Sammeln nur mit Sichel und Stufe, Brauen nur am Kessel, schwach/stark nach Level, Nebenwirkung nur bei den starken ab 45, Trank ersetzt Trank, Essen bleibt, Fehlschlag sinkt, Quest im Prüfer und als Welt-Test.
@@ -129,4 +129,3 @@ Lohn: Kräuterkunde-XP (über die Schritte ca. 600), 3 Heiltränke, 80 Splitter,
 ## Offen (Nutzer)
 
 - Trank-Werte (schwach/stark) sind ein Startpunkt – nach dem ersten Spieltest nachschärfen?
-- Soll Mira Tränke ankaufen (Splitterquelle) oder lieber nicht (Splitter-Senke wichtiger)?

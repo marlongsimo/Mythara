@@ -9,8 +9,275 @@
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
-  "freigeben": []
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 272.5,
+    "y0": 301.4,
+    "x1": 273.3,
+    "y1": 303
+   },
+   {
+    "art": "rechteck",
+    "x0": 274.7,
+    "y0": 301.4,
+    "x1": 275.5,
+    "y1": 303
+   },
+   {
+    "art": "rechteck",
+    "x0": 254,
+    "y0": 291,
+    "x1": 255,
+    "y1": 292
+   },
+   {
+    "art": "rechteck",
+    "x0": 254,
+    "y0": 300,
+    "x1": 255,
+    "y1": 301
+   },
+   {
+    "art": "rechteck",
+    "x0": 260,
+    "y0": 286,
+    "x1": 261,
+    "y1": 287
+   },
+   {
+    "art": "rechteck",
+    "x0": 280,
+    "y0": 284,
+    "x1": 281,
+    "y1": 285
+   },
+   {
+    "art": "rechteck",
+    "x0": 267,
+    "y0": 284,
+    "x1": 268,
+    "y1": 285
+   },
+   {
+    "art": "rechteck",
+    "x0": 309,
+    "y0": 350.4,
+    "x1": 311,
+    "y1": 354
+   }
+  ],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 296,
+    "y0": 350.9,
+    "x1": 309,
+    "y1": 353.5
+   }
+  ]
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "grauwacht_bergfried_tuer",
+   "art": "lesen",
+   "x": 274,
+   "y": 296.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Bergfried von Grauwacht. Über der Tür das Wappen der Wacht: ein Turm über drei Wellen."
+   }
+  },
+  {
+   "id": "grauwacht_burgtor_innen",
+   "art": "lesen",
+   "x": 274,
+   "y": 300.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Burgtor. Die Flügel hängen schief in den Angeln."
+   }
+  },
+  {
+   "id": "grauwacht_platz",
+   "art": "lesen",
+   "x": 274,
+   "y": 343.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Platz von Grauwacht. Die Häuser stehen leer, die Fensterläden schlagen im Wind."
+   }
+  },
+  {
+   "id": "grauwacht_bank_tuer",
+   "art": "lesen",
+   "x": 284,
+   "y": 322.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Grauwacht – noch geschlossen.",
+    "ausbau": "burg"
+   }
+  },
+  {
+   "id": "grauwacht_schmiede_tuer",
+   "art": "lesen",
+   "x": 268.5,
+   "y": 380.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Schmiede der Unterstadt. Die Esse ist kalt."
+   }
+  },
+  {
+   "id": "grauwacht_wegstein",
+   "art": "lesen",
+   "x": 268,
+   "y": 343.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wegstein. Er ist stumm, bis Grauwacht wieder lebt.",
+    "ausbau": "burg"
+   }
+  },
+  {
+   "id": "abtei_kirche_tuer",
+   "art": "lesen",
+   "x": 233,
+   "y": 354.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Abteikirche. Drinnen brennt eine einzelne Kerze."
+   }
+  },
+  {
+   "id": "glocke",
+   "art": "lesen",
+   "x": 248,
+   "y": 354.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Glockenturm von Grauwacht. Oben hängt die Glocke – ein Riss läuft quer durch die Bronze.",
+    "questobjekt": "glocke"
+   }
+  },
+  {
+   "id": "abtei_kessel",
+   "art": "lesen",
+   "x": 246,
+   "y": 377.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Kessel der Abteiküche.",
+    "ausbau": "abtei"
+   }
+  },
+  {
+   "id": "abtei_bindestein",
+   "art": "lesen",
+   "x": 236,
+   "y": 367.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Bindestein im Kreuzgarten. Er schläft, bis die Glocke wieder läutet.",
+    "ausbau": "abtei"
+   }
+  },
+  {
+   "id": "furtbruecke",
+   "art": "lesen",
+   "x": 295,
+   "y": 352,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Brücke zur Furt. Nach zwei Bögen bricht sie ab; drüben, im Dunst, die Hochlande.",
+    "gesperrt": true
+   }
+  },
+  {
+   "id": "huegelgraeber",
+   "art": "lesen",
+   "x": 38,
+   "y": 360,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Grabhügel, so weit man sieht. Der Wind pfeift über die Kuppen; an manchen Stellen ist die Erde frisch aufgewühlt – von innen."
+   }
+  },
+  {
+   "id": "grabkammer_1_eingang",
+   "art": "eingang",
+   "x": 20,
+   "y": 340.8,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Eingang in den Grabhügel, mit Steinplatten gefasst. Kalte Luft steigt herauf.",
+    "tat": "grabkammer",
+    "knopf": "Hinabsteigen",
+    "ziel": [
+     11088,
+     9624.5
+    ]
+   }
+  },
+  {
+   "id": "grabkammer_2_eingang",
+   "art": "eingang",
+   "x": 62,
+   "y": 362.8,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Eingang in den Grabhügel, mit Steinplatten gefasst. Kalte Luft steigt herauf.",
+    "tat": "grabkammer",
+    "knopf": "Hinabsteigen",
+    "ziel": [
+     11120,
+     9624.5
+    ]
+   }
+  },
+  {
+   "id": "hauptmann_eingang",
+   "art": "eingang",
+   "x": 34,
+   "y": 379.8,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Grab des Grauen Hauptmanns. Über dem Eingang ist ein Schwert in den Stein geschlagen. Das Siegel ist gebrochen.",
+    "tat": "grabkammer",
+    "knopf": "Hinabsteigen",
+    "ziel": [
+     11168,
+     9658
+    ]
+   }
+  },
+  {
+   "id": "rast_heidrast_grauwacht",
+   "art": "lesen",
+   "x": 228,
+   "y": 426.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
+   }
+  }
+ ]
 }

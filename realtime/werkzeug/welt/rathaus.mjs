@@ -23,6 +23,7 @@ if (process.argv[1] && process.argv[1].endsWith("rathaus.mjs")) {
   const spiel = { start: [[OBEN[0] - OX, OBEN[1] - OY]], figuren: [], spawnzonen: [],
     interaktionen: [{ id: "treppe_runter", art: "eingang", x: OBEN_TREPPE[0], y: OBEN_TREPPE[1], radius: 1.3, abgleich: "keiner",
       daten: { text: "Die Treppe führt hinunter in die Halle des Rathauses.", tat: "abstieg", knopf: "Die Treppe hinuntergehen", ziel: UNTEN } },
+      { id: "archiv_tuer", art: "eingang", x: 13.2, y: 15.4, radius: 1.3, abgleich: "keiner", daten: { text: "Eine schmale Tür in der Ecke: das Archiv der Waldmark.", tat: "archiv", knopf: "Ins Archiv", ziel: [356 * 32 + 16.5, 300 * 32 + 19.5] } },   /* Phase 9 (#74): Archiv, Gebiet rathaus_archiv (glutsande.mjs) */
       { id: "ratstafel", art: "lesen", x: FUSS[0] + 0.3, y: FUSS[1] - 1.6, radius: 1.6, abgleich: "keiner", daten: { text: "Die Ratstafel der Waldmark. Hier beraten die Ältesten über Wege, Wachen und die Gefahren im Kreuzwald." } }],
     ausgaenge: [], kollision: { sperren: [], freigeben: [] } };
   const dir = join(WELT, "regionen", "rathaus_oben"); mkdirSync(dir, { recursive: true });

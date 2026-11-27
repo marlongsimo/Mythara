@@ -35,7 +35,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url === "/rest/v1/rpc/rpg_held_quest_abschluss_v2") { const a = JSON.parse(b); const H = HELD[a.p_user]; if ((H.quests[a.p_quest] || {}).s === "fertig") return send(200, false); H.quests[a.p_quest] = { s: "fertig" }; H.questpunkte = (H.questpunkte || 0) + (a.p_punkte || 0); ABSCHLUSS.push(a); return send(200, true); }
   if (req.url.startsWith("/rest/v1/rpc/")) return send(200, true);
   send(404, {}); }); }).listen(8796);
-const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8786", SUPABASE_URL: "http://localhost:8796", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765",
+const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, HOLZ_TAKT_MS: "400", BERG_TAKT_MS: "400", PFLANZE_TAKT_MS: "400", HANDWERK_TICK_MS: "100", PORT: "8786", SUPABASE_URL: "http://localhost:8796", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765",
   HOLZ_KERN: "0", BERG_KERN: "0", HOLZ_FALL: "0", BERG_FALL: "0", PFLANZE_FALL: "0", HANDWERK_GLUT: "0" }, stdio: ["ignore", "pipe", "pipe"] });
 let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
 await new Promise((r) => setTimeout(r, 1200));
@@ -92,16 +92,21 @@ try {
   za.ws.send(JSON.stringify({ t: "ziel", id: 0 })); await schlaf(1500);
   const sch = za.w.find((w) => w[2] === "zielscheibe"); check(zaehler(anna, QUEST_A1, "schiessen") === 5 && QB.lage(QUEST_A1, anna.b[QUEST_A1.id]).bits === (1 << QUEST_A1.schritte.length) - 1, `Fünf Treffer gezählt (${anna.b[QUEST_A1.id]})`);
   check(sch && !za.ev.some((e) => e.a === "tot" && e.id === sch[0]) && !za.ev.some((e) => e.a === "hieb" && e.id === sch[0]), "Die Zielscheibe fällt nie und greift nicht an");
-  await schlaf(6000); const fernA = GUTSCHRIFT.filter((g) => g.p_user === A).reduce((n, g) => n + (g.p_fernkampf || 0), 0); check(fernA > 0, `Unter Fernkampf 10: Fernkampf-XP an der Scheibe (${fernA})`);
+  const fernXp = () => GUTSCHRIFT.filter((g) => g.p_user === A).reduce((n, g) => n + (g.p_fernkampf || 0), 0); { const t0 = Date.now(); while (!fernXp() && Date.now() - t0 < 15000) await schlaf(200); } /* warten, bis gebucht ist (#27) */ const fernA = GUTSCHRIFT.filter((g) => g.p_user === A).reduce((n, g) => n + (g.p_fernkampf || 0), 0); check(fernA > 0, `Unter Fernkampf 10: Fernkampf-XP an der Scheibe (${fernA})`);
   za.ws.close();
   await stelle(anna, ...GESA); await rede(anna, "gesa"); d = await sag(anna, "gesa", "abgeben"); await schlaf(600);
   const abA1 = ABSCHLUSS.find((a) => a.p_quest === QUEST_A1.id);
   check(anna.b[QUEST_A1.id] === "fertig" && abA1 && abA1.p_xp.fernkampf === 300 && abA1.p_punkte === 1 && anzahl(anna, "wachbogen") === 1 && anzahl(anna, "splitter") >= 40, `A1 fertig: ein Wachbogen bleibt, 300 Fernkampf-XP, 40 Splitter, 1 Questpunkt (${anna.punkte})`);
   /* Ben: Fernkampf 12, A1 fertig – an der Scheibe keine XP, Hinweis */
   const zb = await kampf(TB, 33.5, 57); await schlaf(1500); const sb2 = zb.w.find((w) => w[2] === "zielscheibe"); const vorB = GUTSCHRIFT.length;
-  if (sb2) { zb.ws.send(JSON.stringify({ t: "ziel", id: sb2[0] })); await schlaf(8000); zb.ws.send(JSON.stringify({ t: "ziel", id: 0 })); }
-  await schlaf(5000); const fernB = GUTSCHRIFT.slice(vorB).filter((g) => g.p_user === B).reduce((n, g) => n + (g.p_fernkampf || 0), 0);
+  if (sb2) { { const t0 = Date.now(); while ((!zb.ich || zb.ich.zielId !== sb2[0]) && Date.now() - t0 < 20000) { zb.ws.send(JSON.stringify({ t: "ziel", id: sb2[0] })); await schlaf(500); } } /* die Scheibe gilt noch kurz als „im Kampf mit Anna“ */ { const t0 = Date.now(); while (!ben.chat.some((t) => /nichts mehr/.test(t)) && Date.now() - t0 < 15000) await schlaf(200); } await schlaf(2000); zb.ws.send(JSON.stringify({ t: "ziel", id: 0 })); }
+  await schlaf(2500); /* Buchungsruhe 0,8 s: was gebucht würde, wäre jetzt da */ const fernB = GUTSCHRIFT.slice(vorB).filter((g) => g.p_user === B).reduce((n, g) => n + (g.p_fernkampf || 0), 0);
   check(fernB === 0 && ben.chat.some((t) => /nichts mehr/.test(t)), `Über Fernkampf 10: keine XP, „Hier lernst du nichts mehr.“ (${fernB})`); zb.ws.close();
+  /* #55: Dora (ohne A1) – für sie gibt es die Zielscheibe nicht: antippen, Fähigkeit darauf → kein Ziel, kein Treffer, keine Trefferzahl, kein Hinweis */
+  { const zd = await kampf(TD, 36.5, 57); await schlaf(1500); const sd = zd.w.find((w) => w[2] === "zielscheibe"), c0 = dora.chat.length, e0 = zd.ev.length;
+    if (sd) { zd.ws.send(JSON.stringify({ t: "ziel", id: sd[0] })); await schlaf(300); zd.ws.send(JSON.stringify({ t: "faehig", taste: "q", x: sd[4], y: sd[5] })); await schlaf(4000); }
+    const ich = zd.ich && zd.ich.id, ev = zd.ev.slice(e0).filter((e) => (e.a === "treffer" && e.von === ich) || ((e.a === "schaden" || e.a === "null") && sd && e.id === sd[0]));
+    check(sd && zd.ich && !zd.ich.zielId && ev.length === 0 && !dora.chat.slice(c0).some((t) => /nur üben/.test(t)), `Ohne Freigabe: die Zielscheibe wird kein Ziel, keine Treffer, kein Hinweis (Ziel ${zd.ich && zd.ich.zielId}, ${ev.length} Ereignisse)`); zd.ws.close(); }
 
   console.log("A2 „Das Wappen mit dem Turm“");
   await stelle(anna, ...ANSELM); await rede(anna, "anselm"); await sag(anna, "anselm", "annehmen"); await schlaf(400);

@@ -43,7 +43,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url.startsWith("/rest/v1/rpc/")) return send(200, true);
   send(404, {}); }); }).listen(8791);
 const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8790", SUPABASE_URL: "http://localhost:8791", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765",
-  FISCH_KERN: "1", FISCH_FALL: "0", WURM_FALL: "0", FISCH_WANDER_MS: "5000", WURM_WANDER_MS: "0", HANDWERK_GLUT: "0",
+  FISCH_KERN: "1", FISCH_FALL: "0", WURM_FALL: "0", FISCH_WANDER_MS: "5000", WURM_WANDER_MS: "0", HANDWERK_GLUT: "0", FISCH_TAKT_MS: "500", WURM_TAKT_MS: "500", HANDWERK_TICK_MS: "100",
   HANDWERK_STELLEN: JSON.stringify([{ id: "kessel_test", station: "kessel", x: 6440, y: 6440, ort: "waldmark" }, { id: "kessel_zu", station: "kessel", x: 6450, y: 6462, ort: "waldmark", schalter: "taverne_kueche", gesperrt: "Die Küche der Taverne ist noch zu." }]) }, stdio: ["ignore", "pipe", "pipe"] });
 let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
 await new Promise((r) => setTimeout(r, 1200));
@@ -84,6 +84,8 @@ async function fischen(s, grund, g, n, ms = 150000, strom = false) { const t0 = 
     await schlaf(250); }
   if (tip) clearInterval(tip); sende(s, { t: "fisch", tat: "stop" }); await schlaf(300); return anzahl(s, g) >= n; }
 const nein = async (s, t, id) => { s[t] = []; sende(s, { t, tat: "start", id }); const m = await warte(s, (m) => m.t === t && (m.tat === "nein" || m.tat === "start")); sende(s, { t, tat: "stop" }); await schlaf(200); return m && m.tat === "nein" ? m.text : ""; };
+/** „nein“ an einer aktiven Stelle; zieht die Stelle gerade weiter, noch einmal mit der dann aktiven (#69) */
+const neinAn = async (s, grund, dx, erwartet) => { let t = ""; for (let i = 0; i < 5 && !erwartet.test(t); i++) { const z = aktiveStelle(s, grund); await stelle(s, z.x + dx, z.y); t = await nein(s, "fisch", z.id); } return t; };
 const essen = async (s, g) => { const i = s.inv.rucksack.findIndex((x) => (typeof x === "string" ? x : x.g) === g); sende(s, { t: "inv", tat: "trinken", i }); return warte(s, (m) => m.t === "getrunken" || (m.t === "chat" && m.kanal === "system"), 3000); };
 try {
   const fred = await spieler(TA), gina = await spieler(TB), hugo = await spieler(TC), ida = await spieler(TD), jule = await spieler(TE);
@@ -112,20 +114,18 @@ try {
 
   console.log("Fischen");
   check(FANGGRUENDE.every((g) => FANGSTELLEN.filter((x) => x.grund === g.id && !fred.ruht.has(x.id)).length === g.aktiv), "Je Fanggrund sind genau „aktiv“ Stellen da");
-  { const z = aktiveStelle(gina, "muehlgraben"); await stelle(gina, z.x + 1.2, z.y); check(/Angelrute/.test(await nein(gina, "fisch", z.id)), "Ohne Angelrute: kein Fischen"); }
-  { const z = aktiveStelle(fred, "muehlgraben_unten"); await stelle(fred, z.x + 1.2, z.y); check(/Fischen 10/.test(await nein(fred, "fisch", z.id)), "Mühlbarsch erst ab Fischen 10"); }
-  { const z = aktiveStelle(fred, "muehlgraben"); await stelle(fred, z.x + 6, z.y); check(/näher/.test(await nein(fred, "fisch", z.id)), "Zu weit vom Wasser"); }
+  check(/Angelrute/.test(await neinAn(gina, "muehlgraben", 1.2, /Angelrute/)), "Ohne Angelrute: kein Fischen");
+  check(/Fischen 10/.test(await neinAn(fred, "muehlgraben_unten", 1.2, /Fischen 10/)), "Mühlbarsch erst ab Fischen 10");
+  check(/näher/.test(await neinAn(fred, "muehlgraben", 6, /näher/)), "Zu weit vom Wasser");
   const ruhtVorher = [...fred.ruht].sort().join();
   const ok = await fischen(fred, "muehlgraben", "fisch_bachling_roh", 19); if (process.env.DBG) console.log(JSON.stringify(fred.fisch.slice(-6)), fred.chat.slice(-3));
   check(ok && anzahl(fred, "wurm") === 0, `Drei Bachlinge mit drei Würmern (${anzahl(fred, "fisch_bachling_roh") - 16} gefangen, ${anzahl(fred, "wurm")} Würmer übrig)`);
   check(((fred.inv.berufe || {}).fischen || 0) >= 60, `Fischen-XP: ${(fred.inv.berufe || {}).fischen} (20 je Bachling)`);
   check(fred.fisch.some((m) => m.tat === "stop" && m.grund === "koeder") || /Würmer/.test(fred.chat.join(" ")) || anzahl(fred, "wurm") === 0, "Würmer alle: das Fischen hört auf");
-  { let t = ""; for (let i = 0; i < 5 && !/Ohne Wurm/.test(t); i++) { const z = aktiveStelle(fred, "muehlgraben"); await stelle(fred, z.x + 1.2, z.y); t = await nein(fred, "fisch", z.id); } /* die Stelle kann gerade weitergezogen sein (#69) */
-    check(/Ohne Wurm/.test(t), "Ohne Würmer beißt nichts"); }
+  check(/Ohne Wurm/.test(await neinAn(fred, "muehlgraben", 1.2, /Ohne Wurm/)), "Ohne Würmer beißt nichts");
   check([...fred.ruht].sort().join() !== ruhtVorher, "Die Fische wandern: andere Stellen als am Anfang");
   check(FANGGRUENDE.every((g) => FANGSTELLEN.filter((x) => x.grund === g.id && !fred.ruht.has(x.id)).length === g.aktiv), "… und je Grund weiterhin genau „aktiv“ Stellen");
-  { let t = ""; for (let i = 0; i < 5 && !/Ohne Wurm/.test(t); i++) { const z = aktiveStelle(hugo, "muehlgraben"); await stelle(hugo, z.x + 1.2, z.y); t = await nein(hugo, "fisch", z.id); }
-    check(/Ohne Wurm/.test(t), "Hugo ohne Würmer: Bachling geht nicht (Angelrute braucht Köder)"); }
+  check(/Ohne Wurm/.test(await neinAn(hugo, "muehlgraben", 1.2, /Ohne Wurm/)), "Hugo ohne Würmer: Bachling geht nicht (Angelrute braucht Köder)");
   const hechtVor = anzahl(hugo, "fisch_moorhecht_roh"), fV = (hugo.inv.berufe || {}).fischen;
   check(await fischen(hugo, "rabenmoor_steg", "fisch_moorhecht_roh", hechtVor + 3, 150000, true), `Moorhecht mit der Reuse, ohne Köder (${anzahl(hugo, "fisch_moorhecht_roh")})`);
   check(hugo.fisch.some((m) => m.tat === "fang" && m.stroemung && m.n === 2), "Strömung lesen: zwei Fische auf einmal");

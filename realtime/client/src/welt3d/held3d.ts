@@ -122,6 +122,8 @@ export class Held3D {
   blick(wx: number, wz: number): void { if (Math.hypot(wx, wz) > 1e-3) this.blickW = Math.atan2(wz, wx); this.ersatz.blick(wx, wz); }
   get blickWinkel(): number { return this.blickW; }
   setze(z: "ruhe" | "laufen" | "rennen" | "block" | "schild_laufen"): void { this.ersatz.setze(z === "rennen" ? "laufen" : z); if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
+  /** eine einmalige Bewegung, wenn das Modell sie hat (Rotmantel: rundumschlag, ruf, trinken) */
+  bewegungEinmal(name: string): void { if (this.gestorben || !this.mixer || !this.clips.has(name)) return; this.einmal = true; this.spiele(name, true, true); }
   /** Stilwechsel (Ereignis „stil“): die Angriffsbewegung des neuen Stils */
   private stilNr = 0; stil(nr: number): void { this.stilNr = nr; }
   angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; const a = this.gegner ? null : angriffFuer(this.held!.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held!.waffe].waffen); /* Bewegung zur angelegten Waffe */
@@ -167,6 +169,9 @@ export class Held3D {
   teleport(): number { if (!this.wurzel || this.gestorben || this.effekt) return 0; this.gestorben = true; this.einmal = false; if (this.clips.has("teleport_weg")) this.spiele("teleport_weg", true);
     const fx = new TeleportEffekt(this.wurzel, TELEPORT_S, 60); fx.gruppe.scale.setScalar(this.hoehe / 1.8); fx.gruppe.visible = true; this.bild.gruppe.add(fx.gruppe); this.effekt = fx;
     this.skala = this.wurzel.scale.x; return TELEPORT_S * 1000; }
+  /** Ankunft nach einem Teleport ohne Neuladen der Seite (Freunde, Wegstein): Lichtsäule weg, Figur wieder da (#53). Ohne laufenden Teleport: nichts */
+  ankunft(): void { const fx = this.effekt; if (!fx || !this.wurzel) return; fx.weg(); fx.gruppe.removeFromParent(); this.effekt = null;
+    this.wurzel.scale.setScalar(this.skala); this.wurzel.visible = true; this.gestorben = false; this.einmal = false; this.anwenden(); }
   sichtbar(an: boolean): void { this.an = an; this.bild.gruppe.visible = an; if (!this.wurzel) this.ersatz.sichtbar(an); }
   /* Bewegungen der Figuren-Fabrik: „gehen“ fürs normale Bewegen, „laufen“ ist dort das Rennen (Sprint). Abgespielt so schnell, dass die Schritte zum Tempo passen
      (Fabrik: Gehen 1,6 m/s, Rennen 4,2 m/s bei 1,8 m; hier 2,0 m, also 1,78 / 4,67 Felder/s: Gehen 2 Felder/s → ×1,12, Sprint 4 Felder/s → ×0,86 – „Felder und Schräge“) */
@@ -207,6 +212,11 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   /* Mooshocker: Modell in echter Größe (0,7 m hoch) im Maßstab der Helden (2,0 m statt 1,8 m); die Gegnerhöhe (Name, Lebensbalken) kommt aus MONSTER.hoehe */
   mooshocker: { datei: "mooshocker3d", angriff: "kopfstoss", ersatz: "gegner.bandit.v003", mass: 2.0 },
   waldgolem: { datei: "waldgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003" },
+  /* Phase 4 (#24): Banditen-Varianten und Hauptmann Rotmantel – eigene Modelle der Figuren-Fabrik, mit echtzeit=1 exportiert (Tempo stimmt) */
+  bandit_spaeher: { datei: "bandit3d_spaeher", angriff: "dolchwurf", ersatz: "gegner.bandit.v003" },
+  bandit_schlaeger: { datei: "bandit3d_schlaeger", angriff: "angriff_axt", ersatz: "gegner.bandit.v003" },
+  bandit_armbrust: { datei: "bandit3d_armbrust", angriff: "schiessen", ersatz: "gegner.bandit.v003" },
+  rotmantel: { datei: "banditenboss3d", angriff: "hieb2h", ersatz: "gegner.bandit.v003" },
   kuh: { datei: "kuh3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   zielscheibe: { datei: "zielscheibe3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   /* Phase 6 (#26): der Rabenorden (Figuren #20). Federmutter: Angriffsbewegung je Stil (MonsterDef.stile: Stab, Bogen, Speer) */

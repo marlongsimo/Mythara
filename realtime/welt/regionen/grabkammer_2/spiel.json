@@ -1,0 +1,45 @@
+{
+ "start": [
+  [
+   16,
+   25
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "grabkammer_2_hinauf",
+   "art": "eingang",
+   "x": 16,
+   "y": 29.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Stufen hinauf ins Freie.",
+    "tat": "grabkammer_hinauf",
+    "knopf": "Hinaufsteigen",
+    "ziel": [
+     6494,
+     5771.4
+    ]
+   }
+  },
+  {
+   "id": "grabkammer_2_sarg",
+   "art": "lesen",
+   "x": 16,
+   "y": 10.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Steinsarg. Der Deckel ist verschoben – jemand oder etwas ist herausgestiegen."
+   }
+  }
+ ]
+}

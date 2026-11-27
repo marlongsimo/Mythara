@@ -60,6 +60,9 @@ nebel = [(round(o['x'] + ox), round(o['y'] + oy)) for o in json.load(open(os.pat
 stellen += waehle('nebelkraut', 4, [p for p in im('rabenmoor') if any(abs(p[0] - a) < 6 and abs(p[1] - b) < 5 for a, b in nebel)], 12)
 # Stufe 65 Lindenblüte: die alte Linde in Weidenhain (Steinring 6452 · 6678,2), eine Stelle
 stellen.append({'id': 'lindenbluete_1', 'art': 'lindenbluete', 'x': 6452.0, 'y': 6680.6, 'region': 'weidenhain'})
+# Phase „Süden“ (#120): Stellen aus sueden.mjs (Kennung sueden_…) bleiben erhalten
+_sp = os.path.join(RT, 'welt', 'sueden_orte.json')
+if os.path.exists(_sp): stellen += json.load(open(_sp, encoding='utf8')).get('kraeuter', [])
 aus = {'_hinweis': 'Kräuter-Fundstellen (Phase 5, Issue #35). Erzeugt von werkzeug/welt/kraeuter.py; Weltfelder, Stehplatz = Fundstelle. Kessel: siehe kessel.',
        'stellen': stellen,
        'kessel': [{'id': 'kessel_kraeuterhaus', 'ort': 'Kräuterhaus der Waldmark (Möbel im Bauplan)', 'x': 6420.9, 'y': 6437.5, 'stehen': [6420.9, 6438.6], 'region': 'waldmark'},
