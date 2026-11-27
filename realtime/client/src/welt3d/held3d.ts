@@ -73,13 +73,14 @@ export class Held3D {
   private zustand = "ruhe"; private einmal = false; private gestorben = false; private blickW = Math.PI / 2; private dreh = Math.PI / 2; private weg = false; private an = true;
   fertig: (() => void) | null = null; private effekt: TeleportEffekt | null = null; private skala = 1;
   /** held: eigener Held oder Mitspieler (gefärbt, nur getragene Teile); gegner: ein Gegner-Modell (alle Teile, z. B. Dolch und Beuteschild) */
-  constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string; mass?: number; stile?: string[] }) {
+  constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string; mass?: number; stile?: string[]; namen?: Record<string, string> }) {
     this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle, true /* Bilder erst laden, wenn das 3D-Modell scheitert */); this.ersatz.aus = true; /* kein 2D-Bild, während das Modell lädt – nur wenn es nicht lädt */ szene.add(this.bild.gruppe);
     /* angelegte Teile (Waffe, Schild, Rüstung) gleich mitladen – nicht erst nach dem Grundmodell: dann stehen Held und Ausrüstung zusammen da */
     if (!gegner && held) { const ids = held.ich && waffenQuelle ? waffenQuelle() : STARTWAFFEN[held.waffe].waffen; for (const id of ids) if (AUSGELAGERT.test(id)) void teilVorlage(MODELLE + "base" + held.aussehen.g + "3d.teile/" + id + ".glb").catch(() => { /* fehlt: später beim Anlegen gemeldet */ }); }
     vorlage(gegner ? gegner.datei : "base" + held!.aussehen.g + "3d") /* Basismann/Basisfrau: die maßgeblichen Grundfiguren der Fabrik */.then((v) => this.aufbauen(v)).catch((e) => { console.warn("3D-Figur:", e); this.ersatz.aus = false; this.ersatz.jetztLaden(); this.ersatz.sichtbar(this.an); }); }
   private aufbauen(v: Vorlage) {
     if (this.weg) return; const w = SkeletonUtils.clone(v.szene); this.clips = v.clips;
+    if (this.gegner && this.gegner.namen) { this.clips = new Map(this.clips); for (const [n, z] of Object.entries(this.gegner.namen)) { const c = v.clips.get(z); if (c) this.clips.set(n, c); } } /* #160: Bewegungen unter anderem Namen (Sturmschwinge: ruhe = kreisen) */
     w.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.frustumCulled = false; m.castShadow = true; m.receiveShadow = true; } });
     if (!this.held) { this.fertigBauen(w); return; } const A = this.held.aussehen;
     const hf = HAUTFARBEN[A.haut].rgb, faktor = new THREE.Vector3(hf[0] / HAUT_BEZUG[A.g], hf[1] / HAUT_BEZUG[A.g], hf[2] / HAUT_BEZUG[A.g]);
@@ -219,7 +220,7 @@ export function heldenFigur3D(szene: THREE.Scene, figur: string, hoehe: number, 
   return held3dAn() ? new Held3D(szene, hoehe, eigen || STANDARD, quelle) : new FigurLeinwand(szene, figur, hoehe, eigen, quelle); }
 export type FigurArt = FigurLeinwand | Held3D;
 /** Gegner mit 3D-Modell (img/figuren-echt3d/): bis geladen das bisherige Bild der Fabrik */
-const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string; mass?: number; /** Angriffsbewegung je Stil (Stilwechsel) */ stile?: string[] }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
+const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string; mass?: number; /** Angriffsbewegung je Stil (Stilwechsel) */ stile?: string[]; /** #160: Bewegung unter anderem Namen, z. B. { ruhe: "kreisen" } */ namen?: Record<string, string> }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
   /* Mooshocker: Modell in echter Größe (0,7 m hoch) im Maßstab der Helden (2,0 m statt 1,8 m); die Gegnerhöhe (Name, Lebensbalken) kommt aus MONSTER.hoehe */
   mooshocker: { datei: "mooshocker3d", angriff: "kopfstoss", ersatz: "gegner.bandit.v003", mass: 2.0 },
   waldgolem: { datei: "waldgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003" },
@@ -287,9 +288,10 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   hochlandbaer: { datei: "hochlandbaer3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   klippenadler: { datei: "klippenadler3d", angriff: "sturz", ersatz: "gegner.bandit.v003", mass: 2.0 },
   /* #160: die Hüter der Hochlande – vorerst Platzhalter aus dem Bestand, bis Figuren die Modelle liefert (#159) */
-  grumhold: { datei: "bergtroll3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.8 }, felsbrocken_waechter: { datei: "waldgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 1.4 },
-  sturmschwinge: { datei: "klippenadler3d", angriff: "sturz", ersatz: "gegner.bandit.v003", mass: 3.2 }, frostwitwe: { datei: "rabenpriester_novize3d", angriff: "zauber_stab", ersatz: "gegner.bandit.v003", mass: 1.3 },
-  eissplitter_waechter: { datei: "eisgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 1.3 },
+  /* #160: die Hüter der Hochlande (Figuren 940ff531c, #159): Bewegungen der Ansagen stehen in shared/bosse.ts (Ansage.bewegung) */
+  grumhold: { datei: "grumhold3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 }, felsbrocken_waechter: { datei: "felsbrocken_waechter3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  sturmschwinge: { datei: "sturmschwinge3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0, namen: { ruhe: "kreisen", gehen: "fliegen" } },
+  frostwitwe: { datei: "frostwitwe3d", angriff: "zauber", ersatz: "gegner.bandit.v003", mass: 2.0 }, eissplitter_waechter: { datei: "eissplitter_waechter3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 },
   bergtroll: { datei: "bergtroll3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 },
   tundraelch: { datei: "tundraelch3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   frostwolf: { datei: "frostwolf3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },

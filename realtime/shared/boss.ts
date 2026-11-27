@@ -46,7 +46,7 @@ export interface Ansage {
   /** Schaden je Getroffenem (von–bis, kein Trefferwurf: wer stehen bleibt, wird getroffen) */ schaden: [number, number];
   art?: Schadensart;
   /** Deckung: Felder, die vom Boss aus hinter Fels oder Säule liegen, bleiben frei (Windschatten) */ deckung?: boolean;
-  /** #160: Wirkung auf die Getroffenen */ wirkung?: AnsageWirkung;
+  /** #160: Wirkung auf die Getroffenen */ wirkung?: AnsageWirkung; /** #160: Bewegung des Modells beim Ansagen (Standard rundumschlag) */ bewegung?: string;
   /** #160: nach dieser Ansage landet ein fliegender Boss (BossPhase.flug) für so viele Sekunden (Sturzflug: 4 s am Boden) */ landen?: number;
 }
 export interface Ruf { /** Gegnerart (MONSTER) */ art: string; n: number; /** Abstand zum Boss in Feldern (Standard 2) */ weite?: number; text?: string }

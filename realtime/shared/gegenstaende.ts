@@ -581,13 +581,17 @@ export const WAFFEN_STUFE70 = ["echoschneide", "seelenbogen", "seelenfokus"];
 /* ───────── #160 (Block H): Rüstung der Stufe 70 – je Hüter der Hochlande ein Satz (doku/konzepte/phase-11.md, Richtwerte aus gipfelgericht.md) ─────────
    Anforderung Defense 70, etwa +8 % über Mythisch, Set-Bonus bei allen Teilen des Satzes (SETS unten): Steinvogt-Platte +2 Stärke, Sturmfeder +2 Fernkampf-Stärke,
    Frostschleier +2 % Magieschaden (neu, kampfwerte.ts). Nur aus der starken Fassung der Hüter (HUETER_BEUTE in shared/bosse.ts, insgesamt 1 : 75 je Sieg), handelbar.
-   Bilder und 3D-Teile vorerst von den mythischen Teilen, bis Figuren die eigenen Modelle liefert (#159). Namen sind Vorschläge. */
+   Teile und Rucksackbilder von Figuren (#159, abe4736cc: img/figuren-echt3d/<figur>.teile/<ebene>.glb, img/objekte3d/ausruestung/stufe70/<ebene>.webp). Namen sind Vorschläge. */
 export const RUESTUNG_STUFE70: Record<"steinvogt" | "sturmfeder" | "frostschleier", string[]> = {
   steinvogt: ["steinvogt_helm", "steinvogt_platte", "steinvogt_beinschienen", "steinvogt_turmschild"],
   sturmfeder: ["sturmfeder_haube", "sturmfeder_wams", "sturmfeder_hose"],
   frostschleier: ["frostschleier_kapuze", "frostschleier_robe", "frostschleier_rock"] };
-{ const T = (id: string, name: string, platz: Platz, art: string, vorbild: string, ab: [number, number, number], bonus: Gegenstand["bonus"], text: string, gruppe: "nahkampf" | "fernkampf" | "magie") => {
-    const V = GEGENSTAENDE[vorbild]; GEGENSTAENDE[id] = { id, name, platz, art, seltenheit: "mythisch", ebenen: V ? V.ebenen : [], ...(V && V.bild ? { bild: V.bild } : {}), anforderung: { skill: "defense", level: 70 },
+{ const EBENE70: Record<string, string> = { steinvogt_helm: "kopf.helm.steinvogt", steinvogt_platte: "ruestung.brust.steinvogt", steinvogt_beinschienen: "ruestung.beine.steinvogt", steinvogt_turmschild: "schild.turm.steinvogt",
+    sturmfeder_haube: "kopf.helm.sturmfeder", sturmfeder_wams: "ruestung.brust.sturmfeder", sturmfeder_hose: "ruestung.beine.sturmfeder",
+    frostschleier_kapuze: "kopf.helm.frostschleier", frostschleier_robe: "ruestung.brust.frostschleier", frostschleier_rock: "ruestung.beine.frostschleier" };
+  const T = (id: string, name: string, platz: Platz, art: string, vorbild: string, ab: [number, number, number], bonus: Gegenstand["bonus"], text: string, gruppe: "nahkampf" | "fernkampf" | "magie") => {
+    const V = GEGENSTAENDE[vorbild], ebene = EBENE70[id]; /* #159: eigene Teile von Figuren (abe4736cc); sonst die mythischen */
+    GEGENSTAENDE[id] = { id, name, platz, art, seltenheit: "mythisch", ebenen: ebene ? [ebene] : V ? V.ebenen : [], ...(ebene ? { bild: "img/objekte3d/ausruestung/stufe70/" + ebene + ".webp" } : V && V.bild ? { bild: V.bild } : {}), anforderung: { skill: "defense", level: 70 },
       abwehr: { nah: ab[0], fern: ab[1], magie: ab[2] }, bonus, text }; RUESTUNGSGRUPPE[id] = gruppe; };
   const S = "Teil der Steinvogt-Platte – Grumhold trug sie, ehe der Berg ihn verschluckte.", F = "Teil der Sturmfeder – aus dem Horst der Sturmschwinge.", E = "Teil des Frostschleiers – kalt wie der Atem der Frostwitwe.";
   T("steinvogt_helm", "Steinvogt-Helm", "kopf", "Schwere Rüstung", "eisenwachthelm_mythisch", [49, 50, -1], { fernAngriff: -3, genau: -6 }, "Ein Helm aus Bergplatten, schwer wie ein Fels. " + S, "nahkampf");

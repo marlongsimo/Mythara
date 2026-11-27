@@ -185,10 +185,10 @@ export class WeltKampf {
     else if (ev.a === "stufe" && ev.id === this.ichId) zahl(this.ichId, `Stufe ${ev.s}!`, "#ffd75e");
     else if (ev.a === "text") zahl(ev.id, ev.t, "#ffd98a");
     else if (ev.a === "hieb" || ev.a === "anlegen") this.hieb(ev.id);
-    else if (ev.a === "ansage") { this.ansageZeigen(ev.felder, ev.t); zahl(ev.id, ev.name + "!", "#ff7a5a"); this.bewegung(ev.id, "rundumschlag"); } /* Boss-Baukasten: die Felder leuchten, bevor es zuschlägt */
+    else if (ev.a === "ansage") { this.ansageZeigen(ev.felder, ev.t); zahl(ev.id, ev.name + "!", "#ff7a5a"); this.bewegung(ev.id, ev.b || "rundumschlag"); } /* #160: eigene Bewegung der Ansage (stampfen, werfen, sturzflug, nova) */ /* Boss-Baukasten: die Felder leuchten, bevor es zuschlägt */
     else if (ev.a === "bossphase") { if (ev.text) zahl(ev.id, ev.text, "#ffb27a"); this.bewegung(ev.id, "ruf"); }
     else if (ev.a === "trinken") { zahl(ev.id, ev.text || "heilt sich", "#7dff9a"); this.bewegung(ev.id, "trinken"); }
-    else if (ev.a === "schweben") zahl(ev.id, "erhebt sich!", "#b9a7ff"); else if (ev.a === "landen") zahl(ev.id, ev.text || "landet", "#b9a7ff"); /* Schweben (#49): Flugbild macht die Oberfläche */
+    else if (ev.a === "schweben") zahl(ev.id, "erhebt sich!", "#b9a7ff"); else if (ev.a === "landen") { zahl(ev.id, ev.text || "landet", "#b9a7ff"); this.bewegung(ev.id, "landen"); } /* #160: Sturmschwinge landet (letztes Bild bleibt) */ /* Schweben (#49): Flugbild macht die Oberfläche */
     else if (ev.a === "stil") { if (ev.text || ev.name) zahl(ev.id, ev.text || ev.name!, "#ffb27a"); this.stil(ev.id, ev.nr); }
     else if (ev.a === "flackern") zahl(ev.id, "flackert", "#c9b6ff"); else if (ev.a === "eingraben") zahl(ev.id, "gräbt sich ein!", "#e0c27a"); /* #102: Bild macht die Oberfläche */
     else if (ev.a === "boee" && ev.id === this.ichId) zahl(ev.id, "Eine Böe kommt!", "#cfe3ff"); }

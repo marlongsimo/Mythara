@@ -13,16 +13,20 @@ import { join } from "node:path";
 const datei = join(tmpdir(), `riftmere-bossquest-${process.pid}.mjs`);
 await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { INSTANZEN } from "./shared/bosse"; export { QUEST_STAERKE } from "./shared/boss"; export { weltJeSpieler } from "./server/src/bosse";',
   resolveDir: new URL("..", import.meta.url).pathname, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
-const { Sim, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, INSTANZEN, MONSTER, QUEST_STAERKE, weltJeSpieler } = await import(datei);
+const { Sim, KARTEN, FEIN, setzeKarte, begehbar, kampfwerte, NULL_XP, xpFuer, INSTANZEN, MONSTER, QUEST_STAERKE, weltJeSpieler } = await import(datei);
 setzeKarte(KARTEN.welt, FEIN);
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
 /* Instanz, empfohlenes Heldenlevel der Quest, Boss */
 const FAELLE = [["federmutter_kammer", 40, "federmutter", "C2"], ["thronsaal", 40, "oberster_rabenpriester", "C3"], ["hauptmann_gruft", 48, "grauer_hauptmann", "E4"],
   ["tempel_kammer", 55, "sandmutter", "F3"], ["wrack_kajuete", 35, "wrackkapitaen", "G3"],
-  ["trollhalle", 60, "grumhold", "H4 (#160, mit Nahkampf – gegen den er stark ist)"]];
+  ["trollhalle", 60, "grumhold", "H4 (#160, mit Nahkampf – gegen den er stark ist)"], ["horst_grauhorn", 60, "sturmschwinge", "H4 (#160, mit Nahkampf – sie fliegt)"],
+  ["eishoehle_hochpass", 60, "frostwitwe", "H4 (#160)"]];
 const LAEUFE = 3, ESSEN = 15, MAX_S = 240, SCHNITT_ESSEN = 11, schnitt = (E) => E.reduce((a, e) => a + e.essen, 0) / E.length;
 for (const [inst, L, boss, quest] of FAELLE) {
-  const D = INSTANZEN.find((d) => d.id === inst), t = L >= 45 ? "_legendaer" : "_episch", Q = D.questStaerke || QUEST_STAERKE;
+  let D = INSTANZEN.find((d) => d.id === inst); const U0 = KARTEN.welt.ursprung, Q = D.questStaerke || QUEST_STAERKE;
+  if (!begehbar(D.gegner[0].x - U0[0], D.gegner[0].y - U0[1])) { /* der Raum fehlt noch in der Kampfwelt (Welt nicht eingemischt): Probe in einer Kopie der Bergwerkshalle */
+    D = { ...D, id: "probe_" + inst, feld: [11595, 9602, 11618, 9624], gegner: [{ ...D.gegner[0], x: 11607.5, y: 9611.5 }] }; INSTANZEN.unshift(D); }
+  const t = L >= 65 ? "_mythisch" : L >= 45 ? "_legendaer" : "_episch";
   console.log(`\n${quest} · ${MONSTER[boss].name} (Stufe ${MONSTER[boss].stufe}) gegen Heldenlevel ${L}, Quest-Fassung ${Math.round(Q.leben * 100)} % Leben, ${Math.round(Q.schaden * 100)} % Schaden`);
   const X = { ...NULL_XP }; for (const k of Object.keys(NULL_XP)) X[k] = xpFuer(L);
   const aus = { waffe: "eidschwert" + t, nebenhand: "sternenschild" + t, brust: "eisenwacht" + t, kopf: "eisenwachthelm" + t, beine: "eisenbeinschienen" + t };

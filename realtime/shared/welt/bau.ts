@@ -3,6 +3,8 @@
  * Reine Rechnung: dieselbe Funktion nutzen Werkzeuge, Editor und Prüfung.
  */
 import { CHUNK_FELDER, chunkName, regionFelder } from "./typen";
+import { TUEREN } from "../bosse";
+const TUER_SCHALTER = new Set(TUEREN.map((t) => t.schalter));
 import type { GelaendeBibliothek, ObjektBibliothek, ObjektDef, RegionDaten, Kollision, Platzierung, ChunkDaten, Figur, Interaktion, Spawnzone, Ausgang, Region, Zone } from "./typen";
 
 /** Liegt der Punkt (in Rechenfeldern, ab dem Fußpunkt gemessen) in der Kollisionsfläche? */
@@ -78,7 +80,9 @@ export function gehRaster(d: RegionDaten, gelaende: GelaendeBibliothek, objekte:
   for (const p of d.objekte) if (!p.ausbau && !p.ausbau_bis) for (const [i, j] of sperrFelder(p, def.get(p.objekt))) setze(i, j, "#"); /* Stadtstufen: sperren je Spieler (ChunkDaten.ausbau) */
   const flaeche = (z: { x0: number; y0: number; x1: number; y1: number }, c: string) => {
     for (let j = Math.floor(z.y0); j < Math.ceil(z.y1); j++) for (let i = Math.floor(z.x0); i < Math.ceil(z.x1); i++) if (i + 0.5 >= z.x0 && i + 0.5 <= z.x1 && j + 0.5 >= z.y0 && j + 0.5 <= z.y1) setze(i, j, c); };
-  for (const z of d.spiel.kollision.sperren) flaeche(z, "#");
+  for (const z of d.spiel.kollision.sperren) if (!(z as { schalter?: string }).schalter || !TUER_SCHALTER.has((z as { schalter?: string }).schalter!)) flaeche(z, "#");
+  /* #160: Sperren mit Schalter, für die es eine Tür gibt (shared/bosse.ts TUEREN – eingestürzter Stollen, Lehmfurt), bleiben im Raster frei:
+     die Tür sperrt sie je Spieler, bis sein Schalter an ist. Ohne Tür bleibt die Sperre fest (sicher). */
   for (const z of d.spiel.kollision.freigeben) flaeche(z, ".");
   return g.map((z) => z.join(""));
 }
