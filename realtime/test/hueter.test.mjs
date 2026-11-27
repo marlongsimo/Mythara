@@ -93,10 +93,10 @@ console.log("\nDie Frostwitwe");
   check(s.wesen.filter((w) => w.typ === "eissplitter_waechter" && w.instanz === b.instanz).length === 2, "ab 60 %: zwei Eissplitter-Wächter"); }
 
 console.log("\nRüstung der Stufe 70");
-{ const alle = Object.values(RUESTUNG_STUFE70).flat(), V = { steinvogt_helm: "eisenwachthelm_mythisch", steinvogt_platte: "eisenwacht_mythisch", steinvogt_beinschienen: "eisenbeinschienen_mythisch", steinvogt_turmschild: "sternenschild_mythisch",
+{ const alle = Object.values(RUESTUNG_STUFE70).flat(), V = { steinvogt_helm: "eisenwachthelm_mythisch", steinvogt_platte: "eisenwacht_mythisch", steinvogt_beinschienen: "eisenbeinschienen_mythisch",
     sturmfeder_haube: "jaegerkapuze_mythisch", sturmfeder_wams: "jaegerwams_mythisch", sturmfeder_hose: "jaegerhose_mythisch", frostschleier_kapuze: "magierkapuze_mythisch", frostschleier_robe: "magierrobe_mythisch", frostschleier_rock: "magierrock_mythisch" };
-  check(alle.length === 10 && alle.every((g) => G[g] && G[g].platz && G[g].anforderung && G[g].anforderung.skill === "defense" && G[g].anforderung.level === 70 && !G[g].untauschbar),
-    "zehn Teile (Steinvogt-Platte 4, Sturmfeder 3, Frostschleier 3), Defense 70, handelbar");
+  check(alle.length === 9 && !alle.some((g) => G[g].platz === "nebenhand") && alle.every((g) => G[g] && G[g].platz && G[g].anforderung && G[g].anforderung.skill === "defense" && G[g].anforderung.level === 70 && !G[g].untauschbar),
+    "neun Teile, je drei: Steinvogt-Platte, Sturmfeder, Frostschleier (kein Turmschild), Defense 70, handelbar");
   const summe = (a) => a.nah + a.fern + Math.max(0, a.magie), q = alle.map((g) => summe(G[g].abwehr) / summe(G[V[g]].abwehr));
   check(q.every((x) => x >= 1.04 && x <= 1.14), `etwa +8 % Abwehr über Mythisch (${Math.min(...q).toFixed(2)}–${Math.max(...q).toFixed(2)})`);
   check(SETS.steinvogt.bonus.staerke === 2 && SETS.sturmfeder.bonus.fernStaerke === 2 && SETS.frostschleier.bonus.magieSchaden === 2, "Set-Boni: +2 Stärke · +2 Fernkampf-Stärke · +2 % Magieschaden");
@@ -127,9 +127,11 @@ for (const H of HUETER) { const R = MONSTER[H.typ].drops.find((d) => d.stark), s
 console.log("\nQuest-Bausteine H1–H4");
 { const st = WEGSTEIN_ZIELE.find((z) => z.id === "steinhag");
   check(st && st.quest === H_QUESTS.h1, `H1: Wegstein-Ziel Steinhag nach ${H_QUESTS.h1}`);
-  const K = rezept("kaeserad"), Gh = rezept("grubenholz");
-  check(K && K.station === "kessel" && K.quest === H_QUESTS.h2 && K.zutaten[0].g.includes("ziegenmilch") && G.ziegenmilch && G.kaeserad && VERBRAUCH.kaeserad, `H2: Almkäse aus Ziegenmilch am Käsekessel (Kochen ${K && K.level}, über ${H_QUESTS.h2})`);
-  check(Gh && Gh.station === "werkbank" && Gh.quest === H_QUESTS.h3 && G.grubenholz && G.grubenholz.untauschbar && G.erzprobe_splitterlicht, `H3: Grubenholz an der Werkbank (Handwerk ${Gh && Gh.level}), Erzprobe mit Splitterlicht`);
+  const K = rezept("kaeselaib"), Gh = rezept("grubenstempel");
+  check(K && K.station === "herd" && K.level === 45 && K.quest === H_QUESTS.h2 && K.zutaten.some((z) => z.g.includes("ziegenmilch") && z.n === 3) && K.zutaten.some((z) => z.g.includes("lab")) && G.kaeselaib && VERBRAUCH.kaeselaib && G.lab,
+    `H2: Käselaib aus 3 Ziegenmilch und Lab am Herd (Kochen ${K && K.level}, über ${H_QUESTS.h2})`);
+  check(Gh && Gh.station === "werkbank" && Gh.level === 45 && Gh.quest === H_QUESTS.h3 && G.grubenstempel && G.grubenstempel.untauschbar && G.erzprobe_leuchtend && G.eisrunen_abschrift,
+    `H3/H4: Grubenstempel an der Werkbank (Handwerk ${Gh && Gh.level}), leuchtende Erzprobe, Abschrift der Eisrunen`);
   const T = TUEREN.find((x) => x.id === "bergwerk_stollen"), U = KARTEN.welt.ursprung, zellen = [];
   if (T) for (let x = T.feld[0]; x <= T.feld[2]; x++) for (let y = T.feld[1]; y <= T.feld[3]; y++) zellen.push(begehbar(x + 0.5 - U[0], y + 0.5 - U[1]));
   check(T && T.schalter === H_SCHALTER.stollen && zellen.filter(Boolean).length >= 3, `H3: eingestürzter Stollen vor der Urkammer (${zellen.filter(Boolean).length} gangbare Felder im Raster – die Tür sperrt je Spieler, Schalter ${T && T.schalter})`);
