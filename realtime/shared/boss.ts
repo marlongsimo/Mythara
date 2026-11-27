@@ -33,7 +33,7 @@
 import type { Schadensart } from "./config";
 
 /** Welche Felder eine Ansage trifft */
-export type AnsageFelder = "rundum" | "ziel" | "raum" | "ring" | [number, number][];
+export type AnsageFelder = "rundum" | "ziel" | "raum" | "ring" | "linie" | "keine" | [number, number][]; /* #178: linie = vom Boss zum Ziel (weite Felder lang, 3 breit); keine = nur der Name (Sammelruf) */
 /** #160: was eine Ansage bei jedem Getroffenen außer dem Schaden tut */
 export interface AnsageWirkung { /** so viele Felder vom Boss weg schieben (Sturmböe) */ schieben?: number; /** verlangsamen: [Anteil, Sekunden] (Eisfeld) */ langsam?: [number, number];
   /** wer schon verlangsamt ist, erstarrt so viele Sekunden (kann nicht laufen und nicht angreifen) */ erstarren?: number }
@@ -47,6 +47,9 @@ export interface Ansage {
   art?: Schadensart;
   /** Deckung: Felder, die vom Boss aus hinter Fels oder Säule liegen, bleiben frei (Windschatten) */ deckung?: boolean;
   /** #160: Wirkung auf die Getroffenen */ wirkung?: AnsageWirkung; /** #160: Bewegung des Modells beim Ansagen (Standard rundumschlag) */ bewegung?: string;
+  /** #178 Unterbrechen: trifft man den Boss während der Ansage mit so viel Schaden, bricht sie ab (gemeistert: Schwächefenster) */ unterbrechen?: number;
+  /** #178: statt Schaden (oder dazu) ruft die Ansage beim Einschlag Helfer (Sammelruf: Deserteure eilen herbei) */ ruf?: Ruf;
+  /** #178 Ansturm: nach dem Einschlag steht der Boss am Ende der angezeigten Linie */ ansturm?: boolean;
   /** #160: nach dieser Ansage landet ein fliegender Boss (BossPhase.flug) für so viele Sekunden (Sturzflug: 4 s am Boden) */ landen?: number;
 }
 export interface Ruf { /** Gegnerart (MONSTER) */ art: string; n: number; /** Abstand zum Boss in Feldern (Standard 2) */ weite?: number; text?: string }
@@ -114,6 +117,9 @@ export function ansageFelder(A: Ansage, bx: number, by: number, zx: number, zy: 
   if (A.felder === "rundum") { for (let dx = -w; dx <= w; dx++) for (let dy = -w; dy <= w; dy++) if (dx || dy) aus.push([bi + dx + 0.5, bj + dy + 0.5]); }
   else if (A.felder === "raum") { const R = raum || [bi - w, bj - w, bi + w, bj + w]; for (let i = R[0]; i <= R[2]; i++) for (let j = R[1]; j <= R[3]; j++) if (i !== bi || j !== bj) aus.push([i + 0.5, j + 0.5]); }
   else if (A.felder === "ring") { for (let dx = -w; dx <= w; dx++) for (let dy = -w; dy <= w; dy++) if (Math.max(Math.abs(dx), Math.abs(dy)) === w) aus.push([bi + dx + 0.5, bj + dy + 0.5]); } /* #160: Ring im Abstand weite */
+  else if (A.felder === "linie") { const l = Math.hypot(zx - bx, zy - by) || 1, ux = (zx - bx) / l, uy = (zy - by) / l, seen = new Set<string>();
+    for (let s = 1; s <= w; s += 0.5) for (const q of [-1, 0, 1]) { const i = Math.floor(bx + ux * s - uy * q), j = Math.floor(by + uy * s + ux * q), k = i + "," + j; if (!seen.has(k) && (i !== bi || j !== bj)) { seen.add(k); aus.push([i + 0.5, j + 0.5]); } } }
+  else if (A.felder === "keine") { /* nur der Name über dem Boss */ }
   else if (A.felder === "ziel") { const zi = Math.floor(zx), zj = Math.floor(zy); for (let dx = -w; dx <= w; dx++) for (let dy = -w; dy <= w; dy++) aus.push([zi + dx + 0.5, zj + dy + 0.5]); }
   else for (const [dx, dy] of A.felder) aus.push([bi + dx + 0.5, bj + dy + 0.5]);
   return aus; }

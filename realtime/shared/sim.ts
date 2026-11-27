@@ -56,7 +56,7 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   /** Fliehen (MonsterDef.fliehen): läuft gerade zu diesem Kumpan; geflohen = in diesem Leben schon einmal; heim0 = das eigene Lager (heim zieht zum Kumpan mit) */ flucht?: number; geflohen?: boolean; heim0?: Punkt;
   /** Instanz (shared/boss.ts): die Kopie, zu der dieses Wesen gehört – es sieht und trifft nur Wesen derselben Kopie; welle: Nummer seiner Welle */ instanz?: string; welle?: number; /** #116: Schaden mal (Boss in der Quest-Kopie) */ schadenMal?: number; /** #160: Abwehr mal (Boss in der Quest-Kopie) */ abwehrMal?: number; /** aus den Gegnerplätzen der Welt (#130) */ gp?: boolean;
   /** vom Boss gerufen (Kennung des Bosses): kehrt nicht wieder; weg = verschwindet am Ende des Schritts */ helfer?: number; weg?: boolean; /** Folge.angriff (E3): erscheint einmal für einen Kampf, kehrt nicht wieder; einmalT: Zeit ohne Ziel */ einmal?: boolean; einmalT?: number;
-  /** Boss-Baukasten: Stand des Kampfes; laufende Ansage (Rest in s, Felder, Angriff); Trinken am Heilort (Rest in s, Anteil des Lebens) */ boss?: BossLauf; ansage?: { t: number; felder: [number, number][]; a: Ansage; /** #175: wer bei der Ansage in der Gefahrenzone stand */ drin?: number[] }; trinkT?: number; trinkN?: number;
+  /** Boss-Baukasten: Stand des Kampfes; laufende Ansage (Rest in s, Felder, Angriff); Trinken am Heilort (Rest in s, Anteil des Lebens) */ boss?: BossLauf; ansage?: { t: number; felder: [number, number][]; a: Ansage; /** #175: wer bei der Ansage in der Gefahrenzone stand */ drin?: number[]; /** #178: Schaden während der Ansage (Unterbrechen) */ getroffen?: number }; trinkT?: number; trinkN?: number;
   /** #102: unangreifbar bis (Simulationszeit: Flackern, Eingraben des Bosses); Flackern-Takt; eingegraben (Sand-Auftauchen, nicht im Zustand) und die laufende Ansage dazu */ weg0?: number; flackerT?: number; /** Heiler: Zeit seit dem letzten Heilen */ heilT?: number; vergraben?: boolean; auftauchen?: { t: number; x: number; y: number };
   /** Stilwechsel (MonsterDef.stile): der laufende Stil und seine Zeit; Verkleidung: was der Held angelegt hat (setzt der Server, MonsterDef.friedlichMit) */ stil?: number; stilT?: number; angelegt?: string[];
   /** Türen: für diesen Helden gesperrte Felder (Rechenfelder x0, y0, x1, y1) mit Text; wann zuletzt gemeldet */ sperren?: { f: number[]; t: string }[]; sperrZ?: number }
@@ -269,7 +269,9 @@ export class Sim {
   /** Direkter Schaden ohne Würfe (Gift, Blutung, Brand, heiliges Licht): nur Schutzpunkte fangen ihn ab */
   private abziehen(z: Wesen, menge: number, von: Wesen | undefined, art?: string): void {
     if (z.tot || menge <= 0) return; if (von && von.schadenMal !== undefined && !von.held) menge *= von.schadenMal;
-    if (von && von.held && z.boss && z.boss.schwachBis !== undefined && z.boss.schwachBis > this.zeit) menge *= SCHWAECHE.mal; /* #175: Schwächefenster */ let m = Math.max(1, Math.round(menge)); /* #116: Quest-Fassung */
+    if (von && von.held && z.boss && z.boss.schwachBis !== undefined && z.boss.schwachBis > this.zeit) menge *= SCHWAECHE.mal; /* #175: Schwächefenster */
+    if (z.ansage && z.ansage.a.unterbrechen && von && von.held) { z.ansage.getroffen = (z.ansage.getroffen || 0) + menge; /* #178 Unterbrechen: genug Schaden während der Ansage bricht sie ab */
+      if (z.ansage.getroffen >= z.ansage.a.unterbrechen) { z.ansage = undefined; this.ev.push({ a: "text", id: z.id, t: "unterbrochen!" }); if (z.boss) { z.boss.schwachBis = this.zeit + SCHWAECHE.sek; this.ev.push({ a: "text", id: z.id, t: "verwundbar!" }); } } } let m = Math.max(1, Math.round(menge)); /* #116: Quest-Fassung */
     if (!z.held && MONSTER[z.typ].zielscheibe) { /* Zielscheibe (Phase 2): unverwundbar, keine Beute – nur Fernkampf-XP bis Fernkampf-Level 10, Treffer zählen für Quests */
       if (von && von.held && art !== "dauer") { const kampfart = von.kw ? von.kw.waffe.art : "nah"; this.ev.push({ a: "treffer", typ: z.typ, von: von.id, art: kampfart });
         if (von.kw && von.xpNeu && von.zielscheibeFrei && kampfart === "fern" && levelAus(von.kw.skills.fernkampf || 0, "fernkampf") < ZIELSCHEIBE_BIS) { const ziel = xpZiel("fern", von.kw.stil), rest = von.xpRest || (von.xpRest = { ...NULL_XP });
@@ -653,6 +655,9 @@ export class Sim {
       if (B && B.art === "taktiker") { const v = MONSTER[w.typ].v2, art = (A.art === "magie" || A.art === "fern" ? A.art : "nah") as Art;
         for (const o of raus) { const voll = (lo + Math.floor(this.zf() * (hi - lo + 1))) * mal, p = o.kw && v ? trefferChance(gegnerWerte(v, art).treffer, o.kw.abwehr[art]) : 1; /* Rüstung mindert bis auf die Hälfte */
           this.abziehen(o, voll * STREIF_ANTEIL * (0.5 + 0.5 * p), w); o.ruhe = 0; } } }
+    if (A.ruf) this.rufen(w, A.ruf); /* #178 Sammelruf: nicht unterbrochen – die Helfer kommen */
+    if (A.ansturm && S.felder.length) { let best: [number, number] | null = null, bd = -1; for (const [fx, fy] of S.felder) { const d = Math.hypot(fx - w.x, fy - w.y); if (d > bd && !fels(Math.floor(fx), Math.floor(fy))) { bd = d; best = [fx, fy]; } }
+      if (best) { w.x = best[0]; w.y = best[1]; w.pfad = []; } } /* #178 Ansturm: der Boss steht danach am Ende der Linie */
     if (A.landen && w.boss && w.boss.schwebBis !== undefined) { w.boss.schwebBis = undefined; if (S.felder.length) { const mx = S.felder.reduce((a, f) => a + f[0], 0) / S.felder.length, my = S.felder.reduce((a, f) => a + f[1], 0) / S.felder.length; if (!fels(Math.floor(mx), Math.floor(my))) { w.x = mx; w.y = my; } } /* stößt dort herab, wo der Schatten war */ w.boss.bodenBis = this.zeit + A.landen; this.ev.push({ a: "landen", id: w.id, text: "landet – jetzt!" }); } /* #160: nach dem Sturzflug am Boden */
     w.cdA = Math.max(w.cdA, KAMPF_TICK * 2); }
   /** Helfer rufen: n Gegner neben dem Boss, mit seinem Ziel; sie kehren nicht wieder */

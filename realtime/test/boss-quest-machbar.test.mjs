@@ -17,6 +17,8 @@ const { Sim, KARTEN, FEIN, setzeKarte, begehbar, kampfwerte, NULL_XP, xpFuer, IN
 setzeKarte(KARTEN.welt, FEIN);
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
 /* Instanz, empfohlenes Heldenlevel der Quest, Boss */
+/* #178: jeder Midgame-Boss hat eine Stil-Schwäche – der Held kämpft mit ihr (Federmutter und Sandmutter Fernkampf, Wrackkapitän und Grauer Hauptmann Magie, der Oberste Nahkampf) */
+const STIL = { federmutter: "fern", sandmutter: "fern", wrackkapitaen: "magie", grauer_hauptmann: "magie", oberster_rabenpriester: "nah" };
 const FAELLE = [["federmutter_kammer", 40, "federmutter", "C2"], ["thronsaal", 40, "oberster_rabenpriester", "C3"], ["hauptmann_gruft", 48, "grauer_hauptmann", "E4"],
   ["tempel_kammer", 55, "sandmutter", "F3"], ["wrack_kajuete", 35, "wrackkapitaen", "G3"],
   ["trollhalle", 60, "grumhold", "H4 (#160, mit Nahkampf – gegen den er stark ist)"], ["horst_grauhorn", 60, "sturmschwinge", "H4 (#160, mit Nahkampf – sie fliegt)"],
@@ -27,9 +29,11 @@ for (const [inst, L, boss, quest] of FAELLE) {
   if (!begehbar(D.gegner[0].x - U0[0], D.gegner[0].y - U0[1])) { /* der Raum fehlt noch in der Kampfwelt (Welt nicht eingemischt): Probe in einer Kopie der Bergwerkshalle */
     D = { ...D, id: "probe_" + inst, feld: [11595, 9602, 11618, 9624], gegner: [{ ...D.gegner[0], x: 11607.5, y: 9611.5 }] }; INSTANZEN.unshift(D); }
   const t = L >= 65 ? "_mythisch" : L >= 45 ? "_legendaer" : "_episch";
-  console.log(`\n${quest} · ${MONSTER[boss].name} (Stufe ${MONSTER[boss].stufe}) gegen Heldenlevel ${L}, Quest-Fassung ${Math.round(Q.leben * 100)} % Leben, ${Math.round(Q.schaden * 100)} % Schaden`);
+  console.log(`\n${quest} · ${MONSTER[boss].name} [${STIL[boss] || "nah"}] (Stufe ${MONSTER[boss].stufe}) gegen Heldenlevel ${L}, Quest-Fassung ${Math.round(Q.leben * 100)} % Leben, ${Math.round(Q.schaden * 100)} % Schaden`);
   const X = { ...NULL_XP }; for (const k of Object.keys(NULL_XP)) X[k] = xpFuer(L);
-  const aus = { waffe: "eidschwert" + t, nebenhand: "sternenschild" + t, brust: "eisenwacht" + t, kopf: "eisenwachthelm" + t, beine: "eisenbeinschienen" + t };
+  const stil = STIL[boss] || "nah", aus = stil === "fern" ? { waffe: "mondkurzbogen" + t, brust: "jaegerwams" + t, kopf: "jaegerkapuze" + t, beine: "jaegerhose" + t }
+    : stil === "magie" ? { waffe: "sternenszepter" + t, brust: "magierrobe" + t, kopf: "magierkapuze" + t, beine: "magierrock" + t }
+    : { waffe: "eidschwert" + t, nebenhand: "sternenschild" + t, brust: "eisenwacht" + t, kopf: "eisenwachthelm" + t, beine: "eisenbeinschienen" + t };
   const erg = [];
   for (let v = 0; v < LAEUFE; v++) {
     const s = Sim.welt(16 + v * 7919, undefined, true), U = KARTEN.welt.ursprung; s.ursprung = [U[0], U[1]]; s.wesen = s.wesen.filter((w) => w.held);
