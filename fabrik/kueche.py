@@ -1,7 +1,7 @@
 """Mythara Fabrik – Gegenstände für Fischen und Kochen in Blender bauen (als glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   python3 fabrik/kueche.py -- <art> <ziel.glb>
-  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt | salz | glutwels_salzkruste | raeucherhering | barsch_salzkruste | aalsuppe | hasenfleisch | wildschweinfleisch | wolfsfleisch | hasenbraten | rinderbraten | wildschweinbraten | wolfsgulasch | fleisch_verbrannt | wildbret | wildbretbraten | silberbarsch_gebraten | sturmhecht_kraeuterkruste | tiefseeaal_suppe
+  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt | salz | glutwels_salzkruste | raeucherhering | barsch_salzkruste | aalsuppe | hasenfleisch | wildschweinfleisch | wolfsfleisch | hasenbraten | rinderbraten | wildschweinbraten | wolfsgulasch | fleisch_verbrannt | wildbret | wildbretbraten | krebsscheren_salzkruste | silberbarsch_gebraten | sturmhecht_kraeuterkruste | tiefseeaal_suppe
 
 wuermer: Holzschälchen mit Erde und rosa Würmern · fischsuppe: Holzschale, helle Brühe, Fischstücke, Kräuter, Löffel ·
 bauerneintopf: Tonschale, braune Soße, Fleisch, Möhren, Kartoffeln · kuhfleisch: rotes Stück mit Fettrand und Knochen ·
@@ -175,6 +175,18 @@ elif ART == "salz":                                                             
     for k in range(7):
         bpy.ops.mesh.primitive_cube_add(size=random.uniform(0.01, 0.016), location=(random.uniform(0.05, 0.14), random.uniform(-0.1, 0.0), 0.006), rotation=(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 3)))
         bpy.context.object.data.materials.append(KR)
+elif ART == "krebsscheren_salzkruste":                                                          # #180: zwei rote Krebsscheren in aufgebrochener Salzkruste auf dem Tonteller
+    TON = mat("tonteller", (120, 62, 36), 0.75); KRUSTE = mat("salzkruste", (252, 248, 236), 0.7); ROT = mat("schere_gegart", (214, 70, 40), 0.4); HELL = mat("schere_hell", (240, 160, 120), 0.5)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=0.17, depth=0.014, location=(0, 0, 0.007)); t = bpy.context.object; t.scale = (1.1, 0.8, 1); t.data.materials.append(TON)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.17, minor_radius=0.009, location=(0, 0, 0.016), major_segments=48, minor_segments=8); t = glatt(bpy.context.object); t.scale = (1.1, 0.8, 1); t.data.materials.append(TON)
+    k = kugel((0, 0, 0.025), 0.07, KRUSTE, (1.8, 1.2, 0.5), 24)
+    for v in k.data.vertices: v.co += Vector((0, 0, 0.004 * math.sin(v.co.x * 55) * math.cos(v.co.y * 70)))
+    for sx, a in ((-1, 0.5), (1, -0.4)):                                                       # Scheren: Arm, Hand, zwei Finger
+        kugel((sx * 0.05, 0.0, 0.05), 0.028, ROT, (1.6, 0.8, 0.7), 14).rotation_euler = (0, 0, a)
+        kugel((sx * 0.1, 0.02 * sx, 0.055), 0.03, ROT, (1.5, 1.0, 0.75), 14).rotation_euler = (0, 0, a)
+        for f in (-1, 1): kugel((sx * 0.14, 0.02 * sx + f * 0.014, 0.058), 0.016, ROT if f > 0 else HELL, (2.2, 0.6, 0.6), 10).rotation_euler = (0, 0, a + f * 0.25)
+    for x, y, r in ((0.09, -0.07, 0.02), (-0.1, 0.07, 0.016), (0.0, -0.09, 0.014)): wuerfel((x, y, 0.025), r, KRUSTE, (0.4, 0.7, x * 10))
+    for x, y in ((-0.12, -0.05), (0.13, 0.06)): kugel((x, y, 0.024), 0.011, mat("kraut", (70, 120, 50), 0.7), (1.6, 0.8, 0.4), 8)
 elif ART in ("glutwels_salzkruste", "barsch_salzkruste", "sturmhecht_kraeuterkruste"):                                                              # Phase 9: Glutwels in Salzkruste – auf dem Tonteller, Kruste aufgebrochen, Kopf und Schwanz schauen heraus
     TON = mat("tonteller", (120, 62, 36), 0.75); KRUSTE = mat("salzkruste", (252, 248, 236), 0.7); BRAUN = mat("kruste_braun", (214, 162, 96), 0.8)
     if ART == "sturmhecht_kraeuterkruste": KRUSTE = mat("kraeuterkruste", (120, 146, 72), 0.8); BRAUN = mat("kraeuterkruste_braun", (150, 130, 62), 0.8)   # #176: Kräuterkruste statt Salz

@@ -3,6 +3,6 @@
   "name": "Rabenküken",
   "kategorie": "pet",
   "aktuell": "v001",
-  "status": "v001: Mini-Oberster-Rabenpriester (Wunsch des Nutzers), ruhe und laufen – Spieldatei img/figuren-echt3d/pet.rabenkueken.glb",
+  "status": "v001: Mini-Oberster-Rabenpriester (Wunsch des Nutzers) als Pet (#180, Baustein #170): Bewegungen ruhe, gehen, laufen, freude (einmal, beim Fund) – img/figuren-echt3d/pet.rabenkueken.glb (+ .mobil.glb), Symbolbild img/objekte3d/pets/pet.rabenkueken.webp",
   "herkunft": "gegner.oberster_rabenpriester (Meshy)"
 }

@@ -1,12 +1,14 @@
 {
-  "hinweis": "pet.rabenkueken – Rabenküken (Begleiter): Mini-Version des Obersten Rabenpriesters (Meshy „Raven King“), ohne Schwerter, mit fabrik/kind.py verkleinert (×0,3, Kopf ×1,35) – etwa hüfthoch. Bewegungen ruhe, laufen.",
+  "hinweis": "pet.rabenkueken – Rabenküken (Begleiter): Mini-Version des Obersten Rabenpriesters (Meshy „Raven King“), ohne Schwerter, mit fabrik/kind.py verkleinert (×0,3, Kopf ×1,35) – etwa hüfthoch. Bewegungen ruhe, gehen, laufen und freude (#180: Pet; freude = kampfschrei aus rig.py, umbenannt).",
   "koerper_textur": true,
   "stil": "gemalt",
   "stuecke_behalten": true,
   "luecken_schliessen": true,
   "bewegungen": [
     "ruhe",
-    "laufen"
+    "gehen",
+    "laufen",
+    "kampfschrei"
   ],
   "huelle": [],
   "teilnetze": [],
