@@ -340,10 +340,22 @@
    "y": 5856
   },
   {
+   "id": "zunftschmied",
+   "rolle": "Meisterschmied der Zunft",
+   "x": 7062,
+   "y": 5930.8
+  },
+  {
+   "id": "zunftschmiede_wache",
+   "rolle": "Wache am Tor der Zunftschmiede (ab Stufe 60)",
+   "x": 7055,
+   "y": 5937.6
+  },
+  {
    "id": "zunftmeister",
    "rolle": "Zunftmeisterin der Bergleute",
    "x": 7060,
-   "y": 5936
+   "y": 5943.5
   },
   {
    "id": "zunftbankier",
@@ -1489,43 +1501,43 @@
     "id": "esse_zunft_1",
     "station": "esse",
     "x": 7055,
-    "y": 5934.4
+    "y": 5931.2
    },
    {
     "id": "esse_zunft_2",
     "station": "esse",
-    "x": 7058.3,
-    "y": 5934.4
+    "x": 7057.7,
+    "y": 5931.2
    },
    {
     "id": "esse_zunft_3",
     "station": "esse",
-    "x": 7061.7,
-    "y": 5934.4
+    "x": 7060.3,
+    "y": 5931.2
    },
    {
     "id": "esse_zunft_4",
     "station": "esse",
-    "x": 7065,
-    "y": 5934.4
+    "x": 7063,
+    "y": 5931.2
    },
    {
     "id": "amboss_zunft_1",
     "station": "amboss",
-    "x": 7056.6,
-    "y": 5935.6
+    "x": 7056.3,
+    "y": 5932.8
    },
    {
     "id": "amboss_zunft_2",
     "station": "amboss",
-    "x": 7063.4,
-    "y": 5935.6
+    "x": 7061.7,
+    "y": 5932.8
    },
    {
     "id": "brennofen_zunft",
     "station": "brennofen (neu, Systeme)",
-    "x": 7049,
-    "y": 5934
+    "x": 7051.5,
+    "y": 5930.4
    }
   ],
   "laeden": [
@@ -1615,9 +1627,9 @@
   ],
   "viertel": {
    "Marktviertel": 30,
-   "Burgviertel": 7,
-   "Zunftviertel": 16,
-   "Seeufer": 13,
+   "Burgviertel": 6,
+   "Zunftviertel": 13,
+   "Seeufer": 15,
    "Unterstadt": 18
   },
   "zunftstollen": {
@@ -1641,6 +1653,31 @@
     "x": 11878,
     "y": 9646.4
    }
+  },
+  "zunftschmiede": {
+   "flaeche": [
+    7048,
+    5921,
+    7070,
+    5936
+   ],
+   "tor": [
+    7056,
+    5934,
+    7059,
+    5935
+   ],
+   "wache": [
+    7058,
+    5937.6
+   ],
+   "bankkiste": {
+    "id": "steinhag_zunftschmiede_bankkiste",
+    "x": 7067,
+    "y": 5927.4
+   },
+   "beruf": "schmieden",
+   "ab": 60
   }
  },
  "zunft_adern": [

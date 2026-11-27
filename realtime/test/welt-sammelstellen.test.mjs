@@ -32,7 +32,10 @@ console.log("\nSammelstellen");
 const SUED_HOLZ = ["eiche", "tanne", "eibe", "moorweide"], SUED_ERZ = ["kupfer", "eisen", "schwarzeisen", "sterneisen"], GLUT = ["moorweide", "kernbaum", "weltenbaum", "sterneisen", "splittereisen", "ureisen"];
 const HOCHL = ["eiche", "tanne", "eibe", "moorweide", "kernbaum", "weltenbaum", "kupfer", "eisen", "schwarzeisen", "sterneisen", "splittereisen", "ureisen"];   /* Hochlande (#147, „Hochlande füllen“): Grundholz und niedrige Erze nahe Steinhag und an den Wegen, Höheres an den Hängen */
 const ureisenOben = gruppen.flatMap((g) => g.pts.filter((p) => imHoch(p) && p.art === "ureisen").map((p) => p.id)); check(!ureisenOben.length, "Hochlande: Ureisen nur unter Tage", ureisenOben);
-const falsch = gruppen.filter((g) => !g.einzeln).flatMap((g) => g.pts.filter((p) => !(imHoch(p) || imUnter(p) ? HOCHL : imOst(p) ? GLUT : g.typ === "holz" ? SUED_HOLZ : SUED_ERZ).includes(p.art)).map((p) => `${g.name}: ${p.art}`));
+/* Zunfthäuser (#168): der Hain des Holzfällerhofs ist ab Holzfällerei 60 – dort gehören Kernbaum und Weltenbaum hin */
+const ZUNFT = /^Hain des Holzfällerhofs/, zg = gruppen.filter((g) => ZUNFT.test(g.name)).flatMap((g) => g.pts.map((p) => p.art));
+check(zg.includes("kernbaum") && zg.includes("weltenbaum") && zg.every((a) => ["eibe", "kernbaum", "weltenbaum"].includes(a)), `Hain des Holzfällerhofs (Zunft, ab 60): ${zg.join(", ")}`);
+const falsch = gruppen.filter((g) => !g.einzeln && !ZUNFT.test(g.name)).flatMap((g) => g.pts.filter((p) => !(imHoch(p) || imUnter(p) ? HOCHL : imOst(p) ? GLUT : g.typ === "holz" ? SUED_HOLZ : SUED_ERZ).includes(p.art)).map((p) => `${g.name}: ${p.art}`));
 check(!falsch.length, "Stufen passen: Süden/Westen Holz 1–35 und Erz 1–35, Glutsande ab 35 (bis Ureisen/Weltenbaum 65), Hochlande 40–65", falsch);
 const pflicht = ["heckenhof", "summweide", "halber_weg", "erlengrund", "kreuzstein", "schilfsee", "lehmfurt", "distelhof", "faehrtenlager", "laemmerhang", "kielmund", "moewenbucht", "haferstedt", "netzbucht", "sandquell", "glutbrunn", "salzpfanne", "nordstrand"];
 const RADIUS = { haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 34 };

@@ -77,6 +77,23 @@ npc.push({ id: "wache_suedstrasse", rolle: "Wache an der Südstraße (keine Sper
   lies("mole", mx, my + 1.2, "Die Mole. Am Ende brennt das Leuchtfeuer, das die Boote heimholt.");
   /* Brücke über die Kiel nach Westen */
   { let y = cy - 14, x0 = cx; while (!"~".includes(zeichen(x0 - 1, y))) x0--; let x1 = x0; while ("~".includes(zeichen(x1 - 1, y)) && x1 > x0 - 12) x1--; const bx = (x0 + x1) / 2 + 1; ding("dorf_bruecke_01", bx, y + 1.3, { id: "kiel_bruecke" }); freigeben.push({ art: "rechteck", x0: x1 - 1.5, y0: y - 1.3, x1: x0 + 1.5, y1: y + 1.3 }); }
+  /* Fischerzunft (#168, ab Fischen 60): Privatsteg am Strand südwestlich der Stadt mit vielen Fangstellen (Seeaal, Klippenbarsch, Hering), Räucherhütte, Bankkiste;
+     der Strand davor ist eingehegt (Hecke bis ins Wasser), ein Tor im Osten – das Feld des Tors bekommt Systeme als Tür (beruf fischen, Stufe 60) */
+  { const PY = 7353.3, X1 = 6402, Y0 = 7345, Y1 = 7360, TOR = 7353; let hx = 0; const hid = () => "zaun_fischerzunft_" + ++hx;
+    let land = 6400; while (land > 6360 && !meer(land - 1 + 0.5, PY - 1.3)) land--;   /* erstes Meerfeld westlich: dort setzt der Steg an */
+    for (const [y, yy] of [[Y0 + 0.96, Y0 + 0.5], [Y1, Y1 - 0.5]]) { let a = X1 - 1.2; while (a > 6360 && !meer(a - 1.2, yy)) a -= 2.2; for (let x = a; x <= X1 - 1.2 + 0.01; x += 2.2) ding("k_hecke", x, y, { id: hid() }); }
+    let lo = -Infinity, hi = Infinity; for (let y = Y0 + 1.7; y < Y1 + 0.01; y += 0.8) { const yy = Math.min(y, Y1 - 0.8); if (yy - 0.96 > TOR + 1.5 || yy < TOR - 1.5) { ding("k_hecke", X1 - 1.2, yy, { id: hid() }); if (yy < TOR) lo = Math.max(lo, yy); else hi = Math.min(hi, yy - 0.96); } }
+    for (let i = 0; i < 3; i++) steg(land + 4.9 - i * 7.9, PY, "fischerzunft_steg_" + (i + 1));
+    const fang = [["seeaal", 45, 4], ["seeaal", 45, 6], ["klippenbarsch", 35, 8], ["seeaal", 45, 10], ["seeaal", 45, 12], ["hering", 20, 14]];
+    fang.forEach(([f, st, dx], i) => fischplatz("fischerzunft_fang_" + (i + 1), f, st, land - dx + 0.5, i % 2 ? PY - 0.8 : PY - 1.8, 0, i % 2 ? 1 : -1, "Vom Privatsteg der Fischerzunft aus beißen " + { seeaal: "Seeaale", klippenbarsch: "Klippenbarsche", hering: "Heringe" }[f] + "."));
+    for (const f of vorschlag.fischplaetze.filter((f) => f.id.startsWith("fischerzunft_fang_"))) if (Math.abs(f.stehplatz[1] - PY) > 2) throw new Error("Fischerzunft: Fangstelle nicht am Steg " + f.id);
+    ding("kueste_raeucherhuette", 6396, 7349.5, { id: "fischerzunft_raeucherhuette" }); ding("kueste_netze", 6393, 7357.5, { id: "fischerzunft_netze" }); ding("k_kiste", 6399, 7357.6, { id: "fischerzunft_bankkiste" });
+    lies("fischerzunft_bankkiste", 6399, 7359, "Die Bankkiste der Fischerzunft. Was du hier einlegst, liegt auf deinem Konto.");
+    lies("fischerzunft", X1 + 1.6, TOR - 2.2, "Der Privatsteg der Fischerzunft. „Nur für Meister des Fischens – ab Stufe 60.“");
+    weg([[cx - 1, cy + 34], [6416, 7352], [X1 + 1, TOR]], 1.8, "e");
+    vorschlag.fischerzunft = { zunft: "fischerzunft", name: "Fischerzunft", ort: "Kielmund", beruf: "fischen", ab: 60, flaeche: [land - 24, Y0, X1, Y1], tor: [X1 - 3, Math.floor(lo), X1 - 1, Math.ceil(hi) - 1], wache: [X1 + 1.5, TOR],
+      bankkiste: { id: "fischerzunft_bankkiste", x: 6399, y: 7359 }, stationen: [{ id: "raeucherhuette_fischerzunft", station: "raeucherhuette", x: 6396, y: 7351 }], fang: fang.map((_, i) => "fischerzunft_fang_" + (i + 1)) };
+    npc.push({ id: "zunftfischer", rolle: "Meisterfischer der Zunft", x: land + 1.5, y: PY - 1.3 }, { id: "fischerzunft_wache", rolle: "Wache am Tor der Fischerzunft (ab Stufe 60)", x: X1 + 1.5, y: TOR + 1.5 }); }
   npc.push({ id: "hafenmeister", rolle: "Hafenmeister", x: kaiAn(cy)[0] + 2, y: cy }, { id: "wirtin_ankerkraut", rolle: "Taverne", x: cx + 11, y: cy - 15.6 }, { id: "fischhaendler", rolle: "Fischmarkt", x: cx - 4, y: cy + 8.8 },
     { id: "bankier_kielmund", rolle: "Bank", x: cx + 26, y: cy - 16 }, { id: "schmied_kielmund", rolle: "Werkstatt", x: cx + 25, y: cy + 12 }, { id: "schiffbauer", rolle: "Werft", x: kaiAn(cy + 14)[0] + 3, y: cy + 16 }); }
 

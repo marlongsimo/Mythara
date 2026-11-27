@@ -66,6 +66,9 @@ if os.path.exists(_sp): stellen += json.load(open(_sp, encoding='utf8')).get('kr
 # Hochlande (#147): Stellen aus hochlande.mjs (Kennung hochlande_…)
 _hp = os.path.join(RT, 'welt', 'hochlande_orte.json')
 if os.path.exists(_hp): stellen += json.load(open(_hp, encoding='utf8')).get('kraeuter', [])
+# Zunfthäuser (#168): Beete im Kräutergarten der Heilkundigen (zunfthaeuser.mjs, Kennung kraeutergarten_…)
+_zp = os.path.join(RT, 'welt', 'zunft_orte.json')
+if os.path.exists(_zp): stellen += json.load(open(_zp, encoding='utf8')).get('kraeuter', [])
 # Phase 10 (#82, #133): Kräuterhof an der Küste (kueste.mjs, Hof 6418 · 7064) – Beete („a“, 6410–6425 × 7065–7070) mit vorhandenen Kräutern der Stufe 20–45
 # und Ringelblume für die Zucht-Quest; keine neuen Arten. Kessel vor dem Kräuterhaus (Objekt kraeuterhof_kessel).
 _beet = {'ringelblume': [(6411.5, 7066.5), (6415.5, 7069.5)], 'moorgloeckchen': [(6415.5, 7066.5), (6419.5, 7069.5)],

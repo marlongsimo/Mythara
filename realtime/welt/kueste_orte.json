@@ -42,6 +42,18 @@
    "y": 6770
   },
   {
+   "id": "zunftfischer",
+   "rolle": "Meisterfischer der Zunft",
+   "x": 6390.5,
+   "y": 7352
+  },
+  {
+   "id": "fischerzunft_wache",
+   "rolle": "Wache am Tor der Fischerzunft (ab Stufe 60)",
+   "x": 6403.5,
+   "y": 7354.5
+  },
+  {
    "id": "hafenmeister",
    "rolle": "Hafenmeister",
    "x": 6383,
@@ -112,6 +124,72 @@
    "stehplatz": [
     6384.5,
     7310.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_1",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6385.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6385.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_2",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6383.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6383.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_3",
+   "fisch": "klippenbarsch",
+   "stufe": 35,
+   "x": 6381.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6381.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_4",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6379.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6379.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_5",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6377.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6377.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_6",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 6375.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6375.5,
+    7352.5
    ]
   },
   {
@@ -216,5 +294,49 @@
    "x": 6380,
    "y": 7062
   }
- ]
+ ],
+ "fischerzunft": {
+  "zunft": "fischerzunft",
+  "name": "Fischerzunft",
+  "ort": "Kielmund",
+  "beruf": "fischen",
+  "ab": 60,
+  "flaeche": [
+   6365,
+   7345,
+   6402,
+   7360
+  ],
+  "tor": [
+   6399,
+   7350,
+   6401,
+   7354
+  ],
+  "wache": [
+   6403.5,
+   7353
+  ],
+  "bankkiste": {
+   "id": "fischerzunft_bankkiste",
+   "x": 6399,
+   "y": 7359
+  },
+  "stationen": [
+   {
+    "id": "raeucherhuette_fischerzunft",
+    "station": "raeucherhuette",
+    "x": 6396,
+    "y": 7351
+   }
+  ],
+  "fang": [
+   "fischerzunft_fang_1",
+   "fischerzunft_fang_2",
+   "fischerzunft_fang_3",
+   "fischerzunft_fang_4",
+   "fischerzunft_fang_5",
+   "fischerzunft_fang_6"
+  ]
+ }
 }

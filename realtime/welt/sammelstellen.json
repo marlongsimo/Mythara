@@ -686,6 +686,67 @@
    ]
   },
   {
+   "name": "Hain des Holzfällerhofs: Kernbäume",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "holzfaellerhof_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6393.5,
+     "y": 7013.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_kernbaum_2",
+     "art": "kernbaum",
+     "x": 6399.5,
+     "y": 7014.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_kernbaum_3",
+     "art": "kernbaum",
+     "x": 6405.5,
+     "y": 7013.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_eibe_4",
+     "art": "eibe",
+     "x": 6407.5,
+     "y": 7018.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Hain des Holzfällerhofs: Weltenbaum-Setzlinge",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "holzfaellerhof_weltenbaum_5",
+     "art": "weltenbaum",
+     "x": 6394.5,
+     "y": 7019.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_weltenbaum_6",
+     "art": "weltenbaum",
+     "x": 6400.5,
+     "y": 7020.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_eibe_7",
+     "art": "eibe",
+     "x": 6404.5,
+     "y": 7022.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
    "name": "Bergwald unter Steinhag",
    "ort": "steinhag",
    "baeume": [
