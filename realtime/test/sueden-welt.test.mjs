@@ -143,10 +143,11 @@ try {
   check(QB.erledigt(S2, ute.b[S2.id], "stock"), "Dem Summen gefolgt, den Stock aufgerichtet");
   { let i = 0; const t0 = Date.now(); while (anzahl(ute, "ringelblume") < 6 && Date.now() - t0 < 90000) { const [x, y, id] = RINGEL[i++ % 3]; await sammeln(ute, "kraut", id, x, y, "ringelblume", Math.min(6, anzahl(ute, "ringelblume") + 1), 15000); }
     check(anzahl(ute, "ringelblume") >= 6 && QB.erledigt(S2, ute.b[S2.id], "blumen"), `Sechs Ringelblumen mit der Sichel (${anzahl(ute, "ringelblume")})`); }
-  await zu(ute, fig(S2, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "blumen_mira"); await schlaf(300);
-  check(QB.erledigt(S2, ute.b[S2.id], "mira") && anzahl(ute, "ringelblume") === 3, "Drei Ringelblumen an Mira in der Waldmark");
-  { const vor = anzahl(ute, "kleiner_heiltrank"); await zu(ute, fig(S2, "imme")); await rede(ute, "imme"); await sag(ute, "imme", "abgeben"); await schlaf(600);
-    check(ute.b[S2.id] === "fertig" && anzahl(ute, "ringelblume") === 0 && anzahl(ute, "kleiner_heiltrank") === vor + 1, "S2 fertig, Lohn abgeholt: ein kleiner Heiltrank"); }
+  /* auf langsamen Rechnern kommt beim Sammeln manchmal eine Blume mehr – darum relativ prüfen */
+  { const rb = anzahl(ute, "ringelblume"); await zu(ute, fig(S2, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "blumen_mira"); await schlaf(300);
+    check(QB.erledigt(S2, ute.b[S2.id], "mira") && anzahl(ute, "ringelblume") === rb - 3, "Drei Ringelblumen an Mira in der Waldmark"); }
+  { const vor = anzahl(ute, "kleiner_heiltrank"), rb = anzahl(ute, "ringelblume"); await zu(ute, fig(S2, "imme")); await rede(ute, "imme"); await sag(ute, "imme", "abgeben"); await schlaf(600);
+    check(ute.b[S2.id] === "fertig" && anzahl(ute, "ringelblume") === rb - 3 && anzahl(ute, "kleiner_heiltrank") === vor + 1, "S2 fertig, Lohn abgeholt: ein kleiner Heiltrank"); }
 
   console.log("Miras Rezeptbuch (Waldmark, Rabenmoor)");
   { const M = QUESTS.find((q) => q.id === "waldmark_miras_rezeptbuch"), WEG = [[6458.5, 6429.5, "wegerich_1"], [6453.5, 6437.5, "wegerich_3"], [6423.5, 6431.5, "wegerich_4"]];
@@ -165,6 +166,9 @@ try {
   { const K = QUESTS.find((q) => q.id === "kueste_der_kraeuterhof"), kob = (id) => K.objekte.find((o) => o.id === id);
     await zu(ute, fig(K, "frieda")); await rede(ute, "frieda"); await sag(ute, "frieda", "annehmen"); await schlaf(400);
     check(stand(ute, K).phase === "laeuft", "Ute nimmt den Kräuterhof an (nach Miras Rezeptbuch, Kräuterkunde 20)");
+    /* Platz im Rucksack (24) schaffen: Reste aus S4/S9, die der Kräuterhof nicht braucht – ein voller Rucksack verschluckt sonst Questgegenstände (Issue) */
+    for (const g of ["brot", "barren_kupfer", "stamm_eiche", "fisch_muehlbarsch_gebraten"]) { const i = (ute.inv.rucksack || []).findIndex((x) => (typeof x === "string" ? x : x.g) === g); if (i < 0) continue;
+      sende(ute, { t: "inv", tat: "fallen", i }); await warte(ute, (m) => m.t === "inventar"); }
     await zu(ute, fig(K, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "samen_nehmen"); await schlaf(300);
     await zu(ute, fig(K, "hedda")); await rede(ute, "hedda"); await sag(ute, "hedda", "ableger_bitten"); await schlaf(300);
     check(anzahl(ute, "ringelblumensamen") === 1 && anzahl(ute, "moorgloeckchen_ableger") === 1, "Samen von Mira, Ableger von Hedda");
