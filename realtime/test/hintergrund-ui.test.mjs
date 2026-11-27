@@ -85,7 +85,7 @@ try {
   await p.evaluate(() => window.EZW.welt3d.versetzen(6536, 6583)); await p.waitForFunction(() => window.EZK && window.EZK.bereit && window.EZK.z, null, { timeout: 60000 }); await p.waitForTimeout(1500);
   for (let i = 0; i < 6; i++) { await p.keyboard.press("1"); await p.waitForTimeout(300); }
   await sicht(false); await p.evaluate(() => window.__stumm()); await p.waitForTimeout(3000); await sicht(true); /* kurz: vier Banditen schlagen weiter auf den stehenden Helden ein */
-  await p.waitForFunction(() => window.EZK && window.EZK.netz && window.EZK.z, null, { timeout: 30000 }).catch(() => {}); await p.waitForTimeout(2500);
+  await p.waitForFunction(() => (window.__wsl || []).some((x) => /welt offen/.test(x)) && window.EZK && window.EZK.netz && window.EZK.z, null, { timeout: 90000, polling: 500 }).catch(() => {}); await p.waitForTimeout(2500); /* erst die neue Verbindung: gleich nach dem Abbruch meldet die alte, stumme noch „verbunden“ (#109) */
   const nachher = await p.evaluate(() => { const K = window.EZK; return { namen: [...K.namen.values()].map((n) => n.name), annas: [...K.namen.values()].filter((n) => n.name === "Anna").length, helden: K.z.w.filter((e) => e[1] === 1).length, netz: Boolean(K.netz) }; });
   check(nachher.netz && nachher.annas === 1 && nachher.helden === 1, `Nach dem Abbruch im Kampf: verbunden, genau ein Held (${JSON.stringify(nachher)})`);
   const z0 = await p.evaluate(() => JSON.stringify(window.EZK.z.w.map((e) => [e[0], e[4], e[5], e[7]]))); await p.waitForTimeout(1500);
