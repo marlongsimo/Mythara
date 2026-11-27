@@ -1,0 +1,11 @@
+{
+  "id": "ruestung.beine.steinvogt",
+  "name": "Löwenwacht – beine",
+  "kategorie": "ruestung",
+  "stufe": 70,
+  "klasse": "Nahkampf",
+  "aktuell": "v001",
+  "status": "v001: Modell des Nutzers (uebergabe/figuren/ruestung70/nah_tassets.blend, quelle/meshy.glb), ersetzt die umgefärbte Fassung aus abe4736cc; eingepasst mit fabrik/teil_anpassen.py wie der Magierrock (oben=-0.46, hoehe=0.52) auf basemann3d und basefrau3d, über ein Probe-Rig (gleiches Skelett, Bindung geprüft) als Teil ruestung.beine.steinvogt ausgelagert – Helden-glb unverändert; .mobil.glb und Rucksackbild img/objekte3d/ausruestung/stufe70/ruestung.beine.steinvogt.webp",
+  "herkunft": "eigenes Modell (Nutzer)",
+  "hinweis": "Satzname laut Nutzer „Löwenwacht“ (früher Steinvogt-Platte); Dateinamen und Ebenen (*.steinvogt) bleiben."
+}
