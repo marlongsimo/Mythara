@@ -66,7 +66,8 @@ INSTANZEN.push({ id: "federmutter_kammer", name: "Das Nest der Federmutter", fel
 
 /* ───────── Phase 10 (#92, G3): der Wrackkapitän in seiner Kajüte (Region wrack_kajuete, Weltfelder 11488…11519 × 9600…9631) ─────────
    Geist eines Kapitäns: Säbelwirbel rundum, ruft unter 60 % zwei Strandräuber, unter 30 % schwappt Geisterwasser durch die Kajüte (Deckung hinter Kisten). Instanz je Spieler (Schalter aus G3). */
-BOSSE.wrackkapitaen = { typ: "wrackkapitaen", phasen: [
+/* #178: Schläger, schwach gegen Magie – Kernmechaniken Deckung (Geisterflut) und Diener (zwei Strandräuber), Säbelwirbel als Rundumschlag */
+BOSSE.wrackkapitaen = { typ: "wrackkapitaen", art: "schlaeger", phasen: [
   { ab: 1, ansagen: [{ name: "Säbelwirbel", alle: 4, felder: "rundum", schaden: [6, 11] }] },
   { ab: 0.6, text: "Der Wrackkapitän ruft seine Mannschaft!", ruf: { art: "strandraeuber_saebel", n: 2, text: "Alle Mann an Deck!" }, ansagen: [{ name: "Säbelwirbel", alle: 3, felder: "rundum", schaden: [6, 11] }] },
   { ab: 0.3, text: "Geisterwasser flutet die Kajüte!", ansagen: [{ name: "Geisterflut", sek: 4, felder: "raum", deckung: true, vorlauf: 2, schaden: [9, 15] }] } ] };

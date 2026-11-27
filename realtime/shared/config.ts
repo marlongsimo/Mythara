@@ -498,7 +498,7 @@ Object.assign(MONSTER, {
   /** Der Wrackkapitän: Stufe 40, Geist, Mini-Boss in der Kajüte (Instanz wrack_kajuete, G3); ruft Strandräuber */
   wrackkapitaen: { name: "Der Wrackkapitän", stufe: 40, bild: "img/echtzeit/bandit.webp", hoehe: 130, lp: 200, tempo: 3.0, angriffswert: { nah: 48, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 40, magie: 35 }, r: 0.5, untot: true, boss: true, wiederkehr: 600,
     angriff: { name: "Geistersäbel", art: "nah", schaden: [1, 12], takt: 2.5, reich: 1.7, aushol: 0 },
-    v2: { staerke: 75, geschick: 55, defense: 45, magie: 30, staerkeBonus: 20, ticks: 5, abwehr: { nah: 20, fern: 20, magie: 0 } },
+    v2: { staerke: 75, geschick: 55, defense: 45, magie: 30, staerkeBonus: 20, ticks: 5, abwehr: { nah: 30, fern: 30, magie: -5 } /* #178: schwach gegen Magie */ },
     info: "Der Kapitän des Wracks. Er ist mit seinem Schiff untergegangen – und hat es nie verlassen.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [120, 250] }] }, { wurf: [{ g: "fisch_seeaal_roh", chance: 50, anzahl: [2, 4] }] }, { wurf: [{ g: "barren_eisen", chance: 30, anzahl: [3, 6] }] }, { wurf: [{ g: "@selten", chance: 100 / 12 }, { g: "@episch", chance: 100 / 60 }] }] },
   /* ───── Süden (#126, doku/konzepte/sueden.md): Heckenhof bis Lehmfurt, Stufe 2–30; Beute nach beute.md (nur Fleisch neu) ───── */
