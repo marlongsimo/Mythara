@@ -25,6 +25,7 @@ export const QUEST3: QuestDef = {
   logFertig: "Du hast den Waldsäbel geschmiedet. Er trifft, was die Splitter verändert haben, härter – Waldgolems und Mooshocker.",
   logAbgabe: "Der Waldsäbel ist fertig. Zeig ihn Förster Hartwig am Waldweg westlich der Waldmark.",
   punkte: 1,
+  glueckwunsch: "Der Säbel steht dir. Geh mit dem Wald – und lass die Eichen im Norden in Ruhe.",
   belohnungText: "Belohnung: der Gesegnete Waldsäbel (untauschbar, ab Geschick 5, +15 % Schaden gegen Waldwesen) und XP in Holzfällerei, Bergbau und Schmieden",
   figuren: [{ id: "foerster", name: F, modell: "npc.foerster", x: 6362.5, y: 6452.5, blick: [0, 1] }],
   schritte: [

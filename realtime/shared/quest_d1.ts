@@ -133,6 +133,7 @@ export const QUEST_D1: QuestDef = {
   },
   sperren: { herstellen: { kettenglied: [{ wenn: { phase: ["neu", "fertig"] }, text: "Kettenglieder schmiedest du nur für Kords Fähre." }, { wenn: { erledigt: ["glieder"] }, text: "Acht Glieder hast du schon." }] } },
   schalter: { faehre_frei: FERTIG },
+  glueckwunsch: "Sie fährt! Zum ersten Mal seit dem Frühjahr. Die Fähre gehört dir, wann du willst.",
   belohnungText: "Belohnung: 1.000 Schmieden-XP, 1.000 Bergbau-XP, 400 Splitter · danach: die Fähre fährt – der kurze Weg zum Ostufer",
   belohnung: { berufe: { schmieden: 1000, bergbau: 1000 }, splitter: 400 },
   punkte: 2,

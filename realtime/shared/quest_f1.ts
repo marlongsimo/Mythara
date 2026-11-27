@@ -83,6 +83,7 @@ export const QUEST_F1: QuestDef = {
       ],
     },
   },
+  glueckwunsch: "Zwanzig Jahre alt, der Brief! Aber du bist echt. Willkommen in Glutbrunn.",
   belohnungText: "Belohnung: Fernkampf 3.000, Stärke 3.000, Defense 2.000 XP, 600 Splitter · danach: Wegstein-Ziel Glutbrunn",
   belohnung: { xp: { fernkampf: 3000, staerke: 3000, defense: 2000 }, splitter: 600 },
   punkte: 2,

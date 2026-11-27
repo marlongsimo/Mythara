@@ -118,6 +118,7 @@ export const QUEST_E1: QuestDef = {
     },
   },
   schalter: { dornenwall_offen: [FERTIG, { erledigt: RANKEN }], grauwacht_abtei: FERTIG },
+  glueckwunsch: "Othmar … und du. Grauwacht hat wieder Besuch. Die Abtei lebt.",
   belohnungText: "Belohnung: Holzfällerei 800, Stärke 800, Defense 800 XP, 300 Splitter · danach: der alte Weg durch den Nordsaum ist offen (Abkürzung), Wegstein-Ziel Heidrast, die Abtei ist bewohnt",
   belohnung: { xp: { staerke: 800, defense: 800 }, berufe: { holzfaellerei: 800 }, splitter: 300 },
   punkte: 2,

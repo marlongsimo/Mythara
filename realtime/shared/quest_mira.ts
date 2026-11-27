@@ -85,6 +85,7 @@ export const QUEST_MIRA: QuestDef = {
     },
   },
   schalter: { mira_ankauf: FERTIG },
+  glueckwunsch: "Mein Heft! Mit allen Flecken! Du bist ein Schatz, weißt du das?",
   belohnungText: "Belohnung: Kräuterkunde-XP, 3 Heiltränke, 80 Splitter · danach: Mira kauft deine Tränke an (halber Ladenpreis)",
   belohnung: { berufe: { kraeuterkunde: 400 }, splitter: 80, gegenstaende: [{ g: "heiltrank", n: 3 }] },
   punkte: 1,

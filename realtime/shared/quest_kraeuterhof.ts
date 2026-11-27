@@ -97,6 +97,7 @@ export const QUEST_KRAEUTERHOF: QuestDef = {
     },
   },
   schalter: { kraeuterhof_beete: FERTIG },
+  glueckwunsch: "Die Beete blühen, der Kessel dampft. Der Kräuterhof lebt wieder.",
   belohnungText: "Belohnung: Kräuterkunde 2.500 XP, 300 Splitter · danach: auf dem Kräuterhof wachsen Ringelblume und Moorglöckchen",
   belohnung: { berufe: { kraeuterkunde: 2500 }, splitter: 300 },
   punkte: 1,

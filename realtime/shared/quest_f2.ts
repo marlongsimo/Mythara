@@ -72,6 +72,7 @@ export const QUEST_F2: QuestDef = {
   },
   sperren: { herstellen: { pfannenblech: [{ wenn: { phase: ["neu", "fertig"] }, text: "Ein Pfannenblech schmiedest du nur für Ruwens Siederei." }, { wenn: { erledigt: ["blech"] }, text: "Das Blech hast du schon." }] } },
   schalter: { ruwen_salz: FERTIG },
+  glueckwunsch: "Salz und Feuer, und alles heil. Ruwen verkauft wieder, und die Pfanne glüht.",
   belohnungText: "Belohnung: Schmieden 3.000, Kochen 2.000 XP, 500 Splitter, das erste Salz · danach: Ruwen Kehl verkauft Salz",
   belohnung: { berufe: { schmieden: 3000, kochen: 2000 }, splitter: 500 },
   punkte: 2,

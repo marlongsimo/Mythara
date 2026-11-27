@@ -78,6 +78,7 @@ export const QUEST_TAVERNE: QuestDef = {
   },
   /* Küche (Herd, Kessel) ab dem Annehmen, damit die Suppe gekocht werden kann; Verkauf erst nach dem Abschluss */
   schalter: { taverne_kueche: [LAEUFT, FERTIG], taverne_offen: FERTIG },
+  glueckwunsch: "Die Taverne ist offen! Rein mit dir, ist warm drinnen.",
   belohnungText: "Belohnung: Kochen-XP, 80 Splitter · danach: die Taverne der Waldmark ist offen (Herd, Kessel, Verkauf einfacher Gerichte)",
   belohnung: { berufe: { kochen: 400 }, splitter: 80 },
   punkte: 1,

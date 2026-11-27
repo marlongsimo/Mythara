@@ -76,6 +76,9 @@ export const QUEST_S8: QuestDef = {
     },
   },
   schalter: { s8_trophaee: FERTIG },
+  /* Das Fell des Graupelzes an der Wand der Sägemühle (6389 | 7002), sichtbar nach der Quest (#134, QuestDef.deko) */
+  deko: [{ id: "trophaee_graupelz", glb: "img/objekte3d/sueden/trophaee_graupelz.glb", x: 6389, y: 7002, h: 1.8, dreh: 90, sichtbar: FERTIG }],
+  glueckwunsch: "SEIN FELL KOMMT AN DIE WAND! Und meine Pferde schlafen wieder!",
   belohnungText: "Belohnung: Stärke 800, Geschick 400 XP, 2 Heiltränke, 150 Splitter · danach: das Fell des Graupelzes an der Wand der Sägemühle",
   belohnung: { xp: { staerke: 800, geschick: 400 }, splitter: 150, gegenstaende: [{ g: "heiltrank", n: 2 }] },
   punkte: 1,
