@@ -11,7 +11,8 @@ let ok = true; const check = (b, t, e = []) => { console.log(`  ${b ? "✓" : "�
 const G = await gemeinsam(), bib = bibliothek(), lies = (f) => JSON.parse(readFileSync(join(WELT, f), "utf8"));
 const S = lies("sammelstellen.json"), gruppen = [...S.lichtungen.map((l) => ({ ...l, typ: "holz", pts: l.baeume })), ...S.senken.map((s) => ({ ...s, typ: "erz", pts: s.adern }))];
 const ORTE = { ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, leuchtturm: [6176, 7036] };
-const WEST = [6030, 6650, 6720, 7400], OST = [6860, 6420, 7620, 7680], imOst = (p) => p.x >= OST[0];
+const WEST = [6030, 6650, 6720, 7400], OST = [6860, 6420, 7620, 7680], HOCH = [6780, 5380, 7700, 6300];
+const imUnter = (p) => p.y > 9000, imHoch = (p) => !imUnter(p) && p.x >= HOCH[0] && p.y < 6350, imOst = (p) => !imUnter(p) && p.x >= OST[0] && p.y >= 6350, imWest = (p) => !imUnter(p) && !imHoch(p) && !imOst(p);
 function welt(box, extra = []) {
   const R = new G.WeltRaster();
   for (const n of readdirSync(join(WELT, "regionen"))) { const rp = join(WELT, "regionen", n, "region.json"); if (!existsSync(rp)) continue; const r = JSON.parse(readFileSync(rp, "utf8")); if (r.ebene || r.entwurf) continue;
@@ -24,8 +25,9 @@ const flut = (R, [sx, sy], box) => { const s = 2, seen = new Set(), q = [[Math.f
 
 console.log("\nSammelstellen");
 const SUED_HOLZ = ["eiche", "tanne", "eibe", "moorweide"], SUED_ERZ = ["kupfer", "eisen", "schwarzeisen", "sterneisen"], GLUT = ["moorweide", "kernbaum", "weltenbaum", "sterneisen", "splittereisen", "ureisen"];
-const falsch = gruppen.filter((g) => !g.einzeln).flatMap((g) => g.pts.filter((p) => !(imOst(p) ? GLUT : g.typ === "holz" ? SUED_HOLZ : SUED_ERZ).includes(p.art)).map((p) => `${g.name}: ${p.art}`));
-check(!falsch.length, "Stufen passen: Süden/Westen Holz 1–35 und Erz 1–35, Glutsande ab 35 (bis Ureisen/Weltenbaum 65)", falsch);
+const HOCHL = ["eibe", "kernbaum", "weltenbaum", "sterneisen", "splittereisen", "ureisen"];   /* Hochlande (#147): Stufe 40–65 (Eibe laut Konzept dabei) */
+const falsch = gruppen.filter((g) => !g.einzeln).flatMap((g) => g.pts.filter((p) => !(imHoch(p) || imUnter(p) ? HOCHL : imOst(p) ? GLUT : g.typ === "holz" ? SUED_HOLZ : SUED_ERZ).includes(p.art)).map((p) => `${g.name}: ${p.art}`));
+check(!falsch.length, "Stufen passen: Süden/Westen Holz 1–35 und Erz 1–35, Glutsande ab 35 (bis Ureisen/Weltenbaum 65), Hochlande 40–65", falsch);
 const pflicht = ["heckenhof", "summweide", "halber_weg", "erlengrund", "kreuzstein", "schilfsee", "lehmfurt", "distelhof", "faehrtenlager", "laemmerhang", "kielmund", "moewenbucht", "haferstedt", "netzbucht", "sandquell", "glutbrunn", "salzpfanne", "nordstrand"];
 const RADIUS = { haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 34 };
 const fern = pflicht.filter((o) => !gruppen.some((g) => g.ort === o && g.pts.every((p) => Math.hypot(p.x - ORTE[o][0], p.y - ORTE[o][1]) < (RADIUS[o] ?? 12) + 20)));
@@ -35,7 +37,7 @@ const groesse = gruppen.filter((g) => (g.pts.length < 3 || g.pts.length > 6) && 
 check(!groesse.length, "Gruppen von 3–6 Stellen (Ausnahme Phase 9: Ureisen in den Tafelbergen, der einzelne Weltenbaum der Oase)", groesse);
 /* Nachtrag #142: 4–6 einzelne Stellen über der Stufe der Gegend im Süden und Westen, bis Stufe 45, versteckt abseits der Wege */
 { const STUFE = { eiche: 1, tanne: 10, eibe: 20, moorweide: 35, kernbaum: 45, kupfer: 1, eisen: 10, schwarzeisen: 20, sterneisen: 35, splittereisen: 45 };
-  const E = gruppen.filter((g) => g.einzeln && !imOst(g.pts[0])), wegZ = new Set(["e", "k", "p"]);
+  const E = gruppen.filter((g) => g.einzeln && imWest(g.pts[0])), wegZ = new Set(["e", "k", "p"]);
   const GR = readdirSync(join(WELT, "regionen")).filter((n) => existsSync(join(WELT, "regionen", n, "region.json"))).map((n) => { const r = JSON.parse(readFileSync(join(WELT, "regionen", n, "region.json"), "utf8")); return r.ebene || r.entwurf ? null : { x0: r.ursprung[0] * 32, y0: r.ursprung[1] * 32, z: readFileSync(join(WELT, "regionen", n, "gelaende.txt"), "utf8").split("\n") }; }).filter(Boolean);
   const zeichen = (x, y) => { for (const g of GR) { const z = g.z[Math.floor(y) - g.y0]; if (z && x >= g.x0 && x < g.x0 + z.length) return z[Math.floor(x) - g.x0]; } return "?"; };
   const nahWeg = E.filter((g) => { const p = g.pts[0]; for (let dy = -6; dy <= 6; dy++) for (let dx = -6; dx <= 6; dx++) if (wegZ.has(zeichen(p.x + dx, p.y + dy))) return true; return false; }).map((g) => g.name);
@@ -51,9 +53,12 @@ const region1 = gruppen.filter((g) => new Set(g.pts.map((p) => p.region)).size >
 const gp = lies("gegnerplaetze.json").plaetze, nah = gruppen.flatMap((g) => g.pts.filter((p) => gp.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 6)).map((p) => `${g.name} ${p.id}`)); check(!nah.length, "keine Gegnerplätze an den Bäumen und Adern", nah);
 /* gesperrt (man läuft nicht durch den Stamm) und von außen erreichbar */
 { const R = welt(WEST, ["weidenhain"]), w = region("weidenhain"), [WX, WY] = w.region.ursprung.map((v) => v * 32), greifbar = flut(R, [WX + w.spiel.start[0][0], WY + w.spiel.start[0][1]], WEST);
-  const west = gruppen.flatMap((g) => g.pts.filter((p) => !imOst(p)).map((p) => ({ ...p, g: g.name }))), weg = west.filter((p) => !greifbar(p.x, p.y)), offen = west.filter((p) => R.begehbar(p.x, p.y));
+  const west = gruppen.flatMap((g) => g.pts.filter(imWest).map((p) => ({ ...p, g: g.name }))), weg = west.filter((p) => !greifbar(p.x, p.y)), offen = west.filter((p) => R.begehbar(p.x, p.y));
   check(!weg.length, `Westen/Süden: ${west.length} Bäume und Adern von Weidenhain aus erreichbar`, weg.map((p) => `${p.g} ${p.id} ${p.x}|${p.y}`)); check(!offen.length, "ihre Felder sind gesperrt", offen.map((p) => p.id)); }
 { const R = welt(OST), greifbar = flut(R, [6918, 6740], OST);
   const ost = gruppen.flatMap((g) => g.pts.filter(imOst).map((p) => ({ ...p, g: g.name }))), weg = ost.filter((p) => !greifbar(p.x, p.y)), offen = ost.filter((p) => R.begehbar(p.x, p.y));
   check(!weg.length, `Glutsande: ${ost.length} Bäume und Adern vom Pass aus erreichbar`, weg.map((p) => `${p.g} ${p.id} ${p.x}|${p.y}`)); check(!offen.length, "ihre Felder sind gesperrt", offen.map((p) => p.id)); }
+{ const R = welt(HOCH), greifbar = flut(R, [6800, 5766], HOCH);
+  const hoch = gruppen.flatMap((g) => g.pts.filter(imHoch).map((p) => ({ ...p, g: g.name }))), weg = hoch.filter((p) => !greifbar(p.x, p.y)), offen = hoch.filter((p) => R.begehbar(p.x, p.y));
+  check(hoch.length >= 20 && !weg.length, `Hochlande: ${hoch.length} Bäume und Adern von der Furt aus erreichbar`, weg.map((p) => `${p.g} ${p.id} ${p.x}|${p.y}`)); check(!offen.length, "ihre Felder sind gesperrt", offen.map((p) => p.id)); }
 console.log(ok ? "\nSammelstellen: alles in Ordnung" : "\nSammelstellen: FEHLER"); process.exit(ok ? 0 : 1);

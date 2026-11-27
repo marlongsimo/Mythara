@@ -1,0 +1,18 @@
+[
+ {"id":"leiter_1","objekt":"hoehle_leiter_01","x":48.5,"y":59.5},
+ {"id":"feuerkorb_2","objekt":"moor_feuerkorb_01","x":44.5,"y":52.5},
+ {"id":"feuerkorb_3","objekt":"moor_feuerkorb_01","x":52.5,"y":52.5},
+ {"id":"bergwerk_lore_1","objekt":"hochland_lore","x":47.5,"y":49.5},
+ {"id":"bergwerk_lore_2","objekt":"hochland_lore","x":66.5,"y":41.5},
+ {"id":"hochland_schienen_6","objekt":"hochland_schienen","x":48,"y":54},
+ {"id":"hochland_schienen_7","objekt":"hochland_schienen","x":48,"y":51.5},
+ {"id":"hochland_schienen_8","objekt":"hochland_schienen","x":48,"y":49},
+ {"id":"hochland_grubenholz_9","objekt":"hochland_grubenholz","x":30,"y":38},
+ {"id":"hochland_grubenholz_10","objekt":"hochland_grubenholz","x":60,"y":18.5,"spiegeln":true},
+ {"id":"hochland_grubenholz_11","objekt":"hochland_grubenholz","x":80,"y":26},
+ {"id":"steinsaeule_12","objekt":"hoehle_steinsaeule_01","x":18.5,"y":10.5},
+ {"id":"steinsaeule_13","objekt":"hoehle_steinsaeule_01","x":27.5,"y":15.5},
+ {"id":"steinsaeule_14","objekt":"hoehle_steinsaeule_01","x":83.5,"y":9.5},
+ {"id":"kiste_15","objekt":"k_kiste","x":51,"y":55},
+ {"id":"holzstapel_16","objekt":"dorf_holzstapel_01","x":40,"y":26}
+]

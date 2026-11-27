@@ -13,7 +13,7 @@ export const MERIT: Feld = [6677.5, 6484.5];
 export const LINDE: Feld = [6453.2, 6679.4];          /* Bindestein an der Linde (B1) */
 /* ── Smaragdküste (#82, Zweig claude/mythara-world-pipeline-z4ynx5, 773b1f09; NPC-Plätze welt/kueste_orte.json) ── */
 /** Südstraße von Weidenhain (6444 | 6738) nach Kielmund: Spuren und Wagen als Vorschlag entlang der Straße */
-export const SUEDSTRASSE = { spur_1: [6446.5, 6820.5] as Feld, spur_2: [6441.5, 6930.5] as Feld, wagen: [6436.5, 7040.5] as Feld, raeuber: [6439.5, 7044.5] as Feld };
+export const SUEDSTRASSE = { spur_1: [6446.5, 6820.5] as Feld, spur_2: [6441.5, 6930.5] as Feld, wagen: [6436.5, 7040.5] as Feld, raeuber: [6432, 6950] as Feld /* Lager der Wegelagerer (Süden #120: wegelager_nord) */ };
 /** Kielmund: Kaufherr vor dem Küstenhaus (Tür 6414 | 7296,8), Fischplatz am Kai (Stehplatz), Werkstatt */
 export const KIELMUND = { kaufherr: [6414.5, 7299] as Feld, kai: [6384.5, 7310.5] as Feld, werkstatt: [6452, 7327.4] as Feld };
 /** Leuchtturm auf der Klippe (6176 | 7035,2), Wärterin am NPC-Platz leuchtturmwaerter, Kessel im Wärterhaus (Vorschlag) */
