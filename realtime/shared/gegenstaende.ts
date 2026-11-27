@@ -274,7 +274,7 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
   GEGENSTAENDE.barren_waldstein = { id: "barren_waldstein", name: "Waldsteinbarren", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: Q + "barren_waldstein.webp",
     text: "Geschmolzener Waldstein. Das Metall nimmt keine Splitter an." };
   GEGENSTAENDE.waldsaebel = { ...GEGENSTAENDE.waldsaebel /* der vorhandene Gesegnete Waldsäbel: eigenes Modell (waffe.waldsaebel) und Bild */, untauschbar: true,
-    anforderung: { skill: "geschick", level: 5 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 21, staerke: 19, gegen: { wald: 0.15 } },
+    anforderung: { skill: "geschick", level: 5 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 16, staerke: 14, gegen: { wald: 0.15 } } /* Balancing 27.11.: knapp unter dem Eidschwert der Stufe 10 (18/16) */,
     text: "Eine geschwungene Klinge aus Waldstein, der Griff aus dem Holz des Waldgottes, umrankt von lebendigen Dornen. Er trifft, was die Splitter verändert haben, härter: +15 % Schaden gegen Wesen des Waldes (Waldgolems, Mooshocker). Nicht tauschbar." }; }
 /* Phase 2 „Waldland“ (26.11.2026): Gegenstände der Einsteigerquests A1–A3, Essen und Golem-Beute (Bilder: fabrik/waldland_dinge.py) */
 { const Q = "img/objekte3d/skilling/erzeugnisse/";
@@ -425,8 +425,8 @@ const BALANCING: Record<string, Bal> = {
   eisenwachthelm_episch: { a: ["defense", 35], ab: [19, 19, -1], mal: HELM }, eisenwacht_episch: { a: ["defense", 35], ab: [61, 63, -6], mal: PANZER }, eisenbeinschienen_episch: { a: ["defense", 35], ab: [31, 31, -4], mal: BEINE },
   eisenwachthelm_legendaer: { a: ["defense", 45], ab: [30, 30, -1], mal: HELM }, eisenwacht_legendaer: { a: ["defense", 45], ab: [78, 80, -6], mal: PANZER }, eisenbeinschienen_legendaer: { a: ["defense", 45], ab: [49, 49, -4], mal: BEINE },
   eisenwachthelm_mythisch: { a: ["defense", 65], ab: [45, 46, -1], mal: HELM }, eisenwacht_mythisch: { a: ["defense", 65], ab: [104, 106, -6], mal: PANZER }, eisenbeinschienen_mythisch: { a: ["defense", 65], ab: [66, 66, -4], mal: BEINE },
-  jaegerkapuze_episch: { a: ["defense", 35], ab: [4, 4, 4], mal: [4, -1] }, jaegerwams_episch: { a: ["defense", 35], ab: [23, 20, 20], mal: [15, -15] }, jaegerhose_episch: { a: ["defense", 35], ab: [10, 8, 8], mal: [8, -10] },
-  jaegerkapuze_legendaer: { a: ["defense", 45], ab: [7, 7, 6], mal: [6, -1] }, jaegerwams_legendaer: { a: ["defense", 45], ab: [40, 40, 40], mal: [20, -15] }, jaegerhose_legendaer: { a: ["defense", 45], ab: [16, 16, 14], mal: [11, -10] },
+  jaegerkapuze_episch: { a: ["defense", 35], ab: [9, 9, 6], mal: [4, -1] }, jaegerwams_episch: { a: ["defense", 35], ab: [31, 32, 24], mal: [15, -15] }, jaegerhose_episch: { a: ["defense", 35], ab: [18, 18, 10], mal: [8, -10] },
+  jaegerkapuze_legendaer: { a: ["defense", 45], ab: [10, 10, 8], mal: [6, -1] }, jaegerwams_legendaer: { a: ["defense", 45], ab: [40, 40, 40], mal: [20, -15] }, jaegerhose_legendaer: { a: ["defense", 45], ab: [20, 20, 14], mal: [11, -10] },
   jaegerkapuze_mythisch: { a: ["defense", 65], ab: [12, 12, 10], mal: [10, -1] }, jaegerwams_mythisch: { a: ["defense", 65], ab: [54, 55, 50], mal: [30, -15] }, jaegerhose_mythisch: { a: ["defense", 65], ab: [25, 27, 24], mal: [17, -10] },
   magierkapuze_episch: { a: ["defense", 35], ab: [0, 0, 4], mal: [0, 4] }, magierrobe_episch: { a: ["defense", 35], ab: [0, 0, 20], mal: [0, 20] }, magierrock_episch: { a: ["defense", 35], ab: [0, 0, 15], mal: [0, 15] },
   magierkapuze_legendaer: { a: ["defense", 45], ab: [6, 6, 6], mal: [0, 6] }, magierrobe_legendaer: { a: ["defense", 45], ab: [10, 10, 22], mal: [0, 22] }, magierrock_legendaer: { a: ["defense", 45], ab: [8, 8, 17], mal: [0, 17] },
@@ -609,7 +609,7 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
   GEGENSTAENDE.kloeppel = { id: "kloeppel", name: "Klöppel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G8 + "kloeppel.webp",
     text: "Ein Klöppel aus Kernbaum, schwer und gerade. Er gehört in die Glocke von Grauwacht." };
   GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
-    anforderung: { skill: "geschick", level: 25 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 22, staerke: 22 },
+    anforderung: { skill: "geschick", level: 40 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 33, staerke: 34 } /* Balancing 27.11.: zwischen Stufe 35 und 45, nur Lohn aus E4 */,
     text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }
 
 /* ───────── Phase 9 (#86): Glutsande und Glutbrunn – Bilder img/objekte3d/glutsande/symbole/, Glutwels img/objekte3d/skilling/angeln/symbole/ (Figuren #75) ───────── */
