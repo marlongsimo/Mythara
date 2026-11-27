@@ -10,6 +10,9 @@ export const PETS: Record<string, PetDef> = {
   nagbert: { id: "nagbert", name: "Nagbert", beruf: "holzfaellerei", datei: "pet.nagbert", bild: "img/objekte3d/pets/pet.nagbert.webp", tat: "beim Holzfällen" },
   steinbert: { id: "steinbert", name: "Steinbert", beruf: "bergbau", datei: "pet.steinbert", bild: "img/objekte3d/pets/pet.steinbert.webp", tat: "beim Bergbau" },
 };
+/** #170 (Entscheidung des Nutzers, KANON fd1014fd0): jedes Pet ist ein Gegenstand – im Rucksack, folgt von dort aus, darf in die Bank (gebunden: nicht handelbar) */
+export const petGegenstand = (id: string): string => "pet_" + id;
+export const petAusGegenstand = (g: string): string | null => (g.startsWith("pet_") && g.slice(4) in PETS ? g.slice(4) : null);
 export const petFuerBeruf = (beruf: string): PetDef | undefined => Object.values(PETS).find((p) => p.beruf === beruf);
 /** 1 : petNenner(Stufe) je Abbau (nie seltener als 1 : 60.000, nie häufiger als 1 : 1.000) */
 export const petNenner = (stufe: number): number => Math.max(1000, 60000 - 800 * Math.max(0, stufe));

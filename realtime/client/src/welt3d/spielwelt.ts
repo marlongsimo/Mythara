@@ -68,7 +68,7 @@ import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../
 import { aktiverHeld } from "../held";
 import { angelegteEbenen, inventarVomServerDa, inventar, petBitten } from "../inventar";
 import { PetFigur } from "./npc3d";
-import { PETS } from "../../../shared/pets";
+import { PETS, petGegenstand } from "../../../shared/pets";
 /* angelegtes Beil / angelegte Spitzhacke: in der Hand zeigen */
 import { serverZusatz } from "../gruppe";
 import { karteDrehen, rucksackVorladen } from "../rahmen";
@@ -424,7 +424,7 @@ export class Spielwelt3D implements WeltKern {
       if (gehenZuerst) gr.splice(Math.max(0, gr.findIndex((g) => g.farbe === FARBE.objekt || g.farbe === FARBE.figur)), 0, { kopf: "Hier", farbe: FARBE.objekt, aktionen: [gehen] }); else gr.push({ kopf: "", aktionen: [gehen] }); }
     if (b) { const P = this.meinPet, inv = inventar(); /* #170: das eigene Pet wegschicken; am eigenen Helden ein gefundenes rufen */
       if (P && Math.hypot(P.x - b.x, P.z - b.z) <= 1.3) gr.unshift({ kopf: PETS[P.id].name, farbe: FARBE.figur, aktionen: [{ text: "Wegschicken", sym: "👋", tat: () => { petBitten(null); } }] });
-      else if (Math.hypot(this.ort.x - b.x, this.ort.y - b.z) <= 1.2 && (inv.pets || []).some((p) => p !== inv.petAktiv)) gr.push({ kopf: "Begleiter", farbe: FARBE.figur, aktionen: (inv.pets || []).filter((p) => p !== inv.petAktiv && PETS[p]).map((p) => ({ text: `${PETS[p].name} rufen`, sym: "🐾", tat: () => { petBitten(p); } })) }); }
+      else if (Math.hypot(this.ort.x - b.x, this.ort.y - b.z) <= 1.2 && (inv.pets || []).some((p) => p !== inv.petAktiv && inv.rucksack.includes(petGegenstand(p)))) gr.push({ kopf: "Begleiter", farbe: FARBE.figur, aktionen: (inv.pets || []).filter((p) => p !== inv.petAktiv && PETS[p] && inv.rucksack.includes(petGegenstand(p))) /* nur, was im Rucksack ist (#170) */.map((p) => ({ text: `${PETS[p].name} rufen`, sym: "🐾", tat: () => { petBitten(p); } })) }); }
     aktionsMenue(px, py, gr); }
   /** Gegenstände am Boden beim Punkt: der nächste (bis gut ein Feld) und alles auf seinem Feld */
   bodenHier(x: number, y: number): { d0: BodenDing; hier: BodenDing[] } | null { let b: BodenDing | null = null, bd = 1.2; for (const d of bodenListe()) { const w = Math.hypot(d.x - x, d.y - y); if (w <= bd) { bd = w; b = d; } }
