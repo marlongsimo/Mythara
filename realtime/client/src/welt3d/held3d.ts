@@ -278,6 +278,16 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   steinschlucker: { datei: "steinschlucker3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003" },
   graupelz: { datei: "graupelz3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
   schaf: { datei: "schaf3d", angriff: "treffer", ersatz: "gegner.bandit.v003" },
-  ente: { datei: "ente3d", angriff: "laufen", ersatz: "gegner.bandit.v003" } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
+  ente: { datei: "ente3d", angriff: "laufen", ersatz: "gegner.bandit.v003" },
+  /* #138: zehn Gegner aus den Modellen des Nutzers (Figuren 8c2ed9b25, Modelle in echter Größe → Heldenmaßstab 2,0); der Drakling folgt als Bodengegner */
+  steppenwolf: { datei: "steppenwolf3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  ockerhyaene: { datei: "ockerhyaene3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  hochlandwidder: { datei: "hochlandwidder3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  hochlandbaer: { datei: "hochlandbaer3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  klippenadler: { datei: "klippenadler3d", angriff: "sturz", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  bergtroll: { datei: "bergtroll3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  tundraelch: { datei: "tundraelch3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  frostwolf: { datei: "frostwolf3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  eisgolem: { datei: "eisgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }
