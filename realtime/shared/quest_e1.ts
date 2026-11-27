@@ -4,7 +4,7 @@
  * Die Fahlen Weiten sind auch vorher zu Fuß erreichbar (durch den Wald, Entscheidung des Nutzers 26.11.) – E1 öffnet nur die Abkürzung: den Dornenwall
  * am alten Weg im Nordsaum (drei Ranken). In Heidrast Hirtin Mette Heider, der Rudelführer der Heidewölfe, die Abtei: Äbtissin Gunhild.
  * QUER: Merit schickt dich erst zu Othmar Rehn nach Weidenhain – er kannte Gunhild und gibt dir einen Brief für sie mit (Abgabe in der Abtei).
- * Lohn: Holzfällerei 800, Stärke 800, Defense 800 XP, 300 Splitter, 2 Questpunkte. Schalter dornenwall_offen (Abkürzung offen, je Spieler), grauwacht_stufe1 (Abtei bewohnt);
+ * Lohn: Holzfällerei 800, Stärke 800, Defense 800 XP, 300 Splitter, 2 Questpunkte. Schalter dornenwall_offen (Abkürzung offen, je Spieler), grauwacht_abtei (Stadtstufe „abtei“: die Abtei ist bewohnt, Markt);
  * Wegstein-Ziel Heidrast.
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Welt: Fahle Weiten, Heidrast, Abtei; Figuren: Mette, Gunhild; Gegner heidewolf_rudelfuehrer).
@@ -117,7 +117,7 @@ export const QUEST_E1: QuestDef = {
       ],
     },
   },
-  schalter: { dornenwall_offen: [FERTIG, { erledigt: RANKEN }], grauwacht_stufe1: FERTIG },
+  schalter: { dornenwall_offen: [FERTIG, { erledigt: RANKEN }], grauwacht_abtei: FERTIG },
   belohnungText: "Belohnung: Holzfällerei 800, Stärke 800, Defense 800 XP, 300 Splitter · danach: der alte Weg durch den Nordsaum ist offen (Abkürzung), Wegstein-Ziel Heidrast, die Abtei ist bewohnt",
   belohnung: { xp: { staerke: 800, defense: 800 }, berufe: { holzfaellerei: 800 }, splitter: 300 },
   punkte: 2,

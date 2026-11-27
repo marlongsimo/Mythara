@@ -4,7 +4,7 @@
  * QUER: Gunhild schickt dich erst zu Merit Stahl nach Graufurt – die Wacht hat das Rezept der Glockenbronze im Bergfried: Kupfer aus der Senke vor der Waldmark, Splittereisen aus der Furtklamm.
  * Glockenbronze aus Kupfer und Splittereisen (Esse, Quest-Rezept), die Glockenform am Herd der Abteiküche (Quest-Rezept), der Klöppel aus Kernbaum (Werkbank),
  * mit den Nonnen aufhängen, der erste Schlag – Ysoldes Stimme antwortet von Graufurt aus: „Endlich.“
- * Lohn: Schmieden 1.000 XP, 400 Splitter, 2 Questpunkte. Schalter glocke_laeutet (stündlich für alle), bindestein_abtei.
+ * Lohn: Schmieden 1.000 XP, 400 Splitter, 2 Questpunkte. Schalter glocke_heil (die Glocke läutet stündlich, für alle in den Fahlen Weiten – shared/weltereignisse.ts), bindestein_abtei.
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Abtei, Glockenturm, Rezepte glockenbronze, glocke, kloeppel; Glocke als Weltereignis).
  * Stellen aus der Welt (#50, shared/quest_e_orte.ts; Lesestelle glocke mit questobjekt „glocke“). Liste: doku/quests/e-bausteine.md.
@@ -99,7 +99,7 @@ export const QUEST_E2: QuestDef = {
     glocke: [{ wenn: { phase: ["neu", "fertig"] }, text: "Eine Glocke gießt man nicht aus Langeweile." }, { wenn: { erledigt: ["form"] }, text: "Die Glocke ist gegossen." }],
     kloeppel: [{ wenn: { phase: ["neu", "fertig"] }, text: "Einen Klöppel schnitzt du nur für die Glocke von Grauwacht." }, { wenn: { erledigt: ["kloeppel"] }, text: "Den Klöppel hast du schon." }],
   } },
-  schalter: { glocke_laeutet: [FERTIG, { erledigt: ["schlag"] }], bindestein_abtei: FERTIG },
+  schalter: { glocke_heil: [FERTIG, { erledigt: ["schlag"] }], bindestein_abtei: FERTIG },
   belohnungText: "Belohnung: Schmieden 1.000 XP, 400 Splitter · danach: die Glocke läutet stündlich für alle, Bindestein in der Abtei",
   belohnung: { berufe: { schmieden: 1000 }, splitter: 400 },
   punkte: 2,

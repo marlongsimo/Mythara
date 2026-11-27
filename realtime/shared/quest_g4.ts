@@ -2,7 +2,7 @@
  * Riftmere – Quest G4 „Netze für die Möwenbucht“ (Phase 10, klein), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-10.md. Fischerin Bente Möller in der Möwenbucht: Der Sturm hat die Netze zerrissen.
  * Ein Fischernetz aus Garn knüpfen (Werkbank, Handwerk 20, Quest-Rezept), fünf Heringe fangen, drei in der Räucherhütte räuchern.
- * Lohn: Fischen 1.500, Kochen 1.500, Handwerk 800 XP, 250 Splitter, 1 Questpunkt; die Räucherhütte ist frei (Schalter raeucherhuette – während der Quest und danach).
+ * Lohn: Fischen 1.500, Kochen 1.500, Handwerk 800 XP, 250 Splitter, 1 Questpunkt; die Räucherhütte ist frei (Schalter raeucherhuette_frei – während der Quest und danach).
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Möwenbucht, Räucherhütte als Kochstation, Hering, Rezepte fischernetz und raeucherhering). Liste: doku/quests/g-bausteine.md.
  */
@@ -62,7 +62,7 @@ export const QUEST_G4: QuestDef = {
     },
   },
   sperren: { herstellen: { fischernetz: [{ wenn: { phase: ["neu", "fertig"] }, text: "Ein Fischernetz knüpfst du für Bente in der Möwenbucht." }, { wenn: { erledigt: ["netz_geben"] }, text: "Bente hat ihr Netz schon." }] } },
-  schalter: { raeucherhuette: [LAEUFT, FERTIG] },
+  schalter: { raeucherhuette_frei: [LAEUFT, FERTIG] },
   belohnungText: "Belohnung: Fischen 1.500, Kochen 1.500, Handwerk 800 XP, 250 Splitter · danach: die Räucherhütte der Möwenbucht",
   belohnung: { berufe: { fischen: 1500, kochen: 1500, handwerk: 800 }, splitter: 250 },
   punkte: 1,

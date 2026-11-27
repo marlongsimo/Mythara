@@ -3,7 +3,7 @@
  * Grundlage: doku/konzepte/phase-10.md. Kaufherr Jasper Kranich (Küstenhaus) vermisst eine Ladung aus dem Wrack am Strand.
  * Strandräuber im Wrack, eine Kiste mit dem Rabensiegel (der Rabenorden kaufte über Kielmund Splitter ein – B4/C-Bezug), die Klippenhöhlen, der Wrackkapitän (Instanz).
  * QUER: Bertold Krähe (Rabenmoor) und Merit Stahl (Graufurt) müssen den Fund sehen, bevor Kranich die Wahrheit hört.
- * Lohn: Stärke 3.000, Geschick 3.000, Defense 3.000 XP, 800 Splitter, 2 Questpunkte. Schalter wrack_instanz (solange die Quest läuft).
+ * Lohn: Stärke 3.000, Geschick 3.000, Defense 3.000 XP, 800 Splitter, 2 Questpunkte. Schalter wrackkapitaen_kajuete (Instanz, solange die Quest läuft; danach die stärkere Fassung öffentlich oder als eigene Instanz).
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Wrack, Klippenhöhlen und Kajüte wrack_kajuete als Instanz aus #82, Strandräuber, Wrackkapitän). Liste: doku/quests/g-bausteine.md.
  */
@@ -41,9 +41,9 @@ export const QUEST_G3: QuestDef = {
     { id: "kiste", text: "Die Kiste im Wrack öffnen", ereignis: { art: "objekt", id: "g3_kiste" }, nach: ["raeuber"], wo: WRACK.kiste,
       log: "Öffne die Kiste im Bauch des Wracks." },
     { id: "bertold", text: "Bertold Krähe den Fund zeigen", ereignis: { art: "antwort" }, nach: ["kiste"], bei: "bertold", gruppe: "zeugen",
-      log: "Zeig den Brief aus der Kiste Bertold Krähe im Rabenmoor und Merit Stahl in Graufurt ({n:zeugen})." },
+      log: "Zeig die Kiste mit dem Rabensiegel Bertold Krähe im Rabenmoor und Merit Stahl in Graufurt ({n:zeugen})." },
     { id: "merit", text: "Merit Stahl den Fund zeigen", ereignis: { art: "antwort" }, nach: ["kiste"], bei: "merit", gruppe: "zeugen",
-      log: "Zeig den Brief aus der Kiste Bertold Krähe im Rabenmoor und Merit Stahl in Graufurt ({n:zeugen})." },
+      log: "Zeig die Kiste mit dem Rabensiegel Bertold Krähe im Rabenmoor und Merit Stahl in Graufurt ({n:zeugen})." },
     { id: "kapitaen", text: "Den Wrackkapitän in den Klippenhöhlen stellen", ereignis: { art: "erlegen", typ: "wrackkapitaen" }, nach: ZEUGEN, wo: HOEHLE.kapitaen,
       log: "Merit und Bertold sagen dasselbe: Der Kapitän wusste, was er fuhr. Steig durch die Felstür an der Klippe in die Höhlen und stell den Wrackkapitän in seiner Kajüte." },
     { id: "logbuch", text: "Die Logbuchseite in der Kajüte lesen", ereignis: { art: "objekt", id: "g3_logbuch" }, nach: ["kapitaen"], wo: HOEHLE.logbuch,
@@ -54,8 +54,8 @@ export const QUEST_G3: QuestDef = {
       text: "„Morgenstern, letzte Fahrt. Ladung: 40 Säckchen. Abnehmer: die Insel. Bezahlung: Federn.“ Darunter, zittrig: „Sie sagen, die Federn machen stark. Sie machen nur kalt.“",
       schon: "Die Logbuchseite der „Morgenstern“.", sonst: [{ wenn: NEU, text: "Eine Seite Papier, feucht und gewellt." }, { wenn: FERTIG, text: "Die Logbuchseite der „Morgenstern“." },
         { wenn: { offen: ["logbuch"] }, text: "Der Kapitän steht zwischen dir und dem Tisch." }] },
-    { id: "g3_kiste", name: "Kiste im Wrack", x: WRACK.kiste[0], y: WRACK.kiste[1], modell: "stelle", tat: "untersuchen", tatText: "Die Kiste öffnen", weit: 2.5, geben: [{ g: "wrackbrief" }],
-      text: "Unter nassem Segeltuch: Splitter, sorgfältig in Säckchen genäht. Und ein Brief, das Siegel schwarz – ein Rabe über einem Kreis aus Steinen.",
+    { id: "g3_kiste", name: "Kiste im Wrack", x: WRACK.kiste[0], y: WRACK.kiste[1], modell: "stelle", tat: "untersuchen", tatText: "Die Kiste öffnen", weit: 2.5, geben: [{ g: "wrackkiste", name: "die Kiste mit dem Rabensiegel" }],
+      text: "Unter nassem Segeltuch: Splitter, sorgfältig in Säckchen genäht. Und eine kleine Kiste, das Siegel schwarz – ein Rabe über einem Kreis aus Steinen. Darin Rechnungen über Splitter, gekauft über Kielmund.",
       schon: "Die Kiste ist leer.", sonst: [{ wenn: NEU, text: "Eine Kiste im Bauch des Wracks, mit Ketten gesichert." }, { wenn: FERTIG, text: "Die Kiste ist leer." }, { wenn: { offen: ["kiste"] }, text: "Die Strandräuber hocken auf der Kiste." }] },
   ],
   /* Kranich: höflich, rechnet. Bertold: schwer, erkennt das Zeichen sofort. Merit: förmlich, wird hart, wenn es um die Wacht geht. */
@@ -66,7 +66,7 @@ export const QUEST_G3: QuestDef = {
         { wenn: NEU, zeilen: ["Gute Geschäfte."], antworten: ["tschuess"] },
         { wenn: FERTIG, zeilen: ["Splitter für Raben. Unter meiner Flagge. Ich prüfe jetzt jede Kiste selbst."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Sie sind zurück. Und Ihr Gesicht sagt mir, dass ich die Wahrheit nicht mögen werde."], antworten: ["bericht"] },
-        { wenn: { ...LAEUFT, erledigt: ["kiste"] }, zeilen: ["Ein Brief mit einem Raben? Ich kenne das Zeichen nicht. Zeigen Sie ihn denen, die es kennen."], antworten: ["hilfe", "tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["kiste"] }, zeilen: ["Eine Kiste mit einem Raben? Ich kenne das Zeichen nicht. Zeigen Sie ihn denen, die es kennen."], antworten: ["hilfe", "tschuess"] },
         { zeilen: ["Das Wrack, südlich vom Hafen. Seien Sie vorsichtig."], antworten: ["hilfe", "tschuess"] },
       ],
       optionen: [
@@ -80,28 +80,28 @@ export const QUEST_G3: QuestDef = {
     },
     bertold: {
       reden: [
-        { wenn: { ...LAEUFT, erledigt: ["kiste"], offen: ["bertold"], hat: "wrackbrief" }, zeilen: ["Du kommst von der Küste? Mit Salz im Haar? Was bringst du mir?"], antworten: ["wrackbrief_bertold", "tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["kiste"], offen: ["bertold"], hat: "wrackkiste" }, zeilen: ["Du kommst von der Küste? Mit Salz im Haar? Was bringst du mir?"], antworten: ["wrackkiste_bertold", "tschuess"] },
         { zeilen: ["Geh mit trockenen Füßen."], antworten: ["tschuess"] },
       ],
       optionen: [
-        { id: "wrackbrief_bertold", text: "Den Brief aus dem Wrack zeigen.", wenn: { hat: "wrackbrief" }, folge: [{ f: { erledige: ["bertold"], zeilen: ["Bertold muss das Siegel nicht einmal brechen. Er kennt es.",
+        { id: "wrackkiste_bertold", text: "Die Kiste mit dem Rabensiegel zeigen.", wenn: { hat: "wrackkiste" }, folge: [{ f: { erledige: ["bertold"], zeilen: ["Bertold muss das Siegel nicht einmal brechen. Er kennt es.",
           "Der Orden hat über das Meer eingekauft. Auch nach dem Obersten. Das heißt: Es gibt noch welche. Irgendwo."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Geh mit trockenen Füßen."] } }] },
       ],
     },
     merit: {
       reden: [
-        { wenn: { ...LAEUFT, erledigt: ["kiste"], offen: ["merit"], hat: "wrackbrief" }, zeilen: ["Du hast etwas aus Kielmund mitgebracht? Zeig her."], antworten: ["wrackbrief_merit", "tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["kiste"], offen: ["merit"], hat: "wrackkiste" }, zeilen: ["Du hast etwas aus Kielmund mitgebracht? Zeig her."], antworten: ["wrackkiste_merit", "tschuess"] },
         { zeilen: ["Für die Wacht."], antworten: ["tschuess"] },
       ],
       optionen: [
-        { id: "wrackbrief_merit", text: "Den Brief aus dem Wrack zeigen.", wenn: { hat: "wrackbrief" }, folge: [{ f: { erledige: ["merit"], zeilen: ["Merit liest. Ihr Kiefer wird hart.",
+        { id: "wrackkiste_merit", text: "Die Kiste mit dem Rabensiegel zeigen.", wenn: { hat: "wrackkiste" }, folge: [{ f: { erledige: ["merit"], zeilen: ["Merit blättert die Rechnungen durch. Ihr Kiefer wird hart.",
           "Der Kapitän hat unterschrieben. Mit dem Zeichen der Wacht – ein ehemaliger Seemann der Wacht. Er wusste, was er fuhr.", "Such ihn. Lebendig oder nicht – er muss Rede stehen."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Für die Wacht."] } }] },
       ],
     },
   },
-  schalter: { wrack_instanz: LAEUFT },
+  schalter: { wrackkapitaen_kajuete: LAEUFT },
   belohnungText: "Belohnung: Stärke 3.000, Geschick 3.000, Defense 3.000 XP, 800 Splitter",
   belohnung: { xp: { staerke: 3000, geschick: 3000, defense: 3000 }, splitter: 800 },
   punkte: 2,

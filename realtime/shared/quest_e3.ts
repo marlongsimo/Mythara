@@ -2,11 +2,11 @@
  * Riftmere – Quest E3 „Fahnenflucht“ (Phase 8), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-8.md. Burgvogt Wigand Fels, der einzige Wachtmann in der Burg von Grauwacht. Die Deserteure am Grenzposten sind Wachtleute,
  * die nach dem Zerfall fortliefen. Das Lager auskundschaften, Anführer Tjark Sölde stellen – und wählen: überreden oder besiegen.
- * Lohn: Stärke 1.000, Geschick 600 XP, 400 Splitter, 2 Questpunkte. Schalter grauwacht_stufe2 (Burg besetzt, Bank und Waffenladen).
+ * Lohn: Stärke 1.000, Geschick 600 XP, 400 Splitter, 2 Questpunkte. Schalter grauwacht_burg (Stadtstufe „burg“: Burg besetzt, Bank, Waffenladen, Werkstatt).
  *
  * QUER: Tjark ist ein Vetter von Raban, der Wache an der Straßensperre (Quest 1) – wer das weiß, kommt leichter an ihn heran (Gespräch).
  * Die Wahl: Der Schritt „tjark“ ist erledigt, wenn Tjark fällt (erlegen) ODER wenn man ihn überredet (Antwort erledigt ihn, er gibt „Tjarks Eid“).
- * Dass die Burg nach dem Überreden schneller besetzt ist, braucht eine Wahl im Queststand (Baukasten) – bis dahin gilt grauwacht_stufe2 für beide Wege.
+ * Dass die Burg nach dem Überreden schneller besetzt ist, braucht eine Wahl im Queststand (Baukasten) – bis dahin gilt grauwacht_burg für beide Wege.
  *
  * Stellen aus der Welt (#50, shared/quest_e_orte.ts). ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Spiel: Deserteure mit Fliehen, Tjark als Gegner auf Ansage, Wigand). Liste: doku/quests/e-bausteine.md.
  */
@@ -27,7 +27,7 @@ export const QUEST_E3: QuestDef = {
   logFertig: "Die Burg von Grauwacht ist wieder besetzt. Am Markt öffnen eine Bank und ein Waffenladen.",
   geber: "wigand",
   figuren: [
-    { id: "wigand", name: "Wigand Fels", modell: "stadtwache3d", x: BURG.wigand[0], y: BURG.wigand[1], blick: [0, 1] },
+    { id: "wigand", name: "Wigand Fels", modell: "stadtwache3d", x: BURG.wigand[0], y: BURG.wigand[1], blick: [0, 1], ausbau: "abtei" },
     { id: "tjark", name: "Tjark Sölde", modell: "npcmann3d", x: GRENZPOSTEN.tjark[0], y: GRENZPOSTEN.tjark[1], blick: [1, 0] },
   ],
   voraussetzungen: [
@@ -88,7 +88,7 @@ export const QUEST_E3: QuestDef = {
       ],
     },
   },
-  schalter: { grauwacht_stufe2: FERTIG },
+  schalter: { grauwacht_burg: FERTIG },
   belohnungText: "Belohnung: Stärke 1.000, Geschick 600 XP, 400 Splitter · danach: die Burg von Grauwacht ist besetzt, Bank und Waffenladen",
   belohnung: { xp: { staerke: 1000, geschick: 600 }, splitter: 400 },
   punkte: 2,
