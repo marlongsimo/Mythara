@@ -938,6 +938,24 @@
     #ez-konto .tafel.laden .lware:hover { background: #e0b860 !important; } #ez-konto .tafel.laden .lware.s-selten { background: #4fae58 !important; } #ez-konto .tafel.laden .lware.s-episch { background: #8a63d8 !important; } #ez-konto .tafel.laden .lware.s-legendaer { background: #e0902e !important; }
     #ez-konto .tafel.laden .lware canvas { width: 52px; height: 52px; } #ez-konto .tafel.laden .lname { font-size: 11px; min-height: 2.4em; }
     #ez-konto .tafel.laden > p.klein { display: none; }
+    /* #87 Verkaufen: Waren links, Rucksack rechts (wie die Bank), darunter eine Zeile mit dem Ankaufpreis */
+    #ez-konto .tafel.laden { width: min(820px, calc(100vw - 16px)); max-height: calc(100vh - 12px); overflow: hidden; }
+    #ez-konto .tafel.laden .lkopf { padding-right: 40px; }
+    #ez-konto .tafel.laden .lkoerper { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; }
+    #ez-konto .tafel.laden .lraster { align-content: start; max-height: calc(100vh - 170px); overflow-y: auto; overflow-x: hidden; }
+    #ez-konto .tafel.laden .lrechts { border-left: 1px solid #6d5632; padding-left: 10px; } #ez-konto .tafel.laden .lrs { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 0 0 6px; font: 600 13px Cinzel, Georgia, serif; color: #e9c46a; } #ez-konto .tafel.laden .lrs small { font: 600 11.5px Inter, sans-serif; color: #cdb98a; }
+    #ez-konto .tafel.laden .lrucksack { display: grid; grid-template-columns: repeat(4, var(--lz, 44px)); grid-auto-rows: var(--lz, 44px); gap: 4px; }
+    #ez-konto .tafel.laden .lfach { position: relative; isolation: isolate; display: grid; place-items: center; padding: 0; margin: 0; border: 0; border-radius: 0; background: #b08a3c; cursor: pointer; -webkit-touch-callout: none; user-select: none; clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); }
+    #ez-konto .tafel.laden .lfach::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: radial-gradient(#241b10, #120d08); clip-path: inherit; }
+    #ez-konto .tafel.laden .lfach canvas { width: 82%; height: 82%; } #ez-konto .tafel.laden .lfach b { position: absolute; left: 4px; top: 2px; font: 800 11px Inter, sans-serif; color: #ffe14d; text-shadow: 1px 1px 0 #000, -1px 1px 0 #000; }
+    #ez-konto .tafel.laden .lfach.leer { background: #3a2e1c; cursor: default; } #ez-konto .tafel.laden .lfach.leer::before { background: #120d08; }
+    #ez-konto .tafel.laden .lfach.nein { background: #4a3a24; } #ez-konto .tafel.laden .lfach.nein canvas { opacity: .35; filter: grayscale(1); }
+    #ez-konto .tafel.laden .lfach.an { background: #ffe08a; } #ez-konto .tafel.laden .lfach:not(.leer):hover { background: #e0b860; }
+    #ez-konto .tafel.laden .lpreiszeile { margin: 8px 0 0; padding-top: 7px; border-top: 1px solid #5a4528; font: 12.5px Inter, sans-serif; color: #cdb98a; min-height: 1.4em; }
+    #ez-konto .tafel.laden .lpreiszeile b { color: #f3e3b5; font-weight: 600; } #ez-konto .tafel.laden .lpreiszeile .ja { color: #c7a8ff; font-weight: 700; } #ez-konto .tafel.laden .lpreiszeile .nein { color: #e48a7a; }
+    @media (max-height: 520px) { #ez-konto .tafel.laden { padding-top: 8px; padding-bottom: 8px; } #ez-konto .tafel.laden > h2 { font-size: 16px; } #ez-konto .tafel.laden .lspruch { display: none; } #ez-konto .tafel.laden .lkopf { margin-bottom: 6px; padding-bottom: 5px; }
+      #ez-konto .tafel.laden .lrucksack { --lz: 38px; gap: 3px; } #ez-konto .tafel.laden .lpreiszeile { margin-top: 5px; padding-top: 5px; font-size: 12px; } #ez-konto .tafel.laden .lware canvas { width: 40px; height: 40px; } }
+
     .ez-questmarke { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; font: 800 26px Cinzel, Georgia, serif; color: #ffd84a; text-shadow: 0 0 4px #000, 0 2px 3px #000, 0 0 10px rgba(255,200,40,.8); animation: questhuepf 1.2s ease-in-out infinite; }
     @keyframes questhuepf { 0%, 100% { margin-top: 0; } 50% { margin-top: -5px; } }
     .ez-name3d.quest { color: #fff3c8; font-size: 13px; }
