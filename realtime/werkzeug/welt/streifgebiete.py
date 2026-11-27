@@ -1,9 +1,9 @@
 """
-World Pipeline – Streifgebiete für Rudel (#143, 27.11.2026): wenige, verteilte Flächen, auf denen ein Rudel (5–7 Tiere: Heidewolf, Steppenwolf, Ockerhyäne,
-Hochlandbär, Frostwolf) gemeinsam von Ziel zu Ziel zieht. Etwas Besonderes, nicht die Regel: je Tierart und Land höchstens ein Gebiet.
-Jedes Gebiet liegt dort, wo die Art schon steht (welt/gegnerplaetze.json, gleiche Stufe), ist 90 × 90 Felder groß, überwiegend begehbar und zusammenhängend.
-Ziele (Wegpunkte) liegen auf begehbaren, verbundenen Feldern, abseits von Orten, Questorten und Sammelstellen; was das Rudel meiden soll, steht in „meiden“
-(Kreise mit Grund). Wege dürfen gequert werden. Den Lagertyp „Rudel/Streifgebiet“ baut Systeme (#143) und liest diese Datei ein.
+World Pipeline – Streifgebiete (#143, 27.11.2026): wenige, verteilte, weitläufige Flächen, auf denen 5–7 Tiere einer Art (Heidewolf, Steppenwolf, Ockerhyäne,
+Hochlandbär, Frostwolf) jedes für sich von Ziel zu Ziel streifen – kein Rudel (Entscheidung des Nutzers), jedes Tier läuft einzeln. Etwas Besonderes, nicht die Regel: je Tierart und Land höchstens ein Gebiet.
+Jedes Gebiet liegt dort, wo die Art schon steht (welt/gegnerplaetze.json, gleiche Stufe), ist 120 × 120 Felder groß, überwiegend begehbar und zusammenhängend.
+Ziele (Wegpunkte) liegen auf begehbaren, verbundenen Feldern, abseits von Orten, Questorten und Sammelstellen; was die Tiere meiden sollen, steht in „meiden“
+(Kreise mit Grund). Wege dürfen gequert werden. Den Lagertyp „Streifgebiet“ baut Systeme (#143) und liest diese Datei ein.
 Schreibt welt/streifgebiete.json. Test: test/welt-streifgebiete.test.mjs
 Aufruf (im Ordner realtime): python3 werkzeug/welt/streifgebiete.py   (nach gegnerplaetze.py)
 """
@@ -13,7 +13,7 @@ from scipy import ndimage
 
 RT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')); W = os.path.join(RT, 'welt')
 X0, Y0, B, H, C = 186 * 32, 155 * 32, 75 * 32, 99 * 32, 32
-SEITE, ZIELE = 90, 6
+SEITE, ZIELE = 120, 8
 arten = {a['zeichen']: a['begehbar'] for a in json.load(open(os.path.join(W, 'bibliothek', 'gelaende.json'), encoding='utf8'))['arten']}
 G = np.full((H, B), 'M', dtype='<U1'); REG = np.full((H, B), '', dtype=object); IA = []
 for n in sorted(os.listdir(os.path.join(W, 'regionen'))):
@@ -46,17 +46,19 @@ for s in lies('bedienstellen.json').get('stationen', []): meiden.append((s['x'],
 
 # ───── Kandidaten: wo die Art schon steht ─────
 GP = lies('gegnerplaetze.json')['plaetze']
+import re
+MONSTER = set(re.findall(r'^\s{2}(\w+): \{ name:', open(os.path.join(RT, 'shared', 'config.ts'), encoding='utf8').read(), re.M))   # vorhandene Gegner (Werte in shared/config.ts)
 WUNSCH = [  # (Gegner, Land, Name, Anzahl) – je Art und Land ein Gebiet
-    ('heidewolf', 'Die Fahlen Weiten', 'Heidewolf-Rudel in den Fahlen Weiten', [5, 6]),
+    ('heidewolf', 'Die Fahlen Weiten', 'Heidewölfe in den Fahlen Weiten', [5, 7]),
     ('steppenwolf', 'Die Hochlande', 'Steppenwölfe der Hochlande', [5, 7]),
-    ('steppenwolf', 'Die Glutsande', 'Steppenwölfe in den Glutsande', [5, 6]),
+    ('steppenwolf', 'Die Glutsande', 'Steppenwölfe in den Glutsande', [5, 7]),
     ('ockerhyaene', 'Die Glutsande', 'Hyänen in den Dünen', [5, 7]),
     ('ockerhyaene', 'Die Ockerlande', 'Hyänen der Ockerlande', [5, 7]),
-    ('hochlandbaer', 'Die Hochlande', 'Bärenrotte der Hochlande', [5, 5]),
-    ('frostwolf', 'Die Frostkrone', 'Frostwolf-Rudel der Frostkrone', [5, 7]),
-    ('heidewolf', 'Süden', 'Die Wölfe des Graupelz', [5, 6]),   # Süden (#120): Heidewölfe aus der Waldsenke, im Wald nördlich davon (Stufe 30)
+    ('hochlandbaer', 'Die Hochlande', 'Bären der Hochlande', [5, 6]),
+    ('frostwolf', 'Die Frostkrone', 'Frostwölfe der Frostkrone', [5, 7]),
+    ('heidewolf', 'Süden', 'Die Wölfe des Graupelz', [5, 7]),   # Süden (#120): Heidewölfe aus der Waldsenke, im Wald nördlich davon (Stufe 30)
 ]
-SUEDEN_MITTEN = [(x, y) for x in range(6200, 6420, 10) for y in range(6820, 6960, 10)]
+SUEDEN_MITTEN = [(x, y) for x in range(6200, 6420, 10) for y in range(6800, 6960, 10)]
 def bewerte(cx, cy, art, plaetze):
     x0, y0 = int(cx - SEITE / 2) - X0, int(cy - SEITE / 2) - Y0
     if x0 < 2 or y0 < 2 or x0 + SEITE > B - 2 or y0 + SEITE > H - 2: return None
@@ -97,15 +99,15 @@ for art, land, name, anzahl in WUNSCH:
         q = max(pts, key=lambda q: min((q[0] - z[0]) ** 2 + (q[1] - z[1]) ** 2 for z in ziele)); ziele.append(q)
     ziele = [[float(x0 + X0 + x + 0.5), float(y0 + Y0 + y + 0.5)] for x, y in ziele]
     stufe = sorted(p['stufe'] for p in plaetze)[len(plaetze) // 2] if land != 'Süden' else 30; modell = plaetze[0].get('quelle', '')
-    gid = 'rudel_' + art + '_' + land.split()[-1].lower().replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
+    gid = 'streifgebiet_' + art + '_' + land.split()[-1].lower().replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
     gebiete.append({'id': gid, 'name': name, 'gegner': art, 'anzahl': anzahl, 'stufe': stufe, 'land': land,
                     'region': REG[int(cy) - Y0, int(cx) - X0], 'mitte': [round(cx, 1), round(cy, 1)],
                     'flaeche': [int(x0 + X0), int(y0 + Y0), int(x0 + X0 + SEITE), int(y0 + Y0 + SEITE)], 'ziele': ziele,
                     'pause': [20, 60], 'meiden': [{'x': round(m[0], 1), 'y': round(m[1], 1), 'r': m[2], 'grund': m[3]} for m in mz],
-                    'modell': 'vorhanden' if modell.startswith('vorhanden') else 'fehlt'})
+                    'modell': 'vorhanden' if art in MONSTER else 'fehlt'})
     print(f"{name}: Mitte {cx:.0f}|{cy:.0f}, Stufe {stufe}, {len(mz)} Meidekreise, Platzdichte {wert:.1f}")
-json.dump({'hinweis': 'Streifgebiete für Rudel (#143), erzeugt von werkzeug/welt/streifgebiete.py. Weltfelder. Je Gebiet: gegner (Art wie in gegnerplaetze.json), '
-           'anzahl [min, max], stufe, flaeche [x0, y0, x1, y1] (das Rudel bleibt darin), ziele (Wegpunkte, verbunden begehbar), pause [s] an einem Ziel, '
+json.dump({'hinweis': 'Streifgebiete (#143), erzeugt von werkzeug/welt/streifgebiete.py. Weltfelder. KEIN Rudel: jedes Tier streift einzeln über die Fläche. Je Gebiet: gegner (Art wie in gegnerplaetze.json), '
+           'anzahl [min, max] Tiere, stufe, flaeche [x0, y0, x1, y1] (die Tiere bleiben darin), ziele (Wegpunkte, verbunden begehbar; jedes Tier wählt seine eigenen), pause [s] an einem Ziel, '
            'meiden (Kreise: Orte, Questorte, Sammelstellen, Bedienstellen – nicht betreten; Wege queren ist erlaubt), modell (vorhanden/fehlt laut gegnerplaetze.json). '
            'Den Lagertyp baut Systeme.', 'gebiete': gebiete}, open(os.path.join(W, 'streifgebiete.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
 print(f'Streifgebiete: {len(gebiete)}')

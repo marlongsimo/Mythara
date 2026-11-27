@@ -1,7 +1,7 @@
 /*
- * Mythara – Streifgebiete für Rudel (Welt #143), ohne Browser: wenige Gebiete, je Art und Land höchstens eins; Fläche 60–120 Felder; alle Ziele begehbar, in der Fläche,
+ * Mythara – Streifgebiete (Welt #143, jedes Tier streift einzeln), ohne Browser: wenige Gebiete, je Art und Land höchstens eins; Fläche 60–120 Felder; alle Ziele begehbar, in der Fläche,
  * außerhalb der Meidekreise und untereinander verbunden (ohne Meidekreise zu betreten); keine Orte oder Questorte in der Fläche, die nicht gemieden werden;
- * Stufe wie die Art in der Gegend; Rudelgröße 5–7.
+ * Stufe wie die Art in der Gegend; 5–7 Tiere je Gebiet.
  * Aufruf (im Ordner realtime): node test/welt-streifgebiete.test.mjs
  */
 import { readFileSync, readdirSync, existsSync } from "node:fs";
@@ -14,7 +14,7 @@ console.log("\nStreifgebiete");
 check(SG.length >= 5 && SG.length <= 12, `${SG.length} Gebiete – wenige, etwas Besonderes`);
 const paare = SG.map((g) => g.gegner + "|" + g.land); check(new Set(paare).size === paare.length, "je Art und Land höchstens ein Gebiet");
 const groesse = SG.filter((g) => { const b = g.flaeche[2] - g.flaeche[0], h = g.flaeche[3] - g.flaeche[1]; return b < 60 || b > 120 || h < 60 || h > 120; }).map((g) => g.id); check(!groesse.length, "Flächen 60–120 Felder", groesse);
-const anzahl = SG.filter((g) => g.anzahl[0] < 5 || g.anzahl[1] > 7 || g.anzahl[0] > g.anzahl[1]).map((g) => g.id); check(!anzahl.length, "Rudel 5–7 Tiere", anzahl);
+const anzahl = SG.filter((g) => g.anzahl[0] < 5 || g.anzahl[1] > 7 || g.anzahl[0] > g.anzahl[1]).map((g) => g.id); check(!anzahl.length, "5–7 Tiere je Gebiet", anzahl);
 const stufe = SG.filter((g) => { const l = GP.filter((p) => p.gegner.includes(g.gegner) && (p.land === g.land || g.land === "Süden")).map((p) => p.stufe); return !l.length || Math.abs(g.stufe - l[0]) > 4; }).map((g) => g.id);
 check(!stufe.length, "Stufe wie die Art in der Gegend", stufe);
 const R = new G.WeltRaster(), geladen = new Set();

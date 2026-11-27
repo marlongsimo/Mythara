@@ -91,6 +91,13 @@ const PLAN = [
   ["salzpfanne", "holz", ["moorweide", "kernbaum", "kernbaum"], "Bäume an der Siederei"],
   ["nordstrand", "holz", ["kernbaum", "kernbaum", "moorweide"], "Kernbäume am Nordstrand"],
   ["nordstrand", "erz", ["sterneisen", "sterneisen", "splittereisen"], "Felsen am Nordstrand"],
+  /* Nachtrag des Nutzers (#142): einzelne Stellen deutlich über der Gegend, sparsam, versteckt abseits der Wege (ohne Feldweg) – zum Entdecken */
+  ["heckenhof", "einzeln", ["eibe"], "Einsame Eibe hinter dem Heckenhof"],
+  ["summweide", "einzeln", ["moorweide"], "Alte Moorweide im Wiesengrund"],
+  ["haferstedt", "einzeln", ["kernbaum"], "Kernbaum im Wald über Haferstedt"],
+  ["faehrtenlager", "einzeln", ["sterneisen"], "Sterneisen-Brocken im Gehölz"],
+  ["laemmerhang", "einzeln", ["splittereisen"], "Splitterfels am Lämmerhang"],
+  ["netzbucht", "einzeln", ["schwarzeisen"], "Schwarzeisen an der Bucht"],
 ];
 ORTE.leuchtturm ??= [6176, 7036];
 
@@ -104,22 +111,22 @@ const wegErreichbar = (x, y, max = 60) => { const g = regionAn(x, y); if (!g) re
   while (q.length) { const [a, b, d] = q.shift(); if (d > max) return false; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = a + dx, ny = b + dy, k = nx + "," + ny; if (s.has(k) || nx < g.x0 + 1 || ny < g.y0 + 1 || nx >= g.x1 - 1 || ny >= g.y1 - 1) continue; const c = zeichen(nx + 0.5, ny + 0.5);
       if (WEG.has(c)) return true; if (!GEHBAR.has(c) || hinder.some(([hx, hy, hr]) => hr <= 2 && Math.abs(hx - nx - 0.5) < 1.6 && Math.abs(hy - ny - 0.5) < 1.6)) continue; s.add(k); q.push([nx, ny, d + 1]); } } return false; };
 const anordnen = (arten, cx, cy, erz) => { const n = arten.length, r = erz ? 2.6 : 3.4; return arten.map((art, i) => { const a = (i / n) * Math.PI * 2 + (erz ? 0.4 : 0.9); return { art, x: Math.floor(cx + Math.cos(a) * r) + 0.5, y: Math.floor(cy + Math.sin(a) * r) + 0.5 }; }); };
-function suche(ort, arten, erz) {
-  const [ox, oy] = ORTE[ort], or = ORTSRADIUS[ort] ?? 12, R = erz ? 5 : 6.6; let best = null;
-  for (let d = or + 4; d < or + 46 && !best; d += 2) for (let a = 0; a < 6.28; a += 0.21) {
+function suche(ort, arten, erz, einzeln = false) {
+  const [ox, oy] = ORTE[ort], or = ORTSRADIUS[ort] ?? 12, R = einzeln ? 4 : erz ? 5 : 6.6; let best = null;
+  for (let d = or + (einzeln ? 34 : 4); d < or + (einzeln ? 110 : 46) && !best; d += 2) for (let a = 0; a < 6.28; a += 0.21) {
     const cx = ox + Math.cos(a) * d, cy = oy + Math.sin(a) * d, g = regionAn(cx, cy); if (!g || cx - R - 3 < g.x0 || cy - R - 3 < g.y0 || cx + R + 3 > g.x1 || cy + R + 3 > g.y1) continue;
-    const pts = anordnen(arten, cx, cy, erz); if (pts.some((p) => !GEHBAR.has(zeichen(p.x, p.y)) || "a".includes(zeichen(p.x, p.y)) || wegNah(p.x, p.y, 1))) continue;
+    const pts = einzeln ? [{ art: arten[0], x: Math.floor(cx) + 0.5, y: Math.floor(cy) + 0.5 }] : anordnen(arten, cx, cy, erz); if (pts.some((p) => !GEHBAR.has(zeichen(p.x, p.y)) || "a".includes(zeichen(p.x, p.y)) || wegNah(p.x, p.y, einzeln ? 9 : 1))) continue;
     let gut = 0, alle = 0; for (let y = cy - R; y <= cy + R; y++) for (let x = cx - R; x <= cx + R; x++) if (Math.hypot(x - cx, y - cy) <= R) { alle++; if (GEHBAR.has(zeichen(x, y)) && zeichen(x, y) !== "a") gut++; } if (gut < alle * 0.85) continue;
     if (hinder.some(([x, y, r]) => Math.hypot(x - cx, y - cy) < R + r) || figuren.some(([x, y, r]) => Math.hypot(x - cx, y - cy) < R + r)) continue;
     if (Object.entries(ORTE).some(([k, [x, y]]) => Math.hypot(x - cx, y - cy) < (ORTSRADIUS[k] ?? 12) + R - 2)) continue;
     if (gesetzt.some(([x, y, r]) => Math.hypot(x - cx, y - cy) < r + R + 6)) continue;
-    if (!wegErreichbar(cx, cy)) continue;
+    if (!wegErreichbar(cx, cy, einzeln ? 140 : 60)) continue;
     best = { cx, cy, R, pts, region: g.n }; }
   return best; }
 
 const lichtungen = [], senken = [], bericht = [];
 for (const [ort, typ, arten, name] of PLAN) {
-  if (altNach.has(name)) { const g = altNach.get(name); if (g.typ === "holz") lichtungen.push({ name, ort, baeume: g.baeume }); else senken.push({ name, ort, x: g.x, y: g.y, r: g.r, adern: g.adern }); bericht.push(`${name}: bleibt`); continue; }
+  if (altNach.has(name)) { const g = altNach.get(name), zusatz = g.einzeln ? { einzeln: true, ohneWeg: true } : {}; if (g.typ === "holz") lichtungen.push({ name, ort, baeume: g.baeume, ...zusatz }); else senken.push({ name, ort, x: g.x, y: g.y, r: g.r, adern: g.adern, ...zusatz }); bericht.push(`${name}: bleibt`); continue; }
   if (typ.startsWith("fest")) { if (!arten.length) { bericht.push(`${name}: keine Vorschläge`); continue; } const erz = typ === "festerz" || ERZ_ARTEN.includes(arten[0].art);
     /* feste Vorschläge nach Nähe gruppieren (eine Gruppe je 20 Felder) */
     const teile = []; for (const p of arten) { const t = teile.find((t) => t.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 20)); (t || (teile.push([]), teile.at(-1))).push(p); }
@@ -127,10 +134,11 @@ for (const [ort, typ, arten, name] of PLAN) {
       if (erz) senken.push({ name: nm, ort, x: +mx.toFixed(1), y: +my.toFixed(1), r: Math.max(4, Math.ceil(Math.max(...t.map((p) => Math.hypot(p.x - mx, p.y - my))) + 2)), adern: pts });
       else lichtungen.push({ name: nm, ort, baeume: pts }); gesetzt.push([mx, my, 6]); bericht.push(`${nm}: fest (${t.length})`); });
     continue; }
-  const erz = typ === "erz", f = suche(ort, arten, erz); if (!f) { bericht.push(`${name}: KEIN PLATZ`); continue; }
+  const einzeln = typ === "einzeln", erz = typ === "erz" || (einzeln && ERZ_ARTEN.includes(arten[0])), f = suche(ort, arten, erz, einzeln); if (!f) { bericht.push(`${name}: KEIN PLATZ`); continue; }
   const stamm = name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ß/g, "ss").replace(/[^a-z]+/g, "_").replace(/^_|_$/g, "");
   const pts = f.pts.map((p, i) => ({ id: `${stamm}_${p.art}_${i + 1}`, art: p.art, x: p.x, y: p.y, region: f.region }));
-  if (erz) senken.push({ name, ort, x: +f.cx.toFixed(1), y: +f.cy.toFixed(1), r: 5, adern: pts }); else lichtungen.push({ name, ort, baeume: pts });
+  const zusatz = einzeln ? { einzeln: true, ohneWeg: true } : {};
+  if (erz) senken.push({ name, ort, x: +f.cx.toFixed(1), y: +f.cy.toFixed(1), r: einzeln ? 3 : 5, adern: pts, ...zusatz }); else lichtungen.push({ name, ort, baeume: pts, ...zusatz });
   gesetzt.push([f.cx, f.cy, f.R]); bericht.push(`${name}: ${Math.round(Math.hypot(f.cx - ORTE[ort][0], f.cy - ORTE[ort][1]))} Felder vom Ort`); }
 for (const g of [...lichtungen.flatMap((l) => l.baeume), ...senken.flatMap((s) => s.adern)]) if (![...HOLZ_ARTEN, ...ERZ_ARTEN].includes(g.art)) throw new Error("unbekannte Art " + g.art);
 writeFileSync(DATEI, JSON.stringify({ _hinweis: "Erzeugt von werkzeug/welt/sammelstellen.mjs (#142): Holzfäller-Bäume (lichtungen) und Erzadern (senken) in Gruppen nahe den Orten, Weltfelder, Format wie shared/holz_standorte.json und shared/bergbau_standorte.json. lichtungen.mjs schneidet sie frei; ins Spiel kommen sie über die Standortdateien in shared/.",

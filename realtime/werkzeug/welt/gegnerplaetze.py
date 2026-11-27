@@ -155,12 +155,14 @@ for runde in range(12):
         neu_pkt.append((px, py))
 
 # ───── Gegner zuweisen ─────
+# Gegner mit Werten in shared/config.ts (MONSTER) gelten als vorhanden – so werden neu gebaute Gegner (z. B. Steppenwolf, fab2fde5) ohne Handarbeit erkannt
+IN_CONFIG = set(re.findall(r'^\s{2}(\w+): \{ name:', open(os.path.join(RT, 'shared', 'config.ts'), encoding='utf8').read(), re.M))
 fehlend, je_region = {}, {}
 for k, (x, y) in enumerate(neu_pkt):
     n = REG[y, x] or '?'; land, (lo, hi) = land_von(n, x, y) if n != '?' else ('?', (5, 20)); gel = gelaende_von(x, y)
     g = waehle(gel, lo, hi, k); anzahl = 3 if k % 6 == 0 else 2 if k % 3 == 0 else 1
     modell = UMBENANNT[g][0] if g in UMBENANNT else g
-    quelle = 'vorhanden' if g in VORHANDEN else ('vorhanden (' + UMBENANNT[g][0] + ')') if g in UMBENANNT else 'fehlt' if NEU[g][2].startswith('neu') else 'vorhanden (Figuren)'   # Figuren hat die Gegner der Konzepte gebaut (Zweig claude/tender-heisenberg-bruby2, Leitstelle 27.11.)
+    quelle = 'vorhanden' if g in VORHANDEN else ('vorhanden (' + UMBENANNT[g][0] + ')') if g in UMBENANNT else 'vorhanden (Systeme)' if g in IN_CONFIG and NEU[g][2].startswith('neu') else 'fehlt' if NEU[g][2].startswith('neu') else 'vorhanden (Figuren)'   # Figuren hat die Gegner der Konzepte gebaut (Zweig claude/tender-heisenberg-bruby2, Leitstelle 27.11.)
     if quelle == 'fehlt': f = fehlend.setdefault(g, {'gegner': g, 'stufe': NEU[g][0], 'gelaende': NEU[g][1], 'herkunft': NEU[g][2], 'plaetze': 0}); f['plaetze'] += 1
     plaetze.append({'id': f'gp_{n}_{k + 1}', 'region': n, 'land': land, 'x': int(x + X0) + 0.5, 'y': int(y + Y0) + 0.5, 'gegner': [g], 'modell': modell, 'anzahl': anzahl, 'stufe': stufe_von(g), 'gelaende': gel, 'quelle': quelle})
     e = je_region.setdefault(n, {'plaetze': 0, 'gegner': 0}); e['plaetze'] += 1; e['gegner'] += anzahl

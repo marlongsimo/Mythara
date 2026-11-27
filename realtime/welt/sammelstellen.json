@@ -684,6 +684,51 @@
      "region": "fl_231_198"
     }
    ]
+  },
+  {
+   "name": "Einsame Eibe hinter dem Heckenhof",
+   "ort": "heckenhof",
+   "baeume": [
+    {
+     "id": "einsame_eibe_hinter_dem_heckenhof_eibe_1",
+     "art": "eibe",
+     "x": 6535.5,
+     "y": 6803.5,
+     "region": "fl_201_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Alte Moorweide im Wiesengrund",
+   "ort": "summweide",
+   "baeume": [
+    {
+     "id": "alte_moorweide_im_wiesengrund_moorweide_1",
+     "art": "moorweide",
+     "x": 6441.5,
+     "y": 6864.5,
+     "region": "fl_201_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Kernbaum im Wald über Haferstedt",
+   "ort": "haferstedt",
+   "baeume": [
+    {
+     "id": "kernbaum_im_wald_uber_haferstedt_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6287.5,
+     "y": 6965.5,
+     "region": "fl_186_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
   }
  ],
  "senken": [
@@ -1411,6 +1456,60 @@
      "region": "fl_231_198"
     }
    ]
+  },
+  {
+   "name": "Sterneisen-Brocken im Gehölz",
+   "ort": "faehrtenlager",
+   "x": 6653.1,
+   "y": 6825.2,
+   "r": 3,
+   "adern": [
+    {
+     "id": "sterneisen_brocken_im_geholz_sterneisen_1",
+     "art": "sterneisen",
+     "x": 6653.5,
+     "y": 6825.5,
+     "region": "fl_201_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Splitterfels am Lämmerhang",
+   "ort": "laemmerhang",
+   "x": 6337.1,
+   "y": 7087.2,
+   "r": 3,
+   "adern": [
+    {
+     "id": "splitterfels_am_lammerhang_splittereisen_1",
+     "art": "splittereisen",
+     "x": 6337.5,
+     "y": 7087.5,
+     "region": "fl_186_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Schwarzeisen an der Bucht",
+   "ort": "netzbucht",
+   "x": 6193.1,
+   "y": 6920.8,
+   "r": 3,
+   "adern": [
+    {
+     "id": "schwarzeisen_an_der_bucht_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 6193.5,
+     "y": 6920.5,
+     "region": "fl_186_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
   }
  ]
 }

@@ -901,7 +901,6 @@
  {"id":"bl_baum5_1013","objekt":"wald_baum5","x":386.5,"y":113.5,"s":1.02,"spiegeln":true},
  {"id":"bl_laub_oliv_1014","objekt":"stil_laub_oliv","x":189.5,"y":256.5,"s":1.02,"spiegeln":true},
  {"id":"bl_baum1_1015","objekt":"wald_baum1","x":313.5,"y":88.5,"s":1},
- {"id":"bl_baum5_1016","objekt":"wald_baum5","x":334.5,"y":216.5,"s":0.99},
  {"id":"bl_baum5_1017","objekt":"wald_baum5","x":282.5,"y":84.5,"s":0.94},
  {"id":"bl_linde_1018","objekt":"stil_linde_01","x":462.5,"y":106.5,"s":0.94,"spiegeln":true},
  {"id":"bl_baum3_1019","objekt":"wald_baum3","x":260.5,"y":56.5,"s":1.02},

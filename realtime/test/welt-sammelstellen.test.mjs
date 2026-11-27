@@ -24,15 +24,24 @@ const flut = (R, [sx, sy], box) => { const s = 2, seen = new Set(), q = [[Math.f
 
 console.log("\nSammelstellen");
 const SUED_HOLZ = ["eiche", "tanne", "eibe", "moorweide"], SUED_ERZ = ["kupfer", "eisen", "schwarzeisen", "sterneisen"], GLUT = ["moorweide", "kernbaum", "weltenbaum", "sterneisen", "splittereisen", "ureisen"];
-const falsch = gruppen.flatMap((g) => g.pts.filter((p) => !(imOst(p) ? GLUT : g.typ === "holz" ? SUED_HOLZ : SUED_ERZ).includes(p.art)).map((p) => `${g.name}: ${p.art}`));
+const falsch = gruppen.filter((g) => !g.einzeln).flatMap((g) => g.pts.filter((p) => !(imOst(p) ? GLUT : g.typ === "holz" ? SUED_HOLZ : SUED_ERZ).includes(p.art)).map((p) => `${g.name}: ${p.art}`));
 check(!falsch.length, "Stufen passen: Süden/Westen Holz 1–35 und Erz 1–35, Glutsande ab 35 (bis Ureisen/Weltenbaum 65)", falsch);
 const pflicht = ["heckenhof", "summweide", "halber_weg", "erlengrund", "kreuzstein", "schilfsee", "lehmfurt", "distelhof", "faehrtenlager", "laemmerhang", "kielmund", "moewenbucht", "haferstedt", "netzbucht", "sandquell", "glutbrunn", "salzpfanne", "nordstrand"];
 const RADIUS = { haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 34 };
 const fern = pflicht.filter((o) => !gruppen.some((g) => g.ort === o && g.pts.every((p) => Math.hypot(p.x - ORTE[o][0], p.y - ORTE[o][1]) < (RADIUS[o] ?? 12) + 20)));
 check(!fern.length, `jeder der ${pflicht.length} Orte hat eine Gruppe in der Nähe (höchstens 20 Felder hinter dem Ortsrand)`, fern);
 const halb = pflicht.filter((o) => !["holz", "erz"].every((t) => gruppen.some((g) => g.ort === o && g.typ === t))); check(!halb.length, "jeder dieser Orte hat Bäume und Erz", halb);
-const groesse = gruppen.filter((g) => (g.pts.length < 3 || g.pts.length > 6) && !/Ureisen|Weltenbaum/.test(g.name)).map((g) => `${g.name}: ${g.pts.length}`);
+const groesse = gruppen.filter((g) => (g.pts.length < 3 || g.pts.length > 6) && !g.einzeln && !/Ureisen|Weltenbaum/.test(g.name)).map((g) => `${g.name}: ${g.pts.length}`);
 check(!groesse.length, "Gruppen von 3–6 Stellen (Ausnahme Phase 9: Ureisen in den Tafelbergen, der einzelne Weltenbaum der Oase)", groesse);
+/* Nachtrag #142: 4–6 einzelne Stellen über der Stufe der Gegend im Süden und Westen, bis Stufe 45, versteckt abseits der Wege */
+{ const STUFE = { eiche: 1, tanne: 10, eibe: 20, moorweide: 35, kernbaum: 45, kupfer: 1, eisen: 10, schwarzeisen: 20, sterneisen: 35, splittereisen: 45 };
+  const E = gruppen.filter((g) => g.einzeln && !imOst(g.pts[0])), wegZ = new Set(["e", "k", "p"]);
+  const GR = readdirSync(join(WELT, "regionen")).filter((n) => existsSync(join(WELT, "regionen", n, "region.json"))).map((n) => { const r = JSON.parse(readFileSync(join(WELT, "regionen", n, "region.json"), "utf8")); return r.ebene || r.entwurf ? null : { x0: r.ursprung[0] * 32, y0: r.ursprung[1] * 32, z: readFileSync(join(WELT, "regionen", n, "gelaende.txt"), "utf8").split("\n") }; }).filter(Boolean);
+  const zeichen = (x, y) => { for (const g of GR) { const z = g.z[Math.floor(y) - g.y0]; if (z && x >= g.x0 && x < g.x0 + z.length) return z[Math.floor(x) - g.x0]; } return "?"; };
+  const nahWeg = E.filter((g) => { const p = g.pts[0]; for (let dy = -6; dy <= 6; dy++) for (let dx = -6; dx <= 6; dx++) if (wegZ.has(zeichen(p.x + dx, p.y + dy))) return true; return false; }).map((g) => g.name);
+  const zuHoch = E.filter((g) => STUFE[g.pts[0].art] === undefined || STUFE[g.pts[0].art] > 45 || STUFE[g.pts[0].art] < 20).map((g) => `${g.name}: ${g.pts[0].art}`);
+  check(E.length >= 4 && E.length <= 6 && E.every((g) => g.pts.length === 1) && !zuHoch.length, `${E.length} einzelne Stellen über der Gegend (Stufe 20–45): ${E.map((g) => g.pts[0].art).join(", ")}`, zuHoch);
+  check(!nahWeg.length, "sie liegen versteckt, mindestens 6 Felder abseits der Wege (kein Feldweg)", nahWeg); }
 const zahl = (o, t) => gruppen.filter((g) => g.ort === o && g.typ === t).length;
 check(zahl("erlengrund", "holz") >= 3 && zahl("lehmfurt", "erz") >= 3, `Schwerpunkte: Erlengrund ${zahl("erlengrund", "holz")} Baumgruppen, Lehmfurt ${zahl("lehmfurt", "erz")} Senken`);
 const ids = gruppen.flatMap((g) => g.pts.map((p) => p.id)), shared = [...JSON.parse(readFileSync(join(REALTIME, "shared", "holz_standorte.json"), "utf8")).lichtungen.flatMap((l) => l.baeume), ...JSON.parse(readFileSync(join(REALTIME, "shared", "bergbau_standorte.json"), "utf8")).senken.flatMap((s) => s.adern)].map((p) => p.id);

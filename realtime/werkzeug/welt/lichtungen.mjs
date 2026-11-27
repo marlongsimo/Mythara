@@ -54,6 +54,7 @@ for (const [rid, lichtungen] of nachRegion) {
     if (!moor) for (let y = Math.floor(my - R - 1); y <= my + R + 1; y++) for (let x = Math.floor(mx - R - 1); x <= mx + R + 1; x++) {
       const d = Math.hypot(x + 0.5 - mx, y + 0.5 - my); if (feld(x, y) !== "f") continue;
       if (d < R - 1.2 || (d < R + 0.8 && zufall(x, y) < 0.55)) { gel[y][x] = l.senke ? (d < R - 2.2 || (d < R - 1.2 && zufall(x * 5, y) < 0.5) ? "h" : "e") : zufall(x * 3, y * 7) < 0.25 ? "," : "."; wiese++; } }
+    if (l.ohneWeg) { console.log(`  ${l.name}: Radius ${R.toFixed(1)}, ohne Feldweg (versteckt, #142)`); continue; }
     /* 3. Feldweg: kürzester begehbarer Weg (8 Nachbarn) vom Rand der Lichtung zum nächsten Weg */
     const sx = Math.floor(mx), sy = Math.floor(my), vorher = new Map([[`${sx},${sy}`, null]]), schlange = [[sx, sy]]; let ziel = null;
     while (schlange.length && !ziel) { const [x, y] = schlange.shift();
