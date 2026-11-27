@@ -91,7 +91,7 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - **Startseite und Würfelspiel** (27.11.): Die neue Startseite **riftmere.de** (#78) geht live. Das **Würfelspiel wird nicht mehr weiterverfolgt und komplett entfernt** (auch auf `main`, #108) – **erledigt 27.11.** (main 8abfbb68, 673 Dateien). Einladungslinks, App-Start und manifest führen weiter ins Spiel (`echtzeit/`).
 
-- **Zwei Mini-Bosse in den Hochlanden** (27.11.): Bergtroll **Grumhold** (Trollhalle) droppt die **Waffen der Stufe 70**; **„Das erste Echo“** (Urkammer, eigener Mini-Boss, nicht das Minispiel) droppt **Rüstung der Stufe 70**. Block H selbst noch nicht freigegeben.
+- **Zwei Mini-Bosse in den Hochlanden** (27.11.): Bergtroll **Grumhold** (Trollhalle) droppt die **Waffen der Stufe 70**; dazu **drei Rüstungs-Bosse**, je einer je Stil mit eigener Mechanik, Stärke und Schwäche: **Das erste Echo** (Urkammer) → Nahkampf-Rüstung, **Sturmschwinge** (Grauhorn) → Fernkampf-Rüstung, **Frostwitwe** (Hochpass) → Magie-Rüstung (alle Stufe 70). Block H selbst noch nicht freigegeben.
 
 ## Für später (Ideen, noch nicht geplant)
 - **Minispiel für bessere Ausrüstung** (Idee des Nutzers, 27.11., nur im Hinterkopf): Teile mit Zusatzboni je Kampfstil – **Nahkampf: Stärke-Bonus**, **Fernkampf: Fernkampf-Stärke**, **Magie: % Magieschaden** (neu, gibt es heute nicht). Vorschlag Leitstelle: als Gegenstück zur Rissgrube ein **Punkte-Minispiel** (z. B. „Die Passwacht hält“, Verteidigung in Wellen mit Toreparatur über Berufe), Teile **gegen Punkte** statt als Glücks-Drop; eigene Hülle (keine Kopie anderer Spiele).

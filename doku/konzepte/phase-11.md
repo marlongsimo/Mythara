@@ -70,19 +70,32 @@ Alle mit **Querverbindung** zu bekannten Orten (Kanon „Quests über Regionsgre
 | **H2 „Käse für die Passwacht“** (klein) | Die Sennerin versorgt die Passwacht, ihre Ziegen sind ausgebüxt (Folgen-Baustein wie S6), Käse reifen lassen (Kochen), zur Passwacht tragen. | Mettes Schafe (Grauwacht, E-Block) | Kochen-XP, Käserad-Rezept (Kochen, Herd der Alm), Laden der Sennerin |
 | **H3 „Tiefer als erlaubt“** | Bergleute sind tiefer gegraben als die Vögte erlaubten – unten in der Trollhalle wurde etwas geweckt. Grubenholz ersetzen (Handwerk), eingestürzten Stollen freilegen (Bergbau), verletzte Bergleute versorgen (Tränke). | Hedda (Rabenmoor) erkennt Splitterlicht in Erzproben (Haken für die Rissgrube später) | Bergbau-/Handwerk-XP, Zugang zur Urkammer (Ureisen) |
 | **H4 „Der alte Bergtroll“** (Boss) | In der Trollhalle wacht **Grumhold**, ein uralter Bergtroll, der das Bergwerk für sein Revier hält. Quest-Kampf allein und schwächer. Danach Wahl: öffentlich oder eigene Instanz, stärkere Fassung. | Bergvögtin, Passwächter | Questpunkte, XP, **Drops in der starken Fassung: Waffen der Stufe 70** (Echoschneide, Seelenbogen, Seelenfokus, je etwa 1 : 100) |
-| **H5 „Das erste Echo“** (Boss, Wunsch des Nutzers 27.11.) | Nach H3/H4: In der **Urkammer** reißt der Splitterriss auf; heraus tritt **das erste Echo**, ein uralter Krieger aus Splitterlicht. Quest-Kampf allein und schwächer, danach öffentlich oder eigene Instanz. | Hedda (Splitterlicht), Haken für die Rissgrube | Questpunkte, XP, **Drops in der starken Fassung: Rüstung der Stufe 70** |
+| **H5 „Das erste Echo“** (Boss) | Nach H3/H4: In der **Urkammer** reißt der Splitterriss auf; heraus tritt **das erste Echo**, ein uralter Ritter aus Splitterlicht. | Hedda (Splitterlicht), Haken für die Rissgrube | Questpunkte, XP; starke Fassung droppt **Nahkampf-Rüstung Stufe 70** |
+| **H6 „Der Sturm über dem Grauhorn“** (Boss) | Die Passwacht meldet gerissene Schafe und zerfetzte Zelte; auf dem Gipfel des Grauhorns nistet **die Sturmschwinge**, ein riesiger Klippenadler. Mit Steinmännern den Horst finden, Köder auslegen. | Passwächter, Sennerin | Questpunkte, XP; starke Fassung droppt **Fernkampf-Rüstung Stufe 70** |
+| **H7 „Das Eis am Hochpass“** (Boss) | Der Hochpass friert mitten im Sommer zu; in einer Eishöhle am Pass hält **die Frostwitwe** Hof, eine Eismagierin aus der Frostkrone. Einsiedler deutet ihre Runen. | Einsiedler, Bergvögtin; Haken zur Frostkrone | Questpunkte, XP; starke Fassung droppt **Magie-Rüstung Stufe 70** |
 | **Nebenquest „Der Einsiedler vom Spiegelsee“** | Der Einsiedler sammelt Bergkräuter und schreibt die Geschichte der Hochlande; Kräuter bringen, Steinmänner am Grauhorn finden (Erkunden). | Mira (Waldmark) | Kräuterkunde-XP, Kessel am Spiegelsee frei |
 
 Mini-Boss **Grumhold** (Vorschlag): Stufe ~72, Nahkampf (Keule), Stampf-Ring (angezeigt), wirft Felsbrocken (Schattenkreis), schwach gegen Magie; Quest-Fassung ~60 %.
 Beute der starken Fassung: Splitter, hochstufige Erze/Barren, Wildbret, selten die Waffen der Stufe 70 (vorbereitet: STUFE70_BEUTE, #151).
 
-Mini-Boss **Das erste Echo** (Wunsch des Nutzers): zweiter Mini-Boss der Hochlande, in der Urkammer; Krieger aus Splitterlicht (Modell: Heldenfigur mit Leuchtschicht), wechselt seine Schwäche (Farbe zeigt sie). **Droppt Rüstung der Stufe 70** (keine Waffen) – Sätze je Kampfstil (Nahkampf, Fernkampf, Magie), Werte etwa +8 % über Mythisch, Entwurf der Werte wie im Vorschlag `gipfelgericht.md`.
+**Drei Rüstungs-Bosse** (Wunsch des Nutzers, 27.11.): je ein Boss je Kampfstil-Rüstung, jeder mit **eigener Mechanik, Stärke und Schwäche** (ein Dreieck: jeder ist gegen einen Stil stark, gegen einen schwach). Alle nach der Boss-Regel (#116). Gefährliche Angriffe werden vorher angezeigt (auch am Handy spielbar).
+
+| Boss | Ort | stark gegen | schwach gegen | Mechanik | droppt (starke Fassung) |
+|---|---|---|---|---|---|
+| **Das erste Echo** (Ritter aus Splitterlicht) | Urkammer im Bergwerk | Nahkampf (pariert, wirft einen Teil zurück) | **Magie** | Splitterschwert-Wirbel (Ring um ihn, angezeigt); ruft zwei Splitterlinge, die ihm Schild geben, bis man sie zerschlägt; bei 30 % Leben „Nachhall“: jeder seiner Schläge trifft doppelt | **Echowacht** (Nahkampf: Helm, Brustplatte, Beinschienen, Turmschild) |
+| **Die Sturmschwinge** (Riesenadler) | Horst auf dem Gipfel des Grauhorns | Magie (Wind lenkt Zauber ab, −50 %) | **Fernkampf** | kreist außer Nahkampf-Reichweite, stößt herab (Schattenkreis am Boden); nach dem Sturzflug 4 s am Boden (Fenster für Nahkampf); Sturmböen schieben Spieler über den Gipfel | **Sturmfeder** (Fernkampf: Haube, Wams, Hose) |
+| **Die Frostwitwe** (Eismagierin) | Eishöhle am Hochpass | Fernkampf (Eiswand fängt Geschosse) | **Nahkampf** | friert Bodenfelder ein (verlangsamt, wer zu lange steht, erstarrt); Eissplitter-Wächter; Frostnova (angezeigt) – wer nah dran bleibt, trifft sie hart, muss aber ausweichen | **Frostschleier** (Magie: Kapuze, Robe, Rock) |
+
+**Rüstung Stufe 70:** etwa **+8 % über Mythisch (65)**, **Set-Bonus** bei 3 Teilen (Nahkampf +2 Stärke; Fernkampf +2 Fernkampf-Stärke; Magie +2 % Magieschaden – neu). Richtwerte wie im Vorschlag `gipfelgericht.md`.
+**Drops:** jeder Boss nur **seinen** Satz, etwa **1 : 40 je Teil** in der starken Fassung (Vorschlag), kein Pech-Schutz, handelbar (Vorschlag). Dazu immer Splitter, hochstufige Erze/Barren, Wildbret.
+**Modelle:** Echo aus Heldenfigur mit Leuchtschicht; Sturmschwinge aus dem Klippenadler (größer); Frostwitwe aus Menschenfigur + Eis-Material des Eisgolems – oder vom Nutzer (Blender) wie die Waffen. Rüstungssätze: Figuren oder vom Nutzer.
 
 ## Was der Nutzer liefern bzw. entscheiden muss
 
 1. **Freigabe Block H** (H1–H4 + Nebenquest) und Namen (Steinhag, Grumhold, Quest-Titel).
 2. **Modell Grumhold:** Variante des Bergtrolls (größer, Moos/Steinplatten, Keule) – **Figuren baut sie aus deinem Bergtroll**; oder du lieferst ein eigenes Modell (Blender wie bei den Gegnern).
-3. **Drop-Chance** der Stufe-70-Waffen (Vorschlag 1 : 100 je Waffe in der starken Fassung).
+3. **Drop-Chancen:** Stufe-70-Waffen bei Grumhold (Vorschlag 1 : 100 je Waffe), Rüstung bei den drei Bossen (Vorschlag 1 : 40 je Teil).
+5. **Modelle** für die drei Rüstungssätze und die Bosse: lieferst du sie (Blender) oder baut Figuren sie aus Vorlagen?
 4. Optional: eigene Wünsche für Läden in Steinhag (sonst nur vorhandene Waren).
 
 ## Wer macht was
