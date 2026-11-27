@@ -345,6 +345,7 @@ export class Spielwelt3D implements WeltKern {
     { const q = this.quest && this.quest.stelle(x, y); if (q) return q; } /* Questfiguren: „Mit … sprechen“ */
     { const h = this.haendler && this.haendler.stelle(x, y); if (h) return h; } /* Händler am Marktplatz: „Mit … sprechen“, dazu „Laden ansehen“ */
     { const b = this.bank && this.bank.stelle(x, y); if (b) return b; } /* Bankmitarbeiter: „Mit … sprechen“, dazu „Bank“ */
+    { const K = BANKKISTEN.find((k) => Math.hypot(k.x - x, k.y - y) <= 1.2); if (K) return { x: K.x, y: K.y + 0.9, text: "Bankkiste öffnen", tat: () => bankZeigen(K.name, true), da: () => Math.hypot(K.x - this.ort.x, K.y - this.ort.y) <= 2.5 }; } /* #169: Bankkiste – nur ablegen und abheben */
     { const h = this.holz && this.holz.stelle(x, y); if (h) return h; }
     { const b = this.berg && this.berg.stelle(x, y); if (b) return b; }
     { const p = this.pflanzen && this.pflanzen.stelle(x, y); if (p) return p; }

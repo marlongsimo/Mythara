@@ -61,7 +61,12 @@ export const BANK_TSCHUESS = "Dann einen schönen Tag noch.";
 /* #167/#168: Bankkisten in den Zunfthäusern – nur Ablegen und Abheben (keine Reiter, kein Tauschen, keine Platzhalter). Die Kisten stehen als Interaktionen
    in den Weltdaten (Welt baut sie, die Kennung steht hier). Ort wie bei den Bankmitarbeitern: die eine Kampfwelt („waldmark“). */
 export interface Bankkiste { id: string; name: string; x: number; y: number; ort: string }
-export const BANKKISTEN: Bankkiste[] = [];
+export const BANKKISTEN: Bankkiste[] = [
+  /* Entscheidung des Nutzers (27.11., #169): kleinere Orte mit Laden oder Station bekommen eine Bankkiste – Rabenmoor (bei Harms Werkbank) und Möwenbucht (Ortsmitte).
+     Die Kiste als Gegenstand in der Welt stellt Welt an diese Stellen; antippen geht schon ohne (client/src/welt3d/spielwelt.ts). */
+  { id: "bankkiste_rabenmoor", name: "Bankkiste von Rabenmoor", x: 6311.5, y: 6703.5, ort: "waldmark" },
+  { id: "bankkiste_moewenbucht", name: "Bankkiste der Möwenbucht", x: 6214.5, y: 7159.5, ort: "waldmark" },
+];
 export const istBankkiste = (id: string): boolean => BANKKISTEN.some((k) => k.id === id);
 /** Steht man an einer Bankkiste (und nicht an einer richtigen Bank)? */
 export const nahAnBankkiste = (ort: string, x: number, y: number): boolean => BANKKISTEN.some((k) => k.ort === ort && Math.hypot(k.x - x, k.y - y) <= BANK_WEIT);
