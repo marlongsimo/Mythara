@@ -68,7 +68,7 @@ export const QUEST_G3: QuestDef = {
         { wenn: NEU, zeilen: ["Gute Geschäfte."], antworten: ["tschuess"] },
         { wenn: FERTIG, zeilen: ["Splitter für Raben. Unter meiner Flagge. Ich prüfe jetzt jede Kiste selbst."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Sie sind zurück. Und Ihr Gesicht sagt mir, dass ich die Wahrheit nicht mögen werde."], antworten: ["bericht"] },
-        { wenn: { ...LAEUFT, erledigt: ["kiste"] }, zeilen: ["Eine Kiste mit einem Raben? Ich kenne das Zeichen nicht. Zeigen Sie ihn denen, die es kennen."], antworten: ["hilfe", "tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["kiste"] }, zeilen: ["Eine Kiste mit einem Raben? Ich kenne das Zeichen nicht. Zeigen Sie sie denen, die es kennen."], antworten: ["hilfe", "tschuess"] },
         { zeilen: ["Das Wrack, südlich vom Hafen. Seien Sie vorsichtig."], antworten: ["hilfe", "tschuess"] },
       ],
       optionen: [

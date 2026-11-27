@@ -3,7 +3,7 @@
  * Grundlage: doku/quests/3-raben-trilogie.pdf (Seite 4), doku/konzepte/phase-6.md (Brücke statt Kahn, Insel Aschenwerth).
  * Bertold Krähe liest den Brief mit dem Rabensiegel aus B4, Joost will nicht hinüber („da drüben singen sie“), die alte Brücke nach Aschenwerth ist morsch:
  * 4 Moorweiden, 4 Brückenplanken an Harms Werkbank (oder Harm verkauft sie), Meilerpech von Köhler Ulf gegen 5 Tannenstämme, Brücke flicken,
- * 3 Novizen am Steinkreis, Ebbo gefesselt am Menhir, die Novizenkapuze am Ufer, zurück zu Bertold.
+ * 3 Novizen im Norden der Insel, Ebbo gefesselt am Menhir des Steinkreises, die Novizenkapuze am Ufer, zurück zu Bertold.
  * QUER: Welche Moorweiden taugen, weiß Gisbert Ast aus den Obstwiesen (B3) – er hat das Holz für die alte Brücke geliefert. Wer das rote Banner aus B4 trägt, dem zeigt Bertold das Rabenzeichen darunter.
  * Lohn: Rabenkapuze, Magie 600, Defense 600, LP 300 XP, 1 Questpunkt. Schalter bruecke_aschenwerth (die Brücke trägt), Wegstein-Ziel „Rabenmoor“.
  *
@@ -19,6 +19,8 @@ const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT
 /** Rabenmoor: Bertold 48 | 41, Joost 56 | 70,4, Harm 40,5 | 45,6, Brücke 24,6 | 44,3 · Aschenwerth: Steinkreis 98 | 142,4, Westende der Brücke 112,5 | 109,8 */
 const BERTOLD: [number, number] = [6320, 6697], JOOST: [number, number] = [6328, 6726.4], HARM: [number, number] = [6312.5, 6701.6], BRUECKE: [number, number] = [6296.6, 6700.3];
 const GISBERT: [number, number] = [6562.5, 6691.5], WEIDEN: [number, number] = [6305.5, 6712.5], KREIS: [number, number] = [6242, 6734.4], EBBO: [number, number] = [6245.5, 6736.5] /* 6245,5 · 6738,5 war im Gehraster gesperrt (Steinkreis) */, UFER: [number, number] = [6254.5, 6703.5];
+/** Lager der Novizen im Norden von Aschenwerth (Welt: aschenwerth 48–50 | 68–69) */
+const NOVIZEN: [number, number] = [6193, 6663];
 const HILFE = ["Die Brücke nach Aschenwerth ist morsch. Welche Moorweiden taugen, weiß Gisbert Ast in den Obstwiesen. Vier neue Planken aus Moorweide – Harm hat eine Werkbank, oder er schneidet sie dir für Splitter.",
   "Für die Fugen Pech. Köhler Ulf im Nordwald brennt es dir, wenn du ihm fünf Tannenstämme bringst.",
   "Und drüben: Pass auf. Wer immer da singt, singt nicht für uns. Bring mir Ebbo, wenn du kannst. Und alles, was mir sagt, wer sie sind."];
@@ -57,8 +59,8 @@ export const QUEST_C1: QuestDef = {
       log: "Bring Köhler Ulf auf der Köhlerlichtung im Nordwald fünf Tannenstämme. Er brennt dir Meilerpech für die Fugen." },
     { id: "bruecke", text: "Die Brücke nach Aschenwerth flicken", ereignis: { art: "objekt", id: "c1_bruecke" }, nach: ["planken", "pech"], wo: BRUECKE,
       log: "Flick die alte Brücke nach Aschenwerth: Harms Planken liegen bereit, das Pech hast du." },
-    { id: "novizen", text: "Drei Novizen am Steinkreis besiegen", ereignis: { art: "erlegen", typ: "rabenpriester_novize" }, anzahl: 3, nach: ["bruecke"], wo: KREIS,
-      log: "Am Steinkreis auf Aschenwerth halten Rabenpriester Wache. Besieg drei Novizen ({n:novizen}). Sie zaubern – Fernkampf trifft sie gut." },
+    { id: "novizen", text: "Drei Novizen auf Aschenwerth besiegen", ereignis: { art: "erlegen", typ: "rabenpriester_novize" }, anzahl: 3, nach: ["bruecke"], wo: NOVIZEN,
+      log: "Im Norden von Aschenwerth halten Rabenpriester Wache. Besieg drei Novizen ({n:novizen}) – dann such Ebbo am Steinkreis. Sie zaubern; Fernkampf trifft sie gut." },
     { id: "ebbo", text: "Ebbo losbinden", ereignis: { art: "antwort" }, nach: ["novizen"], bei: "ebbo",
       log: "Am äußersten Menhir liegt jemand gefesselt. Bind ihn los." },
     { id: "kapuze", text: "Die Kapuze am Ufer aufheben", ereignis: { art: "objekt", id: "c1_kapuze" }, nach: ["ebbo"], wo: UFER,
