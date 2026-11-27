@@ -146,7 +146,7 @@
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
-    "text": "Der Kräuterhof. Beete voller Salzkraut, Strandflieder und Meerfenchel – ein zweites Kräutergebiet."
+    "text": "Der Kräuterhof. Beete voller Ringelblumen, Moorglöckchen, Eisenhut und Nebelkraut – ein zweites Kräutergebiet."
    }
   },
   {
@@ -217,6 +217,17 @@
    "abgleich": "keiner",
    "daten": {
     "text": "Eine Senke im Wald. Abgenagte Knochen, Pfotenabdrücke so groß wie ein Teller."
+   }
+  },
+  {
+   "id": "laemmerhang",
+   "art": "lesen",
+   "x": 340,
+   "y": 343.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Lämmerhang, eine Schäferei. Im Pferch blöken die Lämmer, der Hund schläft in der Sonne."
    }
   },
   {

@@ -1,0 +1,46 @@
+{
+ "start": [
+  [
+   16,
+   25.5
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "federmutter_hinauf",
+   "art": "eingang",
+   "x": 16,
+   "y": 28.6,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Leiter hinauf in den Steinkreis.",
+    "tat": "federmutter_hinauf",
+    "knopf": "Hinaufsteigen",
+    "ziel": [
+     6242,
+     6728.4
+    ]
+   }
+  },
+  {
+   "id": "federmutter_nest",
+   "art": "lesen",
+   "x": 16,
+   "y": 8,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Nest aus schwarzen Federn und Knochen. Hier wartet die Federmutter.",
+    "questobjekt": "federmutter_nest"
+   }
+  }
+ ]
+}

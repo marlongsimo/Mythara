@@ -273,6 +273,62 @@
    "x": 6422.5,
    "y": 6914.5,
    "region": "fl_186_211"
+  },
+  {
+   "id": "kraeuterhof_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6411.5,
+   "y": 7066.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "kraeuterhof_ringelblume_2",
+   "art": "ringelblume",
+   "x": 6415.5,
+   "y": 7069.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "kraeuterhof_moorgloeckchen_1",
+   "art": "moorgloeckchen",
+   "x": 6415.5,
+   "y": 7066.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "kraeuterhof_moorgloeckchen_2",
+   "art": "moorgloeckchen",
+   "x": 6419.5,
+   "y": 7069.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "kraeuterhof_eisenhut_1",
+   "art": "eisenhut",
+   "x": 6419.5,
+   "y": 7066.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "kraeuterhof_eisenhut_2",
+   "art": "eisenhut",
+   "x": 6423.5,
+   "y": 7069.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "kraeuterhof_nebelkraut_1",
+   "art": "nebelkraut",
+   "x": 6423.5,
+   "y": 7066.5,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "kraeuterhof_nebelkraut_2",
+   "art": "nebelkraut",
+   "x": 6411.5,
+   "y": 7069.5,
+   "region": "fl_186_211"
   }
  ],
  "kessel": [
@@ -297,6 +353,17 @@
     6679.2
    ],
    "region": "rabenmoor"
+  },
+  {
+   "id": "kessel_kraeuterhof",
+   "ort": "vor dem Kräuterhaus am Kräuterhof (Objekt kraeuterhof_kessel)",
+   "x": 6422.0,
+   "y": 7062.0,
+   "stehen": [
+    6422.0,
+    7063.4
+   ],
+   "region": "fl_186_211"
   }
  ]
 }
