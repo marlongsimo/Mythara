@@ -1,0 +1,113 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.imkerin – Imkerin (Summweide): helles Leinengewand, weißes Kopftuch, Honigkrug (Süden #121; aus npcfrau3d, Gewand/Tuch als Hüllen, vorhandene Werkzeuge).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.krug",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.krug/v001/quelle/krug.glb",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.gewand",
+      "platz": "kutte",
+      "farbe": "#d8cfa8",
+      "dicke": 0.03,
+      "unten": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberarm.L",
+          0,
+          1
+        ],
+        [
+          "oberarm.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0,
+          0.8
+        ],
+        [
+          "unterarm.R",
+          0,
+          0.8
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.95
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.95
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.kopftuch",
+      "platz": "kopftuch",
+      "farbe": "#ece8dc",
+      "dicke": 0.035,
+      "gesicht_frei": true,
+      "ueberlage": true,
+      "bereich": [
+        [
+          "kopf",
+          0.2,
+          1
+        ],
+        [
+          "hals",
+          0.2,
+          1
+        ]
+      ]
+    }
+  ],
+  "teilnetze": []
+}

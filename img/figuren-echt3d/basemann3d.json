@@ -561,6 +561,37 @@
     "angriff"
    ],
    "datei": "basemann3d.teile/waffe.sichel.glb"
+  },
+  "ruestung.brust.wacht": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.wacht.glb"
+  },
+  "kopf.helm.wacht": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.wacht.glb"
+  },
+  "ruestung.beine.wacht": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.beine.wacht.glb"
+  },
+  "waffe.klinge_hauptmann": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ],
+   "datei": "basemann3d.teile/waffe.klinge_hauptmann.glb"
   }
  },
  "aktionen": {
