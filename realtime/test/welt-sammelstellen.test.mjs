@@ -16,8 +16,8 @@ const SH = new Map([...JSON.parse(readFileSync(join(REALTIME, "shared", "holz_st
 const wirksam = gruppen.map((g) => SH.has(g.name) ? { ...g, pts: SH.get(g.name).baeume || SH.get(g.name).adern } : g);
 const abweichend = gruppen.filter((g) => SH.has(g.name) && JSON.stringify(g.pts.map((p) => [p.art, p.x, p.y])) !== JSON.stringify(wirksam.find((w) => w.name === g.name).pts.map((p) => [p.art, p.x, p.y]))).map((g) => g.name);
 if (abweichend.length) console.log("  ℹ in shared/ noch die alte Fassung (Integration): " + abweichend.join(", "));
-const WEST = [6030, 6650, 6720, 7400], OST = [6860, 6420, 7620, 7680], HOCH = [6780, 5200, 7700, 6300];
-const imUnter = (p) => p.y > 9000, imHoch = (p) => !imUnter(p) && p.x >= HOCH[0] && p.y < 6350, imOst = (p) => !imUnter(p) && p.x >= OST[0] && p.y >= 6350, imWest = (p) => !imUnter(p) && !imHoch(p) && !imOst(p);
+const WEST = [6030, 6650, 6720, 7400], OST = [6860, 6420, 7620, 7680], HOCH = [6780, 5200, 7700, 6300], NORD = [6000, 5560, 6780, 6360];   /* NORD: Fahle Weiten (#171) */
+const imUnter = (p) => p.y > 9000, imHoch = (p) => !imUnter(p) && p.x >= HOCH[0] && p.y < 6350, imOst = (p) => !imUnter(p) && p.x >= OST[0] && p.y >= 6350, imNord = (p) => !imUnter(p) && !imHoch(p) && p.x < NORD[2] && p.y < 6350, imWest = (p) => !imUnter(p) && !imHoch(p) && !imOst(p) && !imNord(p);
 function welt(box, extra = []) {
   const R = new G.WeltRaster();
   for (const n of readdirSync(join(WELT, "regionen"))) { const rp = join(WELT, "regionen", n, "region.json"); if (!existsSync(rp)) continue; const r = JSON.parse(readFileSync(rp, "utf8")); if (r.ebene || r.entwurf) continue;
@@ -64,6 +64,9 @@ const gp = lies("gegnerplaetze.json").plaetze, nah = wirksam.flatMap((g) => g.pt
 { const R = welt(WEST, ["weidenhain"]), w = region("weidenhain"), [WX, WY] = w.region.ursprung.map((v) => v * 32), greifbar = flut(R, [WX + w.spiel.start[0][0], WY + w.spiel.start[0][1]], WEST);
   const west = wirksam.flatMap((g) => g.pts.filter(imWest).map((p) => ({ ...p, g: g.name }))), weg = west.filter((p) => !greifbar(p.x, p.y)), offen = west.filter((p) => R.begehbar(p.x, p.y));
   check(!weg.length, `Westen/Süden: ${west.length} Bäume und Adern von Weidenhain aus erreichbar`, weg.map((p) => `${p.g} ${p.id} ${p.x}|${p.y}`)); check(!offen.length, "ihre Felder sind gesperrt", offen.map((p) => p.id)); }
+{ const R = welt(NORD), greifbar = flut(R, [6596, 5876], NORD);
+  const nord = wirksam.flatMap((g) => g.pts.filter(imNord).map((p) => ({ ...p, g: g.name }))), weg = nord.filter((p) => !greifbar(p.x, p.y)), offen = nord.filter((p) => R.begehbar(p.x, p.y));
+  check(!weg.length, `Fahle Weiten: ${nord.length} Bäume und Adern von Heidrast aus erreichbar`, weg.map((p) => `${p.g} ${p.id} ${p.x}|${p.y}`)); check(!offen.length, "ihre Felder sind gesperrt", offen.map((p) => p.id)); }
 { const R = welt(OST), greifbar = flut(R, [6918, 6740], OST);
   const ost = wirksam.flatMap((g) => g.pts.filter(imOst).map((p) => ({ ...p, g: g.name }))), weg = ost.filter((p) => !greifbar(p.x, p.y)), offen = ost.filter((p) => R.begehbar(p.x, p.y));
   check(!weg.length, `Glutsande: ${ost.length} Bäume und Adern vom Pass aus erreichbar`, weg.map((p) => `${p.g} ${p.id} ${p.x}|${p.y}`)); check(!offen.length, "ihre Felder sind gesperrt", offen.map((p) => p.id)); }

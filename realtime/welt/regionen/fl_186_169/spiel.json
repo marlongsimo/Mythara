@@ -1,16 +1,235 @@
 {
  "start": [
   [
-   240.0,
-   224.0
+   240,
+   224
   ]
  ],
  "figuren": [],
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
-  "freigeben": []
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 250,
+    "y0": 387,
+    "x1": 251,
+    "y1": 388
+   },
+   {
+    "art": "rechteck",
+    "x0": 244,
+    "y0": 385,
+    "x1": 245,
+    "y1": 386
+   },
+   {
+    "art": "rechteck",
+    "x0": 249,
+    "y0": 381,
+    "x1": 250,
+    "y1": 382
+   },
+   {
+    "art": "rechteck",
+    "x0": 421,
+    "y0": 422,
+    "x1": 422,
+    "y1": 423
+   },
+   {
+    "art": "rechteck",
+    "x0": 416,
+    "y0": 420,
+    "x1": 417,
+    "y1": 421
+   },
+   {
+    "art": "rechteck",
+    "x0": 420,
+    "y0": 416,
+    "x1": 421,
+    "y1": 417
+   },
+   {
+    "art": "rechteck",
+    "x0": 466,
+    "y0": 365,
+    "x1": 467,
+    "y1": 366
+   },
+   {
+    "art": "rechteck",
+    "x0": 461,
+    "y0": 363,
+    "x1": 462,
+    "y1": 364
+   },
+   {
+    "art": "rechteck",
+    "x0": 465,
+    "y0": 359,
+    "x1": 466,
+    "y1": 360
+   },
+   {
+    "art": "rechteck",
+    "x0": 354,
+    "y0": 371,
+    "x1": 355,
+    "y1": 372
+   },
+   {
+    "art": "rechteck",
+    "x0": 349,
+    "y0": 369,
+    "x1": 350,
+    "y1": 370
+   },
+   {
+    "art": "rechteck",
+    "x0": 353,
+    "y0": 365,
+    "x1": 354,
+    "y1": 366
+   },
+   {
+    "art": "rechteck",
+    "x0": 317,
+    "y0": 393,
+    "x1": 318,
+    "y1": 394
+   },
+   {
+    "art": "rechteck",
+    "x0": 312,
+    "y0": 391,
+    "x1": 313,
+    "y1": 392
+   },
+   {
+    "art": "rechteck",
+    "x0": 316,
+    "y0": 387,
+    "x1": 317,
+    "y1": 388
+   },
+   {
+    "art": "rechteck",
+    "x0": 238,
+    "y0": 368,
+    "x1": 239,
+    "y1": 369
+   },
+   {
+    "art": "rechteck",
+    "x0": 234,
+    "y0": 368,
+    "x1": 235,
+    "y1": 369
+   },
+   {
+    "art": "rechteck",
+    "x0": 235,
+    "y0": 364,
+    "x1": 236,
+    "y1": 365
+   },
+   {
+    "art": "rechteck",
+    "x0": 410,
+    "y0": 405,
+    "x1": 411,
+    "y1": 406
+   },
+   {
+    "art": "rechteck",
+    "x0": 406,
+    "y0": 405,
+    "x1": 407,
+    "y1": 406
+   },
+   {
+    "art": "rechteck",
+    "x0": 408,
+    "y0": 401,
+    "x1": 409,
+    "y1": 402
+   },
+   {
+    "art": "rechteck",
+    "x0": 409,
+    "y0": 372,
+    "x1": 410,
+    "y1": 373
+   },
+   {
+    "art": "rechteck",
+    "x0": 404,
+    "y0": 373,
+    "x1": 405,
+    "y1": 374
+   },
+   {
+    "art": "rechteck",
+    "x0": 406,
+    "y0": 369,
+    "x1": 407,
+    "y1": 370
+   },
+   {
+    "art": "rechteck",
+    "x0": 279,
+    "y0": 394,
+    "x1": 280,
+    "y1": 395
+   },
+   {
+    "art": "rechteck",
+    "x0": 274,
+    "y0": 395,
+    "x1": 275,
+    "y1": 396
+   },
+   {
+    "art": "rechteck",
+    "x0": 276,
+    "y0": 391,
+    "x1": 277,
+    "y1": 392
+   },
+   {
+    "art": "rechteck",
+    "x0": 471,
+    "y0": 417,
+    "x1": 472,
+    "y1": 418
+   },
+   {
+    "art": "rechteck",
+    "x0": 467,
+    "y0": 418,
+    "x1": 468,
+    "y1": 419
+   },
+   {
+    "art": "rechteck",
+    "x0": 468,
+    "y0": 414,
+    "x1": 469,
+    "y1": 415
+   }
+  ],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 376,
+    "y0": 434.7,
+    "x1": 383.9,
+    "y1": 437.3
+   }
+  ]
  },
  "interaktionen": [
   {
@@ -23,6 +242,143 @@
    "daten": {
     "text": "Ein Tal, in dem der Wind schweigt. Die Kernbäume stehen hier dicht und gerade."
    }
+  },
+  {
+   "id": "huegelgrund_bank_tuer",
+   "art": "lesen",
+   "x": 201,
+   "y": 395.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Hügelgrund – ein Steinhaus mit Eisengittern vor den Fenstern."
+   }
+  },
+  {
+   "id": "huegelgrund_gasthaus",
+   "art": "lesen",
+   "x": 226,
+   "y": 394.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Gasthaus „Zum Hügelgrab“. Am Herd brodelt Graupensuppe."
+   }
+  },
+  {
+   "id": "huegelgrund",
+   "art": "lesen",
+   "x": 215.5,
+   "y": 393.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hügelgrund. Ein Dorf zwischen den alten Hügelgräbern und dem stillen Kernbaum-Tal – die Leute hier grüßen die Toten, bevor sie die Lebenden grüßen."
+   }
+  },
+  {
+   "id": "weiherhof_bankkiste",
+   "art": "lesen",
+   "x": 391,
+   "y": 426.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste vom Weiherhof. Was du einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "fischplatz_weiherhof_steg",
+   "art": "lesen",
+   "x": 378.5,
+   "y": 434.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Westufer, neben dem Steg, beißen die Moorhechte.",
+    "fisch": "moorhecht",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "fischplatz_weiherhof_ost",
+   "art": "lesen",
+   "x": 402.5,
+   "y": 436.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Ostufer des Weihers ziehen Mühlbarsche.",
+    "fisch": "muehlbarsch",
+    "stufe": 10
+   }
+  },
+  {
+   "id": "fischplatz_weiherhof_sued",
+   "art": "lesen",
+   "x": 391.5,
+   "y": 442.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "In der tiefen Mitte des Weihers steht ein alter Wels.",
+    "fisch": "wels",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "weiherhof",
+   "art": "lesen",
+   "x": 389,
+   "y": 425.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Weiherhof. Ein Fischerhof an einem dunklen Weiher – das einzige stehende Wasser weit und breit."
+   }
+  },
+  {
+   "id": "rast_talweg",
+   "art": "lesen",
+   "x": 356.5,
+   "y": 386.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Asche im Steinring, ein Stamm zum Sitzen – Hirten und Händler ruhen hier."
+   }
+  }
+ ],
+ "senken": [
+  {
+   "x": 236.1,
+   "y": 367.1,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 408.4,
+   "y": 404,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 406.7,
+   "y": 371.7,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 276.7,
+   "y": 393.7,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 469.1,
+   "y": 416.9,
+   "r": 5,
+   "tiefe": 1.1
   }
  ]
 }

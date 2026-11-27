@@ -37,6 +37,7 @@ const hebe = (x, y, h) => { const k = Math.floor(x) + "," + Math.floor(y); hoehe
 const male = (x0, y0, x1, y1, f) => { for (let y = Math.floor(y0); y < Math.ceil(y1); y++) for (let x = Math.floor(x0); x < Math.ceil(x1); x++) { const c = f(x + 0.5, y + 0.5); if (c) setze(x, y, c); } };
 const koerper = []; let nr = 0;
 const ding = (objekt, x, y, mehr = {}) => { const b = BIB.get(objekt); if (!b) throw new Error("unbekanntes Objekt " + objekt); const s = mehr.s ?? 1;
+  if (b.kategorie !== "bewuchs" && Number.isInteger(y / 32)) y -= 0.01;   /* Fußpunkt nicht genau auf eine Gebietsgrenze: der Körper reicht nach oben ins Nachbargebiet und würde dort abgeschnitten */
   const kk = b.kollision?.koerper || (b.kollision?.art === "rechteck" ? [{ x0: b.kollision.x, x1: b.kollision.x + b.kollision.b, y0: b.kollision.y, y1: b.kollision.y + b.kollision.h }] : []);
   for (const k of kk) { const r = [x + k.x0 * s, y + k.y0 * s, x + k.x1 * s, y + k.y1 * s]; const hit = koerper.find((q) => r[0] < q[2] && q[0] < r[2] && r[1] < q[3] && q[1] < r[3]); if (hit && b.kategorie === "gebaeude") throw new Error(`${mehr.id || objekt} überdeckt ${hit[4]}`); koerper.push([...r, mehr.id || objekt]); }
   const o = { id: mehr.id || `hl_${objekt.replace(/^(dorf|graufurt|stil|k|moor|hand|welt|weidenhain|wald|burg|hoehle|wz|holz)_/, "").replace(/_\d+$/, "")}_${++nr}`, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...mehr }; objekte.push(o); return o; };
@@ -233,11 +234,11 @@ const hauptstadt = { mauer: [MAUER.x0, MAUER.y0, MAUER.x1, MAUER.y1], tore: TORE
   /* Ringmauer: Mauerstücke zu zwei Feldern, Ecktürme, Torhäuser; der Grauhornbach fließt durch einen Durchlass */
   let mz = 0; const mid = () => "steinhag_mauer_" + ++mz;
   const bach = (x0, y0, x1, y1) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (nass(jetzt(x + 0.5, y + 0.5))) return true; return false; };
-  for (const Y of [MAUER.y0, MAUER.y1]) for (let x = MAUER.x0 + 2; x < MAUER.x1 - 2; x += 2) {
+  for (const Y of [MAUER.y0, MAUER.y1]) for (let x = MAUER.x0; x < MAUER.x1; x += 2) {   /* von Ecke zu Ecke: keine Lücke zur West- und Ostmauer */
     if (Y === MAUER.y0 && Math.abs(x + 1 - TORE.nordwest[0]) < 3) continue;
     if (bach(x - 1, Y - 2, x + 3, Y + 2)) { for (let y = Y - 1; y <= Y + 1; y++) for (let u = x; u < x + 2; u++) setze(u, y, "~"); continue; }
     ding("burg_mauer_quer", x + 1, Y + 1, { id: mid() }); }
-  for (const X of [MAUER.x0, MAUER.x1]) for (let y = MAUER.y0 + 2; y < MAUER.y1 - 2; y += 2) { if (Math.abs(y + 1 - 5901) < 3) continue; ding("burg_mauer_laengs", X, y + 2, { id: mid() }); }
+  for (const X of [MAUER.x0, MAUER.x1]) for (let y = MAUER.y0; y < MAUER.y1 - 1; y += 2) {   /* ab y0: keine Lücke an den Ecken */ if (Math.abs(y + 1 - 5901) < 3) continue; ding("burg_mauer_laengs", X, y + 2, { id: mid() }); }
   for (const [x, y] of [[MAUER.x0, MAUER.y0], [MAUER.x1, MAUER.y0], [MAUER.x0, MAUER.y1], [MAUER.x1, MAUER.y1], [6966, MAUER.y0], [6946 + 0, MAUER.y1], [7030, MAUER.y1], [MAUER.x0, 5860], [MAUER.x0, 5930], [MAUER.x1, 5930]])
     ding("burg_eckturm", x, y + 1.3, { id: mid() });
   ding("burg_torhaus_tief", MAUER.x0, 5901 + 1.5, { id: "steinhag_tor_west" }); ding("burg_torhaus_tief", MAUER.x1, 5901 + 1.5, { id: "steinhag_tor_ost" }); ding("burg_torhaus", TORE.nordwest[0], MAUER.y0 + 1, { id: "steinhag_tor_nordwest" });
@@ -288,6 +289,7 @@ const hauptstadt = { mauer: [MAUER.x0, MAUER.y0, MAUER.x1, MAUER.y1], tore: TORE
   const BODEN = new Set([...".,fgas"]), ROAD = new Set([..."kpe"]);
   const passt = (x, y, objekt, s) => { const [a, b, c, d] = bb(objekt, s), r = [x + a, y + b, x + c, y + d];
     if (!inStadt(r[0], r[1], -3) || !inStadt(r[2], r[3], -3) || (r[2] > BURG.x0 - 1 && r[1] < BURG.y1 + 1)) return null;
+    if (regionVon(r[0], r[1] - 0.5) !== regionVon(r[2], r[3] + 0.5)) return null;   /* nicht über eine Gebietsgrenze bauen (Kollision würde abgeschnitten) */
     for (let v = Math.floor(r[1]) - 1; v < Math.ceil(r[3]) + 1; v++) for (let u = Math.floor(r[0]) - 1; u < Math.ceil(r[2]) + 1; u++) if (!BODEN.has(jetzt(u + 0.5, v + 0.5))) return null;
     if (koerper.some((q) => r[0] - 1.6 < q[2] && q[0] < r[2] + 1.6 && r[1] - 1.6 < q[3] && q[1] < r[3] + 1.6)) return null;
     if (punkte.some(([px, py]) => px > r[0] - 2.5 && px < r[2] + 2.5 && py > r[1] - 2.5 && py < r[3] + 2.5)) return null;

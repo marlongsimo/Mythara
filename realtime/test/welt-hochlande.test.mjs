@@ -54,6 +54,11 @@ check(hat(/waldmark_bank/) && hat(/marktstand/) && hat(/dorf_schmiede/) && hat(/
 check(gebaeude > haferstedt && gebaeude >= 80 && gebaeude <= 130, `Hauptstadt (#167): ${gebaeude} Gebäude in den Mauern (Haferstedt ${haferstedt}), Viertel ${JSON.stringify(HO.hauptstadt.viertel)}`);
 { const tore = ["steinhag_tor_west", "steinhag_tor_ost", "steinhag_tor_nordwest"], hat = (id) => OBJ.some((o) => o.id === id);
   check(tore.every(hat) && OBJ.filter((o) => /^steinhag_mauer_/.test(o.id)).length > 150 && tore.every((id) => greifbar(IA.get(id).x, IA.get(id).y)), "Ringmauer mit Ecktürmen und drei Toren (West: Furt, Nordwest: Pass, Ost: Erzberg und Alm), alle Tore zu Fuß erreichbar");
+  { /* die Mauer ist dicht: mit geschlossenen Toren kommt man von der Furt nicht auf den Markt */
+    const zu = [[M[0] - 2, 5896, M[0] + 2, 5906], [HO.hauptstadt.tore.nordwest[0] - 4, M[1] - 2, HO.hauptstadt.tore.nordwest[0] + 4, M[1] + 2], [M[2] - 2, 5896, M[2] + 2, 5906]], s = 2, seen = new Set(), q = [[Math.floor(6799 * s), Math.floor(5761.5 * s)]];
+    while (q.length) { const [x, y] = q.pop(); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy, k = nx + "," + ny, wx = (nx + 0.5) / s, wy = (ny + 0.5) / s;
+        if (seen.has(k) || wx < BOX[0] || wy < BOX[1] || wx > BOX[2] || wy > BOX[3] || !R.begehbar(wx, wy) || zu.some((r) => wx >= r[0] && wx <= r[2] && wy >= r[1] && wy <= r[3])) continue; seen.add(k); q.push([nx, ny]); } }
+    check(!seen.has(Math.floor(6990 * s) + "," + Math.floor(5893 * s)), "die Ringmauer ist dicht (mit geschlossenen Toren kein Weg auf den Markt)"); }
   const innen = ["steinhag_vogtsburg", "steinhag_burgplatz", "steinhag_zunftbank_tuer", "steinhag_zunftschmiede", "steinhag_brennofen", "steinhag_zunftstollen_eingang", "steinhag_bank_tuer"], iw = innen.filter((id) => !IA.has(id) || !greifbar(IA.get(id).x, IA.get(id).y));
   check(["steinhag_vogtsburg_bergfried", "steinhag_vogtsburg_palas", "steinhag_zunftbank", "steinhag_zunftschmiede", "steinhag_brennofen", "steinhag_zunftstollen_eingang"].every(hat) && !iw.length, "Vogtsburg auf dem Fels, zweite Bank, Zunftschmiede, Brennofen und Stollen-Abstieg – erreichbar", iw);
   const lw = HO.hauptstadt.laeden.filter((l) => !greifbar(l.x, l.y, 1.4)), sw = HO.hauptstadt.stationen.filter((s) => !greifbar(s.x, s.y, 1.6));

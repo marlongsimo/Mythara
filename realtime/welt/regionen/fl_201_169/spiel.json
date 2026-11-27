@@ -82,6 +82,111 @@
    },
    {
     "art": "rechteck",
+    "x0": 167,
+    "y0": 327,
+    "x1": 168,
+    "y1": 328
+   },
+   {
+    "art": "rechteck",
+    "x0": 162,
+    "y0": 325,
+    "x1": 163,
+    "y1": 326
+   },
+   {
+    "art": "rechteck",
+    "x0": 166,
+    "y0": 321,
+    "x1": 167,
+    "y1": 322
+   },
+   {
+    "art": "rechteck",
+    "x0": 209,
+    "y0": 437,
+    "x1": 210,
+    "y1": 438
+   },
+   {
+    "art": "rechteck",
+    "x0": 204,
+    "y0": 435,
+    "x1": 205,
+    "y1": 436
+   },
+   {
+    "art": "rechteck",
+    "x0": 208,
+    "y0": 431,
+    "x1": 209,
+    "y1": 432
+   },
+   {
+    "art": "rechteck",
+    "x0": 139,
+    "y0": 440,
+    "x1": 140,
+    "y1": 441
+   },
+   {
+    "art": "rechteck",
+    "x0": 133,
+    "y0": 438,
+    "x1": 134,
+    "y1": 439
+   },
+   {
+    "art": "rechteck",
+    "x0": 138,
+    "y0": 434,
+    "x1": 139,
+    "y1": 435
+   },
+   {
+    "art": "rechteck",
+    "x0": 81,
+    "y0": 391,
+    "x1": 82,
+    "y1": 392
+   },
+   {
+    "art": "rechteck",
+    "x0": 76,
+    "y0": 389,
+    "x1": 77,
+    "y1": 390
+   },
+   {
+    "art": "rechteck",
+    "x0": 80,
+    "y0": 385,
+    "x1": 81,
+    "y1": 386
+   },
+   {
+    "art": "rechteck",
+    "x0": 190,
+    "y0": 377,
+    "x1": 191,
+    "y1": 378
+   },
+   {
+    "art": "rechteck",
+    "x0": 185,
+    "y0": 375,
+    "x1": 186,
+    "y1": 376
+   },
+   {
+    "art": "rechteck",
+    "x0": 189,
+    "y0": 372,
+    "x1": 190,
+    "y1": 373
+   },
+   {
+    "art": "rechteck",
     "x0": 356,
     "y0": 323,
     "x1": 357,
@@ -121,6 +226,174 @@
     "y0": 412,
     "x1": 459,
     "y1": 413
+   },
+   {
+    "art": "rechteck",
+    "x0": 153,
+    "y0": 308,
+    "x1": 154,
+    "y1": 309
+   },
+   {
+    "art": "rechteck",
+    "x0": 149,
+    "y0": 309,
+    "x1": 150,
+    "y1": 310
+   },
+   {
+    "art": "rechteck",
+    "x0": 150,
+    "y0": 305,
+    "x1": 151,
+    "y1": 306
+   },
+   {
+    "art": "rechteck",
+    "x0": 243,
+    "y0": 426,
+    "x1": 244,
+    "y1": 427
+   },
+   {
+    "art": "rechteck",
+    "x0": 238,
+    "y0": 426,
+    "x1": 239,
+    "y1": 427
+   },
+   {
+    "art": "rechteck",
+    "x0": 240,
+    "y0": 422,
+    "x1": 241,
+    "y1": 423
+   },
+   {
+    "art": "rechteck",
+    "x0": 106,
+    "y0": 419,
+    "x1": 107,
+    "y1": 420
+   },
+   {
+    "art": "rechteck",
+    "x0": 101,
+    "y0": 420,
+    "x1": 102,
+    "y1": 421
+   },
+   {
+    "art": "rechteck",
+    "x0": 103,
+    "y0": 416,
+    "x1": 104,
+    "y1": 417
+   },
+   {
+    "art": "rechteck",
+    "x0": 27,
+    "y0": 353,
+    "x1": 28,
+    "y1": 354
+   },
+   {
+    "art": "rechteck",
+    "x0": 23,
+    "y0": 354,
+    "x1": 24,
+    "y1": 355
+   },
+   {
+    "art": "rechteck",
+    "x0": 24,
+    "y0": 350,
+    "x1": 25,
+    "y1": 351
+   },
+   {
+    "art": "rechteck",
+    "x0": 193,
+    "y0": 346,
+    "x1": 194,
+    "y1": 347
+   },
+   {
+    "art": "rechteck",
+    "x0": 188,
+    "y0": 347,
+    "x1": 189,
+    "y1": 348
+   },
+   {
+    "art": "rechteck",
+    "x0": 190,
+    "y0": 343,
+    "x1": 191,
+    "y1": 344
+   },
+   {
+    "art": "rechteck",
+    "x0": 111,
+    "y0": 333,
+    "x1": 112,
+    "y1": 334
+   },
+   {
+    "art": "rechteck",
+    "x0": 106,
+    "y0": 333,
+    "x1": 107,
+    "y1": 334
+   },
+   {
+    "art": "rechteck",
+    "x0": 108,
+    "y0": 329,
+    "x1": 109,
+    "y1": 330
+   },
+   {
+    "art": "rechteck",
+    "x0": 180,
+    "y0": 440,
+    "x1": 181,
+    "y1": 441
+   },
+   {
+    "art": "rechteck",
+    "x0": 176,
+    "y0": 440,
+    "x1": 177,
+    "y1": 441
+   },
+   {
+    "art": "rechteck",
+    "x0": 178,
+    "y0": 436,
+    "x1": 179,
+    "y1": 437
+   },
+   {
+    "art": "rechteck",
+    "x0": 85,
+    "y0": 344,
+    "x1": 86,
+    "y1": 345
+   },
+   {
+    "art": "rechteck",
+    "x0": 81,
+    "y0": 345,
+    "x1": 82,
+    "y1": 346
+   },
+   {
+    "art": "rechteck",
+    "x0": 82,
+    "y0": 341,
+    "x1": 83,
+    "y1": 342
    }
   ],
   "freigeben": [
@@ -330,6 +603,160 @@
    }
   },
   {
+   "id": "grauwacht_tor_sued",
+   "art": "lesen",
+   "x": 251,
+   "y": 405,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Südtor von Grauwacht. Die Wacht hat es wieder besetzt – der Weg führt nach Heidrast.",
+    "ausbau": "burg"
+   }
+  },
+  {
+   "id": "grauwacht_kaserne",
+   "art": "lesen",
+   "x": 232,
+   "y": 329.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Kaserne der Wacht. Drinnen hängen die Spieße in Reihen, draußen übt die Wache an Strohzielen.",
+    "ausbau": "burg"
+   }
+  },
+  {
+   "id": "grauwacht_kaserne_bankkiste",
+   "art": "lesen",
+   "x": 239.5,
+   "y": 329.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Kaserne. Was du hier einlegst, liegt auf deinem Konto.",
+    "ausbau": "burg"
+   }
+  },
+  {
+   "id": "grauwacht_taverne",
+   "art": "lesen",
+   "x": 296.5,
+   "y": 343.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Taverne „Zur Furt“. Wer über die Brücke kommt, kehrt hier zuerst ein.",
+    "ausbau": "burg"
+   }
+  },
+  {
+   "id": "grauwacht_gerberei",
+   "art": "lesen",
+   "x": 290,
+   "y": 390.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Gerberei in der Handwerkergasse.",
+    "ausbau": "burg"
+   }
+  },
+  {
+   "id": "grauwacht_tischlerei",
+   "art": "lesen",
+   "x": 299,
+   "y": 390.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Tischlerei in der Handwerkergasse.",
+    "ausbau": "burg"
+   }
+  },
+  {
+   "id": "grauwacht_weberei",
+   "art": "lesen",
+   "x": 308,
+   "y": 390.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Weberei in der Handwerkergasse.",
+    "ausbau": "burg"
+   }
+  },
+  {
+   "id": "fischplatz_grauwacht",
+   "art": "lesen",
+   "x": 311.5,
+   "y": 370.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "An der Kaimauer von Grauwacht beißen die Heringe aus dem Sund.",
+    "fisch": "hering",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "wollhag_bankkiste",
+   "art": "lesen",
+   "x": 141,
+   "y": 331.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Schäferei. Was du einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "wollhag",
+   "art": "lesen",
+   "x": 138,
+   "y": 329.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Wollhag. Eine Schäferei mitten auf der Heide – im Frühjahr wird hier geschoren, dass die Wolle wie Schnee über die Weiten fliegt."
+   }
+  },
+  {
+   "id": "wollhag_pferch",
+   "art": "lesen",
+   "x": 137,
+   "y": 334.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Pferch der Schäferei. Die Schafe drängen sich an den Zaun, sobald jemand kommt."
+   }
+  },
+  {
+   "id": "rast_graeberweg",
+   "art": "lesen",
+   "x": 106.5,
+   "y": 434.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Asche im Steinring, ein Stamm zum Sitzen – Hirten und Händler ruhen hier."
+   }
+  },
+  {
+   "id": "fischplatz_nordkueste_wollhag",
+   "art": "lesen",
+   "x": 121.5,
+   "y": 256.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "An der Nordküste der Fahlen Weiten stehen Klippenbarsche zwischen den Steinen.",
+    "fisch": "klippenbarsch",
+    "stufe": 35
+   }
+  },
+  {
    "id": "furt",
    "art": "lesen",
    "x": 367,
@@ -385,6 +812,54 @@
   {
    "x": 458.7,
    "y": 414.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 151.3,
+   "y": 307.7,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 240.9,
+   "y": 425.2,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 103.7,
+   "y": 418.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 25.1,
+   "y": 352.8,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 190.7,
+   "y": 345.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 108.9,
+   "y": 332.3,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 178.4,
+   "y": 439.1,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 83.1,
+   "y": 343.8,
    "r": 5,
    "tiefe": 1.1
   }

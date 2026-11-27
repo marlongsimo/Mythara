@@ -918,6 +918,148 @@
    ]
   },
   {
+   "name": "Eichen bei Hügelgrund",
+   "ort": "huegelgrund",
+   "baeume": [
+    {
+     "id": "eichen_bei_hugelgrund_eiche_1",
+     "art": "eiche",
+     "x": 6202.5,
+     "y": 5795.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "eichen_bei_hugelgrund_eiche_2",
+     "art": "eiche",
+     "x": 6196.5,
+     "y": 5793.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "eichen_bei_hugelgrund_tanne_3",
+     "art": "tanne",
+     "x": 6201.5,
+     "y": 5789.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Köhlerwald bei Kohlstatt",
+   "ort": "kohlstatt",
+   "baeume": [
+    {
+     "id": "kohlerwald_bei_kohlstatt_eiche_1",
+     "art": "eiche",
+     "x": 6449.5,
+     "y": 5875.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "kohlerwald_bei_kohlstatt_tanne_2",
+     "art": "tanne",
+     "x": 6444.5,
+     "y": 5874.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "kohlerwald_bei_kohlstatt_tanne_3",
+     "art": "tanne",
+     "x": 6445.5,
+     "y": 5869.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "kohlerwald_bei_kohlstatt_eibe_4",
+     "art": "eibe",
+     "x": 6450.5,
+     "y": 5870.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Eiben hinter den Meilern",
+   "ort": "kohlstatt",
+   "baeume": [
+    {
+     "id": "eiben_hinter_den_meilern_eibe_1",
+     "art": "eibe",
+     "x": 6396.5,
+     "y": 5869.5,
+     "region": "fl_186_183"
+    },
+    {
+     "id": "eiben_hinter_den_meilern_eibe_2",
+     "art": "eibe",
+     "x": 6391.5,
+     "y": 5866.5,
+     "region": "fl_186_183"
+    },
+    {
+     "id": "eiben_hinter_den_meilern_moorweide_3",
+     "art": "moorweide",
+     "x": 6395.5,
+     "y": 5863.5,
+     "region": "fl_186_183"
+    }
+   ]
+  },
+  {
+   "name": "Windbäume bei Wollhag",
+   "ort": "wollhag",
+   "baeume": [
+    {
+     "id": "windbaume_bei_wollhag_tanne_1",
+     "art": "tanne",
+     "x": 6599.5,
+     "y": 5735.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "windbaume_bei_wollhag_tanne_2",
+     "art": "tanne",
+     "x": 6594.5,
+     "y": 5733.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "windbaume_bei_wollhag_eiche_3",
+     "art": "eiche",
+     "x": 6598.5,
+     "y": 5729.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Weiden am Weiher",
+   "ort": "weiherhof",
+   "baeume": [
+    {
+     "id": "weiden_am_weiher_moorweide_1",
+     "art": "moorweide",
+     "x": 6373.5,
+     "y": 5830.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "weiden_am_weiher_moorweide_2",
+     "art": "moorweide",
+     "x": 6368.5,
+     "y": 5828.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "weiden_am_weiher_eibe_3",
+     "art": "eibe",
+     "x": 6372.5,
+     "y": 5824.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
    "name": "Einsame Eibe hinter dem Heckenhof",
    "ort": "heckenhof",
    "baeume": [
@@ -1364,6 +1506,384 @@
      "x": 7095.5,
      "y": 5911.5,
      "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 1)",
+   "ort": "fwweg_alt_1",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_1_eiche_1",
+     "art": "eiche",
+     "x": 6584.5,
+     "y": 5896.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_1_eiche_2",
+     "art": "eiche",
+     "x": 6579.5,
+     "y": 5894.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_1_tanne_3",
+     "art": "tanne",
+     "x": 6583.5,
+     "y": 5890.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 3)",
+   "ort": "fwweg_alt_3",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_3_tanne_1",
+     "art": "tanne",
+     "x": 6646.5,
+     "y": 6001.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_3_eibe_2",
+     "art": "eibe",
+     "x": 6641.5,
+     "y": 5999.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_3_eibe_3",
+     "art": "eibe",
+     "x": 6645.5,
+     "y": 5995.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 5)",
+   "ort": "fwweg_alt_5",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_5_eiche_1",
+     "art": "eiche",
+     "x": 6667.5,
+     "y": 6122.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_5_eiche_2",
+     "art": "eiche",
+     "x": 6662.5,
+     "y": 6120.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_5_tanne_3",
+     "art": "tanne",
+     "x": 6666.5,
+     "y": 6116.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 7)",
+   "ort": "fwweg_alt_7",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_7_tanne_1",
+     "art": "tanne",
+     "x": 6687.5,
+     "y": 6224.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_7_eibe_2",
+     "art": "eibe",
+     "x": 6682.5,
+     "y": 6222.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_7_eibe_3",
+     "art": "eibe",
+     "x": 6687.5,
+     "y": 6218.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 9)",
+   "ort": "fwweg_alt_9",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_9_eiche_1",
+     "art": "eiche",
+     "x": 6641.5,
+     "y": 5845.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_9_eiche_2",
+     "art": "eiche",
+     "x": 6636.5,
+     "y": 5843.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_9_tanne_3",
+     "art": "tanne",
+     "x": 6640.5,
+     "y": 5839.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 11)",
+   "ort": "fwweg_alt_11",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_11_tanne_1",
+     "art": "tanne",
+     "x": 6571.5,
+     "y": 5848.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_11_eibe_2",
+     "art": "eibe",
+     "x": 6565.5,
+     "y": 5846.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_11_eibe_3",
+     "art": "eibe",
+     "x": 6570.5,
+     "y": 5842.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 13)",
+   "ort": "fwweg_alt_13",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_13_eiche_1",
+     "art": "eiche",
+     "x": 6513.5,
+     "y": 5799.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_13_eiche_2",
+     "art": "eiche",
+     "x": 6508.5,
+     "y": 5797.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_13_tanne_3",
+     "art": "tanne",
+     "x": 6512.5,
+     "y": 5793.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 15)",
+   "ort": "fwweg_alt_15",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_15_tanne_1",
+     "art": "tanne",
+     "x": 6418.5,
+     "y": 5773.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_15_eibe_2",
+     "art": "eibe",
+     "x": 6413.5,
+     "y": 5771.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_15_eibe_3",
+     "art": "eibe",
+     "x": 6417.5,
+     "y": 5767.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 17)",
+   "ort": "fwweg_alt_17",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_17_eiche_1",
+     "art": "eiche",
+     "x": 6306.5,
+     "y": 5779.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_17_eiche_2",
+     "art": "eiche",
+     "x": 6301.5,
+     "y": 5777.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_17_tanne_3",
+     "art": "tanne",
+     "x": 6305.5,
+     "y": 5773.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 19)",
+   "ort": "fwweg_alt_19",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_19_tanne_1",
+     "art": "tanne",
+     "x": 6269.5,
+     "y": 5801.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_19_eibe_2",
+     "art": "eibe",
+     "x": 6264.5,
+     "y": 5799.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_19_eibe_3",
+     "art": "eibe",
+     "x": 6268.5,
+     "y": 5795.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 21)",
+   "ort": "fwweg_alt_21",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_21_eiche_1",
+     "art": "eiche",
+     "x": 6484.5,
+     "y": 5878.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_21_eiche_2",
+     "art": "eiche",
+     "x": 6479.5,
+     "y": 5876.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_21_tanne_3",
+     "art": "tanne",
+     "x": 6483.5,
+     "y": 5872.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 23)",
+   "ort": "fwweg_alt_23",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_23_tanne_1",
+     "art": "tanne",
+     "x": 6622.5,
+     "y": 5785.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_23_eibe_2",
+     "art": "eibe",
+     "x": 6617.5,
+     "y": 5783.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_23_eibe_3",
+     "art": "eibe",
+     "x": 6621.5,
+     "y": 5780.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 25)",
+   "ort": "fwweg_alt_25",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_25_eiche_1",
+     "art": "eiche",
+     "x": 6639.5,
+     "y": 5972.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_25_eiche_2",
+     "art": "eiche",
+     "x": 6634.5,
+     "y": 5970.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_25_tanne_3",
+     "art": "tanne",
+     "x": 6638.5,
+     "y": 5966.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 27)",
+   "ort": "fwweg_alt_27",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_27_tanne_1",
+     "art": "tanne",
+     "x": 6548.5,
+     "y": 5875.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_27_eibe_2",
+     "art": "eibe",
+     "x": 6543.5,
+     "y": 5873.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_27_eibe_3",
+     "art": "eibe",
+     "x": 6547.5,
+     "y": 5869.5,
+     "region": "fl_201_183"
     }
    ]
   },
@@ -2725,6 +3245,156 @@
    ]
   },
   {
+   "name": "Kupfersenke bei Hügelgrund",
+   "ort": "huegelgrund",
+   "x": 6188.1,
+   "y": 5775.1,
+   "r": 5,
+   "adern": [
+    {
+     "id": "kupfersenke_bei_hugelgrund_kupfer_1",
+     "art": "kupfer",
+     "x": 6190.5,
+     "y": 5776.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "kupfersenke_bei_hugelgrund_kupfer_2",
+     "art": "kupfer",
+     "x": 6186.5,
+     "y": 5776.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "kupfersenke_bei_hugelgrund_eisen_3",
+     "art": "eisen",
+     "x": 6187.5,
+     "y": 5772.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Eisenbruch am Grauen Fels",
+   "ort": "brechstein",
+   "x": 6679.6,
+   "y": 5941.4,
+   "r": 5,
+   "adern": [
+    {
+     "id": "eisenbruch_am_grauen_fels_eisen_1",
+     "art": "eisen",
+     "x": 6681.5,
+     "y": 5942.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "eisenbruch_am_grauen_fels_eisen_2",
+     "art": "eisen",
+     "x": 6677.5,
+     "y": 5942.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "eisenbruch_am_grauen_fels_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6679.5,
+     "y": 5938.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Sterneisen im Grauen Fels",
+   "ort": "brechstein",
+   "x": 6668.3,
+   "y": 5925.4,
+   "r": 5,
+   "adern": [
+    {
+     "id": "sterneisen_im_grauen_fels_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 6670.5,
+     "y": 5926.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "sterneisen_im_grauen_fels_sterneisen_2",
+     "art": "sterneisen",
+     "x": 6666.5,
+     "y": 5926.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "sterneisen_im_grauen_fels_sterneisen_3",
+     "art": "sterneisen",
+     "x": 6667.5,
+     "y": 5922.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Steine auf der Schafheide",
+   "ort": "wollhag",
+   "x": 6583.3,
+   "y": 5715.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "steine_auf_der_schafheide_kupfer_1",
+     "art": "kupfer",
+     "x": 6585.5,
+     "y": 5716.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "steine_auf_der_schafheide_eisen_2",
+     "art": "eisen",
+     "x": 6581.5,
+     "y": 5717.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "steine_auf_der_schafheide_eisen_3",
+     "art": "eisen",
+     "x": 6582.5,
+     "y": 5713.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Senke am Weiherhof",
+   "ort": "weiherhof",
+   "x": 6360.4,
+   "y": 5812,
+   "r": 5,
+   "adern": [
+    {
+     "id": "senke_am_weiherhof_kupfer_1",
+     "art": "kupfer",
+     "x": 6362.5,
+     "y": 5813.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "senke_am_weiherhof_eisen_2",
+     "art": "eisen",
+     "x": 6358.5,
+     "y": 5813.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "senke_am_weiherhof_eisen_3",
+     "art": "eisen",
+     "x": 6360.5,
+     "y": 5809.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
    "name": "Sterneisen-Brocken im Gehölz",
    "ort": "faehrtenlager",
    "x": 6653.1,
@@ -3105,6 +3775,426 @@
      "x": 7297.5,
      "y": 5375.5,
      "region": "fl_216_155"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 2)",
+   "ort": "fwweg_alt_2",
+   "x": 6626.7,
+   "y": 5937.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_2_kupfer_1",
+     "art": "kupfer",
+     "x": 6629.5,
+     "y": 5938.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_2_kupfer_2",
+     "art": "kupfer",
+     "x": 6624.5,
+     "y": 5939.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_2_eisen_3",
+     "art": "eisen",
+     "x": 6626.5,
+     "y": 5935.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 4)",
+   "ort": "fwweg_alt_4",
+   "x": 6655.7,
+   "y": 6059.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_4_eisen_1",
+     "art": "eisen",
+     "x": 6658.5,
+     "y": 6060.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_4_eisen_2",
+     "art": "eisen",
+     "x": 6653.5,
+     "y": 6061.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_4_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6655.5,
+     "y": 6057.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 6)",
+   "ort": "fwweg_alt_6",
+   "x": 6677.7,
+   "y": 6178.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_6_kupfer_1",
+     "art": "kupfer",
+     "x": 6680.5,
+     "y": 6179.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_6_kupfer_2",
+     "art": "kupfer",
+     "x": 6675.5,
+     "y": 6180.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_6_eisen_3",
+     "art": "eisen",
+     "x": 6677.5,
+     "y": 6176.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 8)",
+   "ort": "fwweg_alt_8",
+   "x": 6704.7,
+   "y": 6271.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_8_eisen_1",
+     "art": "eisen",
+     "x": 6707.5,
+     "y": 6272.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_8_eisen_2",
+     "art": "eisen",
+     "x": 6702.5,
+     "y": 6273.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_8_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6704.5,
+     "y": 6269.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 10)",
+   "ort": "fwweg_alt_10",
+   "x": 6672.9,
+   "y": 5833.2,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_10_kupfer_1",
+     "art": "kupfer",
+     "x": 6675.5,
+     "y": 5834.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_10_kupfer_2",
+     "art": "kupfer",
+     "x": 6670.5,
+     "y": 5834.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_10_eisen_3",
+     "art": "eisen",
+     "x": 6672.5,
+     "y": 5830.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 12)",
+   "ort": "fwweg_alt_12",
+   "x": 6535.7,
+   "y": 5826.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_12_eisen_1",
+     "art": "eisen",
+     "x": 6538.5,
+     "y": 5827.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_12_eisen_2",
+     "art": "eisen",
+     "x": 6533.5,
+     "y": 5828.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_12_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6535.5,
+     "y": 5824.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 14)",
+   "ort": "fwweg_alt_14",
+   "x": 6457.1,
+   "y": 5760.8,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_14_kupfer_1",
+     "art": "kupfer",
+     "x": 6459.5,
+     "y": 5761.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_14_kupfer_2",
+     "art": "kupfer",
+     "x": 6455.5,
+     "y": 5762.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_14_eisen_3",
+     "art": "eisen",
+     "x": 6456.5,
+     "y": 5758.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 16)",
+   "ort": "fwweg_alt_16",
+   "x": 6358.7,
+   "y": 5779.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_16_eisen_1",
+     "art": "eisen",
+     "x": 6361.5,
+     "y": 5780.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_16_eisen_2",
+     "art": "eisen",
+     "x": 6356.5,
+     "y": 5781.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_16_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6358.5,
+     "y": 5777.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 18)",
+   "ort": "fwweg_alt_18",
+   "x": 6228.7,
+   "y": 5801.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_18_kupfer_1",
+     "art": "kupfer",
+     "x": 6231.5,
+     "y": 5802.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_18_kupfer_2",
+     "art": "kupfer",
+     "x": 6226.5,
+     "y": 5803.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_18_eisen_3",
+     "art": "eisen",
+     "x": 6228.5,
+     "y": 5799.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 20)",
+   "ort": "fwweg_alt_20",
+   "x": 6421.1,
+   "y": 5824.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_20_eisen_1",
+     "art": "eisen",
+     "x": 6423.5,
+     "y": 5825.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_20_eisen_2",
+     "art": "eisen",
+     "x": 6419.5,
+     "y": 5826.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_20_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6420.5,
+     "y": 5822.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 22)",
+   "ort": "fwweg_alt_22",
+   "x": 6622.7,
+   "y": 5753.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_22_kupfer_1",
+     "art": "kupfer",
+     "x": 6625.5,
+     "y": 5754.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_22_kupfer_2",
+     "art": "kupfer",
+     "x": 6620.5,
+     "y": 5755.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_22_eisen_3",
+     "art": "eisen",
+     "x": 6622.5,
+     "y": 5751.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 24)",
+   "ort": "fwweg_alt_24",
+   "x": 6540.9,
+   "y": 5740.3,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_24_eisen_1",
+     "art": "eisen",
+     "x": 6543.5,
+     "y": 5741.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_24_eisen_2",
+     "art": "eisen",
+     "x": 6538.5,
+     "y": 5741.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_24_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6540.5,
+     "y": 5737.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 26)",
+   "ort": "fwweg_alt_26",
+   "x": 6610.4,
+   "y": 5847.1,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_26_kupfer_1",
+     "art": "kupfer",
+     "x": 6612.5,
+     "y": 5848.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_26_kupfer_2",
+     "art": "kupfer",
+     "x": 6608.5,
+     "y": 5848.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_26_eisen_3",
+     "art": "eisen",
+     "x": 6610.5,
+     "y": 5844.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Fahle Weiten 28)",
+   "ort": "fwweg_alt_28",
+   "x": 6515.1,
+   "y": 5751.8,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_fahle_weiten_28_eisen_1",
+     "art": "eisen",
+     "x": 6517.5,
+     "y": 5752.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_28_eisen_2",
+     "art": "eisen",
+     "x": 6513.5,
+     "y": 5753.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "adern_am_weg_fahle_weiten_28_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6514.5,
+     "y": 5749.5,
+     "region": "fl_201_169"
     }
    ]
   },
