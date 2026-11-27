@@ -5,7 +5,6 @@
  */
 import type { QuestDef } from "./questbau";
 import { QUEST_D3 } from "./quest_d3";
-import { QUEST_C3 } from "./quest_c3";
 import { QUEST_E1 } from "./quest_e1";
 import { QUEST_E2 } from "./quest_e2";
 import { QUEST_E3 } from "./quest_e3";
@@ -24,7 +23,6 @@ import { QUEST_G4 } from "./quest_g4";
 /** Entwurf → worauf er wartet (Issue) */
 export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_D3, wartet: "Herd in der Taverne „Zur Furt“ (Kochstelle) und Almas Laden (alma_pastete) – #123" },
-  { q: QUEST_C3, wartet: "Phase 6: Boss und Instanz, Folgen, Kerkermeister, Lohn nach Wahl" },
   { q: QUEST_E1, wartet: "Phase 8: Nordsaum-Weg, Heidrast, Abtei (Welt), Mette und Gunhild (Figuren), Rudelführer" },
   { q: QUEST_E2, wartet: "Phase 8: Abtei und Glockenturm, Rezepte glockenbronze/glocke/kloeppel, Glocke als Weltereignis" },
   { q: QUEST_E3, wartet: "Phase 8: Grenzposten, Deserteure, Figur wird Gegner (Tjark), Wahl im Stand" },

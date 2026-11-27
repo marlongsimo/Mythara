@@ -5,10 +5,11 @@
  * Abstieg durch die Gruft, Federgänge, Kerkerschlüssel vom Kerkermeister, die vier Käfige (Liske und die anderen folgen bis zur Treppe), Heddas Moorwasser
  * ins Splitterbecken (dann heilt sich der Oberste nicht), der Oberste Rabenpriester im Thronsaal (Instanz), Liske bei Hedda, Fest im Langhaus.
  * Lohn: Rabenpanzer (Set komplett), je 1.000 XP Geschick, Stärke, Defense, 1.000 Splitter, 2 Questpunkte.
- * Danach: Wegstein-Ziel „Aschenwerth“, Bindestein am gereinigten Becken, Bossing frei (Schalter bindestein_becken, bossing_oberster).
+ * Boss-Regel (#116): Im Thronsaal kämpfst du in der Quest allein gegen eine schwächere Fassung (Schalter rabenpriester_thronsaal, Eintritt mit einem Federsiegel –
+ * Hedda gibt eines mit), danach die stärkere öffentlich oder als eigene Instanz (rabenpriester_danach). Das Becken trübt der Schalter becken_getruebt.
+ * Danach: Wegstein-Ziel „Aschenwerth“, Bindestein am gereinigten Becken (Schalter bindestein_becken).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 6 (Boss und Instanz, Folgen, Kerkermeister-Beute, Lohn nach Wahl für den Angriffsskill)
- * und auf Figuren in mehreren Quests (Hedda, Bertold). Stellen: rabengrund (Ursprung 10560 | 9600), rabengrund_thronsaal (10752 | 9600).
+ * Im Spiel (shared/quests.ts) seit 27.11. (Kerkermeister, Moorwasser 364c6523). Stellen: rabengrund (Ursprung 10560 | 9600), rabengrund_thronsaal (10752 | 9600).
  * Liste: doku/quests/c-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
@@ -51,7 +52,7 @@ export const QUEST_C3: QuestDef = {
     { id: "becken", text: "Das Moorwasser ins Splitterbecken gießen", ereignis: { art: "objekt", id: "c3_becken" }, nach: ["abstieg", "weihen"], wo: BECKEN,
       log: "Gieß Heddas Moorwasser ins Splitterbecken, damit der Oberste sich nicht daraus heilen kann." },
     { id: "oberster", text: "Den Obersten Rabenpriester besiegen", ereignis: { art: "erlegen", typ: "oberster_rabenpriester" }, nach: ["kaefige", "becken"], wo: THRON,
-      log: "Im Thronsaal wartet der Oberste Rabenpriester. Weich den dunklen Feldern aus, wenn er schwebt; geh hinter eine Säule, wenn er die Flügel hebt." },
+      log: "Im Thronsaal wartet der Oberste Rabenpriester – du gehst allein. Das Tor öffnet sich mit einem Federsiegel. Weich den dunklen Feldern aus, wenn er schwebt; geh hinter eine Säule, wenn er die Flügel hebt." },
     { id: "liske", text: "Liske bei Hedda wiedersehen", ereignis: { art: "antwort" }, nach: ["oberster"], bei: "liske",
       log: "Liske wartet oben bei Mutter Hedda in Rabenmoor." },
   ],
@@ -82,15 +83,17 @@ export const QUEST_C3: QuestDef = {
         { wenn: FERTIG, zeilen: ["Liske schläft bei mir. Jorin weicht ihr nicht von der Seite.", "Danke, Kind. Das sag ich nicht oft."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["oberster"] }, zeilen: ["Sie ist hier. Sie ist wirklich hier. Geh zu ihr."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["kaefige"] }, zeilen: ["Ebbos Bruder ist oben angekommen. Er sagt, du hast sie alle rausgelassen. Und Liske?", "…Dann geh und bring es zu Ende."], antworten: ["hilfe", "moorwasser", "tschuess"] },
-        { zeilen: ["Durch die Gruft hinunter. Und vergiss das Moorwasser nicht."], antworten: ["hilfe", "moorwasser", "tschuess"] },
+        { zeilen: ["Durch die Gruft hinunter. Und vergiss das Moorwasser nicht."], antworten: ["hilfe", "moorwasser", "siegel", "tschuess"] },
       ],
       optionen: [
-        { id: "annehmen", text: "Ich gehe hinunter. (Quest annehmen)", folge: [{ f: { start: true, geben: [{ g: "moorwasser", name: "eine Phiole Moorwasser", fehlt: true }],
+        { id: "annehmen", text: "Ich gehe hinunter. (Quest annehmen)", folge: [{ f: { start: true, geben: [{ g: "moorwasser", name: "eine Phiole Moorwasser", fehlt: true }, { g: "federsiegel", name: "ein Federsiegel", fehlt: true }],
           zeilen: ["Dann nimm das. Moorwasser, vom tiefsten Loch im Moor. Trag es zur Linde nach Weidenhain und lass es am Bindestein weihen. Dann gieß es ins Becken, bevor du ihm gegenübertrittst.", "Und bring sie nach Hause. Alle, die noch laufen können."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Sie warten schon lange. Ein paar Tage mehr … ich hoffe, sie halten das aus."] } }] },
         { id: "hilfe", text: "Wie war das noch?", folge: [{ f: { weiter: true, zeilen: HILFE } }] },
         { id: "moorwasser", text: "Ich brauche noch Moorwasser.", folge: [{ f: { weiter: true, geben: [{ g: "moorwasser", name: "eine Phiole Moorwasser", fehlt: true }], zeilen: ["Hier. Verschütt's nicht."],
           nichtsZuGeben: ["Du hast doch eine Phiole. Oder ist sie schon im Becken? Dann brauchst du keine mehr."] } }] },
+        { id: "siegel", text: "Ich brauche ein Federsiegel für den Thronsaal.", wenn: { phase: ["laeuft"], offen: ["oberster"] }, folge: [{ f: { weiter: true, geben: [{ g: "federsiegel", name: "ein Federsiegel", fehlt: true }],
+          zeilen: ["Hier. Eins von denen, die du mir gebracht hast.", "Der Altar frisst es. Jedes Mal eins. Also stirb nicht zu oft."], nichtsZuGeben: ["Du hast doch eins. Schau in den Rucksack."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Geh mit trockenen Füßen."] } }] },
       ],
     },
@@ -123,7 +126,9 @@ export const QUEST_C3: QuestDef = {
   },
   /* Kerkerschlüssel: vom Kerkermeister, solange er fehlt (Rolle Spiel: chance 100) */
   beute: { c3_kerkerschluessel: { erledigt: ["abstieg"], offen: ["schluessel"] } },
-  schalter: { thronsaal_instanz: LAEUFT, becken_trueb: [{ erledigt: ["becken"] }, FERTIG], bindestein_becken: FERTIG, bossing_oberster: FERTIG },
+  /* Thronsaal (shared/bosse.ts): in der Quest allein und schwächer, sobald Käfige und Becken erledigt sind; danach öffentlich oder eigene Instanz */
+  schalter: { rabenpriester_thronsaal: { phase: ["laeuft"], erledigt: ["kaefige", "becken"], offen: ["oberster"] }, becken_getruebt: [{ erledigt: ["becken"] }, FERTIG],
+    bindestein_becken: FERTIG, rabenpriester_danach: FERTIG },
   glueckwunsch: "Der Oberste ist gefallen, und unsere Leute sind zu Hause. Rabenmoor feiert. Mit dir.",
   belohnungText: "Belohnung: der Rabenpanzer (Set komplett), je 1.000 XP Geschick, Stärke und Defense, 1.000 Splitter · danach: Wegstein-Ziel Aschenwerth, Bindestein am Becken, der Oberste als Boss",
   belohnung: { xp: { geschick: 1000, staerke: 1000, defense: 1000 }, splitter: 1000, gegenstaende: [{ g: "rabenpanzer" }] },
