@@ -1,6 +1,15 @@
 # Aufräumen – Freigabeliste (Issue #73)
 
-Stand **26.11.2026**, Zweig `claude/aufraeumen` (von `origin/feature/realtime-engine`). **Bisher ist nichts gelöscht.**
+Stand **27.11.2026**, Zweig `claude/aufraeumen` (von `origin/feature/realtime-engine`).
+
+**Freigabe des Nutzers (26.11.):** Gruppe A ist freigegeben und auf diesem Zweig gelöscht (Commit 5b126a02). Gruppe B bleibt, bis die neue Riftmere-Startseite live ist (#78). C und D bleiben vorerst. Das Löschen auf `main` läuft über ein eigenes Issue `für-dich`.
+
+**Prüflauf nach dem Löschen:**
+- `npm ci`, `node build.mjs`, `tsc`: grün.
+- `node test/parallel.mjs`: 42 von 42 grün.
+- `*-ui.test.mjs`: 18 von 24 grün. Die 6 roten (`anzeige`, `chat-schutz`, `handwerk`, `hintergrund`, `inventar`, `rucksack-ziehen`) schlagen auf dem unveränderten `origin/feature/realtime-engine` mit denselben Meldungen fehl. Sie hängen also nicht am Löschen.
+- `quest01-ui` ist wackelig (einmal rot, einmal grün).
+- `konto-loeschen`, `wache` und `weltenwahl` brauchen einen Webserver auf Port 8765 in der Projektwurzel.
 
 ## So wurde geprüft
 
