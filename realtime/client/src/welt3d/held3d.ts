@@ -286,6 +286,10 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   hochlandwidder: { datei: "hochlandwidder3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   hochlandbaer: { datei: "hochlandbaer3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   klippenadler: { datei: "klippenadler3d", angriff: "sturz", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  /* #160: die Hüter der Hochlande – vorerst Platzhalter aus dem Bestand, bis Figuren die Modelle liefert (#159) */
+  grumhold: { datei: "bergtroll3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.8 }, felsbrocken_waechter: { datei: "waldgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 1.4 },
+  sturmschwinge: { datei: "klippenadler3d", angriff: "sturz", ersatz: "gegner.bandit.v003", mass: 3.2 }, frostwitwe: { datei: "rabenpriester_novize3d", angriff: "zauber_stab", ersatz: "gegner.bandit.v003", mass: 1.3 },
+  eissplitter_waechter: { datei: "eisgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 1.3 },
   bergtroll: { datei: "bergtroll3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003", mass: 2.0 },
   tundraelch: { datei: "tundraelch3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
   frostwolf: { datei: "frostwolf3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },

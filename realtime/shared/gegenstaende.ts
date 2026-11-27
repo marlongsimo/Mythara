@@ -22,7 +22,7 @@ export const ANF_NAME: Record<AnfSkill, string> = { geschick: "Geschick", staerk
 export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
 export interface WaffenWerte { art: Art; /** Mehr Schaden gegen eine Gegnerfamilie (MONSTER.familie), z. B. { wald: 0.15 } = +15 % Max Hit */ gegen?: Record<string, number>; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
-export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number }; text: string;
+export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number; /** #160: Magieschaden in Prozent (Max Hit der Magie × (1 + p/100)) */ magieSchaden?: number }; text: string;
   /** #151 Waffen der Stufe 70: passive Fähigkeit, solange die Waffe Ladungen hat (chance je Treffer) – geladen wird sie mit 1 Splitter je Ladung, Laden bindet sie */ passiv?: Passiv;
   /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; /** Grundwert in Splittern für den Trödler (#88), wenn kein Laden ihn führt */ wert?: number; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
 
@@ -245,15 +245,23 @@ GEGENSTAENDE.rabenpanzer = { id: "rabenpanzer", name: "Rabenpanzer", platz: "bru
 GEGENSTAENDE.rabenbeinschuetzer = { id: "rabenbeinschuetzer", name: "Rabenbeinschützer", platz: "beine", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["ruestung.beine.rabe"], anforderung: { skill: "defense", level: 15 },
   abwehr: { nah: 11, fern: 11, magie: 8 }, text: "Gehärtetes Leder mit Federsaum und einem Rabenwappen am Gürtel. Teil 3 des Rabensets – Belohnung aus dem dritten Abschnitt der Raben-Trilogie." };
 RUESTUNGSGRUPPE.rabenkapuze = RUESTUNGSGRUPPE.rabenpanzer = RUESTUNGSGRUPPE.rabenbeinschuetzer = "rabenset";
-export interface SetBonus { id: string; name: string; teile: string[]; text: string; heilung: { chance: number; anteil: number } }
+export interface SetBonus { id: string; name: string; teile: string[]; text: string; /** Treffer gegen den Helden heilen (Rabenset) */ heilung?: { chance: number; anteil: number };
+  /** #160: Boni wie Gegenstand.bonus, wenn alle Teile angelegt sind (Stufe 70: +2 Stärke, +2 Fernkampf-Stärke, +2 % Magieschaden) */ bonus?: Gegenstand["bonus"] }
 export const SETS: Record<string, SetBonus> = {
   rabenset: { id: "rabenset", name: "Rabenset", teile: ["rabenkapuze", "rabenpanzer", "rabenbeinschuetzer"], heilung: { chance: 0.15, anteil: 0.5 },
     text: "Alle drei Teile angelegt: Jeder Treffer, der Schaden macht, heilt mit 15 % Wahrscheinlichkeit um 50 % dieses Schadens (nicht über das maximale Leben)." },
+  /* #160: die Sätze der Stufe 70 (Teile in RUESTUNG_STUFE70; der Turmschild gehört zur Steinvogt-Platte, zählt aber nicht für den Bonus) */
+  steinvogt: { id: "steinvogt", name: "Steinvogt-Platte", teile: ["steinvogt_helm", "steinvogt_platte", "steinvogt_beinschienen"], bonus: { staerke: 2 },
+    text: "Helm, Brustplatte und Beinschienen angelegt: +2 Stärke." },
+  sturmfeder: { id: "sturmfeder", name: "Sturmfeder", teile: ["sturmfeder_haube", "sturmfeder_wams", "sturmfeder_hose"], bonus: { fernStaerke: 2 },
+    text: "Haube, Wams und Hose angelegt: +2 Fernkampf-Stärke." },
+  frostschleier: { id: "frostschleier", name: "Frostschleier", teile: ["frostschleier_kapuze", "frostschleier_robe", "frostschleier_rock"], bonus: { magieSchaden: 2 },
+    text: "Kapuze, Robe und Rock angelegt: +2 % Magieschaden." },
 };
 /** Aktive Set-Boni bei diesen angelegten Gegenständen */
 export const aktiveSets = (angelegt: (string | undefined)[]) => Object.values(SETS).filter((s) => s.teile.every((t) => angelegt.includes(t)));
 /** Heilung durch den Set-Bonus für einen Treffer (zufall: 0..1, z. B. Math.random()); 0 bei Schaden 0 oder ohne Glück */
-export const setHeilung = (s: SetBonus, schaden: number, zufall: number) => (schaden > 0 && zufall < s.heilung.chance ? Math.round(schaden * s.heilung.anteil) : 0);
+export const setHeilung = (s: SetBonus, schaden: number, zufall: number) => (s.heilung && schaden > 0 && zufall < s.heilung.chance ? Math.round(schaden * s.heilung.anteil) : 0);
 /** Angriffsbewegung der 3D-Figur je Waffenart (nur Darstellung – der Kampf rechnet weiter mit dem Ausrüstungssatz der Startwaffe) */
 export const ANGRIFF_JE_ART: Record<string, string> = { Holzbeil: "angriff", Spitzhacke: "angriff", Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Kurzbogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
 /** Angriffsbewegung zu den angelegten Figurenebenen (die Waffe in der Hand) – oder null, wenn keine bekannte Waffe angelegt ist */
@@ -570,6 +578,42 @@ export const WAFFEN_STUFE70 = ["echoschneide", "seelenbogen", "seelenfokus"];
   GEGENSTAENDE.seelenfokus = { id: "seelenfokus", name: "Seelenfokus", platz: "waffe", art: "Stab", seltenheit: "mythisch", ebenen: ["waffe.seelenfokus"], bild: B + "seelenfokus.webp", zweihand: true /* Zweihand-Stab (Figuren) */,
     anforderung: { skill: "magie", level: 70 }, waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 30, magieStaerke: 216 }, passiv: PASSIVE.seelenbrand,
     text: "Ein Stab mit einem Herz aus kaltem Feuer. Wen er trifft, der brennt von innen. " + T }; }
+/* ───────── #160 (Block H): Rüstung der Stufe 70 – je Hüter der Hochlande ein Satz (doku/konzepte/phase-11.md, Richtwerte aus gipfelgericht.md) ─────────
+   Anforderung Defense 70, etwa +8 % über Mythisch, Set-Bonus bei allen Teilen des Satzes (SETS unten): Steinvogt-Platte +2 Stärke, Sturmfeder +2 Fernkampf-Stärke,
+   Frostschleier +2 % Magieschaden (neu, kampfwerte.ts). Nur aus der starken Fassung der Hüter (HUETER_BEUTE in shared/bosse.ts, insgesamt 1 : 75 je Sieg), handelbar.
+   Bilder und 3D-Teile vorerst von den mythischen Teilen, bis Figuren die eigenen Modelle liefert (#159). Namen sind Vorschläge. */
+export const RUESTUNG_STUFE70: Record<"steinvogt" | "sturmfeder" | "frostschleier", string[]> = {
+  steinvogt: ["steinvogt_helm", "steinvogt_platte", "steinvogt_beinschienen", "steinvogt_turmschild"],
+  sturmfeder: ["sturmfeder_haube", "sturmfeder_wams", "sturmfeder_hose"],
+  frostschleier: ["frostschleier_kapuze", "frostschleier_robe", "frostschleier_rock"] };
+{ const T = (id: string, name: string, platz: Platz, art: string, vorbild: string, ab: [number, number, number], bonus: Gegenstand["bonus"], text: string, gruppe: "nahkampf" | "fernkampf" | "magie") => {
+    const V = GEGENSTAENDE[vorbild]; GEGENSTAENDE[id] = { id, name, platz, art, seltenheit: "mythisch", ebenen: V ? V.ebenen : [], ...(V && V.bild ? { bild: V.bild } : {}), anforderung: { skill: "defense", level: 70 },
+      abwehr: { nah: ab[0], fern: ab[1], magie: ab[2] }, bonus, text }; RUESTUNGSGRUPPE[id] = gruppe; };
+  const S = "Teil der Steinvogt-Platte – Grumhold trug sie, ehe der Berg ihn verschluckte.", F = "Teil der Sturmfeder – aus dem Horst der Sturmschwinge.", E = "Teil des Frostschleiers – kalt wie der Atem der Frostwitwe.";
+  T("steinvogt_helm", "Steinvogt-Helm", "kopf", "Schwere Rüstung", "eisenwachthelm_mythisch", [49, 50, -1], { fernAngriff: -3, genau: -6 }, "Ein Helm aus Bergplatten, schwer wie ein Fels. " + S, "nahkampf");
+  T("steinvogt_platte", "Steinvogt-Brustplatte", "brust", "Schwere Rüstung", "eisenwacht_mythisch", [112, 114, -6], { fernAngriff: -15, genau: -30 }, "Steinplatten, mit Erzadern vernietet. " + S, "nahkampf");
+  T("steinvogt_beinschienen", "Steinvogt-Beinschienen", "beine", "Schwere Rüstung", "eisenbeinschienen_mythisch", [71, 71, -4], { fernAngriff: -11, genau: -21 }, "Beinschienen, die bei jedem Schritt knirschen wie Geröll. " + S, "nahkampf");
+  T("steinvogt_turmschild", "Steinvogt-Turmschild", "nebenhand", "Schild", "sternenschild_mythisch", [64, 65, 0], { fernAngriff: -2, genau: -8 }, "Ein Turmschild aus einer einzigen Felsplatte. " + S, "nahkampf");
+  T("sturmfeder_haube", "Sturmfeder-Haube", "kopf", "Leichte Rüstung", "jaegerkapuze_mythisch", [13, 13, 11], { fernAngriff: 12, genau: -1 }, "Leder mit grauen Schwungfedern, leicht wie ein Windstoß. " + F, "fernkampf");
+  T("sturmfeder_wams", "Sturmfeder-Wams", "brust", "Leichte Rüstung", "jaegerwams_mythisch", [58, 59, 54], { fernAngriff: 32, genau: -15 }, "Federn in Lagen, die jeden Windhauch spüren. " + F, "fernkampf");
+  T("sturmfeder_hose", "Sturmfeder-Hose", "beine", "Leichte Rüstung", "jaegerhose_mythisch", [27, 29, 26], { fernAngriff: 19, genau: -10 }, "Gehärtetes Leder, gesäumt mit Sturmfedern. " + F, "fernkampf");
+  T("frostschleier_kapuze", "Frostschleier-Kapuze", "kopf", "Stoffrüstung", "magierkapuze_mythisch", [16, 16, 7], { genau: 8 }, "Ein Schleier aus Eisfäden, der nie taut. " + E, "magie");
+  T("frostschleier_robe", "Frostschleier-Robe", "brust", "Stoffrüstung", "magierrobe_mythisch", [54, 54, 33], { genau: 32 }, "Eine Robe, auf der Raureif wächst. " + E, "magie");
+  T("frostschleier_rock", "Frostschleier-Rock", "beine", "Stoffrüstung", "magierrock_mythisch", [36, 36, 24], { genau: 24 }, "Weißer Stoff, schwer wie Schnee. " + E, "magie"); }
+
+/* #160 (Block H): Bausteine der Hochlande-Quests (shared/hochlande.ts) – Bilder vorerst aus dem Bestand */
+{ const E = "img/objekte3d/skilling/erzeugnisse/", K = "img/objekte3d/skilling/kochen/symbole/";
+  GEGENSTAENDE.ziegenmilch = { id: "ziegenmilch", name: "Ziegenmilch", art: "Rohstoff", seltenheit: "gewoehnlich", bild: GEGENSTAENDE.krug_wasser ? GEGENSTAENDE.krug_wasser.bild : E + "krug_wasser.webp", wert: 5,
+    text: "Ein Krug frischer Milch von den Ziegen der Hohen Alm. Am Herd der Sennerin wird daraus Käse." };
+  GEGENSTAENDE.kaeserad = { id: "kaeserad", name: "Almkäse", art: "Essen", seltenheit: "selten", bild: GEGENSTAENDE.bauerneintopf ? GEGENSTAENDE.bauerneintopf.bild : K + "bauerneintopf.webp", trank: "kaeserad", wert: 30,
+    text: "Ein Rad Käse von der Hohen Alm, würzig und fest. Die Passwacht schwört darauf. Heilt 15 Lebenspunkte." };
+  VERBRAUCH.kaeserad = { id: "kaeserad", name: "Almkäse", art: "Essen", seltenheit: "selten", heilt: { fest: 15, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "15 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
+    text: "Ein Rad Käse von der Hohen Alm, würzig und fest." };
+  GEGENSTAENDE.grubenholz = { id: "grubenholz", name: "Grubenholz", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 10, bild: E + "stamm_kernbaum.webp",
+    text: "Ein zugeschnittener Stempel aus Kernbaum. Er hält einen Stollen, wenn der Berg drückt." };
+  GEGENSTAENDE.erzprobe_splitterlicht = { id: "erzprobe_splitterlicht", name: "Erzprobe mit Splitterlicht", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: E + "erz_splittereisen.webp",
+    text: "Ein Brocken aus der Tiefe des Erzbergs. Im Dunkeln glimmt er – Hedda wird wissen, was das bedeutet." }; }
+
 /** Vorbereitet für das Minispiel Rissgrube (später): Würfe je Waffe 1 : 100 – noch nicht eingetragen, bleibt inaktiv, bis die Rissgrube gebaut wird (nicht beim Mini-Boss der Hochlande) */
 export const STUFE70_BEUTE = { wurf: WAFFEN_STUFE70.map((g) => ({ g, chance: 1 })) };
 
@@ -579,7 +623,7 @@ export const beutePlatzhalter = (g: string): boolean => g.startsWith("@");
 /** Platzhalter auflösen: eine zufällige Waffe oder Rüstung dieser Seltenheit (ohne Werkzeuge, Questlohn und Set-Teile); Art-Filter über GegenstandDef.art (Teilwort) */
 export function beuteAufloesen(g: string, zufall: () => number = Math.random): string | null { if (!beutePlatzhalter(g)) return g;
   const [sel, art] = g.slice(1).split(":"), werkzeug = /^(holzbeil|spitzhacke|angel)/;
-  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !G.passiv /* #151: Stufe 70 nur aus der Rissgrube (später) */ && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
+  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !G.passiv /* #151: Stufe 70 nur aus der Rissgrube (später) */ && !(G.anforderung && G.anforderung.level >= 70) /* #160: Rüstung 70 nur von den Hütern */ && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
   return L.length ? L[Math.floor(zufall() * L.length)].id : null; }
 
 /* ───────── Phase 7 (#40): Graufurt, Ostufer, Turm – Bilder img/objekte3d/graufurt/symbole/ und Wels img/objekte3d/skilling/angeln/symbole/ (Figuren #37) ───────── */

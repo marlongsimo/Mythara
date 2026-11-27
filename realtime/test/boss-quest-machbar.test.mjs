@@ -1,7 +1,7 @@
 /*
  * Riftmere – Bosse in der Quest-Fassung sind machbar (#156, #116: allein, schwächer, gut machbar).
  * Ein Held der empfohlenen Stufe (alle Skills auf dem Heldenlevel der Quest) mit passender Ausrüstung (Eidschwert, Schild, Eisenwacht: episch ab 35, legendär ab 45)
- * betritt die Quest-Kopie, greift den nächsten Gegner an, bleibt stehen (weicht keiner Ansage aus) und isst bei halbem Leben (30 % des Lebens, alle 3 s, höchstens 15 Mahlzeiten).
+ * betritt die Quest-Kopie, greift Heiler zuerst an (Grumholds Felsbrocken-Wächter), sonst den nächsten Gegner, bleibt stehen (weicht keiner Ansage aus) und isst bei halbem Leben (30 % des Lebens, alle 3 s, höchstens 15 Mahlzeiten).
  * Je Boss drei Läufe mit verschiedenem Zufall: jeder muss gewinnen, ohne zu sterben, in höchstens 4 Minuten; im Schnitt höchstens 11 Mahlzeiten
  * (Maßstab: die Federmutter, die in C2 gut machbar ist).
  * Im Thronsaal ist das Becken getrübt (Schalter becken_getruebt, wie in C3). Dazu D2 (#150): auf dem Turmdach greift erst der Turmwächter an, danach muss das Grünlicht
@@ -18,7 +18,8 @@ setzeKarte(KARTEN.welt, FEIN);
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
 /* Instanz, empfohlenes Heldenlevel der Quest, Boss */
 const FAELLE = [["federmutter_kammer", 40, "federmutter", "C2"], ["thronsaal", 40, "oberster_rabenpriester", "C3"], ["hauptmann_gruft", 48, "grauer_hauptmann", "E4"],
-  ["tempel_kammer", 55, "sandmutter", "F3"], ["wrack_kajuete", 35, "wrackkapitaen", "G3"]];
+  ["tempel_kammer", 55, "sandmutter", "F3"], ["wrack_kajuete", 35, "wrackkapitaen", "G3"],
+  ["trollhalle", 60, "grumhold", "H4 (#160, mit Nahkampf – gegen den er stark ist)"]];
 const LAEUFE = 3, ESSEN = 15, MAX_S = 240, SCHNITT_ESSEN = 11, schnitt = (E) => E.reduce((a, e) => a + e.essen, 0) / E.length;
 for (const [inst, L, boss, quest] of FAELLE) {
   const D = INSTANZEN.find((d) => d.id === inst), t = L >= 45 ? "_legendaer" : "_episch", Q = D.questStaerke || QUEST_STAERKE;
@@ -35,7 +36,7 @@ for (const [inst, L, boss, quest] of FAELLE) {
     if (!b) { erg.push({ sieg: false, grund: "kein Boss in der Kopie" }); continue; }
     let pause = 0, essen = ESSEN, tot = false, n;
     for (n = 0; n < 20 * 300 && b.lp > 0 && s.wesen.includes(b); n++) {
-      if (n % 20 === 0) { const F = s.wesen.filter((w) => !w.held && w.instanz === h.instanz && w.lp > 0).sort((a, c) => Math.hypot(a.x - h.x, a.y - h.y) - Math.hypot(c.x - h.x, c.y - h.y)); if (F[0]) s.eingabe({ t: "ziel", id: F[0].id }, id); }
+      if (n % 20 === 0) { const F = s.wesen.filter((w) => !w.held && w.instanz === h.instanz && w.lp > 0).sort((a, c) => (MONSTER[c.typ].heiler ? 1 : 0) - (MONSTER[a.typ].heiler ? 1 : 0) || Math.hypot(a.x - h.x, a.y - h.y) - Math.hypot(c.x - h.x, c.y - h.y)); if (F[0]) s.eingabe({ t: "ziel", id: F[0].id }, id); } /* Heiler zuerst (Felsbrocken-Wächter heilen Grumhold) */
       s.schritt();
       if (pause > 0) pause--; else if (h.lp > 0 && h.lp < h.max * 0.5 && essen > 0) { h.lp = Math.min(h.max, h.lp + Math.round(h.max * 0.3)); essen--; pause = 20 * 3; }
       if (h.lp <= 0 || h.tot) { tot = true; break; } }
