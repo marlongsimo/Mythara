@@ -17,8 +17,6 @@ export const C2 = "aschenwerth_gesang_der_spiralsteine";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 /** Hedda vor ihrer Hütte (rabenmoor 17,4 | 21,4), Steinkreis im Moor (rabenmoor 86 | 19,6), Steinkreis auf Aschenwerth (98 | 142,4), Gruft (44 | 134,6) */
 const HEDDA: [number, number] = [6289.4, 6677.4], KREIS_MOOR: [number, number] = [6358, 6675.6], KREIS_INSEL: [number, number] = [6242, 6734.4];
-/** Akoluthen im Norden von Aschenwerth (Welt: aschenwerth 34–35 | 61–62) */
-const AKOLUTHEN: [number, number] = [6178.5, 6655];
 /** Einstieg ins Nest im Steinkreis von Aschenwerth (federmutter_abstieg), Ravena im Nest (Region federmutter_kammer, shared/bosse.ts) */
 const ABSTIEG: [number, number] = [6242, 6728.4], NEST: [number, number] = [11536.5, 9611.5];
 /** Die vier Spiralsteine um den Kreis auf Aschenwerth (Vorschlag, die Welt prüft) */
@@ -51,8 +49,8 @@ export const QUEST_C2: QuestDef = {
       log: "Lausch an beiden Steinkreisen, wenn der Orden singt – im Moor und auf Aschenwerth ({n:lauschen}). Mit Wachs in den Ohren und der Kapuze auf dem Kopf." },
     { id: "lauschen_insel", text: "Am Steinkreis auf Aschenwerth lauschen", ereignis: { art: "objekt", id: "c2_kreis_insel" }, gruppe: "lauschen", wo: KREIS_INSEL,
       log: "Lausch an beiden Steinkreisen, wenn der Orden singt – im Moor und auf Aschenwerth ({n:lauschen}). Mit Wachs in den Ohren und der Kapuze auf dem Kopf." },
-    { id: "siegel", text: "Drei Federsiegel von Akoluthen", ereignis: { art: "aufheben", g: "federsiegel" }, anzahl: 3, wo: AKOLUTHEN,
-      log: "Die Akoluthen im Norden von Aschenwerth tragen Federsiegel. Nimm drei an dich ({n:siegel}). Sie durchschauen deine Kapuze." },
+    { id: "siegel", text: "Drei Federsiegel von Akoluthen", ereignis: { art: "aufheben", g: "federsiegel" }, anzahl: 3, wo: KREIS_INSEL,
+      log: "Die Akoluthen auf Aschenwerth tragen Federsiegel. Nimm drei an dich ({n:siegel}). Sie durchschauen deine Kapuze." },
     { id: "silben", text: "Mit Hedda die Silben zusammensetzen", ereignis: { art: "antwort" }, nach: [...LAUSCHEN, "siegel"], bei: "hedda",
       log: "Geh mit dem, was du gehört hast, zu Mutter Hedda. Sie setzt die Silben mit dir zusammen." },
     { id: "mond", text: "Die Spiralsteine in der richtigen Reihenfolge berühren", ereignis: { art: "objekt", id: "c2_mond" }, nach: ["silben"], gruppe: "steine", wo: [STEINE.mond[0], STEINE.mond[1]],
