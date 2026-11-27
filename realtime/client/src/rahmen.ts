@@ -22,7 +22,7 @@ import { heldGanzbild } from "./welt3d/heldbild";
 /** Bild eines Gegenstands: Rüstungen und Helme aus ihrem 3D-Teil, Waffen und Schilde aus den 2D-Ebenen */
 /** Freigestelltes Bild (Gegenstand.bild) mittig in das Feld zeichnen */
 const bilder = new Map<string, Promise<HTMLImageElement>>();
-function bildLaden(url: string): Promise<HTMLImageElement> { let p = bilder.get(url); if (!p) { p = new Promise((ok, nein) => { const i = new Image(); i.onload = () => ok(i); i.onerror = nein; i.src = "../" + url; }); bilder.set(url, p); } return p; }
+function bildLaden(url: string): Promise<HTMLImageElement> { let p = bilder.get(url); if (!p) { const q: Promise<HTMLImageElement> = new Promise((ok, nein) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => { if (bilder.get(url) === q) bilder.delete(url); nein(new Error(url)); }; i.src = "../" + url; }); p = q; bilder.set(url, q); } return p; } /* #166: ein gescheiterter Versuch (etwa beim Vorladen während des Einloggens) wird nicht gemerkt – beim nächsten Öffnen wird neu geladen */
 async function bildMalen(c: HTMLCanvasElement, url: string): Promise<void> { try { const i = await bildLaden(url); const x = c.getContext("2d"); if (!x) return; x.clearRect(0, 0, c.width, c.height); x.drawImage(i, 0, 0, c.width, c.height); } catch { /* Bild fehlt: leer */ } }
 /** #139: die Bilder von Rucksack und Ausrüstung einmal malen (unsichtbar), damit sie beim ersten Öffnen schon da sind */
 export async function rucksackVorladen(): Promise<void> { const I = inventar(), ids = new Set([...I.rucksack, ...Object.values(I.angelegt)].filter((g): g is string => Boolean(g)));
