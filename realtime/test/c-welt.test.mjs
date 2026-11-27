@@ -32,7 +32,7 @@ try {
   check(await sprich(ute, C1, "harm", "planken_geben") && erl(ute, C1, "planken") && anzahl(ute, "brueckenplanke") === 0, "Harm nimmt die vier Planken");
   check(await sprich(ute, C1, "ulf", "tannen") && erl(ute, C1, "pech") && anzahl(ute, "meilerpech") === 1, "Köhler Ulf brennt Meilerpech für fünf Tannenstämme");
   { const t = await objekt(ute, C1, "c1_bruecke"); check(erl(ute, C1, "bruecke") && an(C1, ute, "bruecke_aschenwerth"), `Brücke geflickt, sie trägt (Schalter bruecke_aschenwerth) – ${t.slice(0, 40)}`); }
-  { const r = await W.kampfBis(ute, 6243, 6733, ["rabenpriester_novize"], () => W.erl(ute, C1, "novizen"));
+  { const r = await W.kampfBis(ute, 6193, 6664, ["rabenpriester_novize"], () => W.erl(ute, C1, "novizen"));
     check(erl(ute, C1, "novizen"), `Drei Novizen am Steinkreis besiegt (${r.siege} Siege)`); }
   check(await sprich(ute, C1, "ebbo", "losbinden") && erl(ute, C1, "ebbo"), "Ebbo losgebunden");
   await objekt(ute, C1, "c1_kapuze"); check(erl(ute, C1, "kapuze") && anzahl(ute, "novizenkapuze") === 1, "Die Novizenkapuze am Ufer aufgehoben");
@@ -42,7 +42,7 @@ try {
   check(await sprich(ute, C2, "hedda", "annehmen") && stand(ute, C2).phase === "laeuft" && anzahl(ute, "moorwachs") === 1, "Ute nimmt C2 bei Hedda an und bekommt Moorglöckchen-Wachs");
   await objekt(ute, C2, "c2_kreis_moor"); await objekt(ute, C2, "c2_kreis_insel");
   check(erl(ute, C2, "lauschen_moor") && erl(ute, C2, "lauschen_insel"), "An beiden Steinkreisen gelauscht");
-  { const t0 = Date.now(); await stelle(ute, 6243, 6733); const z = await kampf("ute", 6243, 6733); const AK = ["rabenpriester_akoluth", "rabenpriester_akoluth_speer"];
+  { const t0 = Date.now(); await stelle(ute, 6178.5, 6656); const z = await kampf("ute", 6178.5, 6656); const AK = ["rabenpriester_akoluth", "rabenpriester_akoluth_speer"];
     while (!erl(ute, C2, "siegel") && Date.now() - t0 < 240000) { await kaempfen(z, AK, (n) => n >= 1, 60000); await schlaf(800);
       for (const b of ute.boden.filter((x) => x.g === "federsiegel")) { await stelle(ute, b.x, b.y); sende(ute, { t: "aufheben", id: b.i }); await schlaf(500); } }
     z && z.ws.close(); await schlaf(2500);
