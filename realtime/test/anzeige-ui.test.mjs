@@ -65,13 +65,13 @@ try {
   await anna.waitForFunction(() => [...window.EZK.figuren.values()].some((g) => g.held && !g.tot), null, { timeout: 30000 }).catch(() => {}); await anna.waitForTimeout(5000);
   { const bb = await benBalken(); check(bb.length >= 1 && bb.every((x) => x === false), "Mitspieler außerhalb des Kampfes: nur Name, kein Lebensbalken " + JSON.stringify(bb)); }
   /* die Anzeige oben leuchtet nur 2,2 s – unter Last (~2 s je Abfrage) verpasst man sie: das Aufleuchten mitschreiben (#109) */
-  for (const q of [anna, ben]) await q.evaluate(() => { window.__tat = null; new MutationObserver(() => { const e = document.getElementById("ez-tat"); if (e && e.classList.contains("an")) window.__tat = { t: e.textContent, an: true }; }).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"], characterData: true }); });
+  for (const q of [anna, ben]) await q.evaluate(() => { window.__tat = null; new MutationObserver(() => { const e = document.getElementById("ez-tat"); if (e && e.classList.contains("an")) window.__tat = { t: e.textContent, an: true, c: (e.querySelector(".lvfarbe") || {}).style?.color || "" }; }).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"], characterData: true }); });
   /* Angreifen per Rechtsklick → Anzeige oben */
   for (let v = 0; v < 3; v++) { const ziel = await anna.evaluate(() => { const W = window.EZW.welt3d, K = window.EZK; const f = [...K.figuren.entries()].find(([, g]) => !g.held && !g.tot); if (!f) return null; const x = K.zone.x0 + f[1].x, y = K.zone.y0 + f[1].y; return W.motor.bildschirm(x, W.motor.hoehe(x, y) + 0.9, y); });
     if (ziel) { await anna.mouse.click(ziel.x, ziel.y, { button: "right" }); await anna.waitForTimeout(400); if (!menueLv && process.env.BILD) await anna.screenshot({ path: process.env.BILD + "menue-level.png" }); if (!menueLv) menueLv = await anna.evaluate(() => { const k = [...document.querySelectorAll(".ez-aktionen .kopf")].find((e) => e.querySelector(".lv")); return k ? { t: k.textContent, c: getComputedStyle(k.querySelector(".lv")).color } : null; }); await anna.click('.ez-aktionen button:has-text("Angreifen")', { force: true, timeout: 20000 }) /* unter Last braucht der Klick länger (#109) */.catch(() => {}); await anna.waitForTimeout(300); }
     if (await anna.evaluate(() => Boolean(window.__tat))) break; await anna.keyboard.press("Escape"); }
   const tat = await anna.evaluate(() => window.__tat || null);
-  check(tat && tat.an && /^Angreifen: Bandit/.test(tat.t), "Oben mittig: " + JSON.stringify(tat));
+  check(tat && tat.an && /^Angriff: Bandit Lvl 1$/.test(tat.t) && /rgb\(\d+, 255, 0\)/.test(tat.c), "Oben mittig (#98): „Angriff: Bandit Lvl 1“, Level grün " + JSON.stringify(tat));
   await ben.waitForFunction(() => window.EZK && window.EZK.bereit && window.EZK.z && [...window.EZK.figuren.values()].some((g) => !g.held && !g.tot), null, { timeout: 120000, polling: 1000 }).catch(() => {}); /* Bens Kampf muss bereit sein (unter Last dauert das) */
   /* Ben greift ebenfalls an (direkt über seine Verbindung; das Menü prüft der Test bei Anna) → Anna sieht seinen Lebensbalken */
   { const annasZiel = await anna.evaluate(() => (window.EZK.z && window.EZK.z.ich && window.EZK.z.ich.zielId) || 0);
@@ -80,7 +80,7 @@ try {
         if (frei[0]) K.netz.sende({ t: "ziel", id: frei[0][0] }); return false; }, annasZiel); if (ok) break; await ben.waitForTimeout(500); } }
   { let bb = []; for (let i = 0; i < 40 && !bb.some((x) => x === true); i++) { await anna.waitForTimeout(500); bb = await benBalken(); }
     check(bb.some((x) => x === true), "Mitspieler im Kampf: Lebensbalken sichtbar " + JSON.stringify(bb)); }
-  check(menueLv && /Bandit \(Level 1\)/.test(menueLv.t) && /rgb\(\d+, 255, 0\)/.test(menueLv.c), "Gedrückt halten / Rechtsklick: „Bandit (Level 1)“, Level grün (leichter als Anna): " + JSON.stringify(menueLv));
+  check(menueLv && /Bandit Lvl 1/.test(menueLv.t) && /rgb\(\d+, 255, 0\)/.test(menueLv.c), "Gedrückt halten / Rechtsklick: „Bandit Lvl 1“, Level grün (leichter als Anna): " + JSON.stringify(menueLv));
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "anzeige-angreifen.png" });
   check(await anna.evaluate(() => { const W = window.EZW.welt3d; return typeof W.ausfuehren === "function"; }), "3D-Welt bereit");
   await anna.evaluate(() => { const W = window.EZW.welt3d; W.ausfuehren({ x: W.ort.x, y: W.ort.y, text: "Eiche fällen", tat: () => {}, da: () => true }, () => {}); });
