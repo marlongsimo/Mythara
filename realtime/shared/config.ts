@@ -316,6 +316,60 @@ Object.assign(MONSTER, {
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [20, 40] }] }, { wurf: [{ g: "seelenlicht", chance: 60, anzahl: [2, 5] }] }, { wurf: [{ g: "@selten:Stab", chance: 100 / 32 }] }] },
 } as Record<string, MonsterDef>);
 
+/* ───────── Phase 8 (#58): die Fahlen Weiten und Grauwacht – Werte doku/konzepte/phase-8.md (Beute: Vorschläge des Konzepts, ohne Wachtrüstung – vorerst nicht, Entscheidung 26.11.) ───────── */
+Object.assign(MONSTER, {
+  /** Heidewolf: Stufe 32, im Rudel (offene Heide) */
+  heidewolf: { name: "Heidewolf", stufe: 32, bild: "img/echtzeit/bandit.webp", hoehe: 80, lp: 45, tempo: 4.4, angriffswert: { nah: 30, fern: 0, magie: 0 }, abwehr: { nah: 25, fern: 20, magie: 20 }, r: 0.45,
+    angriff: { name: "Sprungbiss", art: "nah", schaden: [1, 6], takt: 2, reich: 1.4, aushol: 0 },
+    v2: { staerke: 50, geschick: 35, defense: 25, magie: 5, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 6,
+    info: "Ein grauer Wolf der Heide, mager und zäh. Wo einer heult, antworten drei.",
+    drops: [{ wurf: [{ g: "splitter", chance: 80, anzahl: [5, 12] }] }, { wurf: [{ g: "leder_weich", chance: 20, anzahl: [1, 2] }, { g: "kuhfleisch", chance: 15 }] }] },
+  /** Rudelführer: Stufe 36, führt das Rudel (E1) */
+  rudelfuehrer: { name: "Rudelführer", stufe: 36, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 80, tempo: 4.4, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 35, fern: 30, magie: 25 }, r: 0.5,
+    angriff: { name: "Reißen", art: "nah", schaden: [1, 8], takt: 2, reich: 1.5, aushol: 0 },
+    v2: { staerke: 70, geschick: 45, defense: 35, magie: 5, ticks: 4, abwehr: { nah: 10, fern: 5, magie: 0 } }, aggroReich: 6,
+    info: "Der größte Wolf der Heide, das Fell grau wie Asche. Er heult – und das Rudel kommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [20, 40] }] }, { wurf: [{ g: "leder_gehaertet", chance: 30, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 64 }] }] },
+  /** Wiedergänger: Stufe 38, langsam und zäh; friedlich, solange die Glocke läutet (shared/weltereignisse.ts) */
+  wiedergaenger: { name: "Wiedergänger", stufe: 38, bild: "img/gegner/moorleiche.jpg", hoehe: 118, lp: 110, tempo: 1.4, angriffswert: { nah: 35, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 45, magie: 20 }, r: 0.45, untot: true,
+    angriff: { name: "Rostklinge", art: "nah", schaden: [1, 8], takt: 3, reich: 1.6, aushol: 0 }, friedlichBei: "glocke_laeutet",
+    v2: { staerke: 70, geschick: 40, defense: 40, magie: 10, ticks: 6, abwehr: { nah: 15, fern: 25, magie: -10 } }, aggroReich: 4,
+    info: "Ein Toter in rostiger Wachtrüstung. Er geht, als hätte er noch einen Befehl. Wenn die Glocke von Grauwacht schlägt, bleibt er stehen und lauscht.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [8, 16] }] }, { wurf: [{ g: "seelenlicht", chance: 30, anzahl: [1, 3] }] }, { wurf: [{ g: "@selten", chance: 100 / 128 }] }] },
+  /** Deserteur mit Schwert: Stufe 42, flieht zum Lager (Grenzposten) */
+  deserteur_schwert: { name: "Deserteur", stufe: 42, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 85, tempo: 3.2, angriffswert: { nah: 45, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 40, magie: 30 }, r: 0.4, fliehen: 0.25,
+    angriff: { name: "Wachtschwert", art: "nah", schaden: [1, 9], takt: 2.5, reich: 1.6, aushol: 0 },
+    v2: { staerke: 80, geschick: 55, defense: 45, magie: 10, ticks: 5, abwehr: { nah: 20, fern: 15, magie: 0 } },
+    info: "Ein Wachtmann in grauem Wappenrock, das Wappen abgerissen. Er hat die Wacht verlassen – und verteidigt jetzt nur noch sich selbst.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [12, 24] }] }, { wurf: [{ g: "wachtstein", chance: 15 }, { g: "heiltrank", chance: 10 }] }, { wurf: [{ g: "@selten:Schwert", chance: 100 / 96 }] }] },
+  /** Deserteur mit Armbrust: Stufe 44, Fernkampf */
+  deserteur_armbrust: { name: "Deserteur", stufe: 44, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 75, tempo: 3.0, angriffswert: { nah: 10, fern: 50, magie: 0 }, abwehr: { nah: 35, fern: 45, magie: 30 }, r: 0.4,
+    angriff: { name: "Bolzen", art: "fern", schaden: [1, 10], takt: 3, reich: 6, aushol: 0 },
+    v2: { fernkampf: 90, geschick: 30, staerke: 20, defense: 40, magie: 10, ticks: 6, abwehr: { nah: 5, fern: 20, magie: 0 } },
+    info: "Ein Wachtmann mit schwerer Armbrust. Er lädt langsam – aber er trifft.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [12, 24] }] }, { wurf: [{ g: "wachtstein", chance: 15 }, { g: "garn", chance: 15, anzahl: [5, 10] }] }, { wurf: [{ g: "@selten:Armbrust", chance: 100 / 96 }] }] },
+  /** Tjark Sölde: Anführer der Deserteure (E3, „besiegen“) – wie Rotmantel: Rundumschlag, ruft seine Leute, trinkt */
+  tjark: { name: "Tjark Sölde", stufe: 46, bild: "img/echtzeit/bandit.webp", hoehe: 128, lp: 220, tempo: 3.2, angriffswert: { nah: 55, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 50, magie: 35 }, r: 0.5, boss: true, wiederkehr: 600,
+    angriff: { name: "Zweihänder", art: "nah", schaden: [1, 13], takt: 3, reich: 1.9, aushol: 0 },
+    v2: { staerke: 95, geschick: 60, defense: 55, magie: 15, staerkeBonus: 20, ticks: 6, abwehr: { nah: 25, fern: 20, magie: 0 } },
+    info: "Der Anführer der Deserteure. Einst ein guter Wachtmann, sagen sie in Grauwacht.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [120, 220] }] }, { wurf: [{ g: "wachtstein", chance: 60, anzahl: [2, 4] }] }, { wurf: [{ g: "@selten", chance: 10 }, { g: "@episch", chance: 1 }] }] },
+  /** Grabwächter: Stufe 48, Steinfigur der Grabkammern, Rundumschlag mit Ansage */
+  grabwaechter: { name: "Grabwächter", stufe: 48, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 105, tempo: 2.0, angriffswert: { nah: 50, fern: 0, magie: 0 }, abwehr: { nah: 75, fern: 65, magie: 40 }, r: 0.55,
+    angriff: { name: "Steinspeer", art: "nah", schaden: [1, 11], takt: 3, reich: 1.9, aushol: 0 }, spezial: { name: "Rundumschlag", laden: 1, alle: 10, radius: 2.2, reich: 2, schaden: [7, 12], art: "nah" },
+    v2: { staerke: 90, geschick: 55, defense: 75, magie: 15, ticks: 6, abwehr: { nah: 35, fern: 30, magie: -5 } }, aggroReich: 4,
+    info: "Eine Steinfigur am Eingang einer Grabkammer. Sie hält Wache, seit es keine Wacht mehr gibt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [15, 30] }] }, { wurf: [{ g: "wachtstein", chance: 40, anzahl: [1, 2] }, { g: "seelenlicht", chance: 20, anzahl: [2, 4] }] }, { wurf: [{ g: "@selten", chance: 100 / 64 }, { g: "@episch", chance: 100 / 512 }] }] },
+  /** Der Graue Hauptmann: Mini-Boss, Stufe 52, Geist in Wachtrüstung (Gruft, Instanz – shared/bosse.ts) */
+  grauer_hauptmann: { name: "Der Graue Hauptmann", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 260, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 55, magie: 45 }, r: 0.55, untot: true, boss: true, wiederkehr: 999999,
+    angriff: { name: "Geisterklinge", art: "nah", schaden: [1, 15], takt: 2.5, reich: 1.9, aushol: 0 },
+    v2: { staerke: 100, geschick: 70, defense: 60, magie: 40, staerkeBonus: 30, ticks: 5, abwehr: { nah: 25, fern: 25, magie: 0 } },
+    info: "Der letzte Hauptmann von Grauwacht. Er hat seine Wacht nie beendet – und lässt die Toten nicht ruhen.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [200, 400] }] }, { wurf: [{ g: "wachtstein", chance: 100, anzahl: [3, 6] }] }, { wurf: [{ g: "seelenlicht", chance: 50, anzahl: [5, 10] }] },
+      { wurf: [{ g: "@selten", chance: 100 / 12 }, { g: "@episch", chance: 100 / 48 }, { g: "@legendaer", chance: 100 / 600 }] }] },
+} as Record<string, MonsterDef>);
+
+
 
 
 /** Trefferchance aus Angriffs- und Verteidigungswert (beide würfeln 0 bis Wert, der höhere Angriffswurf trifft) */

@@ -20,6 +20,19 @@ import subprocess
 US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"],
                                cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])  # die Quelle meldet zuerst ihren Umfang
 BESONDERS = {
+    # Phase 8 (#58): die Fahlen Weiten (Festland-Kacheln der Welt #50) – Heidewölfe in der offenen Heide, der Rudelführer mit Rudel (E1),
+    # Wiedergänger bei den Hügelgräbern (friedlich beim Glockenschlag), Deserteure am Grenzposten (E3).
+    # WARTEN: Festland-Kacheln sind noch kein Kampfgebiet (FESTLAND unten) – diese Lager wirken erst, wenn das Festland Teil der Kampfwelt wird (Entscheidung offen, Größe des Spiels)
+    "fl_201_183": {"leine": 12, "wandern": 3,
+                   "lager": [("heidewolf", 6560, 5900), ("heidewolf", 6558, 5898), ("heidewolf", 6560, 5898),
+                             ("deserteur_schwert", 6640, 6110), ("deserteur_schwert", 6638, 6108), ("deserteur_armbrust", 6640, 6108), ("deserteur_armbrust", 6630, 6122)]},
+    "fl_201_169": {"leine": 12, "wandern": 3,
+                   "lager": [("rudelfuehrer", 6520, 5830), ("heidewolf", 6518, 5828), ("heidewolf", 6520, 5828),
+                             ("wiedergaenger", 6480, 5795), ("wiedergaenger", 6478, 5793), ("wiedergaenger", 6440, 5760)]},
+    # Phase 8 (#58): Grabkammern und das Grab des Grauen Hauptmanns (Untergrund, Welt #50) – Grabwächter und Wiedergänger; der Hauptmann in der Gruft (Instanz)
+    "grabkammer_1": {"leine": 10, "wandern": 1, "lager": [("grabwaechter", 11088, 9614), ("wiedergaenger", 11086, 9612), ("wiedergaenger", 11088, 9612)]},
+    "grabkammer_2": {"leine": 10, "wandern": 1, "lager": [("grabwaechter", 11120, 9614), ("wiedergaenger", 11118, 9612), ("wiedergaenger", 11120, 9612)]},
+    "hauptmann_grab": {"leine": 10, "wandern": 1, "lager": [("grabwaechter", 11158, 9618), ("grabwaechter", 11162, 9618), ("wiedergaenger", 11160, 9618), ("wiedergaenger", 11180, 9640), ("wiedergaenger", 11182, 9638)]},
     # Phase 7 (#40): Ostufer – Schlickkrebse am Westufer, Splitterreiher auf den Wiesen (Stufe 45–60, nur über die Fähre)
     "ostufer": {"leine": 12, "wandern": 3,
                 "lager": [("schlickkrebs", 6800, 6520), ("schlickkrebs", 6798, 6518), ("schlickkrebs", 6800, 6560), ("schlickkrebs", 6802, 6558),
@@ -72,8 +85,11 @@ for rid, eintrag in welt["regionen"].items():
             if not os.path.exists(p): continue
             for yy, zeile in enumerate(json.load(open(p))["geh"]):
                 for xx, ch in enumerate(zeile): raster[j * C + yy][i * C + xx] = "." if ch == "." else "T"
-    for (art, wx, wy) in z.get("lager", []): assert raster[wy - y0][wx - x0] == ".", f"Lager nicht frei: {wx},{wy}"
-    lager = [{"art": art, "x": (wx - x0) / 2, "y": (wy - y0) / 2, "gruppe": n + 1} for n, (art, wx, wy) in enumerate(z.get("lager", []))]
+    # Lager auf einem gesperrten Feld: übersprungen (mit Hinweis), statt den Bau anzuhalten – so dürfen Lager für Gebiete stehen, die die Welt gerade umbaut (Phase 8: Fahle Weiten)
+    alle = z.get("lager", []); frei = [(a, wx, wy) for (a, wx, wy) in alle if 0 <= wy - y0 < H and 0 <= wx - x0 < B and raster[wy - y0][wx - x0] == "."]
+    for (a, wx, wy) in alle:
+        if (a, wx, wy) not in frei: print(f"  Hinweis: {rid}: Lager {a} bei {wx},{wy} liegt nicht auf freiem Feld – übersprungen")
+    lager = [{"art": art, "x": (wx - x0) / 2, "y": (wy - y0) / 2, "gruppe": n + 1} for n, (art, wx, wy) in enumerate(frei)]
     start = eintrag["start"][0]; karte = z.get("karte", "welt_" + rid)
     aus.append("  " + json.dumps({"region": rid, "karte": karte, "name": R.get("name", rid), "x0": x0, "y0": y0, "b": B, "h": H, "stufe": z.get("stufe", R.get("stufe", 1)),
         "zeilen": ["".join(r) for r in raster], "start": [[(start[0] - x0) / 2 - 0.5, (start[1] - y0) / 2 - 0.5]], "lager": lager,

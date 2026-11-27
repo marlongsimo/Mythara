@@ -22,6 +22,15 @@ export const TUEREN: Tuer[] = [];
 TUEREN.push({ id: "turm_wappentuer", feld: [6840, 6519, 6840, 6519], schalter: "wappentuer_offen", eingang: "turm_wappentuer",
   zu: "Die Tür trägt ein Wappen – ein Turm über drei Wellen. Sie ist verschlossen. Vielleicht weiß jemand in Graufurt, wer hier hineindarf." });
 
+/* ───────── Phase 8 (#58, E4): der Graue Hauptmann in seiner Gruft (Region hauptmann_gruft, Weltfelder 11200…11231 × 9600…9631) ─────────
+   Ruft Wiedergänger, später Ansage über die Gruft mit Deckung hinter den Grabsteinen. Instanz je Spieler, solange „hauptmann_gruft“ an ist (E4). */
+BOSSE.grauer_hauptmann = { typ: "grauer_hauptmann", phasen: [
+  { ab: 1, ansagen: [{ name: "Rundumschlag", alle: 4, felder: "rundum", schaden: [8, 14] }] },
+  { ab: 0.6, text: "Der Graue Hauptmann ruft seine Wacht!", ruf: { art: "wiedergaenger", n: 2, text: "Steht auf, Wacht!" }, ansagen: [{ name: "Rundumschlag", alle: 3, felder: "rundum", schaden: [8, 14] }] },
+  { ab: 0.3, text: "Ein eisiger Sturm fegt durch die Gruft!", ansagen: [{ name: "Grabessturm", sek: 4, felder: "raum", deckung: true, vorlauf: 2, schaden: [12, 20] }] } ] };
+INSTANZEN.push({ id: "hauptmann_gruft", name: "Die Gruft des Grauen Hauptmanns", feld: [11200, 9600, 11231, 9631], schalter: "hauptmann_gruft",
+  gegner: [{ art: "grauer_hauptmann", x: 11216.5, y: 9619.5 }], text: "Hinter dir schließt sich die Gruft. Am Sarkophag regt sich etwas Graues." });
+
 /* ───────── Phase 6 (#18): Der Oberste Rabenpriester im Thronsaal (doku/konzepte/phase-6.md „Bosskampf“) ─────────
    Thronsaal = Region rabengrund_thronsaal (Weltfelder 10752…10783 × 9600…9631): Becken (10768, 9615), vier Säulen (±6 Felder), Altar im Norden.
    Instanz je Versuch mit Federsiegel; offen, solange der Schalter „rabenpriester_thronsaal“ an ist (C3 im Schritt Thronsaal, danach Bossing). */

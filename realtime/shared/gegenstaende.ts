@@ -540,3 +540,11 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
     text: "Almas Pastete aus Wels und Mehl, das Rezept der Taverne „Zur Furt“. Heilt 14 Lebenspunkte." };
   VERBRAUCH.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 11, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "11 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Dick, fett und knusprig." };
   VERBRAUCH.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", heilt: { fest: 14, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "14 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Almas Pastete aus Wels und Mehl." }; }
+
+/* ───────── Phase 8 (#58): Grauwacht – Klöppel (E2) und die Klinge des Grauen Hauptmanns (E4-Lohn); die Wachtrüstung vorerst nicht (Entscheidung 26.11.) ───────── */
+{ const G8 = "img/objekte3d/grauwacht/symbole/";
+  GEGENSTAENDE.kloeppel = { id: "kloeppel", name: "Klöppel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G8 + "kloeppel.webp",
+    text: "Ein Klöppel aus Kernbaum, schwer und gerade. Er gehört in die Glocke von Grauwacht." };
+  GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
+    anforderung: { skill: "geschick", level: 25 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 22, staerke: 22 },
+    text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }

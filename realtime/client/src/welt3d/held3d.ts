@@ -220,6 +220,15 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   schlickkrebs: { datei: "schlickkrebs3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
   splitterreiher: { datei: "splitterreiher3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
   turmwaechter: { datei: "turmwaechter3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
-  gruenlicht: { datei: "gruenlicht3d", angriff: "angriff", ersatz: "gegner.bandit.v003" } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
+  gruenlicht: { datei: "gruenlicht3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  /* Phase 8 (#58): Fahle Weiten und Grauwacht (Figuren #51, Modelle auf dem Figuren-Zweig) */
+  heidewolf: { datei: "heidewolf3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  rudelfuehrer: { datei: "rudelfuehrer3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  wiedergaenger: { datei: "wiedergaenger3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  deserteur_schwert: { datei: "deserteur_schwert3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
+  deserteur_armbrust: { datei: "deserteur_armbrust3d", angriff: "schiessen", ersatz: "gegner.bandit.v003" },
+  tjark: { datei: "tjark3d", angriff: "hieb2h", ersatz: "gegner.bandit.v003" },
+  grabwaechter: { datei: "grabwaechter3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  grauer_hauptmann: { datei: "grauer_hauptmann3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }
