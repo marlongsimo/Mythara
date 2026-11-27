@@ -93,12 +93,12 @@ export function uebersicht(o: WeltkarteOpts): void {
   document.body.appendChild(hülle);
 
   /* Ansicht: Verschiebung (px am Bildschirm) und Zoom */
-  let z = 1, vx = 0, vy = 0;
+  let z = 1, vx = 0, vy = 0, wkz = -1;
   /** fester Zoom aus der Breite der Kartenfläche */ const zFest = () => Math.max(0.05, flaeche.clientWidth / (SICHT_FELDER * PX));
   const setzen = () => { /* nicht weiter hinaus schieben, als die Welt reicht (ein Rest bleibt sichtbar) */
     const W = flaeche.clientWidth, Hh = flaeche.clientHeight, b = B * z, h = H * z;
     vx = b <= W ? (W - b) / 2 : Math.min(W * 0.4, Math.max(W * 0.6 - b, vx)); vy = h <= Hh ? (Hh - h) / 2 : Math.min(Hh * 0.4, Math.max(Hh * 0.6 - h, vy));
-    lw.style.transform = `translate(${vx.toFixed(1)}px, ${vy.toFixed(1)}px) scale(${z.toFixed(4)})`; hülle.style.setProperty("--wkz", String(z)); ordnen();
+    lw.style.transform = `translate(${vx.toFixed(1)}px, ${vy.toFixed(1)}px) scale(${z.toFixed(4)})`; if (wkz !== z) { wkz = z; hülle.style.setProperty("--wkz", String(z)); } ordnen(); /* #183: --wkz nur bei neuem Zoom – sonst rechnet jeder Zug alle Symbole und Namen neu */
   };
   /** Zoom neu (Fenstergröße geändert): die Mitte bleibt, wo sie war */
   const neuZoomen = () => { const n = zFest(), px = flaeche.clientWidth / 2, py = flaeche.clientHeight / 2; vx = px - (px - vx) * (n / z); vy = py - (py - vy) * (n / z); z = n; setzen(); };
@@ -107,8 +107,10 @@ export function uebersicht(o: WeltkarteOpts): void {
 
   /* eigene Stelle laufend nachführen (der Held läuft weiter, auch während die Karte offen ist) */
   let lauf = 0;
-  const folgen = () => { const i = o.ich(); punkt.hidden = !i; if (i) { punkt.style.left = (i.x - x0) * PX + "px"; punkt.style.top = (i.y - y0) * PX + "px"; }
-    const r = o.hier && o.regionen.find((q) => q.id === o.hier!()); (hülle.querySelector(".wk-kopfort") as HTMLElement).textContent = r ? r.name : ""; lauf = requestAnimationFrame(folgen); };
+  const kopfort = hülle.querySelector(".wk-kopfort") as HTMLElement; let alt = "";
+  const folgen = () => { const i = o.ich(), r = o.hier && o.regionen.find((q) => q.id === o.hier!()), neu = (i ? Math.round((i.x - x0) * PX) + "," + Math.round((i.y - y0) * PX) : "") + "|" + (r ? r.name : "");
+    if (neu !== alt) { alt = neu; punkt.hidden = !i; if (i) { punkt.style.left = (i.x - x0) * PX + "px"; punkt.style.top = (i.y - y0) * PX + "px"; } kopfort.textContent = r ? r.name : ""; } /* #183: nur bei Änderung schreiben */
+    lauf = requestAnimationFrame(folgen); };
   folgen();
 
   /* Ziehen mit Zeigern (Maus, Finger); kein Zoomen (fester Ausschnitt) */
@@ -141,7 +143,7 @@ function stil() {
 #ez-uebersicht{position:fixed;inset:0;z-index:60;background:radial-gradient(ellipse at center,#1d1912 0%,#0c0a07 100%);color:#f3e6c4;font-family:Cinzel,Georgia,serif;touch-action:none;user-select:none;-webkit-user-select:none}
 #ez-uebersicht .wk-flaeche{position:absolute;inset:0;overflow:hidden;cursor:grab}
 #ez-uebersicht .wk-flaeche.zieht{cursor:grabbing}
-#ez-uebersicht .wk-leinwand{position:absolute;left:0;top:0;transform-origin:0 0}
+#ez-uebersicht .wk-leinwand{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
 #ez-uebersicht .wk-symbol{position:absolute;width:30px;height:auto;transform:translate(-50%,-58%) scale(calc(1 / var(--wkz,1)));transform-origin:50% 58%;filter:drop-shadow(0 1px 3px rgba(0,0,0,.85))}
 #ez-uebersicht .wk-leinwand img{position:absolute;display:block;pointer-events:none;image-rendering:auto}
 #ez-uebersicht .wk-name{position:absolute;transform:translate(-50%,-50%) scale(calc(1 / var(--wkz,1)));white-space:nowrap;pointer-events:none;font-size:15px;letter-spacing:.08em;color:#ffe9b0;text-shadow:0 0 4px #000,0 0 8px #000,0 1px 2px #000;opacity:.92}
