@@ -83,6 +83,8 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - **Gegner-Modelle für spätere Gebiete** (27.11.): Der Nutzer hat die 10 fehlenden Gegner als Blender-Dateien geliefert (Steppenwolf, Ockerhyäne, Hochlandwidder, Hochlandbär, Klippenadler, Bergtroll, Tundraelch, Frostwolf, Drakling, Eisgolem). Sie dienen auch als **Vorlagen für spätere Gegner**. Der **Drakling kann nicht fliegen** (Bodengegner).
 
+- **Welt lebendiger** (27.11.): Leere Flächen bekommen Orte und Bewuchs (#140, #141). Im Süden und in den neuen Orten gibt es **fällbare Bäume und Erzstellen in Gruppen nahe jedem Ort**, dazu **vereinzelt Stellen einer höheren Stufe** abseits zum Entdecken (#142, nur vorhandene Arten). **Streifende Rudel** (#143): Wölfe, Bären und Hyänen ziehen vereinzelt in Gruppen von **5–7** über eine größere Fläche.
+
 ## Für später (Ideen, noch nicht geplant)
 
 - **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
