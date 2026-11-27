@@ -26,7 +26,9 @@ export interface WeltkarteOpts {
 const STUFE = (art: string, gebiet: boolean): "gross" | "mittel" | "land" | "klein" =>
   art === "Stadt" ? "gross" : art === "Dorf" || (gebiet && (art === "Gehöft" || art === "Ruineninsel")) ? "mittel" : art === "Landschaft" || art === "Wald" ? "land" : "klein";
 
-const PX = 4; /* Bildpunkte je Feld bei Zoom 1 */
+/** Bildpunkte je Feld auf der Leinwand. #183: die Leinwand wird gleich in Bildschirmgröße aufgebaut (Breite / SICHT_FELDER, Zoom ≈ 1) –
+ *  vorher 4 px je Feld mit scale(0,13): WebKit (iPhone) rasterte dafür eine Ebene von 9600×12672 px */
+let PX = 4;
 /** So viele Felder zeigt die Karte in der Breite (fester Zoom, #11: von den Riedwiesen bis Graufurt) */
 export const SICHT_FELDER = 750;
 let offen: (() => void) | null = null;
@@ -40,7 +42,7 @@ export function uebersicht(o: WeltkarteOpts): void {
   if (offen) { offen(); return; }
   if (!o.regionen.length) return;
   stil();
-  const C = o.chunkFelder;
+  const C = o.chunkFelder; PX = Math.max(0.3, (window.innerWidth || 800) / SICHT_FELDER);
   /* Umriss der ganzen Welt in Feldern */
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const r of o.regionen) { x0 = Math.min(x0, r.ursprung[0] * C); y0 = Math.min(y0, r.ursprung[1] * C); x1 = Math.max(x1, (r.ursprung[0] + r.chunks[0]) * C); y1 = Math.max(y1, (r.ursprung[1] + r.chunks[1]) * C); }
@@ -53,10 +55,15 @@ export function uebersicht(o: WeltkarteOpts): void {
     <button type="button" class="wk-zu" aria-label="Schließen">✕</button>
     <p class="wk-hilfe">Ziehen zum Verschieben · M oder Esc schließt</p>`;
   const flaeche = hülle.querySelector(".wk-flaeche") as HTMLElement, lw = hülle.querySelector(".wk-leinwand") as HTMLElement;
+  /* #183: Bilder erst laden, wenn sie in die Nähe des Sichtbereichs kommen (nachladen() unten) – sonst lägen alle Regionen dekodiert im Speicher (73 MPx) */
+  const kacheln: { im: HTMLImageElement; x: number; y: number; w: number; h: number; an: boolean }[] = [];
   for (const r of o.regionen) {
-    const im = document.createElement("img"); im.alt = ""; im.draggable = false; im.src = `${o.daten}karte-${r.id}.webp${o.stand ? "?v=" + o.stand : ""}`; im.dataset.region = r.id;
-    Object.assign(im.style, { left: (r.ursprung[0] * C - x0) * PX + "px", top: (r.ursprung[1] * C - y0) * PX + "px", width: r.chunks[0] * C * PX + "px", height: r.chunks[1] * C * PX + "px" });
-    lw.appendChild(im);
+    const im = document.createElement("img"); im.alt = ""; im.draggable = false; im.decoding = "async"; im.dataset.src = `${o.daten}karte-${r.id}.webp${o.stand ? "?v=" + o.stand : ""}`; im.dataset.region = r.id;
+    /* Kanten auf ganze Pixel: bei Bruchteil-Pixeln je Feld blieben zwischen benachbarten Regionen feine Nähte */
+    const l = Math.round((r.ursprung[0] * C - x0) * PX), t = Math.round((r.ursprung[1] * C - y0) * PX), rr = Math.round(((r.ursprung[0] + r.chunks[0]) * C - x0) * PX), u = Math.round(((r.ursprung[1] + r.chunks[1]) * C - y0) * PX);
+    const k = { im, x: l, y: t, w: rr - l, h: u - t, an: false };
+    Object.assign(im.style, { left: k.x + "px", top: k.y + "px", width: k.w + "px", height: k.h + "px" });
+    lw.appendChild(im); kacheln.push(k);
   }
   /* Namen nach den Bildern, damit sie oben liegen. Ein Land aus mehreren Regionen (das Festland ist in Kacheln geschnitten) bekommt seinen Namen
      nur einmal, in der flächengewichteten Mitte seiner Regionen. */
@@ -94,11 +101,17 @@ export function uebersicht(o: WeltkarteOpts): void {
 
   /* Ansicht: Verschiebung (px am Bildschirm) und Zoom */
   let z = 1, vx = 0, vy = 0, wkz = -1;
+  /* #183: nur Bilder nahe am Sichtbereich laden (Rand eine halbe Bildschirmgröße), weit draußen wieder entladen (Rand 1,5) – keine Schreibvorgänge, solange sich nichts ändert */
+  const nachladen = () => { const W = flaeche.clientWidth, Hh = flaeche.clientHeight;
+    const box = (rand: number) => [(-vx - W * rand) / z, (-vy - Hh * rand) / z, (W * (1 + rand) - vx) / z, (Hh * (1 + rand) - vy) / z];
+    const [ax, ay, bx, by] = box(0.5), [fx, fy, gx, gy] = box(1.5);
+    for (const k of kacheln) { if (!k.an) { if (k.x < bx && k.x + k.w > ax && k.y < by && k.y + k.h > ay) { k.an = true; k.im.src = k.im.dataset.src!; } }
+      else if (!(k.x < gx && k.x + k.w > fx && k.y < gy && k.y + k.h > fy)) { k.an = false; k.im.removeAttribute("src"); } } };
   /** fester Zoom aus der Breite der Kartenfläche */ const zFest = () => Math.max(0.05, flaeche.clientWidth / (SICHT_FELDER * PX));
   const setzen = () => { /* nicht weiter hinaus schieben, als die Welt reicht (ein Rest bleibt sichtbar) */
     const W = flaeche.clientWidth, Hh = flaeche.clientHeight, b = B * z, h = H * z;
     vx = b <= W ? (W - b) / 2 : Math.min(W * 0.4, Math.max(W * 0.6 - b, vx)); vy = h <= Hh ? (Hh - h) / 2 : Math.min(Hh * 0.4, Math.max(Hh * 0.6 - h, vy));
-    lw.style.transform = `translate(${vx.toFixed(1)}px, ${vy.toFixed(1)}px) scale(${z.toFixed(4)})`; if (wkz !== z) { wkz = z; hülle.style.setProperty("--wkz", String(z)); } ordnen(); /* #183: --wkz nur bei neuem Zoom – sonst rechnet jeder Zug alle Symbole und Namen neu */
+    lw.style.transform = `translate(${vx.toFixed(1)}px, ${vy.toFixed(1)}px) scale(${z.toFixed(4)})`; nachladen(); if (wkz !== z) { wkz = z; hülle.style.setProperty("--wkz", String(z)); } ordnen(); /* #183: --wkz nur bei neuem Zoom – sonst rechnet jeder Zug alle Symbole und Namen neu */
   };
   /** Zoom neu (Fenstergröße geändert): die Mitte bleibt, wo sie war */
   const neuZoomen = () => { const n = zFest(), px = flaeche.clientWidth / 2, py = flaeche.clientHeight / 2; vx = px - (px - vx) * (n / z); vy = py - (py - vy) * (n / z); z = n; setzen(); };
@@ -166,6 +179,10 @@ function stil() {
 #ez-uebersicht button:hover{background:rgba(60,46,26,.95)}
 #ez-uebersicht .wk-zu{position:absolute;right:max(14px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));font-size:18px}
 #ez-uebersicht .wk-hilfe{position:absolute;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;font:12px/1.3 Georgia,serif;color:#cbb88a;opacity:.8;text-align:center;pointer-events:none;max-width:calc(100% - 140px)}
+/* #183: leichtere Schatten (WebKit malt drop-shadow und mehrfache text-shadow teuer); beim Ziehen ganz ohne – die Ebene wird dann nur verschoben */
+#ez-uebersicht .wk-leinwand .wk-name{text-shadow:0 0 3px #000,0 1px 1px #000}
+#ez-uebersicht .wk-flaeche.zieht .wk-symbol{filter:none}
+#ez-uebersicht .wk-flaeche.zieht .wk-name{text-shadow:none}
 @media (max-width:600px){#ez-uebersicht .wk-hilfe{display:none}}`;
   document.head.appendChild(s);
 }

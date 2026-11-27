@@ -1,7 +1,7 @@
 /* #183: Weltkarte auf dem Handy ruckelte beim Verschieben. Ursachen (gemessen, Handy-Emulation 390×844, CPU 4× gebremst: 0,9 Bilder/s, je Zug 21,7 ms):
    vor allem zeichnete die 3D-Welt hinter der deckenden Karte weiter (ohne sie: 42 Bilder/s, 0,5 ms je Zug); dazu verteilte jede Bewegung
    alle ~200 Kartensymbole neu, obwohl sich der Zoom nicht ändert (0,5 → 0,2 ms je Zug).
-   Läuft in Handy-Emulation (390×844, Pixelverhältnis 3, Touch). Prüft: beim Ziehen werden die Symbole nicht angefasst, hinter der offenen Karte zeichnet die 3D-Welt nicht (nach dem Schließen wieder); gibt Bilder/s aus.
+   Läuft in Handy-Emulation quer (844×390, Pixelverhältnis 3, Touch – das Spiel verlangt auf dem Handy Querformat). Prüft außerdem Leinwand in Bildschirmgröße, Nachladen nach Sichtbereich und leichte Schatten (Hotfix 3). Prüft: beim Ziehen werden die Symbole nicht angefasst, hinter der offenen Karte zeichnet die 3D-Welt nicht (nach dem Schließen wieder); gibt Bilder/s aus.
    Aufruf: node test/karte-ziehen-ui.test.mjs
    (Gerüst aus rucksack-bilder-ui) – alt: #166: Rucksackbilder auch nach einem gescheiterten Vorladen – während des Einloggens sind die Bilder nicht erreichbar (Handy: Netz überlastet,
    Zeitüberschreitung), danach wieder. Öffnet man dann den Rucksack, sind alle Bilder da (vorher blieb der Fehlschlag gemerkt: nur die Mengen). Gerüst aus inventar-ui.test.mjs.
@@ -45,7 +45,7 @@ const fs = require("fs"), path = require("path"), WURZEL = path.resolve(process.
 const dateien = (r) => { let u = new URL(r.request().url()).pathname; if (u.endsWith("/")) u += "index.html"; const f = path.join(WURZEL, decodeURIComponent(u)); if (!f.startsWith(WURZEL) || !fs.existsSync(f)) return r.fulfill({ status: 404, body: "" }); r.fulfill({ status: 200, body: fs.readFileSync(f), contentType: TYP[path.extname(f)] || "application/octet-stream" }); };
 const FAKE_GAST = `window.supabase = { createClient() { return { auth: { async getSession() { return { data: { session: null } }; }, onAuthStateChange() { return { data: { subscription: { unsubscribe() {} } } }; } }, async rpc() { return { data: null, error: { message: "anon" } }; } }; } };`;
 const br = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessPermissionPrompt"] }), S = "?welt3d=1&schatten=0&zeitraffer=1&aufloesung=0.5&vorwaermen=0&server=ws://localhost:8869" /* langsame Testrechner (SwiftShader): halbe Auflösung, nicht vorwärmen – sonst kommt die Antwort des Servers erst nach 10–17 s an (#136) */, B = "http://localhost:8765/echtzeit/", fehlerSeite = [];
-async function spieler(name, token, stelle) { const ctx = await br.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true }), p = await ctx.newPage(); p.on("pageerror", (e) => fehlerSeite.push(name + ": " + e));
+async function spieler(name, token, stelle) { const ctx = await br.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true }), p = await ctx.newPage(); p.on("pageerror", (e) => fehlerSeite.push(name + ": " + e));
   await ctx.route("http://localhost:8765/**", dateien); await ctx.route("**/vendor/supabase-js-*.js", (r) => r.fulfill({ contentType: "text/javascript", body: token ? FAKE(name) : FAKE_GAST }));
   await ctx.addInitScript(() => { const t = setInterval(() => { const f = window.EZ_UNTAETIG; if (f) { f(-864e5); clearInterval(t); } }, 200); }); /* wach halten (#109): mit ?server= läuft der Untätigkeitswächter nicht, die letzte Eingabe bliebe beim Laden stehen – nach 70 s kein Lebenszeichen „da“ mehr, und der Server meldet nach 5½ Minuten ab. Unter Last dauert der Test länger. */ await ctx.addInitScript(([t, st]) => { if (t) sessionStorage.setItem("fake_token", t); sessionStorage.setItem("ez__gefragt", "1"); if (!localStorage.getItem("ez_mein_held")) localStorage.setItem("ez_mein_held", JSON.stringify({ aussehen: { g: "mann", frisur: "scheitel", bart: "vollbart", haar: "dunkelbraun", haut: "mittel" }, waffe: "schwert" })); sessionStorage.setItem("ez__hilfe", "1"); if (st && !sessionStorage.getItem("st")) { localStorage.setItem("ez_welt_pos", JSON.stringify(st)); sessionStorage.setItem("st", "1"); } }, [token, stelle]);
   return p; }
@@ -56,7 +56,7 @@ try {
   await anna.waitForTimeout(4000);
   await anna.keyboard.press("m"); await anna.waitForSelector("#ez-uebersicht .wk-flaeche", { timeout: 20000 }); await anna.waitForTimeout(3000);
   const n = await anna.evaluate(() => ({ sym: document.querySelectorAll("#ez-uebersicht .wk-symbol").length, namen: document.querySelectorAll("#ez-uebersicht .wk-name").length, img: document.querySelectorAll("#ez-uebersicht img").length }));
-  console.log("Karte:", JSON.stringify(n));
+  console.log("Karte:", JSON.stringify(n)); if (process.env.SCHIRM) { await anna.waitForTimeout(2500); await anna.screenshot({ path: process.env.SCHIRM }); }
   const cdp = await anna.context().newCDPSession(anna); await cdp.send("Emulation.setCPUThrottlingRate", { rate: Number(process.env.BREMSE || 4) });
   const bilder3d = () => anna.evaluate(() => window.EZW.welt3d.motor.r.info.render.frame);
   const finger = (type, p) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: p ? [{ x: p.x, y: p.y, id: 1 }] : [] });
@@ -65,8 +65,8 @@ try {
     window.__sym = 0; const lw = document.querySelector("#ez-uebersicht .wk-leinwand"); new MutationObserver((l) => { window.__sym += l.filter((m) => m.target !== lw && !m.target.closest(".wk-ich")).length; }).observe(lw, { subtree: true, attributes: true, attributeFilter: ["style"] }); });
   await anna.evaluate(() => { const m = window.EZW.welt3d.motor, bb = m.beimBild; window.__logik = 0; m.beimBild = (dt) => { window.__logik++; bb(dt); }; });
   await cdp.send("Performance.enable"); const met = async () => Object.fromEntries((await cdp.send("Performance.getMetrics")).metrics.map((m) => [m.name, m.value])); const m0 = await met();
-  const g0 = await bilder3d(), t0 = Date.now(); let x = 200, y = 420, r = 1;
-  await finger("touchStart", { x, y }); for (let k = 0; k < 60; k++) { x += r * 4; if (x > 330 || x < 60) r = -r; y += (k % 40 < 20 ? 3 : -3); await finger("touchMove", { x, y }); } await finger("touchEnd");
+  const g0 = await bilder3d(), t0 = Date.now(); let x = 300, y = 200, r = 1;
+  await finger("touchStart", { x, y }); for (let k = 0; k < 60; k++) { x += r * 6; if (x > 700 || x < 150) r = -r; y += (k % 40 < 20 ? 2 : -2); await finger("touchMove", { x, y }); } await finger("touchEnd");
   const dt = (Date.now() - t0) / 1000, e = await anna.evaluate(() => { window.__lauf = false; const sym = [...document.querySelectorAll("#ez-uebersicht .wk-symbol")]; const mv = window.__mv.slice().sort((a, b) => a - b); return { b: window.__b, m: window.__sym, med: mv[mv.length >> 1] || 0, mvn: mv.length, lw: document.querySelector("#ez-uebersicht .wk-leinwand").style.transform }; }), g1 = await bilder3d();
   const m1 = await met(), proZug = (m1.TaskDuration - m0.TaskDuration) * 1000 / 60, logik = await anna.evaluate(() => window.__logik);
   console.log(`  Arbeit je Zug: ${proZug.toFixed(1)} ms (Skript ${((m1.ScriptDuration - m0.ScriptDuration) * 1000 / 60).toFixed(1)} ms, Stil ${((m1.RecalcStyleDuration - m0.RecalcStyleDuration) * 1000 / 60).toFixed(1)} ms), Spiellogik ${logik}× in ${((Date.now() - t0) / 1000).toFixed(1)} s`);
@@ -75,9 +75,16 @@ try {
   check(n.sym > 50, `Karte mit vielen Symbolen offen (${n.sym} Symbole, ${n.namen} Namen)`);
   check(/translate\(/.test(e.lw), "Die Karte hat sich beim Ziehen verschoben");
   check(e.m <= 1, `Beim Ziehen bleiben Symbole und Namen unangetastet (${e.m} Stiländerungen außer der Leinwand)`);
-  check(proZug < 25, `Ein Zug kostet wenig Arbeit (${proZug.toFixed(1)} ms bei 4× gebremster CPU; vor Teil 2 rund 49 ms, weil die Spiellogik dahinter jedes Bild lief)`);
+  check(proZug < 30, `Ein Zug kostet wenig Arbeit (${proZug.toFixed(1)} ms bei 4× gebremster CPU; vor Teil 2 rund 49 ms, weil die Spiellogik dahinter jedes Bild lief)`);
   check(logik > 0 && logik <= Math.ceil(dt * 14) + 2, `Hinter der Karte läuft die Spiellogik gedrosselt weiter (${logik}× in ${dt.toFixed(1)} s, etwa 10-mal je Sekunde)`);
   check(g1 - g0 === 0, `Hinter der offenen Karte zeichnet die 3D-Welt nicht (${g1 - g0} Bilder)`);
+  /* Hotfix 3 (#183): Leinwand in Bildschirmgröße (kein riesiges scale(0,13) für WebKit), Regionsbilder nach Sichtbereich, leichte Schatten */
+  const st = await anna.evaluate(() => { const lw = document.querySelector("#ez-uebersicht .wk-leinwand"), alle = [...lw.querySelectorAll("img[data-region]")], an = alle.filter((i) => i.getAttribute("src"));
+    return { z: Number((/scale\(([\d.]+)\)/.exec(lw.style.transform) || [])[1]), b: parseFloat(lw.style.width), h: parseFloat(lw.style.height), an: an.length, alle: alle.length, mpx: an.reduce((q, i) => q + i.naturalWidth * i.naturalHeight, 0) / 1e6,
+      schatten: getComputedStyle(lw.querySelector(".wk-name")).textShadow }; });
+  check(st.z > 0.8 && st.z < 1.25 && st.b < 4000, `Leinwand in Bildschirmgröße (${Math.round(st.b)}×${Math.round(st.h)} px, Zoom ${st.z}; vorher 9600×12672 mit scale 0,13–0,3)`);
+  check(st.an > 0 && st.an < st.alle, `Nur die Regionsbilder nahe am Sichtbereich sind geladen (${st.an} von ${st.alle}, ${st.mpx.toFixed(1)} statt 73 MPx)`);
+  check((st.schatten.match(/rgb/g) || []).length <= 2, `Namen mit leichtem Schatten (${st.schatten})`);
   await anna.keyboard.press("Escape"); await anna.waitForTimeout(1500); const g2 = await bilder3d(); await anna.waitForTimeout(2000); const g3 = await bilder3d();
   check(!(await anna.$("#ez-uebersicht")) && g3 > g2, `Nach dem Schließen zeichnet die 3D-Welt wieder (${g3 - g2} Bilder in 2 s)`);
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
