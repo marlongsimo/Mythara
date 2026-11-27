@@ -132,6 +132,7 @@ const grauwacht = { mauer: [MAUER.x0, MAUER.y0, null, MAUER.y1], tore: { sued: [
   orte.grauwacht = GW.platz; }
 
 /* ═══════════════════════ Neue Orte ═══════════════════════ */
+const ORT_REIF = [6424, 5722];
 const ORT = { huegelgrund: [6165, 5800], kohlstatt: [6420, 5878], brechstein: [6656, 5946], wollhag: [6570, 5738], weiherhof: [6340, 5834] };
 Object.assign(orte, ORT);
 /* ───── Hügelgrund: Dorf im Westen (Bank, Laden, Gasthaus mit Herd, Kräuterbeet) ───── */
@@ -221,6 +222,25 @@ Object.assign(orte, ORT);
   const kiste = baue("steinhag_bankkiste", cx + 3, cy - 2, { id: "heidrast_bankkiste", rand: 0 }, 7); lies("heidrast_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste von Heidrast, an den Brunnen gekettet. Was du einlegst, liegt auf deinem Konto.");
   banken.push({ id: "heidrast_bankkiste", ort: "Heidrast", kiste: [kiste.x, kiste.y + 1.4] });
   ["wegerich", "ringelblume"].forEach((a, i) => kraut(`heidrast_${a}_1`, a, cx - 8 + i * 16, cy + 12)); }
+
+/* ───── Reifbach (#171 Schritt 2): Fischerweiler an einem Bach, der in die Bucht der Nordküste fällt ───── */
+{ const BACH = [[6394, 5764], [6390, 5748], [6398, 5732], [6404, 5718], [6408, 5704]], [cx, cy] = [6424, 5722];
+  male(6378, 5698, 6420, 5770, (x, y) => { const d = strecke(x, y, BACH) + 0.25 * welle(x, y); return nass(jetzt(x, y)) ? null : d < 1.1 ? "~" : d < 2.3 ? (welle(x, y) > 0.2 ? "s" : ".") : null; });
+  ortsboden(cx, cy, 16, 12); eben.push([cx - 12, cy - 9, cx + 14, cy + 10]); orte.reifbach = [cx, cy]; namen.push(["Reifbach", "Ort", cx, cy]);
+  for (const [o, dx, dy, id] of [["moor_fischer_01", -4, -4, "reifbach_kate_1"], ["moor_fischer_01", 6, -6, "reifbach_kate_2"], ["moor_kate_01", 10, 4], ["weidenhain_kate_01", -2, 8]]) baue(o, cx + dx, cy + dy, id ? { id } : {}, 6);
+  const r = baue("kueste_raeucherhuette", cx + 2, cy + 1, { id: "reifbach_raeucherhuette", rand: 0 }, 5), f = baue("dorf_festfeuer_01", cx + 6, cy + 2, { id: "reifbach_feuer", rand: 0 }, 4);
+  stationen.push({ id: "raeucherhuette_reifbach", station: "raeucherhuette", x: r.x, y: r.y + 1.6 }, { id: "feuer_reifbach", station: "feuer", x: f.x, y: f.y + 1.6 });
+  const kiste = baue("steinhag_bankkiste", cx - 6, cy + 2, { id: "reifbach_bankkiste", rand: 0 }, 6); lies("reifbach_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste von Reifbach, salzverkrustet. Was du einlegst, liegt auf deinem Konto.");
+  banken.push({ id: "reifbach_bankkiste", ort: "Reifbach", kiste: [kiste.x, kiste.y + 1.4] });
+  const st = baue("dorf_marktstand_03", cx + 2, cy + 6, { id: "reifbach_laden", rand: 0 }, 5); laeden.push({ id: "reifbach_laden", ort: "Reifbach", art: "Räucherfisch, Angelzeug", x: st.x, y: +(st.y + 1.2).toFixed(1), blick: [0, -1] });
+  ding("kueste_netze", cx + 12, cy - 2, { id: "reifbach_netze" });
+  lies("reifbach", cx + 1.5, cy + 3.6, "Reifbach. Wo der kalte Bach ins Meer fällt, räuchern drei Familien ihren Fang – im Winter liegt Reif auf den Netzen.");
+  npc.push({ id: "fischerin_reifbach", rolle: "Fischerin (Räucherfeuer)", x: f.x - 1.5, y: f.y + 1.6 }, { id: "haendler_reifbach", rolle: "Händler (Laden)", x: st.x, y: st.y + 1.2 });
+  uferplatz("fischplatz_reifbach_bach", "bachling", 1, 6396, 5745, "Im Reifbach schießen kleine Bachlinge zwischen den Steinen.");
+  uferplatz("fischplatz_reifbach_bach_unten", "muehlbarsch", 10, 6404, 5722, "Am Unterlauf des Reifbachs stehen Mühlbarsche.");
+  uferplatz("fischplatz_reifbach_bucht", "hering", 20, 6414, 5708, "In der Bucht vor Reifbach ziehen Heringsschwärme.");
+  ["wegerich", "ringelblume"].forEach((a, i) => kraut(`reifbach_${a}_1`, a, cx - 10 + i * 20, cy - 10));
+  weg([[cx, cy + 9], [6418, 5750], [6412, 5776]], 1.8); weg([[cx + 14, cy + 1], [6480, 5730], [6530, 5752]], 1.8); }
 
 /* ───── Rastplätze an den langen Wegen ───── */
 for (const [id, x, y] of [["rast_talweg", 6300, 5790], ["rast_graeberweg", 6532, 5838], ["rast_nordweg", 6624, 6010]]) {

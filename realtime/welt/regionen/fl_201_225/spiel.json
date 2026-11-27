@@ -33,6 +33,48 @@
    },
    {
     "art": "rechteck",
+    "x0": 458,
+    "y0": 79,
+    "x1": 459,
+    "y1": 80
+   },
+   {
+    "art": "rechteck",
+    "x0": 453,
+    "y0": 77,
+    "x1": 454,
+    "y1": 78
+   },
+   {
+    "art": "rechteck",
+    "x0": 457,
+    "y0": 73,
+    "x1": 458,
+    "y1": 74
+   },
+   {
+    "art": "rechteck",
+    "x0": 452,
+    "y0": 222,
+    "x1": 453,
+    "y1": 223
+   },
+   {
+    "art": "rechteck",
+    "x0": 447,
+    "y0": 220,
+    "x1": 448,
+    "y1": 221
+   },
+   {
+    "art": "rechteck",
+    "x0": 451,
+    "y0": 216,
+    "x1": 452,
+    "y1": 217
+   },
+   {
+    "art": "rechteck",
     "x0": 62,
     "y0": 30,
     "x1": 63,
@@ -121,6 +163,90 @@
     "y0": 24,
     "x1": 26,
     "y1": 25
+   },
+   {
+    "art": "rechteck",
+    "x0": 427,
+    "y0": 61,
+    "x1": 428,
+    "y1": 62
+   },
+   {
+    "art": "rechteck",
+    "x0": 422,
+    "y0": 62,
+    "x1": 423,
+    "y1": 63
+   },
+   {
+    "art": "rechteck",
+    "x0": 424,
+    "y0": 57,
+    "x1": 425,
+    "y1": 58
+   },
+   {
+    "art": "rechteck",
+    "x0": 466,
+    "y0": 257,
+    "x1": 467,
+    "y1": 258
+   },
+   {
+    "art": "rechteck",
+    "x0": 461,
+    "y0": 258,
+    "x1": 462,
+    "y1": 259
+   },
+   {
+    "art": "rechteck",
+    "x0": 463,
+    "y0": 254,
+    "x1": 464,
+    "y1": 255
+   },
+   {
+    "art": "rechteck",
+    "x0": 308,
+    "y0": 127,
+    "x1": 309,
+    "y1": 128
+   },
+   {
+    "art": "rechteck",
+    "x0": 304,
+    "y0": 127,
+    "x1": 305,
+    "y1": 128
+   },
+   {
+    "art": "rechteck",
+    "x0": 305,
+    "y0": 123,
+    "x1": 306,
+    "y1": 124
+   },
+   {
+    "art": "rechteck",
+    "x0": 285,
+    "y0": 134,
+    "x1": 286,
+    "y1": 135
+   },
+   {
+    "art": "rechteck",
+    "x0": 280,
+    "y0": 135,
+    "x1": 281,
+    "y1": 136
+   },
+   {
+    "art": "rechteck",
+    "x0": 282,
+    "y0": 131,
+    "x1": 283,
+    "y1": 132
    }
   ],
   "freigeben": []
@@ -206,6 +332,131 @@
    }
   },
   {
+   "id": "rotlehm",
+   "art": "lesen",
+   "x": 400.5,
+   "y": 141.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Rotlehm. Eine Stadt aus Lehm und Staub am Ockerstrom – hier enden die Karawanen aus den Glutsanden."
+   }
+  },
+  {
+   "id": "rotlehm_wegstein",
+   "art": "lesen",
+   "x": 392,
+   "y": 144.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Wegstein von Rotlehm."
+   }
+  },
+  {
+   "id": "rotlehm_bindestein",
+   "art": "lesen",
+   "x": 404,
+   "y": 144.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Bindestein am Markt von Rotlehm."
+   }
+  },
+  {
+   "id": "rotlehm_feste",
+   "art": "lesen",
+   "x": 457.5,
+   "y": 115,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Lehmfeste von Rotlehm. Die Mauern sind dick wie ein Mann lang ist – gegen Hitze, Hyänen und Räuber."
+   }
+  },
+  {
+   "id": "rotlehm_karawanenhof",
+   "art": "lesen",
+   "x": 367.5,
+   "y": 115,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Karawanenhof. Kamelglocken, Gewürzsäcke, und im Schatten der Mauer schläft ein Treiber auf seinen Ballen."
+   }
+  },
+  {
+   "id": "rotlehm_bank_tuer",
+   "art": "lesen",
+   "x": 410,
+   "y": 129.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Rotlehm – im kühlsten Haus der Stadt."
+   }
+  },
+  {
+   "id": "rotlehm_werkstatt",
+   "art": "lesen",
+   "x": 382,
+   "y": 157.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkstatt von Rotlehm: Esse, Amboss, Werkbank – und Hufeisen für die Lasttiere."
+   }
+  },
+  {
+   "id": "rotlehm_taverne",
+   "art": "lesen",
+   "x": 385.5,
+   "y": 130.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Taverne „Zum Roten Krug“. Es gibt Wasser, Dattelwein und Geschichten über die Tafelberge."
+   }
+  },
+  {
+   "id": "fischplatz_ockerstrom_nord",
+   "art": "lesen",
+   "x": 318.5,
+   "y": 126.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Ufer des Ockerstroms – das Wasser ist trüb, aber die Fische sind fett.",
+    "fisch": "moorhecht",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "fischplatz_ockerstrom_sued",
+   "art": "lesen",
+   "x": 321.5,
+   "y": 156.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Ufer des Ockerstroms – das Wasser ist trüb, aber die Fische sind fett.",
+    "fisch": "wels",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "rast_ockerlande_5",
+   "art": "lesen",
+   "x": 471.5,
+   "y": 285.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz an der Karawanenstraße. Asche, Dattelkerne, ein umgestürzter Krug."
+   }
+  },
+  {
    "id": "lehmfurt_schmiede",
    "art": "lesen",
    "x": 37.5,
@@ -261,6 +512,30 @@
   {
    "x": 24.2,
    "y": 26.6,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 425,
+   "y": 60.5,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 463.7,
+   "y": 256.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 306.2,
+   "y": 126.3,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 282.7,
+   "y": 133.7,
    "r": 5,
    "tiefe": 1.1
   }

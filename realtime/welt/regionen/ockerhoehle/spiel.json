@@ -1,0 +1,89 @@
+{
+ "start": [
+  [
+   16,
+   27
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 7,
+    "y0": 11,
+    "x1": 8,
+    "y1": 12
+   },
+   {
+    "art": "rechteck",
+    "x0": 10,
+    "y0": 6,
+    "x1": 11,
+    "y1": 7
+   },
+   {
+    "art": "rechteck",
+    "x0": 16,
+    "y0": 5,
+    "x1": 17,
+    "y1": 6
+   },
+   {
+    "art": "rechteck",
+    "x0": 22,
+    "y0": 6,
+    "x1": 23,
+    "y1": 7
+   },
+   {
+    "art": "rechteck",
+    "x0": 25,
+    "y0": 11,
+    "x1": 26,
+    "y1": 12
+   }
+  ],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "ockerhoehle_hinaus",
+   "art": "eingang",
+   "x": 16,
+   "y": 30.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinaus ins Licht der Ockerlande.",
+    "tat": "ockerhoehle_hinaus",
+    "knopf": "Hinaus",
+    "ziel": [
+     7552,
+     7588.72
+    ]
+   }
+  },
+  {
+   "id": "ockerhoehle_halle",
+   "art": "lesen",
+   "x": 16,
+   "y": 16.6,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Halle im Inneren des Tafelbergs. Die Wände glänzen schwarz und blau – Ureisen und Splittereisen."
+   }
+  }
+ ],
+ "senken": [
+  {
+   "x": 16.5,
+   "y": 8.3,
+   "r": 12,
+   "tiefe": 1.1
+  }
+ ]
+}
