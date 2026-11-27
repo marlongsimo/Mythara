@@ -16,7 +16,7 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   "exklusiv": true           jeder Punkt des Körpers gehört höchstens zu einer Hülle (die erste in der Liste gewinnt) – keine doppelten Schichten
   Hülle "gesicht_frei": true das Gesicht bleibt frei (für Kapuzen und Helme mit offenem Gesicht)
   "vorbereitet": [...]       Teile, die gebaut und eingetragen, aber noch nicht an die Figur gehängt werden (z. B. Bogen: braucht eigene Bewegungen)
-  "schild_lage": 0.85         Schildmitte entlang des linken Unterarms (0 = Ellbogen, 1 = Handgelenk; Standard 0.55) – die Mitte liegt danach noch 4 cm zum Ellbogen hin; Helden: 1.16 = Mitte genau am Handgelenk (Wunsch Nutzer)
+  "schild_lage": 0.85         Schildmitte entlang des linken Unterarms (0 = Ellbogen, 1 = Handgelenk; Standard 0.55) – die Mitte liegt danach noch 4 cm zum Ellbogen hin; Helden: 1.49 = Mitte am sichtbaren Handgelenk (vom Nutzer markiert)
   "block": "waffe"           Block ohne Schild: Parade mit der Waffe
   "haltung": "zivil"         ohne Kampfstellung: Arme hängen locker, schwingen beim Gehen (Dorfbewohner)
   "haltung": "stab"          Stab aufrecht in der rechten Hand, linker Arm locker (Priesterin, Magier); Bewegungen zauber, segen, nova
