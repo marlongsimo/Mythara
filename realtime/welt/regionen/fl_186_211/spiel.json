@@ -51,6 +51,28 @@
  },
  "interaktionen": [
   {
+   "id": "bl_haferstedt",
+   "art": "lesen",
+   "x": 265.5,
+   "y": 226.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Haferstedt. Ein Marktflecken mitten in den Feldern – wer zwischen Rabenmoor und der Küste Korn, Wolle oder Fisch verkaufen will, kommt am Markttag hierher."
+   }
+  },
+  {
+   "id": "bl_netzbucht",
+   "art": "lesen",
+   "x": 195,
+   "y": 179,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Netzbucht. Drei Fischerkaten und eine Räucherhütte an einer stillen Bucht. Der Fang geht jeden Markttag nach Haferstedt."
+   }
+  },
+  {
    "id": "leuchtturm",
    "art": "lesen",
    "x": 224,
