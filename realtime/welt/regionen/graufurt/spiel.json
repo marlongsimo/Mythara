@@ -219,6 +219,22 @@
    "daten": {
     "text": "Ein umgestürzter Baum versperrt den Uferweg nach Norden. Hier geht es noch nicht weiter."
    }
+  },
+  {
+   "id": "ort_wegweiser_graufurt_westtor_lesen",
+   "art": "lesen",
+   "x": 0,
+   "y": 117.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wegweiser: Nach Waldmark ← · Nach Graufurt → · Nach Glutbrunn ↓",
+    "ziele": [
+     "Nach Waldmark ←",
+     "Nach Graufurt →",
+     "Nach Glutbrunn ↓"
+    ]
+   }
   }
  ],
  "ausgaenge": [],

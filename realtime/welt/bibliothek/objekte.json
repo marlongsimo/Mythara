@@ -11222,6 +11222,34 @@
     "puls_breite": 30,
     "puls_hell": 0.4
    }
+  },
+  {
+   "id": "welt_wegweiser_01",
+   "name": "Wegweiser",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/welt_wegweiser_01.webp",
+   "groesse": [
+    69,
+    101
+   ],
+   "anker": [
+    0.3913,
+    0.901
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/wegweiser.glb",
+    "wind": 0
+   }
   }
  ]
 }

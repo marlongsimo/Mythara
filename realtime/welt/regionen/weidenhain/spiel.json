@@ -15,26 +15,11 @@
  ],
  "figuren": [
   {
-   "id": "hanne",
-   "rolle": "npc",
-   "figur": "hanne",
-   "x": 33.4,
-   "y": 23.4
-  },
-  {
    "id": "lene",
    "rolle": "npc",
    "figur": "lene",
    "x": 40.6,
    "y": 25.2
-  },
-  {
-   "id": "tebbe",
-   "rolle": "npc",
-   "figur": "tebbe",
-   "x": 58.6,
-   "y": 36.6,
-   "links": true
   },
   {
    "id": "mette",

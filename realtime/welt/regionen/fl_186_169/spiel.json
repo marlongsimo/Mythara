@@ -12,5 +12,17 @@
   "sperren": [],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "kernbaum_tal",
+   "art": "lesen",
+   "x": 296,
+   "y": 372,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Tal, in dem der Wind schweigt. Die Kernbäume stehen hier dicht und gerade."
+   }
+  }
+ ]
 }

@@ -1,0 +1,46 @@
+{
+ "start": [
+  [
+   16,
+   27
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "kajuete_hinaus",
+   "art": "eingang",
+   "x": 16,
+   "y": 29,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Zurück in die Höhle.",
+    "tat": "kajuete_zurueck",
+    "knopf": "Zurück",
+    "ziel": [
+     11474,
+     9615.5
+    ]
+   }
+  },
+  {
+   "id": "logbuch_seite",
+   "art": "lesen",
+   "x": 16,
+   "y": 12.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Auf dem Tisch: die herausgerissene Seite aus dem Logbuch des Leuchtturms.",
+    "questobjekt": "logbuch_seite"
+   }
+  }
+ ]
+}

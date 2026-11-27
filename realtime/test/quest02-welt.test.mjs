@@ -88,7 +88,7 @@ try {
     ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token: "tok_anna_" + "x".repeat(30), geraet: "test-" + String("tok_anna_" + "x".repeat(30)).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") })); fertig(Z); }); });
   await new Promise((r) => setTimeout(r, 1500));
   const moos = () => z.w.filter((w) => w[2] === "mooshocker" && !w[10]);
-  check(moos().length === 7, `Am Moosrain stehen sieben Mooshocker (${moos().length})`);
+  check(moos().length === 10, `Am Moosrain stehen zehn Mooshocker (#81) (${moos().length})`);
   const passiv = z.ev.filter((e) => e.a === "hieb").length; check(passiv === 0, "Sie greifen nicht von selbst an");
   let siege = 0; const t0 = Date.now();
   while (siege < 3 && Date.now() - t0 < 120000) { const ich = z.w.find((w) => w[1] === 1); const ziel = moos().sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
@@ -112,7 +112,8 @@ try {
   const bodenTxt = d && (d.zeilen || []).map((z) => z.text).join(" ");
   check(d && d.splitter === 20 && cora.q2 === "fertig" && ABSCHLUSS.filter((a) => a.p_user === C).length === 1 && /am Boden/.test(bodenTxt), "Voller Rucksack: Abschluss gebucht, Hinweis „liegt neben dir am Boden“");
   await new Promise((r) => setTimeout(r, 1500)); const amBoden = cora.boden.filter((x) => x.g === "splitter").reduce((n, x) => n + x.n, 0);
-  check(amBoden === 20 && Math.hypot(cora.boden[0].x - (NPC2.odo[0] + 0), cora.boden[0].y - NPC2.odo[1]) < 3, `20 Splitter liegen bei ihr am Boden (${amBoden})`);
+  { const sp = cora.boden.find((x) => x.g === "splitter") || cora.boden[0]; /* seit #81 kann auch Mooshocker-Beute in der Liste stehen */
+  check(amBoden === 20 && Math.hypot(sp.x - (NPC2.odo[0] + 0), sp.y - NPC2.odo[1]) < 3, `20 Splitter liegen bei ihr am Boden (${amBoden})`); }
   await new Promise((r) => setTimeout(r, 300)); check(!(anna2.boden || []).some((x) => x.g === "splitter"), "Anna sieht Coras Splitter nicht");
 } catch (e) { console.error(e); f++; }
 srv.kill(); sb.close(); if (f) console.log("404:", [...new Set(FEHLT)].join(" ")); if (f) console.log(log.split("\n").slice(-30).join("\n"));

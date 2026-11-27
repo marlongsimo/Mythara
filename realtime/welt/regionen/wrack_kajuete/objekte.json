@@ -1,0 +1,9 @@
+[
+ {"id":"tisch_1","objekt":"hoehle_tisch_01","x":16,"y":10},
+ {"id":"kiste_2","objekt":"k_kiste","x":9,"y":9},
+ {"id":"kiste_3","objekt":"k_kiste","x":23,"y":9},
+ {"id":"faesser_4","objekt":"k_faesser","x":9,"y":18},
+ {"id":"faesser_5","objekt":"k_faesser","x":23,"y":18},
+ {"id":"feuerkorb_6","objekt":"moor_feuerkorb_01","x":12.5,"y":15.5},
+ {"id":"feuerkorb_7","objekt":"moor_feuerkorb_01","x":20.5,"y":15.5}
+]

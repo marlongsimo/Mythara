@@ -1,0 +1,9 @@
+[
+ {"id":"leiter_01_1","objekt":"hoehle_leiter_01","x":16.5,"y":27.5},
+ {"id":"altar_stein_2","objekt":"k_altar_stein","x":16,"y":8.29},
+ {"id":"feuerkorb_01_3","objekt":"moor_feuerkorb_01","x":11.5,"y":9.5},
+ {"id":"feuerkorb_01_4","objekt":"moor_feuerkorb_01","x":21.5,"y":9.5},
+ {"id":"grabstein_breit_5","objekt":"k_grabstein_breit","x":11.5,"y":13.5},
+ {"id":"grabstein_zerbrochen_6","objekt":"k_grabstein_zerbrochen","x":20.5,"y":13.5},
+ {"id":"truemmer_7","objekt":"k_truemmer","x":19.5,"y":18.5,"spiegeln":true}
+]

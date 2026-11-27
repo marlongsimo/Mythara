@@ -1,0 +1,46 @@
+{
+ "start": [
+  [
+   16,
+   27
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "kammer_ausgang",
+   "art": "eingang",
+   "x": 16,
+   "y": 29,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Zurück in den Tempel.",
+    "tat": "tempel_kammer_zurueck",
+    "knopf": "Zurück",
+    "ziel": [
+     11312,
+     9609.5
+    ]
+   }
+  },
+  {
+   "id": "kartenstueck_5",
+   "art": "lesen",
+   "x": 16,
+   "y": 5.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Im Sand, unter dem Tor, ein Stück Pergament: ein Teil einer Karte.",
+    "questobjekt": "kartenstueck_5"
+   }
+  }
+ ]
+}

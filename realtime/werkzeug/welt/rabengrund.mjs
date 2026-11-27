@@ -1,7 +1,7 @@
 /*
  * World Pipeline – Rabengrund (Phase 6, 27.11.2026): der Dungeon unter der Gruft von Aschenwerth. Untergrund, Chunk 330|300, 4 × 3 Chunks.
  *   1 Einstieg (Treppe aus der Gruft)  2 Federgänge (gewundene Gänge mit drei Nischen für Rabenschwärme und Akoluthen)
- *   3 Kerker (vier Käfige, Ecke des Kerkermeisters)  4 Splitterbecken (runde Halle, Becken in der Mitte, Splitterkristalle)
+ *   3 Kerker (vier Käfige, Ecke des Kerkermeisters, Leiter hinauf zur Gruft – dorthin laufen die Befreiten)  4 Splitterbecken (runde Halle, Becken in der Mitte, Splitterkristalle)
  *   Vom Splitterbecken führt ein Durchgang in den Thronsaal – ein eigenes Gebiet (rabengrund_thronsaal.mjs), als Instanz kopierbar.
  * Stimmung: dunkler Stein, wenige Feuerkörbe, violettes Splitterlicht (Splitter-Obelisken), Federn am Boden.
  * Aufruf (im Ordner realtime): node werkzeug/welt/rabengrund.mjs     danach: node werkzeug/welt/bauen.mjs rabengrund
@@ -38,7 +38,7 @@ const dinge = [
   /* 2 Federgänge: Federn, wenige Feuerkörbe, Knochen und Trümmer */
   ...[[24, 48.5], [33, 38], [38, 31.5], [52, 29], [63, 36], [64, 46], [52, 61], [44, 67.5], [50, 73], [62, 75], [72, 69]].map(([x, y], i) => o("hoehle_federn_01", x, y, i % 2 ? { spiegeln: true } : {})),
   o("moor_feuerkorb_01", 36, 38.6), o("moor_feuerkorb_01", 60, 36.8), o("moor_feuerkorb_01", 46, 74.4), o("k_truemmer", 33.6, 31.6), o("k_truemmer", 63.6, 28.6), o("k_truemmer", 41.6, 72.4, { spiegeln: true }),
-  /* 3 Kerker */ ...KAEFIGE.map(([x, y]) => o("hoehle_kaefig_01", x, y)), o("hoehle_tisch_01", 95.5, 21.6), o("k_faesser", 98, 17.6), o("moor_feuerkorb_01", 72.6, 22.6), o("moor_feuerkorb_01", 97.6, 24.4),
+  /* 3 Kerker */ ...KAEFIGE.map(([x, y]) => o("hoehle_kaefig_01", x, y)), o("hoehle_leiter_01", 97.5, 7.4), o("hoehle_tisch_01", 95.5, 21.6), o("k_faesser", 98, 17.6), o("moor_feuerkorb_01", 72.6, 22.6), o("moor_feuerkorb_01", 97.6, 24.4),
   o("hoehle_federn_01", 84, 18), o("hoehle_federn_01", 78, 22, { spiegeln: true }),
   /* 4 Splitterbecken: leuchtendes Becken (r 4), Splitter-Obelisken im Kreis, Federn */ o("hoehle_splitterbecken_01", BECKEN.x, BECKEN.y, { s: 1.35 }),
   ...[0, 1, 2, 3, 4, 5].map((i) => { const w = (i / 6) * Math.PI * 2 + 0.5; return o("wz_splitter_obelisk", BECKEN.x + Math.cos(w) * 8.6, BECKEN.y + Math.sin(w) * 8.6); }),
@@ -48,6 +48,7 @@ for (const p of dinge) { if (!BIB.has(p.objekt)) throw new Error("unbekanntes Ob
 const lies = (id, x, y, text, mehr = {}) => ({ id, art: mehr.tat ? "eingang" : "lesen", x, y, radius: mehr.tat ? 2.0 : 1.6, abgleich: "keiner", daten: { text, ...mehr } });
 const spiel = { start: [[UNTEN[0] - OX, UNTEN[1] - OY]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] },
   interaktionen: [lies("treppe_hinauf", 12, 46.2, "Die ausgetretenen Stufen führen hinauf in die Gruft.", { tat: "aufstieg", knopf: "Hinauf in die Gruft", ziel: OBEN }),
+    lies("kerker_treppe", 97.5, 10.2, "Eine Leiter in einem Schacht, durch den Moorluft hereinzieht. Oben schimmert Tageslicht: der alte Fluchtweg der Wächter, hinauf zur Gruft.", { tat: "aufstieg", knopf: "Hinauf zur Gruft", ziel: OBEN }),
     lies("kerker", 85, 16, "Vier Käfige an der Wand. In einem hockt jemand und hebt den Kopf, als du näher kommst."),
     lies("splitterbecken", BECKEN.x, BECKEN.y + 5.2, "Das Becken ist voll von etwas, das wie Wasser aussieht, aber violett leuchtet. Die Splitter am Rand summen leise."),
     lies("thronsaal_tor", 115, 62, "Ein hohes Tor aus schwarzem Holz, mit Federn behängt. Dahinter: der Thronsaal.", { tat: "thronsaal", knopf: "Den Thronsaal betreten", ziel: THRON_EINGANG })] };

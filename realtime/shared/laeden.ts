@@ -5,7 +5,7 @@
  */
 import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "imme";
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme";
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
   gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string }
@@ -47,6 +47,10 @@ export const LAEDEN: Record<LadenId, Laden> = {
   imme: { id: "imme", name: "Immes Honigstand", spruch: "Was die Wiese gibt.", haendler: "Imme Sommer", modell: "npc.imkerin", x: 6419, y: 6907, blick: [0, 1], vor: [6419, 6908.5], questFigur: "imme",
     gruss: "Der Stock steht, die Bienen summen. Was darf es sein?", tschuess: "Pass auf die Schwärme am Rand auf.", waren: [{ g: "kleiner_heiltrank", preis: 35 }, { g: "heiltrank", preis: 150 }] /* Preise wie bei Mira */,
     wenn: { quest: "summweide_der_verschwundene_stock", phase: "fertig" }, zu: "Imme hat keine Zeit für Handel. Ihr Bienenstock ist verschwunden." },
+  /* Phase 4: Gisbert Ast verkauft Äpfel in den Obstwiesen – erst nach B3 „Fallobst“; er ist Questfigur (quest_b3.ts) */
+  obstwiesen: { id: "obstwiesen", name: "Gisberts Äpfel", spruch: "Äpfel aus den Obstwiesen.", haendler: "Gisbert Ast", modell: "npc.gisbert", x: 6562.5, y: 6691.5, blick: [1, 0], vor: [6563.7, 6691.5], questFigur: "gisbert",
+    gruss: "Ein Apfel am Tag, sagt man. Ich sag: zwei. Zum ehrlichen Preis.", tschuess: "Grüß die Kisten vom Großvater, wenn du sie siehst.", waren: [{ g: "apfel", preis: 2 }],
+    wenn: { quest: "obstwiesen_fallobst", phase: "fertig" }, zu: "Gisbert hat nichts zu verkaufen. Seine Kisten sind leer." },
   traenke: { id: "traenke", name: "Schluck auf!", spruch: "Tränke für jedes Wehwehchen.", haendler: "Mira Kräuterlieb", modell: "npc.kraeuterfrau", x: 6456, y: 6441, blick: [0, -1], vor: [6456.5, 6438.5],
     gruss: "Ach, du siehst blass aus, Kindchen. Ein Schlückchen gefällig?", tschuess: "Komm wieder, bevor's wehtut. Hinterher ist's teurer.", waren: [{ g: "kleiner_heiltrank", preis: 35 }, { g: "heiltrank", preis: 150 }] },
 };
@@ -54,7 +58,7 @@ export const LADEN_LISTE = Object.values(LAEDEN);
 /** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */
 export const ladenOffen = (L: Laden, stand: (id: string) => string): boolean => !L.wenn || stand(L.wenn.quest) === L.wenn.phase;
 /** Symbol je Laden (Minikarte und Karte) */
-export const LADEN_ZEICHEN: Record<LadenId, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", imme: "🍯" };
+export const LADEN_ZEICHEN: Record<LadenId, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯" };
 /* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */
 /** Ein Händler zahlt für seine eigenen Waren so viel von seinem Preis; der Trödler so viel vom Grundwert */
 export const ANKAUF_ANTEIL = 0.8, TROEDLER_ANTEIL = 0.5;

@@ -67,8 +67,10 @@ BESONDERS = {
     "turm_ebene3": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10960, 9612)]},
     "turm_dach": {"leine": 10, "wandern": 1, "lager": [("gruenlicht", 10990, 9612), ("turmwaechter", 10988, 9614)]},
     # Phase 6 (#17, #26): Aschenwerth – drei Novizen am Steinkreis (friedlich mit Rabenkapuze), Akoluthen und die Federmutter im Heiligtum, Moorraben am Moor
-    "aschenwerth": {"leine": 12, "wandern": 2,
-                    "lager": [("rabenpriester_novize", 6240, 6728), ("rabenpriester_novize", 6244, 6728), ("rabenpriester_novize", 6242, 6730),
+    # dazu Phase 4 (#15): Banditenlager am Moorrand im Norden (Späher, Schläger, Armbrustschütze) – Mehrkampf, damit ein fliehender Späher Hilfe bekommt
+    "aschenwerth": {"leine": 12, "wandern": 2, "mehrkampf": [[6200, 6600, 6224, 6620]],
+                    "lager": [("bandit_spaeher", 6206, 6608), ("bandit_spaeher", 6218, 6608), ("bandit_schlaeger", 6212, 6609), ("bandit_armbrust", 6210, 6614), ("bandit_spaeher", 6216, 6614),
+                              ("rabenpriester_novize", 6240, 6728), ("rabenpriester_novize", 6244, 6728), ("rabenpriester_novize", 6242, 6730),
                               ("rabenpriester_akoluth", 6212, 6714), ("rabenpriester_akoluth_speer", 6214, 6716), ("federmutter", 6214, 6704),
                               ("moorrabe", 6198, 6688), ("moorrabe", 6200, 6688), ("moorrabe", 6202, 6688)]},
     # Phase 6 (#17, #26): Rabengrund – Federgänge mit Moorrabenschwärmen und Akoluthen bis zum Kerker; der Oberste wartet im Thronsaal (Instanz, shared/bosse.ts)
@@ -78,7 +80,14 @@ BESONDERS = {
                              ("moorrabe", 10622, 9672), ("moorrabe", 10624, 9672), ("moorrabe", 10616, 9674),
                              ("rabenpriester_akoluth_speer", 10640, 9625), ("rabenpriester_akoluth", 10638, 9623), ("rabenpriester_akoluth_speer", 10645, 9612)]},
     # Banditen-Hauptquartier unter der Hütte in der Westmark: neun Dolch-Banditen in sechs Räumen, die Halle ist Mehrkampf; Gegner bleiben in ihren Räumen
-    "unterschlupf": {"karte": "unterschlupf", "stufe": 4, "aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": US["mehrkampf"], "lager": [tuple(l) for l in US["lager"]]},
+    # Phase 4: die Quelle stellt Dolch-Banditen auf – hier bekommen sie ihre Rolle: Wachstube Schläger + Armbrust, Schlafsaal Schläger + Späher, Beutelager Schläger, Halle gemischt
+    "unterschlupf": {"karte": "unterschlupf", "stufe": 4, "aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": US["mehrkampf"],
+                     "lager": [(art, l[1], l[2]) for art, l in zip(["bandit_schlaeger", "bandit_armbrust", "bandit_schlaeger", "bandit_spaeher", "bandit_schlaeger", "bandit_armbrust", "bandit_schlaeger", "bandit_spaeher"], US["lager"])]},
+    # Phase 4 (#15): Späher-Lager in der Westmark (Zelte der Welt-Pipeline, #21) – Mehrkampf, damit ein fliehender Späher beim Kumpan wirklich Hilfe bekommt
+    "westmark": {"aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": [[6272, 6544, 6298, 6564]],
+                 "lager": [("bandit_spaeher", 6280, 6552), ("bandit_spaeher", 6285, 6550), ("bandit_spaeher", 6290, 6554), ("bandit_spaeher", 6282, 6558), ("bandit_spaeher", 6288, 6558), ("bandit_spaeher", 6278, 6555)]},
+    # Phase 4 (#16): Hauptmann Rotmantel als öffentlicher Mini-Boss (3 min Wiederkehr, config.ts) – wer B4 noch hat, ist in seiner eigenen Kopie der Kammer (shared/bosse.ts)
+    "rotmantel_kammer": {"aggro": 3, "leine": 8, "wandern": 0, "mehrkampf": [[10432, 9600, 10463, 9631]], "lager": [("rotmantel", 10448, 9614)]},
     # Die Banditen-Lichtung im Kreuzwald: vier Dolch-Banditen, Einzelkampf (seit 22.11.2026, vorher Mehrkampf). Karte/Stufe wie bisher (Buchungen laufen als „kreuzwald“).
     "waldweg": {"karte": "kreuzwald", "stufe": 3, "aggro": 4,
                 "lager": [("bandit_dolch", 6544, 6578), ("bandit_dolch", 6556, 6575), ("bandit_dolch", 6548, 6589), ("bandit_dolch", 6561, 6586)]},
@@ -87,9 +96,9 @@ BESONDERS = {
                  "lager": [("waldgolem", 6314, 6360), ("waldgolem", 6328, 6355), ("waldgolem", 6342, 6366), ("waldgolem", 6322, 6370), ("waldgolem", 6336, 6378)]},
     # Zielscheiben am Südturm der Waldmark (Phase 2 „Waldland“, Quest A1, 26.11.2026): unverwundbare Strohscheiben, greifen nie an (config.ts zielscheibe)
     "waldmark": {"aggro": 0, "leine": 1, "wandern": 0, "lager": [("zielscheibe", 6436, 6460), ("zielscheibe", 6433, 6460)]},
-    # Der Moosrain im Osthof (Quest „Der stille Rain“, 23.11.2026): sieben passive Mooshocker in lockeren Gruppen nordöstlich der Windmühle, Leine 8, Streifen 2
+    # Der Moosrain im Osthof (Quest „Der stille Rain“, 23.11.2026): zehn passive Mooshocker (#81: drei mehr) in lockeren Gruppen nordöstlich der Windmühle, Leine 8, Streifen 2
     "osthof": {"aggro": 0, "leine": 8, "wandern": 2,
-               "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408)]
+               "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408), ("mooshocker", 6572, 6414), ("mooshocker", 6574, 6405), ("mooshocker", 6591, 6409)]  # +3 (#81)
                # Kuhgehege (Handwerk, 25.11.2026): zehn friedliche Kühe hinter Zaun (shared/handwerk_welt.json), Kuhhaut für die Werkbank
                + [("kuh", 6522, 6409), ("kuh", 6527, 6408), ("kuh", 6533, 6409), ("kuh", 6539, 6408), ("kuh", 6524, 6412), ("kuh", 6530, 6412), ("kuh", 6536, 6413), ("kuh", 6521, 6416), ("kuh", 6528, 6416), ("kuh", 6538, 6417)]},
 }

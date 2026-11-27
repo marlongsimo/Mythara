@@ -212,7 +212,9 @@ export class Sim {
   private ohneBindung(a: Wesen, z: Wesen): boolean { const boss = (w: Wesen) => !w.held && Boolean(MONSTER[w.typ].boss || BOSSE[w.typ]); return Boolean(a.instanz || z.instanz || a.helfer || z.helfer || boss(a) || boss(z)); }
   darf(a: Wesen, z: Wesen): boolean { if (!this.gleich(a, z)) return false; if (a.team === z.team || this.mehrkampfBei(z) || this.ohneBindung(a, z)) return true; const ga = this.gebunden(a), gz = this.gebunden(z); return (!ga || ga === z) && (!gz || gz === a); }
   private binden(a: Wesen, z: Wesen): void { if (a.team === z.team || this.mehrkampfBei(z) || this.ohneBindung(a, z)) return; const bis = this.zeit + Sim.EINZEL_BINDUNG; a.kampfMit = z.id; z.kampfMit = a.id; a.kampfBis = bis; z.kampfBis = bis; }
-  private feinde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && !o.vergraben && o.team !== w.team && this.gleich(o, w)); }
+  private feinde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && !o.vergraben && o.team !== w.team && this.gleich(o, w) && !this.verborgen(w, o)); }
+  /** Zielscheibe (#55): für einen Helden ohne Freigabe gibt es sie nicht – kein Ziel, kein Treffer, kein Gegenangriff (der Browser blendet sie aus) */
+  private verborgen(w: Wesen, o: Wesen): boolean { return w.held && !w.zielscheibeFrei && !o.held && Boolean(MONSTER[o.typ] && MONSTER[o.typ].zielscheibe); }
   private freunde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && o.team === w.team && this.gleich(o, w)); }
   private untot(w: Wesen): boolean { return !w.held && Boolean(MONSTER[w.typ].untot); }
 
@@ -224,7 +226,7 @@ export class Sim {
     const zahl = (v: unknown) => typeof v === "number" && Number.isFinite(v);
     if (e.t === "richtung") { if (!zahl(e.x) || !zahl(e.y)) return; const l = Math.hypot(e.x, e.y); if (l < 0.05) { h.rx = 0; h.ry = 0; } else { const k = Math.min(1, l) / l; h.rx = e.x * k; h.ry = e.y * k; h.pfad = this.felder ? h.pfad.slice(0, 1) : []; } }
     else if (e.t === "lauf") { if (!zahl(e.x) || !zahl(e.y)) return; h.zielId = 0; h.rx = 0; h.ry = 0; h.pfad = this.wegZu(h, { x: e.x, y: e.y }); }
-    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot || !this.gleich(h, z)) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
+    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot || !this.gleich(h, z) || this.verborgen(h, z)) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
     else if (e.t === "modus") { if (!h.kw) this.wechsel(h); } /* v1: nur Angreifen – kein Waffenwechsel */
     else if (e.t === "auto") { h.auto = e.an !== false; }
     else if (e.t === "halt") { h.pfad = []; h.zielId = 0; h.rx = 0; h.ry = 0; }
@@ -280,7 +282,7 @@ export class Sim {
   }
   /** Ein Angriff trifft auf ein Ziel. Zurück: Schaden (0 = abgewehrt oder verfehlt). */
   treffen(von: Wesen, z: Wesen, s: Spec): number {
-    if (z.tot || !this.gleich(von, z)) return 0; if (this.unangreifbar(z)) { this.ev.push({ a: "text", id: z.id, t: "unerreichbar" }); return 0; } if (s.art === "nah" && this.schwebt(z)) { this.ev.push({ a: "text", id: z.id, t: "unerreichbar" }); return 0; } /* Schweben: Nahkampf reicht nicht hinauf */
+    if (z.tot || !this.gleich(von, z) || this.verborgen(von, z)) return 0; if (this.unangreifbar(z)) { this.ev.push({ a: "text", id: z.id, t: "unerreichbar" }); return 0; } if (s.art === "nah" && this.schwebt(z)) { this.ev.push({ a: "text", id: z.id, t: "unerreichbar" }); return 0; } /* Schweben: Nahkampf reicht nicht hinauf */
     if (this.weltZeit) { if (!this.darf(von, z)) return 0; this.binden(von, z); } /* Einzelkampf: kein Dritter dazwischen */
     // Schild und Bollwerk: von vorn wird Torvald seltener getroffen; Verbündete direkt hinter einem Bollwerk ebenso
     let minder = 0; const winkel = (a: number, b: number) => { let d = Math.abs(a - b) % (2 * Math.PI); if (d > Math.PI) d = 2 * Math.PI - d; return d; };

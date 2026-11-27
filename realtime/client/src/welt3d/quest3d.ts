@@ -169,7 +169,8 @@ export class QuestWelt {
   /** Sichtbarkeit nach dem eigenen Stand (aus den Quest-Daten): Aufgehobenes verschwindet; „heil“ zeigt z. B. den geflickten Zaun; leuchtet, solange es zu tun ist */
   private objekteSchritt() { const puls = 0.35 + 0.25 * Math.sin(performance.now() / 260);
     for (const o of this.objekte) { const nah = Math.hypot(o.d.x - this.u.ort.x, o.d.y - this.u.ort.y) < 45; o.g.visible = nah;
-      if (!nah) continue; const q = questDef(o.q)!, L = objektLage(q, questStandB(q.id), o.d);
+      if (!nah) continue; o.g.position.y = this.u.motor.hoehe(o.d.x, o.d.y); /* Höhe nachführen: beim Aufbau ist der Chunk oft noch nicht geladen (Start weit weg) – das Objekt läge sonst unter dem Gelände (#62) */
+      const q = questDef(o.q)!, L = objektLage(q, questStandB(q.id), o.d);
       if (o.kaputt && o.heil) { o.kaputt.visible = !L.heil; o.heil.visible = L.heil; } if (L.weg) o.g.visible = false;
       if (o.d.modell === "stelle" && !(L.leuchtet && questGeladen())) o.g.visible = false; /* eine Stelle an der Kulisse gibt es nur, solange sie zu tun ist (sonst bleibt deren eigenes „Ansehen“) */
       o.ring.visible = L.leuchtet && questGeladen(); (o.ring.material as THREE.MeshBasicMaterial).opacity = puls; } }

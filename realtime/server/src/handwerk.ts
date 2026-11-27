@@ -7,7 +7,9 @@
  *   · Glut (12 % je Stück): Fenster von 1,5 s; „handwerk“/„glut“ darin → beim nächsten Stück eine Einheit der häufigsten Zutat gespart, 50 % mehr XP.
  *   · Abbruch: Menge fertig, Zutaten aus, Rucksack voll, weggegangen, „stop“ oder Verbindung weg.
  */
-import { REZEPTE, rezept, Rezept, WERKZEUG_AN, STATIONEN, WERKSTAETTEN, HANDWERK_WEIT, GLUT_CHANCE, GLUT_MS, TICK_MS, brennChance } from "../../shared/handwerk";
+import { REZEPTE, rezept, Rezept, WERKZEUG_AN, STATIONEN, WERKSTAETTEN, HANDWERK_WEIT, GLUT_CHANCE, GLUT_MS, TICK_MS as SPIEL_TICK_MS, brennChance, werkstattErreichbar } from "../../shared/handwerk";
+/** Takt fürs Herstellen; für Tests einstellbar (HANDWERK_TICK_MS, #27) */
+const TICK_MS = process.env.HANDWERK_TICK_MS !== undefined ? Number(process.env.HANDWERK_TICK_MS) : SPIEL_TICK_MS;
 import { berufAn, beruf } from "../../shared/berufe";
 import { levelAus } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
@@ -35,7 +37,7 @@ export function handwerkEinrichten(o: { sb: Sb; senden: (s: HandwerkSpieler, m: 
 /** Level im Beruf dieser Werkstatt (Schmieden an Esse und Amboss, sonst Handwerk) */
 export const handwerkLevel = (nutzer: string, station: Rezept["station"] = "werkbank"): number => levelAus(berufXp(nutzer, berufAn(station)));
 const offen = (s: HandwerkSpieler, W: { schalter?: string }) => !W.schalter || HANDWERK_QUEST.schalter(s.nutzer, W.schalter);
-const naheWerkstaetten = (s: HandwerkSpieler, r: Rezept) => s.wx !== undefined && s.wy !== undefined ? WERKSTAETTEN.filter((W) => W.station === r.station && Math.hypot(s.wx! - W.x, s.wy! - W.y) <= HANDWERK_WEIT) : [];
+const naheWerkstaetten = (s: HandwerkSpieler, r: Rezept) => s.wx !== undefined && s.wy !== undefined ? WERKSTAETTEN.filter((W) => W.station === r.station && Math.hypot(s.wx! - W.x, s.wy! - W.y) <= HANDWERK_WEIT && werkstattErreichbar(s.wx!, s.wy!, W)) : []; /* nicht durch die Wand (#57) */
 const nah = (s: HandwerkSpieler, r: Rezept) => { if (r.station === "hand") return true; /* im Rucksack: überall */ return naheWerkstaetten(s, r).some((W) => offen(s, W)); };   /* irgendein (freigeschalteter) Standort dieser Station */
 /** „ladung:wegstein“ → wegstein (Rezepte, die Ladungen statt eines Gegenstands geben) */
 const ladungZiel = (r: Rezept): string | null => (r.ergebnis.startsWith("ladung:") ? r.ergebnis.slice(7) : null);

@@ -1,0 +1,62 @@
+{
+ "start": [
+  [
+   32,
+   56
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "hauptmann_hinauf",
+   "art": "eingang",
+   "x": 32,
+   "y": 61.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Stufen hinauf ins Freie.",
+    "tat": "grabkammer_hinauf",
+    "knopf": "Hinaufsteigen",
+    "ziel": [
+     6466,
+     5788.4
+    ]
+   }
+  },
+  {
+   "id": "hauptmann_siegel",
+   "art": "lesen",
+   "x": 32,
+   "y": 10.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Altar mit einer leeren Mulde – hier lag das Siegel des Hauptmanns."
+   }
+  },
+  {
+   "id": "hauptmann_gruft_tor",
+   "art": "eingang",
+   "x": 32,
+   "y": 4.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Tür aus Eisen, kalt wie Eis. Dahinter: die Gruft des Grauen Hauptmanns.",
+    "tat": "hauptmann_gruft",
+    "knopf": "Die Gruft betreten",
+    "ziel": [
+     11216,
+     9627
+    ]
+   }
+  }
+ ]
+}

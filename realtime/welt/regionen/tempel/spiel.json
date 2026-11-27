@@ -1,0 +1,133 @@
+{
+ "start": [
+  [
+   48,
+   58
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "tempel_hinauf",
+   "art": "eingang",
+   "x": 48,
+   "y": 63.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Stufen hinauf ins Licht.",
+    "tat": "tempel_hinauf",
+    "knopf": "Hinaufsteigen",
+    "ziel": [
+     7112,
+     6700
+    ]
+   }
+  },
+  {
+   "id": "tempel_vorhalle",
+   "art": "lesen",
+   "x": 48,
+   "y": 54,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Vorhalle. Sand rieselt durch Ritzen in der Decke; an den Wänden Reliefs von Magiern, die einander bekämpfen."
+   }
+  },
+  {
+   "id": "spiegelplatte_1",
+   "art": "lesen",
+   "x": 13,
+   "y": 20.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Bronzeplatte auf einem drehbaren Sockel. Sie fängt das Licht aus dem Schacht.",
+    "questobjekt": "spiegelplatte"
+   }
+  },
+  {
+   "id": "spiegelplatte_2",
+   "art": "lesen",
+   "x": 27,
+   "y": 20.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Bronzeplatte auf einem drehbaren Sockel. Sie fängt das Licht aus dem Schacht.",
+    "questobjekt": "spiegelplatte"
+   }
+  },
+  {
+   "id": "spiegelplatte_3",
+   "art": "lesen",
+   "x": 13,
+   "y": 34.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Bronzeplatte auf einem drehbaren Sockel. Sie fängt das Licht aus dem Schacht.",
+    "questobjekt": "spiegelplatte"
+   }
+  },
+  {
+   "id": "spiegelplatte_4",
+   "art": "lesen",
+   "x": 27,
+   "y": 34.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Bronzeplatte auf einem drehbaren Sockel. Sie fängt das Licht aus dem Schacht.",
+    "questobjekt": "spiegelplatte"
+   }
+  },
+  {
+   "id": "lichtschacht",
+   "art": "lesen",
+   "x": 20,
+   "y": 28.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Durch einen Schacht fällt ein einzelner Sonnenstrahl auf den Obelisken."
+   }
+  },
+  {
+   "id": "inschrift",
+   "art": "lesen",
+   "x": 74,
+   "y": 19.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Inschrift in der alten Schrift: „… und der Bote zog nach Osten, wo das Meer splittert …“",
+    "questobjekt": "inschrift"
+   }
+  },
+  {
+   "id": "kammer_tor",
+   "art": "eingang",
+   "x": 48,
+   "y": 3.6,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Tor aus Sandstein mit einem Auge. Es öffnet sich nur, wenn das Licht es trifft.",
+    "tat": "tempel_kammer",
+    "knopf": "Die Kammer betreten",
+    "ziel": [
+     11376,
+     9627
+    ]
+   }
+  }
+ ]
+}

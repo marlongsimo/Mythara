@@ -65,7 +65,7 @@ async function herstellen(s, x, y, rezept, menge = 1) { if (x !== null) await st
   const a = (await warte(s, (m) => m.t === "handwerk" && (m.tat === "nein" || m.tat === "start"))) || {}; if (a.tat !== "start") return a.text || "?";
   await (s.handwerk.find((m) => m.tat === "stop") || warte(s, (m) => m.t === "handwerk" && m.tat === "stop", 90000)); await schlaf(300); return "ok"; }
 const Q = QUESTS.find((q) => q.id === "weidenhain_wasser_auf_die_muehle"), O = (id) => Q.objekte.find((o) => o.id === id), F = (id) => Q.figuren.find((f) => f.id === id);
-const WERKBANK = [6530.5, 6426.5], AMBOSS = [6470.4, 6427.6], SCHUPPEN = [6447, 6671.5];
+const WERKBANK = [6530.5, 6426.5], AMBOSS = [6470.4, 6427.6], SCHUPPEN = [6446, 6673.3]; /* vorn im Schuppen (herstellen rückt 1,2 nach Osten): nur von vorn bedienbar (#57, #64) */
 const einsetzen = async (s, id) => { const o = O(id); await stelle(s, o.x, o.y - 1); return ding(s, id); };
 const kaufen = async (s, laden, g) => { const n = s.chat.length; sende(s, { t: "kaufen", laden, g }); await schlaf(500); return s.chat.slice(n).join(" "); };
 try {
@@ -102,7 +102,8 @@ try {
   check(kai.b[Q.id] === "fertig" && ab && ab.p_punkte === 1 && anzahl(kai, "splitter") >= 320, `B2 fertig: 1 Questpunkt, 300 Splitter (${anzahl(kai, "splitter")})`);
 
   console.log("Nach der Quest");
-  check(await herstellen(kai, ...SCHUPPEN, "garn") !== "?" && !/gesperrt|Wehr wieder hält/.test(await herstellen(kai, ...SCHUPPEN, "garn")), "Werkbank in Tebbes Schuppen: jetzt nutzbar");
+  check(await herstellen(kai, ...SCHUPPEN, "garn") !== "?" && !/gesperrt|Wehr wieder hält|näher/.test(await herstellen(kai, ...SCHUPPEN, "garn")), "Werkbank in Tebbes Schuppen: jetzt nutzbar");
+  check(/näher an die Werkbank/.test(await herstellen(kai, 6446.9 - 1.2, 6670.9, "garn")), "Werkbank in Tebbes Schuppen von hinten durch die Rückwand: nicht bedienbar (#57)");
   { const z = FANGSTELLEN.filter((x) => x.grund === "wehrkolk").find((x) => !kai.ruht.has(x.id)); await stelle(kai, z.x + 1.2, z.y); kai.fisch = []; sende(kai, { t: "fisch", tat: "start", id: z.id }); const m = await warte(kai, (m) => m.t === "fisch" && (m.tat === "nein" || m.tat === "start")); sende(kai, { t: "fisch", tat: "stop" });
     check(m && (m.tat === "start" || /Fischen 10/.test(m.text || "")), `Wehrkolk nach B2: Fische da (${m && (m.text || m.tat)})`); }
   { const z = FANGSTELLEN.filter((x) => x.grund === "wehrkolk").find((x) => !lea.ruht.has(x.id)); await stelle(lea, z.x + 1.2, z.y); lea.fisch = []; sende(lea, { t: "fisch", tat: "start", id: z.id }); const m = await warte(lea, (m) => m.t === "fisch" && (m.tat === "nein" || m.tat === "start")); sende(lea, { t: "fisch", tat: "stop" });
