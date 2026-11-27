@@ -109,7 +109,11 @@ export interface Folge {
   /** Gegenstände geben (vor dem Abschluss: Werkzeug, Ersatz – für den Lohn gibt es belohnung) */ geben?: Geben[];
   /** Gegenstände nehmen (fehlt einer, geht die Antwort nicht) */ nehmen?: { g: string; n?: number }[];
   /** wenn geben nichts zu geben hatte: diese Zeilen statt zeilen */ nichtsZuGeben?: Text[];
+  /** Figur wird Gegner (E3, Tjark): an ihrer Stelle erscheint dieser Gegner (config.ts) und greift den Spieler an; er kehrt nach dem Kampf nicht wieder.
+   *  Die Figur tritt im Browser so lange beiseite (ANGRIFF_FIGUR_MS). Sein Tod meldet „erlegen“ wie jeder Gegner */ angriff?: string;
 }
+/** So lange (ms) ist die Figur fort, nachdem sie zum Gegner wurde (Folge.angriff) */
+export const ANGRIFF_FIGUR_MS = 120000;
 export interface Geben { g: string; /** Text in „(Du bekommst: …)“ */ name: string; /** nur, wenn der Spieler ihn (oder Gleichwertiges) nicht besitzt */ fehlt?: boolean; /** Regex: gleichwertige Gegenstände zählen als vorhanden */ gleich?: string; /** nur, wenn verloren (nirgends mehr) */ verloren?: boolean }
 
 export interface Option { id: string; text: string; /** sichtbar nur, wenn */ wenn?: Bed; /** die erste passende Variante gilt */ folge: { wenn?: Bed; f: Folge }[] }

@@ -38,6 +38,13 @@ setzeKarte(KARTEN.welt_nordwald, FEIN);
   lauf(s, 1); b.lp = Math.floor(b.max * 0.55); lauf(s, 0.3); check(s.wesen.filter((w) => w.helfer === b.id && w.typ === "strandraeuber_saebel").length === 2, "unter 60 %: er ruft zwei Strandräuber");
   b.lp = Math.floor(b.max * 0.25); const ev = lauf(s, 6); check(ev.some((e) => e.a === "ansage" && e.name === "Geisterflut"), "unter 30 %: Geisterflut durch die Kajüte (Deckung)"); }
 
+console.log("\nG-Quests (#118): Frachtbrief, Lampenöl, Splitterglut, Fischernetz");
+check(["frachtbrief", "lampenoel", "splitterglut", "fischernetz"].every((g) => GEGENSTAENDE[g] && GEGENSTAENDE[g].untauschbar && (GEGENSTAENDE[g].bild || GEGENSTAENDE[g].symbol)), "vier Questgegenstände");
+{ const L = rezept("lampenoel"), S = rezept("splitterglut"), N = rezept("fischernetz");
+  check(L.station === "kessel" && L.zutaten[0].g[0] === "fisch_hering_roh" && L.zutaten[0].n === 5 && WERKSTAETTEN.some((w) => w.id === "kessel_leuchtturm") && S.station === "bindestein" && S.level === 20 && L.quest === S.quest && S.quest === "kueste_das_leuchtfeuer",
+    "G2: Lampenöl aus fünf Heringen im Kessel am Leuchtturm, Splitterglut am Bindestein (Splitterbinden 20)");
+  check(N.station === "werkbank" && N.level === 20 && N.zutaten[0].g[0] === "garn" && N.quest === "kueste_netze_fuer_die_moewenbucht", "G4: Fischernetz an der Werkbank (Handwerk 20, 4 Garn)"); }
+
 console.log("\n#141: Haferstedt, Netzbucht, Sandquell");
 { const { LAEDEN, LADEN_ZEICHEN } = await import(datei), ORTE = { haferstedt: [6215, 6980], netzbucht: [6146, 6930], sandquell: [7384, 6740] };
   const L = Object.values(LAEDEN).filter((l) => /^(haferstedt|netzbucht|sandquell)_|^troedler_(haferstedt|sandquell)$/.test(l.id));
