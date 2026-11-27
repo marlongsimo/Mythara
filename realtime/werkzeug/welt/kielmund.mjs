@@ -44,7 +44,7 @@ const KUESTE = JSON.parse(readFileSync(join(WELT, "kueste_orte.json"), "utf8"));
 let nr = 0;
 const ding = (objekt, x, y, mehr = {}) => { const b = BIB.get(objekt); if (!b) throw new Error("unbekanntes Objekt " + objekt); if (b.kategorie !== "bewuchs" && Number.isInteger(y / 32)) y -= 0.01;
   const o = { id: mehr.id || `km_${objekt.replace(/^(dorf|graufurt|stil|k|moor|hand|welt|weidenhain|wald|burg|hoehle|wz|holz|waldmark|kueste|hochland)_/, "").replace(/_\d+$/, "")}_${++nr}`, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...mehr };
-  for (const r of koerperVon(o)) { const hit = koerper.find((q) => r[0] < q[2] && q[0] < r[2] && r[1] < q[3] && q[1] < r[3]); if (hit && b.kategorie === "gebaeude") throw new Error(`${o.id} überdeckt ${hit[4]}`); koerper.push(r); }
+  const rs = koerperVon(o); for (const r of rs) { const hit = koerper.find((q) => r[0] < q[2] && q[0] < r[2] && r[1] < q[3] && q[1] < r[3]); if (hit && b.kategorie === "gebaeude") throw new Error(`${o.id} überdeckt ${hit[4]}`); } koerper.push(...rs);   /* erst alle Körper prüfen: mehrteilige Gebäude überdecken sich nicht selbst */
   objekte.push(o); return o; };
 const lies = (id, x, y, text, mehr = {}) => interaktionen.push({ id, art: "lesen", x: +x.toFixed(2), y: +y.toFixed(2), radius: 1.8, abgleich: "keiner", daten: { text, ...mehr } });
 const weg = (punkte, breite = 1.8, zeichen = "p") => { const xs = punkte.map((p) => p[0]), ys = punkte.map((p) => p[1]);
@@ -94,7 +94,7 @@ for (const g of GASSEN) weg(g, 2.2, "p");
   male(land - 2, Y - 3, land + 6, Y + 1, (x, y) => (nass(jetzt(x, y)) ? null : "p"));   /* Molenkopf am Strand */
   for (let i = 0; i < 4; i++) steg(land + 4.9 - i * 6.8, Y, "kielmund_mole_" + (i + 1));   /* 6,8 Felder: die Stege stoßen ohne Lücke aneinander */
   const ex = land - 22.4; freigeben.push({ art: "rechteck", x0: +(ex - 4).toFixed(2), y0: +(Y - 5).toFixed(2), x1: +(ex + 4.6).toFixed(2), y1: +(Y + 2).toFixed(2) });   /* Plattform am Ende (Meer bleibt Meer, festland.py) */
-  ding("graufurt_turm_ost_01", ex - 1.5, Y + 0.6, { id: "kielmund_leuchtturm", s: 1.4 }); ding("turm_signalfeuer_01", ex - 1.5, Y - 4.6, { id: "kielmund_leuchtfeuer", s: 0.8 });
+  ding("kueste_leuchtturm", ex - 1.5, Y + 0.6, { id: "kielmund_leuchtturm" });   /* Modell von Figuren (#174) */
   for (const [o, dx, dy, s] of [["k_fels_gross", -4.6, -3.4, 0.9], ["k_fels_breit", -4.2, 1.6, 0.8], ["k_fels_klein", 0.8, -5.2, 0.8], ["k_fels_klein", -1.2, 2.6, 0.7]]) ding(o, ex + dx, Y + dy, { s });   /* Felsen am Fuß des Leuchtturms */
   lies("kielmund_mole", land + 1, Y - 1.3, "Die Leuchtturm-Mole von Kielmund. Am Ende brennt das Feuer, das die Boote heimholt – man sieht es bis zur Möwenbucht.");
   lies("kielmund_leuchtturm", ex + 0.6, Y - 1.3, "Der Leuchtturm am Ende der Mole. Der Wärter hat Salz in den Bart und Rost an den Händen.");
@@ -104,19 +104,24 @@ kielmund.wahrzeichen.kuestenhaus = [6414, 7296];
 
 /* ═══════ Altstadt: Tempel mit Platz ═══════ */
 { male(6464, 7280, 6486, 7290, () => "p");
-  const t = baue("dorf_kapelle_01", 6474, 7276, { id: "kielmund_tempel", s: 1.6, rand: 0 }, 4); lies("kielmund_tempel", t.x + 0.6, t.y + 0.8, "Der Tempel der Gezeiten. Drinnen hängen Netze voller Muscheln – Dank für jede Heimkehr.");
+  const t = baue("kielmund_tempel_01", 6474, 7276, { id: "kielmund_tempel", rand: 0 }, 6); if (t.y > 7277) throw new Error("Tempel zu weit südlich für die Priesterin"); lies("kielmund_tempel", t.x + 0.6, t.y + 0.8, "Der Tempel der Gezeiten. Drinnen hängen Netze voller Muscheln – Dank für jede Heimkehr.");
   ding("dorf_brunnen_01", 6470, 7287, { id: "kielmund_tempelbrunnen" }); kielmund.wahrzeichen.tempel = [t.x, t.y];
-  npc.push({ id: "priesterin_kielmund", rolle: "Priesterin (Tempel)", x: t.x + 1.5, y: t.y + 2 }); }
+  npc.push({ id: "priesterin_kielmund", rolle: "Priesterin (Tempel)", x: 6475.5, y: 7278 });   /* fest: shared/laeden.ts */ }
 
 /* ═══════ Hafen: zweite Bank, Räucherhütte, Lagerhäuser, Ladenplätze am Kai ═══════ */
 { const bank = baue("waldmark_bank_01", 6414, 7332, { id: "kielmund_hafenbank" }); lies("kielmund_hafenbank_tuer", bank.x, bank.y + 0.6, "Die Hafenbank von Kielmund. Kapitäne zahlen hier ihre Heuer aus.");
   banken.push({ id: "kielmund_bank", gebaeude: "kielmund_bank", schalter: [6452, 7297.4], vorhanden: true }, { id: "kielmund_hafenbank", gebaeude: "kielmund_hafenbank", schalter: [bank.x, bank.y + 1.4] });
   npc.push({ id: "bankier_kielmund_hafen", rolle: "Bank (Hafenbank)", x: bank.x, y: bank.y + 1.4 }, { id: "bankier_kielmund", rolle: "Bank (Kaufmannsviertel)", x: 6452, y: 7297.4 });
   const r = baue("kueste_raeucherhuette", 6400, 7318, { id: "kielmund_raeucherhuette", rand: 0 }, 6); stationen.push({ id: "raeucherhuette_kielmund", station: "raeucherhuette", x: r.x, y: r.y + 1.6 });
-  for (const [i, [o, x, y]] of [["dorf_scheune_holz_01", 6404, 7348], ["dorf_scheune_holz_01", 6412, 7372]].entries()) baue(o, x, y, { id: "kielmund_lagerhaus_" + (i + 1) }, 8);
+  for (const [i, [o, x, y]] of [["kielmund_lagerhaus_01", 6412, 7372]].entries()) baue(o, x, y, { id: "kielmund_lagerhaus_" + (i + 1) }, 8);
+  { const h = baue("kielmund_hafenmeisterei_01", 6404, 7348, { id: "kielmund_hafenmeisterei" }, 10); lies("kielmund_hafenmeisterei", h.x, h.y + 0.8, "Die Hafenmeisterei. Wer hier anlegt, zahlt Liegegeld – und wer ablegen will, fragt nach dem Wetter.");
+    npc.push({ id: "hafenmeisterin_kielmund", rolle: "Hafenmeisterin", x: h.x + 1.5, y: h.y + 2 }); kielmund.wahrzeichen.hafenmeisterei = [h.x, h.y]; }
+  try { const k = baue("kueste_kran", 6386, 7322, { id: "kielmund_kran", rand: 0 }, 6); kielmund.wahrzeichen.kran = [k.x, k.y]; } catch { /* ohne Kran */ }
+  for (const [x, y] of [[6362, 7330], [6352, 7350]]) if (nass(jetzt(x, y)) && nass(jetzt(x + 2, y)) && nass(jetzt(x - 2, y))) ding("kueste_ruderboot", x, y, { spiegeln: x > 6355 });
   for (const [i, [o, x, y]] of [["dorf_marktstand_01", 6404, 7308], ["dorf_marktstand_03", 6410, 7322], ["k_stand_rot", 6402, 7340]].entries()) { const st = baue(o, x, y, { id: "kielmund_hafenstand_" + (i + 1), rand: 0 }, 5);
     laeden.push({ id: st.id, viertel: "Hafen", art: "Stand am Kai", x: st.x, y: +(st.y + 1.2).toFixed(1), blick: [0, -1] }); }
-  for (const [x, y] of [[6400, 7326], [6405, 7334], [6398, 7312]]) baue(wahl(["k_faesser", "k_kiste", "dorf_fass_01"]), x, y, { rand: 0 }, 3); }
+  for (const [x, y] of [[6400, 7326], [6405, 7334], [6398, 7312], [6408, 7344]]) baue(wahl(["kueste_fischkisten", "kueste_taurolle", "k_faesser"]), x, y, { rand: 0 }, 3);
+  for (const [x, y] of [[6396, 7329], [6399, 7336]]) try { baue("kueste_poller", x, y, { rand: 0 }, 2); } catch { /* kein Platz */ } }
 
 /* ═══════ Kaufmannsviertel: Stände, Kessel am Teich; Fischerquartier: Kessel, Netze ═══════ */
 for (const [i, [o, x, y]] of [["dorf_marktstand_02", 6440, 7306], ["dorf_marktstand_03", 6476, 7306], ["dorf_marktstand_01", 6488, 7306]].entries()) { const st = baue(o, x, y, { id: "kielmund_kaufstand_" + (i + 1), rand: 0 }, 5);
@@ -129,8 +134,11 @@ for (const [i, [o, x, y]] of [["dorf_marktstand_02", 6440, 7306], ["dorf_marktst
 const istGeb = (o) => BIB.get(o.objekt)?.kategorie === "gebaeude";
 const alle = () => [...objekte, ...JSON.parse(readFileSync(join(WELT, "festland", "plan_kueste.json"), "utf8")).objekte];
 const zahl = {}; for (const o of alle().filter((o) => istGeb(o) && o.x > M.x0 - 50 && o.x < M.x1 && o.y > M.y0 && o.y < M.y1)) zahl[VIERTEL(o.x, o.y)] = (zahl[VIERTEL(o.x, o.y)] || 0) + 1;
-const HAUS = { Hafen: ["dorf_haus_holz_01", "dorf_haus_holz_02", "graufurt_steinhaus_02", "dorf_schuppen_holz_01", "moor_fischer_01"], Altstadt: ["graufurt_steinhaus_01", "graufurt_steinhaus_02", "weidenhain_fachwerk_02", "weidenhain_fachwerk_03", "hochland_stadthaus_03"],
-  Kaufmannsviertel: ["weidenhain_fachwerk_02", "weidenhain_fachwerk_03", "hochland_stadthaus_01", "hochland_ladenhaus_01", "hochland_ladenhaus_02", "graufurt_steinhaus_02"], Fischerquartier: ["moor_fischer_01", "dorf_haus_holz_03", "dorf_huette_holz_01", "weidenhain_kate_01", "moor_kate_01"] };
+const HAUS = { Hafen: ["kielmund_fischerhaus_01", "kielmund_fischerhaus_02", "kielmund_lagerhaus_01", "kielmund_fischerhaus_03", "dorf_schuppen_holz_01"], Altstadt: ["graufurt_steinhaus_01", "kielmund_kontor_01", "weidenhain_fachwerk_02", "weidenhain_fachwerk_03", "hochland_stadthaus_03"],
+  Kaufmannsviertel: ["kielmund_kontor_01", "kielmund_kontor_01", "weidenhain_fachwerk_03", "hochland_stadthaus_01", "hochland_ladenhaus_01", "hochland_ladenhaus_02"], Fischerquartier: ["kielmund_fischerhaus_01", "kielmund_fischerhaus_02", "kielmund_fischerhaus_03", "kielmund_fischerhaus_01", "moor_fischer_01"] };   /* Modelle von Figuren (#174) */
+/* Ladenhäuser fest (Integration hat die Händler davor in shared/laeden.ts): gleiche Kennung und Lage wie bisher, eines mit dem Kontor von Figuren */
+const LADENHAEUSER = [["km_schuppen_holz_53", "dorf_schuppen_holz_01", 6407, 7358, 1.04], ["km_schuppen_holz_52", "dorf_schuppen_holz_01", 6412, 7357, 1.04], ["km_stadthaus_72", "kielmund_kontor_01", 6424, 7275, 1], ["km_kate_65", "weidenhain_kate_01", 6454, 7371, 0.98]];
+for (const [id, o, x, y, s] of LADENHAEUSER) { ding(o, x, y, { id, s }); const v = VIERTEL(x, y); zahl[v] = (zahl[v] || 0) + 1; }
 const FREI = [[6380, 7342, 6404, 7362], [6464, 7279, 6487, 7291], [6416, 7308, 6436, 7326]];   /* Zunftsteg, Tempelplatz, Markt/Fischmarkt */
 for (const guete of [4, 8, 12]) for (let y = M.y0 + 5; y < M.y1 - 2; y++) for (let x = 6380; x < M.x1 - 3; x++) {
   const v = VIERTEL(x, y); if ((zahl[v] || 0) >= SOLL[v]) continue; const o = wahl(HAUS[v]), s = +(0.95 + wurf() * 0.1).toFixed(2); if (!passt(o, x, y, s, { frei: FREI })) continue;
@@ -138,7 +146,7 @@ for (const guete of [4, 8, 12]) for (let y = M.y0 + 5; y < M.y1 - 2; y++) for (l
   ding(o, x, y, { s }); zahl[v] = (zahl[v] || 0) + 1; }
 kielmund.viertel = zahl; kielmund.gebaeude = Object.values(zahl).reduce((a, b) => a + b, 0);
 /* Ladenplätze in Häusern an den Hauptgassen (Händler vor der Tür) */
-for (const o of objekte.filter((o) => istGeb(o) && /^km_/.test(o.id) && [7276, 7298, 7318, 7336, 7358, 7372].some((g) => Math.abs(o.y - g) < 2)).sort((a, b) => (/ladenhaus/.test(b.objekt) - /ladenhaus/.test(a.objekt)) || a.x - b.x).slice(0, 6))
+for (const o of LADENHAEUSER.map(([id]) => objekte.find((q) => q.id === id)))
   laeden.push({ id: "kielmund_laden_" + o.id.replace(/^km_/, ""), viertel: VIERTEL(o.x, o.y), art: "Ladenhaus", gebaeude: o.id, x: o.x, y: +(o.y + 1.2).toFixed(1), blick: [0, 1] });
 for (let x = 6406; x < M.x1 - 4; x += 12) for (const y of [7302.6, 7340.6]) if (BODEN.has(jetzt(x, y)) && !imKoerper(x, y, 1)) ding("dorf_laterne_01", x, y);
 

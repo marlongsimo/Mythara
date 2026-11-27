@@ -35,7 +35,7 @@
  {"id":"bl_laub_oliv_2042","objekt":"stil_laub_oliv","x":91.5,"y":356.5,"s":1.01},
  {"id":"bl_laub_oliv_2044","objekt":"stil_laub_oliv","x":196.5,"y":280.5,"s":0.93},
  {"id":"ok_fels_breit_72","objekt":"k_fels_breit","x":135,"y":443.58,"s":1.02},
- {"id":"ok_laub_oliv_88","objekt":"stil_laub_oliv","x":11.5,"y":387.5,"s":0.97},
+ {"id":"ok_ocker_akazie_88","objekt":"ocker_akazie","x":11.5,"y":387.5,"s":0.97},
  {"id":"ok_fels_breit_116","objekt":"k_fels_breit","x":163,"y":388.05,"s":0.76},
  {"id":"ok_laub_gold_250","objekt":"stil_laub_gold","x":12.5,"y":402.5,"s":0.81},
  {"id":"ok_fels_breit_257","objekt":"k_fels_breit","x":231.5,"y":351.36,"s":0.91},

@@ -36,14 +36,22 @@
    7296
   ],
   "tempel": [
-   6474,
-   7276
+   6474.5,
+   7277
+  ],
+  "hafenmeisterei": [
+   6406.5,
+   7348
+  ],
+  "kran": [
+   6386.5,
+   7323.5
   ]
  },
  "viertel": {
   "Altstadt": 26,
   "Hafen": 16,
-  "Kaufmannsviertel": 28,
+  "Kaufmannsviertel": 22,
   "Fischerquartier": 22
  },
  "laeden": [
@@ -226,7 +234,7 @@
   "7262": 6416,
   "7380": 6384
  },
- "gebaeude": 92,
+ "gebaeude": 86,
  "npc": [
   {
    "id": "torwache_kielmund_nord",
@@ -263,6 +271,12 @@
    "rolle": "Bank (Kaufmannsviertel)",
    "x": 6452,
    "y": 7297.4
+  },
+  {
+   "id": "hafenmeisterin_kielmund",
+   "rolle": "Hafenmeisterin",
+   "x": 6408,
+   "y": 7350
   }
  ],
  "fischerzunft_fang": [
