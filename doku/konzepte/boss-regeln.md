@@ -27,8 +27,10 @@ Grundsatz: **Bosse dürfen eine deutlich höhere Stufe haben als die Helden.** B
 |---|---|---|
 | Ankündigung | keine | **immer vorher angezeigt** (Fläche am Boden, Kegel, Linie, Zeichen am Boss, Laut) |
 | Treffer | normaler Trefferwurf | trifft, wer in der Gefahrenzone steht |
-| Schaden | mittel bis hoch, je nach Boss | hart: bis zu etwa 1/3 bis 1/2 des LP-Balkens |
+| Schaden | höchstens etwa **8–15 %** des Höchstlebens eines passend ausgerüsteten Helden | nicht ausgewichen: **30–60 %** des Höchstlebens |
 | Gegenmittel | Rüstung, Defense, Essen, Tränke | **Mechanik:** richtig reagieren vermeidet ihn |
+
+*Schadensrahmen vom Nutzer entschieden (27.11., über die Leitstelle).*
 
 ## 3. Streifschaden: je nach Boss
 
