@@ -4,7 +4,6 @@
  {"id":"bl_busch_560","objekt":"stil_busch_02","x":3.5,"y":10.5},
  {"id":"bl_busch_562","objekt":"stil_busch_02","x":4,"y":14.5},
  {"id":"bl_linde_985","objekt":"stil_linde_01","x":1.5,"y":63.5,"s":0.9,"spiegeln":true},
- {"id":"bl_linde_1112","objekt":"stil_linde_01","x":3.5,"y":51.5,"s":1},
  {"id":"bl_busch_1472","objekt":"stil_busch_02","x":460.5,"y":238.5},
  {"id":"bl_fels_breit_1583","objekt":"k_fels_breit","x":458.5,"y":170.88,"s":0.92},
  {"id":"bl_fels_klein_1584","objekt":"k_fels_klein","x":459,"y":172.1,"s":0.93,"spiegeln":true},

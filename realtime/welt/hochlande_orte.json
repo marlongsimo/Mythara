@@ -512,72 +512,72 @@
   {
    "id": "hochlande_eisenhut_1",
    "art": "eisenhut",
+   "x": 7003.5,
+   "y": 5543.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_2",
+   "art": "nebelkraut",
+   "x": 7107.5,
+   "y": 5799.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_eisenhut_3",
+   "art": "eisenhut",
    "x": 7036.5,
    "y": 5519.5,
    "region": "fl_216_169"
   },
   {
-   "id": "hochlande_nebelkraut_2",
+   "id": "hochlande_nebelkraut_4",
    "art": "nebelkraut",
    "x": 7016.5,
    "y": 5527.5,
    "region": "fl_216_169"
   },
   {
-   "id": "hochlande_eisenhut_3",
+   "id": "hochlande_eisenhut_5",
    "art": "eisenhut",
    "x": 6991.5,
    "y": 5554.5,
    "region": "fl_216_169"
   },
   {
-   "id": "hochlande_nebelkraut_4",
+   "id": "hochlande_nebelkraut_6",
    "art": "nebelkraut",
    "x": 7107.5,
    "y": 5464.5,
    "region": "fl_216_169"
   },
   {
-   "id": "hochlande_eisenhut_5",
+   "id": "hochlande_eisenhut_7",
    "art": "eisenhut",
    "x": 7030.5,
    "y": 5505.5,
    "region": "fl_216_169"
   },
   {
-   "id": "hochlande_nebelkraut_6",
+   "id": "hochlande_nebelkraut_8",
    "art": "nebelkraut",
    "x": 6947.5,
    "y": 5642.5,
    "region": "fl_216_169"
   },
   {
-   "id": "hochlande_eisenhut_7",
+   "id": "hochlande_eisenhut_9",
    "art": "eisenhut",
    "x": 6929.5,
    "y": 5664.5,
    "region": "fl_216_169"
   },
   {
-   "id": "hochlande_nebelkraut_8",
+   "id": "hochlande_nebelkraut_10",
    "art": "nebelkraut",
    "x": 7062.5,
    "y": 5528.5,
    "region": "fl_216_169"
-  },
-  {
-   "id": "hochlande_eisenhut_9",
-   "art": "eisenhut",
-   "x": 6914.5,
-   "y": 5683.5,
-   "region": "fl_216_169"
-  },
-  {
-   "id": "hochlande_nebelkraut_10",
-   "art": "nebelkraut",
-   "x": 6866.5,
-   "y": 5732.5,
-   "region": "fl_201_169"
   },
   {
    "id": "hochlande_wegerich_11",
@@ -1725,9 +1725,9 @@
     ]
    },
    {
-    "id": "steinhag_laden_steinhaus_8",
+    "id": "steinhag_laden_hochland_ladenhaus_8",
     "art": "Ladenhaus",
-    "gebaeude": "hl_steinhaus_8",
+    "gebaeude": "hl_hochland_ladenhaus_8",
     "x": 7017,
     "y": 5900.2,
     "blick": [
@@ -1736,9 +1736,9 @@
     ]
    },
    {
-    "id": "steinhag_laden_haus_holz_7",
+    "id": "steinhag_laden_hochland_ladenhaus_7",
     "art": "Ladenhaus",
-    "gebaeude": "hl_haus_holz_7",
+    "gebaeude": "hl_hochland_ladenhaus_7",
     "x": 6962,
     "y": 5900.2,
     "blick": [
@@ -1747,9 +1747,9 @@
     ]
    },
    {
-    "id": "steinhag_laden_steinhaus_9",
+    "id": "steinhag_laden_hochland_ladenhaus_9",
     "art": "Ladenhaus",
-    "gebaeude": "hl_steinhaus_9",
+    "gebaeude": "hl_hochland_ladenhaus_9",
     "x": 7026,
     "y": 5900.2,
     "blick": [
@@ -1758,9 +1758,9 @@
     ]
    },
    {
-    "id": "steinhag_laden_steinhaus_6",
+    "id": "steinhag_laden_hochland_ladenhaus_6",
     "art": "Ladenhaus",
-    "gebaeude": "hl_steinhaus_6",
+    "gebaeude": "hl_hochland_ladenhaus_6",
     "x": 6953,
     "y": 5900.2,
     "blick": [
@@ -1769,9 +1769,9 @@
     ]
    },
    {
-    "id": "steinhag_laden_steinhaus_5",
+    "id": "steinhag_laden_hochland_ladenhaus_5",
     "art": "Ladenhaus",
-    "gebaeude": "hl_steinhaus_5",
+    "gebaeude": "hl_hochland_ladenhaus_5",
     "x": 6945,
     "y": 5900.2,
     "blick": [
@@ -2030,7 +2030,7 @@
   }
  ],
  "zaehlung": {
-  "Nadelbäume": 227,
+  "Nadelbäume": 212,
   "Einzeltannen": 160,
   "Felsen": 140,
   "Büsche": 180

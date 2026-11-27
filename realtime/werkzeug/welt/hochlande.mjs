@@ -117,7 +117,7 @@ const [SX, SY] = ORTE.steinhag;
   lies("steinhag_bank_tuer", SX - 21, SY - 13, "Die Bank von Steinhag. Dasselbe Konto wie im Tal – nur das Gold riecht nach Stollen.");
   lies("steinhag_wegstein", SX - 6, SY - 1.4, "Der Wegstein von Steinhag."); lies("steinhag_bindestein", SX + 6, SY - 1.4, "Ein Bindestein am Brunnen von Steinhag.");
   /* Häuser an der Hauptgasse (Tür zur Gasse) */
-  for (const [dx, o] of [[-45, "graufurt_steinhaus_01"], [-37, "graufurt_steinhaus_02"], [-28, "dorf_haus_holz_03"], [27, "graufurt_steinhaus_01"], [36, "graufurt_steinhaus_02"], [45, "graufurt_steinhaus_01"]]) ding(o, SX + dx, SY + 7);
+  for (const [dx, o] of [[-45, "hochland_ladenhaus_02"], [-37, "hochland_ladenhaus_01"], [-28, "hochland_ladenhaus_02"], [27, "hochland_ladenhaus_01"], [36, "hochland_ladenhaus_02"], [45, "hochland_ladenhaus_01"]]) ding(o, SX + dx, SY + 7);   /* Ladenhäuser an der Hauptgasse (Figuren #167) */
   /* zwischen den Gassen: Schmiede mit Werkbank, Häuser (Tür zur Unteren Gasse) */
   ding("dorf_schmiede_01", SX + 14, SY + 24, { id: "steinhag_schmiede" }); ding("hand_werkbank_01", SX + 21, SY + 23.4, { id: "steinhag_werkbank" });
   lies("steinhag_werkstatt", SX + 17, SY + 28, "Die Werkstatt von Steinhag: Esse, Amboss und eine Werkbank, an der Grubenholz zugeschnitten wird.");
