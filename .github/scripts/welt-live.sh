@@ -6,7 +6,7 @@
 #    (der Workflow schlägt fehl, es wird nichts gepusht).
 # 2. Danach: Kampfraster neu (werkzeug/weltzonen.py), Typprüfung, Spiel bauen, schnelle Tests – erst wenn alles grün ist, wird gepusht.
 #    Render baut den Spielserver aus feature/realtime-engine.
-# 3. main (die Webseite): Was in feature/realtime-engine unter echtzeit/, img/ und UI/ neu oder geändert ist, kommt nach main.
+# 3. main (die Webseite): Was in feature/realtime-engine unter echtzeit/, img/, UI/ und .github/scripts/ neu oder geändert ist, kommt nach main.
 #    Es wird nie etwas auf main gelöscht. Das geht ohne Auschecken (nur Git-Objekte).
 #
 # Lokal ausprobieren ohne zu pushen:  TROCKEN=1 bash .github/scripts/welt-live.sh
@@ -51,7 +51,9 @@ for q in $QUELLEN; do
   echo "$q: $(git rev-list --count "origin/$ZIEL..origin/$q") neue Commits"
   if git diff --name-only "origin/$ZIEL...origin/$q" | grep -Eq "$GETESTET"; then
     kopf="$(git rev-parse "origin/$q")"; lauf="$(testlauf "$kopf")"
-    if [ "$lauf" != success ] && [ "${OHNE_TESTPRUEFUNG:-0}" != 1 ]; then
+    if [ "$lauf" = unbekannt ]; then   # ohne Leserecht auf die Prüfungen (Workflow ohne „checks: read“): wie früher zusammenführen, aber laut sagen
+      echo "::warning::$q: Testlauf nicht abfragbar (dem Workflow fehlt „checks: read“) – ohne Prüfung zusammengeführt"
+    elif [ "$lauf" != success ] && [ "${OHNE_TESTPRUEFUNG:-0}" != 1 ]; then
       echo "::warning::$q übersprungen: Tests für ${kopf:0:8} sind nicht grün ($lauf) – kommt beim nächsten Lauf mit, sobald sie grün sind"; continue; fi
     echo "$q: Tests für ${kopf:0:8} grün"
   fi
@@ -84,14 +86,16 @@ if [ "${#NEU[@]}" -gt 0 ]; then
   STAND="HEAD"
 fi
 
-# main: neue und geänderte Dateien aus echtzeit/, img/, UI/ übernehmen – ohne Auschecken, nichts löschen
-AENDERUNG="$(git diff --name-only --diff-filter=AM origin/main "$STAND" -- echtzeit img UI)"
+# main: neue und geänderte Dateien aus echtzeit/, img/, UI/ und .github/scripts/ übernehmen – ohne Auschecken, nichts löschen.
+# .github/scripts (#85): der Workflow läuft von main und liest dieses Skript dort. Dateien unter .github/workflows/ darf das Token der Pipeline nicht ändern (GitHub) – die bleiben Handarbeit.
+MAIN_PFADE="echtzeit img UI .github/scripts"
+AENDERUNG="$(git diff --name-only --diff-filter=AM origin/main "$STAND" -- $MAIN_PFADE)"
 if [ -z "$AENDERUNG" ]; then echo "main: schon aktuell"; exit 0; fi
 echo "main: $(printf '%s\n' "$AENDERUNG" | wc -l) Dateien neu oder geändert"
 export GIT_INDEX_FILE="$ARBEIT/main.index"
 git read-tree origin/main
 printf '%s\n' "$AENDERUNG" > "$ARBEIT/liste"
-git ls-tree -r "$STAND" -- echtzeit img UI | python3 -c '
+git ls-tree -r "$STAND" -- $MAIN_PFADE | python3 -c '
 import sys
 liste = set(open(sys.argv[1], encoding="utf-8").read().splitlines())
 for zeile in sys.stdin:
