@@ -6,7 +6,7 @@
 import { starte, starkerHeld, roh, LEGENDAER, QUESTS, QB } from "./questwelt.mjs";
 const D1 = QUESTS.find((q) => q.id === "graufurt_die_faehrkette"), D2 = QUESTS.find((q) => q.id === "ostufer_das_gruene_licht"), D3 = QUESTS.find((q) => q.id === "graufurt_wels_im_trueben");
 const kai = starkerHeld({ fertig: ["nordwald_das_wappen_mit_dem_turm"], berufe: { bergbau: 50, schmieden: 50, fischen: 50, kochen: 50 },
-  rucksack: ["hammer", "spitzhacke_legendaer", "angelrute", "wappenabrieb", { g: "wurm", n: 40 }, ...Array(3).fill("stamm_tanne"), ...Array(8).fill("barren_splittereisen"), { g: "mehl", n: 3 }] });
+  rucksack: ["hammer", "spitzhacke_legendaer", "angelrute", "wappenabrieb", { g: "wurm", n: 40 }, ...Array(3).fill("stamm_tanne"), ...Array(8).fill("barren_splittereisen"), { g: "mehl", n: 5 } /* zwei mehr: eine Pastete kann anbrennen */] });
 kai.inventar.angelegt = { ...LEGENDAER }; /* Ausrüstung in passender Stufe: mit dem Trainingsschwert heilt das Grünlicht den Turmwächter schneller, als man trifft */
 const W = await starte({ sb: 8811, srv: 8812, helden: { kai, lea: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: [{ g: "splitter", n: 20 }], v: 2 } } } });
 /* Ports für parallel.mjs: localhost:8811, localhost:8812 */
