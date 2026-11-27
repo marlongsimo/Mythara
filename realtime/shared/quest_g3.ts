@@ -104,6 +104,7 @@ export const QUEST_G3: QuestDef = {
     },
   },
   schalter: { wrackkapitaen_kajuete: LAEUFT },
+  glueckwunsch: "Jetzt weiß ich, was meine Schiffe fuhren. Das Küstenhaus schuldet Ihnen die Wahrheit – und mehr.",
   belohnungText: "Belohnung: Stärke 3.000, Geschick 3.000, Defense 3.000 XP, 800 Splitter",
   belohnung: { xp: { staerke: 3000, geschick: 3000, defense: 3000 }, splitter: 800 },
   punkte: 2,

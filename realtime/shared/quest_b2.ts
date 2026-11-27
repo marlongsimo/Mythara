@@ -146,6 +146,7 @@ export const QUEST_B2: QuestDef = {
   schalter: { wehr_heil: [FERTIG, { erledigt: ["setzen_oben"] }], werkstatt_weidenhain: FERTIG, hanne_mehl: FERTIG },
   /* Mühlrad an der Wassermühle (Tür Weidenhain 60,4 | 33,2) – Stelle: Vorschlag, die Welt prüft */
   drehen: [{ schalter: "wehr_heil", x: 6463, y: 6689, r: 5 }],
+  glueckwunsch: "Das Rad dreht sich. Hörst du's? So klingt Weidenhain, wenn es lebt.",
   belohnungText: "Belohnung: 300 Splitter, 300 Schmieden-XP · danach: das Mühlrad dreht sich, Tebbes Schuppen wird deine Werkstatt (Esse, Amboss, Werkbank), Hanne Kalk verkauft Mehl",
   belohnung: { splitter: 300, berufe: { schmieden: 300 } },
   punkte: 1,

@@ -137,6 +137,7 @@ export const QUEST_B4: QuestDef = {
   /* Die Tür zum Beutelager ist je Spieler offen mit dem Schlüssel (oder danach); die Kammer ist für die Quest eine Instanz, danach Rotmantel öffentlich */
   schalter: { beutelager_offen: [FERTIG, { erledigt: ["schluessel"] }], rotmantel_instanz: LAEUFT, rotmantel_oeffentlich: FERTIG, rotmantel_kammer_offen: [FERTIG, { erledigt: ["halle"] }],
     /* die Halle ist für die Quest eine eigene Kopie mit zwei Wellen (shared/bosse.ts), solange der Schritt offen ist */ unterschlupf_halle: { phase: ["laeuft"], erledigt: ["schluessel"], offen: ["halle"] } },
+  glueckwunsch: "Rotmantel ist geschlagen. Weidenhain schläft ruhig – und du hast dir das verdient.",
   belohnungText: "Belohnung: je 1.000 XP Stärke, Geschick und Defense, 500 LP-XP, 500 Splitter, eine seltene Waffe nach Wahl, das rote Banner · danach: Rotmantel kehrt als Mini-Boss zurück",
   belohnung: { xp: { staerke: 1000, geschick: 1000, defense: 1000, lp: 500 }, splitter: 500 },
   punkte: 1,

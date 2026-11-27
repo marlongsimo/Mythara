@@ -21,6 +21,7 @@ US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschl
                                cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])  # die Quelle meldet zuerst ihren Umfang
 BESONDERS = {
     # #116: nach der Quest die Bosse öffentlich in ihren Räumen (stärkere Fassung, Wiederkehr 10 min); wer die Quest macht oder „eigene Instanz“ wählt, steht in einer Kopie und sieht sie nicht
+    "federmutter_kammer": {"leine": 14, "wandern": 0, "mehrkampf": [[11520, 9600, 11551, 9631]], "lager": [("federmutter", 11536, 9611)]},  # #132: ihr Nest unter dem Steinkreis
     "rabengrund_thronsaal": {"leine": 14, "wandern": 0, "mehrkampf": [[10752, 9600, 10783, 9631]], "lager": [("oberster_rabenpriester", 10768, 9606)]},
     "hauptmann_gruft": {"leine": 14, "wandern": 0, "mehrkampf": [[11200, 9600, 11231, 9631]], "lager": [("grauer_hauptmann", 11216, 9619)]},
     "tempel_kammer": {"leine": 14, "wandern": 0, "mehrkampf": [[11360, 9600, 11391, 9631]], "lager": [("sandmutter", 11376, 9612)]},
@@ -71,7 +72,7 @@ BESONDERS = {
     "aschenwerth": {"leine": 12, "wandern": 2, "mehrkampf": [[6200, 6600, 6224, 6620]],
                     "lager": [("bandit_spaeher", 6206, 6608), ("bandit_spaeher", 6218, 6608), ("bandit_schlaeger", 6212, 6609), ("bandit_armbrust", 6210, 6614), ("bandit_spaeher", 6216, 6614),
                               ("rabenpriester_novize", 6240, 6728), ("rabenpriester_novize", 6244, 6728), ("rabenpriester_novize", 6242, 6730),
-                              ("rabenpriester_akoluth", 6212, 6714), ("rabenpriester_akoluth_speer", 6214, 6716), ("federmutter", 6214, 6704),
+                              ("rabenpriester_akoluth", 6212, 6714), ("rabenpriester_akoluth_speer", 6214, 6716),
                               ("moorrabe", 6198, 6688), ("moorrabe", 6200, 6688), ("moorrabe", 6202, 6688)]},
     # Phase 6 (#17, #26): Rabengrund – Federgänge mit Moorrabenschwärmen und Akoluthen bis zum Kerker; der Oberste wartet im Thronsaal (Instanz, shared/bosse.ts)
     "rabengrund": {"leine": 10, "wandern": 2, "mehrkampf": [],
@@ -118,6 +119,8 @@ for rid, l in SUEDEN.items(): BESONDERS.setdefault(rid, {"leine": 12, "wandern":
 # #130 Gegnerdichte (Welt, welt/gegnerplaetze.json): spätestens alle ~25 Felder ein Gegnerplatz. Plätze mit quelle „fehlt“ (Modell nötig: Ockerlande, Hochlande,
 # Frostkrone, Drachenarm) vorerst ausgelassen, die des Südens stehen schon oben. Namen der Welt → Gegner (abwechselnd bei Gruppen); unbekannte Gegner fallen weg.
 GP_DATEI = os.path.join(WURZEL, "realtime", "welt", "gegnerplaetze.json")
+# #138: Modelle des Nutzers sind da (Figuren 8c2ed9b25) – deren Plätze mit quelle „fehlt“ gelten jetzt; der Drakling erst, wenn er als Bodengegner da ist
+GP_MODELL_DA = {"steppenwolf", "ockerhyaene", "hochlandwidder", "hochlandbaer", "klippenadler", "bergtroll", "tundraelch", "frostwolf", "eisgolem", "drakling"}  # Drakling als Bodengegner: Figuren 7cd8342fd
 GP_ALIAS = {"wolf": ["heidewolf"], "strandraeuber": ["strandraeuber_saebel", "strandraeuber_armbrust"], "karawanenraeuber": ["karawanenraeuber_saebel", "karawanenraeuber_bogen"],
             "wegelagerer": ["wegelagerer_knueppel", "wegelagerer_schleuder"]}
 import re as _re
@@ -126,7 +129,7 @@ GP = {}; GP_AUS = {"fehlt": 0, "unbekannt": 0}
 if os.path.exists(GP_DATEI):
     for p in json.load(open(GP_DATEI, encoding="utf-8"))["plaetze"]:
         q = p.get("quelle", "")
-        if q == "fehlt" or q.startswith("Süden"): GP_AUS["fehlt"] += 1 if q == "fehlt" else 0; continue
+        if (q == "fehlt" and not all(g in GP_MODELL_DA for g in p["gegner"])) or q.startswith("Süden"): GP_AUS["fehlt"] += 1 if q == "fehlt" else 0; continue
         reihe = [a for g in p["gegner"] for a in GP_ALIAS.get(g, [g])]
         for k in range(max(1, int(p.get("anzahl", 1)))):
             art = reihe[k % len(reihe)]

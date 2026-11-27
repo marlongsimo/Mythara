@@ -15,7 +15,7 @@ const offen = new Map<string, HTMLElement>();
 addEventListener("ez-quest-abholen", (e) => { const id = String((e as CustomEvent).detail || ""), q = questDef(id); if (!q || offen.has(id)) return;
   const el = document.createElement("div"); el.className = "ez-abschluss"; el.dataset.quest = id; el.setAttribute("role", "dialog");
   el.style.cssText = "position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:80;min-width:260px;max-width:92vw;padding:14px 18px;border-radius:10px;background:rgba(32,22,10,.95);color:#f3e3b5;font:15px Georgia,serif;box-shadow:0 6px 24px rgba(0,0,0,.6);text-align:center";
-  el.innerHTML = `<h2 style="margin:0 0 4px;font-size:20px">Quest abgeschlossen!</h2><div style="margin-bottom:8px">„${esc(q.titel)}“</div>
+  el.innerHTML = `<h2 style="margin:0 0 4px;font-size:20px">Quest abgeschlossen!</h2><div style="margin-bottom:8px">„${esc(q.titel)}“</div>${q.glueckwunsch ? `<div style="margin-bottom:8px;font-style:italic;opacity:.9">${esc(q.glueckwunsch)}</div>` : ""}
     <ul style="list-style:none;margin:0 0 10px;padding:0;text-align:left">${lohnListe(q).map((z) => `<li>• ${esc(zeile(z))}</li>`).join("")}</ul>
     <small class="hinweis" style="display:block;margin-bottom:8px;opacity:.8">${esc(q.belohnungText || "")}</small><button type="button" class="okay" style="padding:6px 22px;font:600 15px Georgia,serif">Okay</button>`;
   const knopf = el.querySelector(".okay") as HTMLButtonElement; knopf.onclick = () => { knopf.disabled = true; knopf.textContent = "…"; questAbholen(id); };

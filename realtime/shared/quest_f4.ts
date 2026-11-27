@@ -54,6 +54,7 @@ export const QUEST_F4: QuestDef = {
   },
   /* Das Rezept ist erst mit Nalia frei (danach für immer) */
   sperren: { herstellen: { glutwels_salzkruste: [{ wenn: NEU, text: "Wie man den Glutwels mit Salzkruste kocht, zeigt dir Nalia am Strom." }] } },
+  glueckwunsch: "Der Strom hat dich getragen. Und du hast ihn zum Kochen gebracht.",
   belohnungText: "Belohnung: Fischen 5.000, Kochen 5.000 XP, 300 Splitter · danach: das Rezept Glutwels mit Salzkruste",
   belohnung: { berufe: { fischen: 5000, kochen: 5000 }, splitter: 300 },
   punkte: 1,

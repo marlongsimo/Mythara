@@ -63,6 +63,7 @@ export const QUEST_S5: QuestDef = {
     },
   },
   schalter: { lehmfurt_trittsteine: FERTIG },
+  glueckwunsch: "Trocken. …Gut.",
   belohnungText: "Belohnung: Bergbau 500 XP, 3 Eisenbarren, 80 Splitter · danach: Abkürzung durch die Furt über den Kiel",
   belohnung: { berufe: { bergbau: 500 }, splitter: 80, gegenstaende: [{ g: "barren_eisen", n: 3 }] },
   punkte: 1,

@@ -138,6 +138,7 @@ export interface QuestDef {
   voraussetzungen?: Voraussetzung[];
   /** Questpunkte für den Abschluss */ punkte?: number;
   /** Text für das Questlog */ belohnungText: string;
+  /** ein Satz für das Abschlussfenster, in der Stimme des Abgebers (#95; höchstens etwa 140 Zeichen) */ glueckwunsch?: string;
   belohnung?: Belohnung;
   /** Stände aus der Zeit vor dem Baukasten übersetzen (null = unbekannt) */ alt?: (s: string) => string | null;
   /** Einführung: Marker und Pfeil auch ohne Verfolgen, solange die Quest nicht angenommen ist */ einfuehrung?: boolean;

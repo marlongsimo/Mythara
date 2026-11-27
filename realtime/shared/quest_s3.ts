@@ -73,6 +73,9 @@ export const QUEST_S3: QuestDef = {
   /* Der alte Hecht beißt nur, solange die Quest ihn sucht (shared/fischen.ts: 1 % je Mühlbarsch am Fanggrund schilfsee_steg) */
   beute: { s3_alter_hecht: { erledigt: ["koeder"], offen: ["hecht"] } },
   schalter: { s3_trophaee: FERTIG },
+  /* Der alte Hecht an der Wand der Reusenkate (6435 | 7184), sichtbar nach der Quest (#134, QuestDef.deko) */
+  deko: [{ id: "trophaee_hecht", glb: "img/objekte3d/sueden/trophaee_hecht.glb", x: 6435, y: 7184, h: 1.6, dreh: 90, sichtbar: FERTIG }],
+  glueckwunsch: "Da hängt er, der Alte. Anderthalb Ellen. Na gut, zwei.",
   belohnungText: "Belohnung: Fischen 600 XP, 20 Würmer, 80 Splitter · danach: der alte Hecht an der Wand der Reusenkate",
   belohnung: { berufe: { fischen: 600 }, splitter: 80, gegenstaende: [{ g: "wurm", n: 20 }] },
   punkte: 1,

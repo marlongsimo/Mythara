@@ -76,6 +76,7 @@ export const QUEST_S6: QuestDef = {
       ],
     },
   },
+  glueckwunsch: "Siebzehn. Jeden Morgen siebzehn. Danke.",
   belohnungText: "Belohnung: Geschick 300 XP, 2 Kuhfleisch, 50 Splitter",
   belohnung: { xp: { geschick: 300 }, splitter: 50, gegenstaende: [{ g: "kuhfleisch", n: 2 }] },
   punkte: 1,
