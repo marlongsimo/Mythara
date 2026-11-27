@@ -4,7 +4,7 @@
   "zeichenfolge": true,
   "stuecke_behalten": true,
   "luecken_schliessen": true,
-  "hinweis": "gegner.frostwitwe – Die Frostwitwe (Hüterin, Block H #159): Eismagierin aus npcfrau3d (Stab-Haltung wie die Priesterin), Eisstab, Eiskrone, langer Frostmantel mit Umhang; danach mit fabrik/geist.py eisblau wie aus Eis.",
+  "hinweis": "gegner.frostwitwe – Die Frostwitwe (Hüterin, Block H #159), Modell des Nutzers („Frostkönigin“, uebergabe/figuren/hueter): Eismagierin in Kapuzenrobe; ihr Eisstab ist aus dem Modell ausgeschnitten (quelle/teile/waffe.froststab.glb) und liegt in der rechten Hand. Stab-Haltung wie die Priesterin.",
   "haltung": "stab",
   "bewegungen": [
     "ruhe",
@@ -19,90 +19,12 @@
       "id": "waffe.eisstab",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffen/stab/waffe.eisstab/v001/quelle/eisstab.glb",
-      "griff": 0.55,
-      "griff2": 0.4,
+      "glb": "gegner.frostwitwe/v001/quelle/teile/waffe.froststab.glb",
+      "griff": 0.63,
+      "griff2": 0.75,
       "angriff": "zauber"
-    },
-    {
-      "id": "kleidung.kopf.eiskrone",
-      "platz": "kopf",
-      "art": "kopf",
-      "glb": "kleidung.kopf.eiskrone/v001/quelle/eiskrone.glb",
-      "sitz": 0.22
-    },
-    {
-      "id": "kleidung.umhang",
-      "platz": "umhang",
-      "art": "umhang",
-      "glb": "npc.agnes/v001/quelle/teile/kleidung.umhang.glb"
     }
   ],
-  "huelle": [
-    {
-      "id": "kleidung.frostmantel",
-      "platz": "kutte",
-      "farbe": "#8fb8d8",
-      "dicke": 0.035,
-      "unten": true,
-      "bereich": [
-        [
-          "brust",
-          0,
-          1
-        ],
-        [
-          "bauch",
-          0,
-          1
-        ],
-        [
-          "becken",
-          0,
-          1
-        ],
-        [
-          "oberarm.L",
-          0,
-          1
-        ],
-        [
-          "oberarm.R",
-          0,
-          1
-        ],
-        [
-          "unterarm.L",
-          0,
-          0.9
-        ],
-        [
-          "unterarm.R",
-          0,
-          0.9
-        ],
-        [
-          "oberschenkel.L",
-          0,
-          1
-        ],
-        [
-          "oberschenkel.R",
-          0,
-          1
-        ],
-        [
-          "unterschenkel.L",
-          0,
-          1
-        ],
-        [
-          "unterschenkel.R",
-          0,
-          1
-        ]
-      ]
-    }
-  ],
+  "huelle": [],
   "teilnetze": []
 }

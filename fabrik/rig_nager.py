@@ -7,6 +7,7 @@ Knochen: wurzel – becken – brust – kopf; brust – pfoten (mit der Nuss); 
 Gewichte nach Abstand zu den Knochen, je Körperbereich begrenzt (Schwanzknochen nur am Schwanz, Kopf nur oben), über das Netz geglättet.
 Bewegungen (24 Bilder/s im Spiel):
   ruhe   – nagt an der Nuss: Kopf nickt in kurzen Bissen zur Nuss, die Pfoten heben sie an, der Schwanz wiegt sich
+  gehen  – ruhiger Schritt hinter dem Spieler her: Hinterbeine abwechselnd, ohne Hüpfer, Schwanz pendelt
   laufen – tapselt hinterher: kleine Hüpfer, vorgebeugt, Hinterbeine stoßen ab, der Schwanz wedelt kräftig
 Ausgabe für das Spiel danach mit fabrik/export3d.py (der Körper heißt koerper, Ebene koerper).
 """
@@ -94,7 +95,14 @@ def laufen(t):                                                                  
     for i in range(4):
         q1 = Quaternion((0, 1, 0), math.radians(20 * math.sin(2 * math.pi * 2 * t - i * 0.8))); q2 = Quaternion((1, 0, 0), math.radians(-8))
         R = KN[f"schwanz.{i + 1}"].matrix_local.to_quaternion(); PB[f"schwanz.{i + 1}"].rotation_quaternion = R.inverted() @ (q1 @ q2) @ R
-BEWEGUNGEN = {"ruhe": (ruhe, 24), "laufen": (laufen, 12)}                                     # Bilder je Durchgang bei 24 Bildern/s: 1 s nagen, 0,5 s je Hüpfer
+def gehen(t):                                                                                   # ruhiger Schritt: Hinterbeine abwechselnd, kein Hüpfer, der Schwanz pendelt gemächlich
+    s = math.sin(2 * math.pi * t); hoch(0.015 * H * abs(math.sin(2 * math.pi * t)))
+    dreh("becken", (1, 0, 0), 8 + 2 * abs(s)); dreh("kopf", (1, 0, 0), -5 + 3 * math.sin(4 * math.pi * t)); dreh("pfoten", (1, 0, 0), 3 * s)
+    dreh("hinterbein.L", (1, 0, 0), 22 * s); dreh("hinterbein.R", (1, 0, 0), -22 * s); dreh("brust", (0, 0, 1), 4 * s)
+    for i in range(4):
+        q1 = Quaternion((0, 1, 0), math.radians(9 * math.sin(2 * math.pi * t - i * 0.7))); q2 = Quaternion((1, 0, 0), math.radians(-4))
+        R = KN[f"schwanz.{i + 1}"].matrix_local.to_quaternion(); PB[f"schwanz.{i + 1}"].rotation_quaternion = R.inverted() @ (q1 @ q2) @ R
+BEWEGUNGEN = {"ruhe": (ruhe, 24), "gehen": (gehen, 20), "laufen": (laufen, 12)}                 # gehen: 0,83 s je Doppelschritt                                     # Bilder je Durchgang bei 24 Bildern/s: 1 s nagen, 0,5 s je Hüpfer
 arm_ob.animation_data_create()
 for name, (fn, n) in BEWEGUNGEN.items():
     a = bpy.data.actions.new(name); a.use_fake_user = True; arm_ob.animation_data.action = a
