@@ -89,7 +89,7 @@ TESTS=(
   streifgebiete
   belohnung-wahl
   bergwerk-welt
-  # Durchspiel-Tests C–G (Quests bf7b907a). Noch rot und deshalb erst später aufnehmen: c3b-welt e4b-welt f3b-welt (#156), f-welt (#155)
+  # Durchspiel-Tests C–G (Quests bf7b907a, fe4714a0). Noch rot und deshalb erst später aufnehmen: f-welt (#155, Karawanenräuber am Kanal)
   c1-welt
   c2-welt
   c2b-welt
@@ -104,6 +104,9 @@ TESTS=(
   g3-welt
   g3b-welt
   g4-welt
+  c3b-welt
+  e4b-welt
+  f3b-welt
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

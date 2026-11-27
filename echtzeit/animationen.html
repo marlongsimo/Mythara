@@ -30,11 +30,11 @@
     <div class="feld"><h3>Waffen und Ausrüstung</h3><div id="teile"></div></div>
   </div>
 </main>
-<script src="figur3d.js?v=mwz3djgp"></script>
+<script src="figur3d.js?v=mwz41ita"></script>
 <script>
 (async () => {
   const E = window.MytharaEcht3D, M = "../img/figuren-echt3d/", $ = (s) => document.querySelector(s);
-  const L = await (await fetch("animationen-liste.json?v=mwz3djgp")).json(); const figuren = L.figuren;
+  const L = await (await fetch("animationen-liste.json?v=mwz41ita")).json(); const figuren = L.figuren;
   const PLATZNAME = { hand_r: "Rechte Hand", hand_l: "Linke Hand", arm_l: "Schild", haar: "Frisur", bart: "Bart", helm: "Kopf", brust: "Brust", beine: "Beine", schuerze: "Schürze" };
   const STUFE = { "": "Grundstufe", training: "Training", gewoehnlich: "Einfach", selten: "Selten", episch: "Episch", legendaer: "Legendär", mythisch: "Mythisch" };
   let d = null, fig = null, bew = "ruhe", tempo = 1, pause = false, gewaehlt = {}, stufe = {};
