@@ -122,6 +122,8 @@ export class Held3D {
   blick(wx: number, wz: number): void { if (Math.hypot(wx, wz) > 1e-3) this.blickW = Math.atan2(wz, wx); this.ersatz.blick(wx, wz); }
   get blickWinkel(): number { return this.blickW; }
   setze(z: "ruhe" | "laufen" | "rennen" | "block" | "schild_laufen"): void { this.ersatz.setze(z === "rennen" ? "laufen" : z); if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
+  /** eine einmalige Bewegung, wenn das Modell sie hat (Rotmantel: rundumschlag, ruf, trinken) */
+  bewegungEinmal(name: string): void { if (this.gestorben || !this.mixer || !this.clips.has(name)) return; this.einmal = true; this.spiele(name, true, true); }
   angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; const a = this.gegner ? null : angriffFuer(this.held!.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held!.waffe].waffen); /* Bewegung zur angelegten Waffe */
     const n = this.gegner ? this.gegner.angriff : a && this.clips.has(a) ? a : STARTWAFFEN[this.held!.waffe].angriff, c = this.clips.get(n);
     this.spiele(n, true, true, c ? (c.duration * 1000) / HIEB_MS : 1); /* jeder Angriff dauert 2 Ticks, egal wie lang der Clip ist */ }

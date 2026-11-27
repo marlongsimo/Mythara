@@ -183,9 +183,9 @@ export class WeltKampf {
     else if (ev.a === "stufe" && ev.id === this.ichId) zahl(this.ichId, `Stufe ${ev.s}!`, "#ffd75e");
     else if (ev.a === "text") zahl(ev.id, ev.t, "#ffd98a");
     else if (ev.a === "hieb" || ev.a === "anlegen") this.hieb(ev.id);
-    else if (ev.a === "ansage") { this.ansageZeigen(ev.felder, ev.t); zahl(ev.id, ev.name + "!", "#ff7a5a"); } /* Boss-Baukasten: die Felder leuchten, bevor es zuschlägt */
-    else if (ev.a === "bossphase" && ev.text) zahl(ev.id, ev.text, "#ffb27a");
-    else if (ev.a === "trinken") zahl(ev.id, ev.text || "heilt sich", "#7dff9a");
+    else if (ev.a === "ansage") { this.ansageZeigen(ev.felder, ev.t); zahl(ev.id, ev.name + "!", "#ff7a5a"); this.bewegung(ev.id, "rundumschlag"); } /* Boss-Baukasten: die Felder leuchten, bevor es zuschlägt */
+    else if (ev.a === "bossphase") { if (ev.text) zahl(ev.id, ev.text, "#ffb27a"); this.bewegung(ev.id, "ruf"); }
+    else if (ev.a === "trinken") { zahl(ev.id, ev.text || "heilt sich", "#7dff9a"); this.bewegung(ev.id, "trinken"); }
     else if (ev.a === "schweben") zahl(ev.id, "erhebt sich!", "#b9a7ff"); else if (ev.a === "landen") zahl(ev.id, ev.text || "landet", "#b9a7ff"); /* Schweben (#49): Flugbild macht die Oberfläche */
     else if (ev.a === "stil" && (ev.text || ev.name)) zahl(ev.id, ev.text || ev.name!, "#ffb27a");
     else if (ev.a === "flackern") zahl(ev.id, "flackert", "#c9b6ff"); else if (ev.a === "eingraben") zahl(ev.id, "gräbt sich ein!", "#e0c27a"); /* #102: Bild macht die Oberfläche */
@@ -209,6 +209,8 @@ export class WeltKampf {
     const o = s.add.text(p.x, p.y, t, { fontFamily: "Inter, sans-serif", fontSize: "17px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 4 }).setOrigin(0.5).setDepth(1e7 + 1);
     s.tweens.add({ targets: o, y: p.y - 34, alpha: 0, duration: 900, onComplete: () => o.destroy() }); }
   /** Hitsplat wie in OSRS: Schaden > 0 rot, 0 (verfehlt, geblockt) blau. Die 2D-Welt zeigt weiter Zahlen */
+  /** Eine besondere Bewegung des Modells (Boss: rundumschlag, ruf, trinken) – nur in 3D, wenn das Modell sie hat */
+  protected bewegung(_id: number, _name: string): void { /* 2D: nichts */ }
   protected splat(id: number, n: number): void { this.zahl(id, n > 0 ? String(n) : "0", n > 0 ? (id === this.ichId ? "#ff6a5a" : "#ffe08a") : "#9cc8ff"); }
   /** Der eigene Held schaut in die Richtung des Servers – beim Kämpfen zu seinem Gegner (nur 3D) */ protected eigenerBlick(_winkel: number): void { /* 2D: nichts */ }
   protected hieb(id: number) { const sp = id === this.ichId ? this.s.figur : this.figuren.get(id)?.sp; if (sp && "richte" in sp) sp.play("hieb-x"); }

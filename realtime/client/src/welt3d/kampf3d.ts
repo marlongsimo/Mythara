@@ -94,6 +94,7 @@ export class WeltKampf3D extends WeltKampf {
     if (id === this.ichId) return { x: this.w.ort.x, z: this.w.ort.y, h: HOEHE }; const f = this.figuren.get(id), b = f && this.bilder.get(f); return f && b ? { x: this.zone.x0 + f.x, z: this.zone.y0 + f.y, h: b.h } : null; }
   protected zahl(id: number, t: string, farbe: string) { { const f = id === this.ichId ? undefined : this.figuren.get(id); if (f) f.kampfBis = Math.max(f.kampfBis || 0, performance.now() + 3000); } /* getroffen = im Kampf */ const p = this.stelle(id); if (!p) return; const m = this.w.motor, el = document.createElement("div"); el.className = "ez-zahl3d"; el.textContent = t; el.style.color = farbe; document.body.appendChild(el);
     const y0 = m.hoehe(p.x, p.z) + p.h, t0 = performance.now(), lauf = () => { const a = (performance.now() - t0) / 900; if (a >= 1) { el.remove(); return; } el.style.opacity = String(1 - a * a); schildAn(el, m, p.x, y0 + a * 0.9, p.z); requestAnimationFrame(lauf); }; lauf(); }
+  protected bewegung(id: number, name: string) { const f = this.figuren.get(id), b = f && this.bilder.get(f); if (b && "bewegungEinmal" in b.fl) b.fl.bewegungEinmal(name); }
   protected hieb(id: number) { const bis = performance.now() + 3000; /* wer zuschlägt, kämpft: 3 s lang zum Gegner schauen */
     if (id === this.ichId) { this.ichKampfBis = bis; this.w.figur.angriff(); return; } const f = this.figuren.get(id), b = f && this.bilder.get(f); if (f) f.kampfBis = bis; if (b) b.fl.angriff(); }
   protected eigeneHaltung(schild: boolean, _laeuft: boolean) { this.w.schildHoch = schild; }

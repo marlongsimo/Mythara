@@ -30,6 +30,8 @@ BESONDERS = {
     # Phase 4 (#15): zweites Lager am Moorrand der Riedwiesen (Region Aschenwerth, Nordrand): Späher mit Schläger und Armbrustschütze
     "aschenwerth": {"aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": [[6200, 6600, 6224, 6620]],
                     "lager": [("bandit_spaeher", 6206, 6608), ("bandit_spaeher", 6218, 6608), ("bandit_schlaeger", 6212, 6609), ("bandit_armbrust", 6210, 6614), ("bandit_spaeher", 6216, 6614)]},
+    # Phase 4 (#16): Hauptmann Rotmantel als öffentlicher Mini-Boss (3 min Wiederkehr, config.ts) – wer B4 noch hat, ist in seiner eigenen Kopie der Kammer (shared/bosse.ts)
+    "rotmantel_kammer": {"aggro": 3, "leine": 8, "wandern": 0, "mehrkampf": [[10432, 9600, 10463, 9631]], "lager": [("rotmantel", 10448, 9614)]},
     # Die Banditen-Lichtung im Kreuzwald: vier Dolch-Banditen, Einzelkampf (seit 22.11.2026, vorher Mehrkampf). Karte/Stufe wie bisher (Buchungen laufen als „kreuzwald“).
     "waldweg": {"karte": "kreuzwald", "stufe": 3, "aggro": 4,
                 "lager": [("bandit_dolch", 6544, 6578), ("bandit_dolch", 6556, 6575), ("bandit_dolch", 6548, 6589), ("bandit_dolch", 6561, 6586)]},
