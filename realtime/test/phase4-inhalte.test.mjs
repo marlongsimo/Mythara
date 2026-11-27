@@ -6,7 +6,7 @@ import { build } from "esbuild";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 const datei = join(tmpdir(), `riftmere-phase4-inhalte-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export { MONSTER } from "./shared/config"; export { GEGENSTAENDE } from "./shared/gegenstaende"; export { QUESTS } from "./shared/quests"; export { WELTKAMPF } from "./shared/weltzonen"; export { BOSSE, INSTANZEN, TUEREN, SPRUENGE } from "./shared/bosse"; export { LAEDEN, LADEN_ZEICHEN, grundwert, ankaufPreis } from "./shared/laeden"; export { WERKSTAETTEN } from "./shared/handwerk";',
+await build({ stdin: { contents: 'export { MONSTER } from "./shared/config"; export { GEGENSTAENDE } from "./shared/gegenstaende"; export { QUESTS } from "./shared/quests"; export { WELTKAMPF } from "./shared/weltzonen"; export { BOSSE, INSTANZEN, TUEREN, SPRUENGE } from "./shared/bosse"; export { LAEDEN, LADEN_ZEICHEN, grundwert, ankaufPreis } from "./shared/laeden"; export { WERKSTAETTEN } from "./shared/handwerk"; export { LICHTER, SEELENLICHTER } from "./shared/splitterbinden";',
   resolveDir: process.cwd(), loader: "ts" }, bundle: true, format: "esm", platform: "node", outfile: datei, logLevel: "error" });
 const M = await import(datei);
 let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) fehler++; };
@@ -55,6 +55,10 @@ console.log("Phase 5: Bindestein am Obelisk (#80)");
 { const W = M.WERKSTAETTEN.find((w) => w.id === "bindestein_obelisk"), A2 = quest("waldmark_das_wappen_mit_dem_turm") || M.QUESTS.find((q) => q.titel === "Das Wappen mit dem Turm"), B1 = M.QUESTS.find((q) => (q.figuren || []).some((f) => f.id === "agnes"));
   check(W && W.station === "bindestein" && A2 && A2.schalter && A2.schalter[W.schalter], "Bindestein am Obelisk (Nordwald), nutzbar nach A2");
   check(B1 && B1.dialoge.agnes.reden.some((r) => r.wenn && r.wenn.skill && r.wenn.skill.k === "splitterbinden" && r.wenn.skill.min === 20), "Agnes erzählt ab Splitterbinden 20 vom Laden einer Waffe"); }
+
+{ const arten = ["irrlicht", "grablicht", "nebellicht", "splitterlicht"];
+  check(arten.every((a, i) => M.LICHTER[a] && M.LICHTER[a].level === [20, 35, 45, 65][i]) && [28, 45, 70].every((x, i) => M.LICHTER[arten[i]].xp === x), "Seelenlichter 20/35/45/65 mit 28/45/70 XP laut Konzept");
+  check(arten.every((a) => M.SEELENLICHTER.some((l) => l.art === a)) && M.SEELENLICHTER.every((l) => M.LICHTER[l.art]), `Standorte der Welt übernommen, jedes Licht hat eine Art (${M.SEELENLICHTER.length} Lichter)`); }
 
 console.log("Trödler (#88)");
 { const T = Object.values(M.LAEDEN).filter((l) => l.troedler);

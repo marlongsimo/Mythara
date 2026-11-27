@@ -485,7 +485,11 @@ export class Spielwelt3D implements WeltKern {
       if (d <= rest + 1e-9) { o.x = z.x; o.y = z.y; rest -= d; this.schrittZiel = null; if (!this.pfad.length && !richtung) this.marke.visible = false; }
       else { o.x += (z.x - o.x) / d * rest; o.y += (z.y - o.y) / d * rest; rest = 0; } }
     return bewegt; }
-  private bild(dt: number) { this.simZeit += dt; if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.kraeuter) this.kraeuter.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
+  /** Geladene Waffe „(s)“ (#47): alle 0,5 s nachsehen, ob die angelegte Waffe Ladungen hat – dann leuchtet sie (unter 2 Ladungen flackert es) */
+  private ladungT = 0;
+  private ladungPruefen(dt: number): void { this.ladungT -= dt; if (this.ladungT > 0) return; this.ladungT = 0.5; const f = this.figur as { aufladen?: (an: boolean, rest?: number) => void };
+    if (!f || !f.aufladen) return; const d = inventar().angelegtD, n = (d && d.waffe && d.waffe.ladungen) || 0; f.aufladen(n > 0, Math.min(1, n / 10)); }
+  private bild(dt: number) { this.simZeit += dt; this.ladungPruefen(dt); if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.kraeuter) this.kraeuter.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
     const o = this.ort; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry); const direkt = Math.hypot(rx, ry) > 0.05, richtung: [number, number] | null = direkt ? [rx, ry] : null;
     if (direkt) { this.folgenEnde("selbst"); this.handelZiel = null; } else { this.folgenSchritt(dt); this.handelSchritt(); } /* selbst steuern: Folgen endet; sonst das nächste Laufziel hinter dem anderen */
     if (direkt) { this.pfad = []; this.marke.visible = false; }
