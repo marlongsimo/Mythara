@@ -15,14 +15,17 @@ const ZONEN_DATEI = join(tmpdir(), `riftmere-questwelt-${process.pid}.mjs`);
 await build({ stdin: { contents: 'export { WELTKAMPF } from "./shared/weltzonen"; export { INSTANZEN } from "./shared/bosse";', resolveDir: new URL("..", import.meta.url).pathname, loader: "ts" },
   bundle: true, platform: "node", format: "esm", outfile: ZONEN_DATEI, logLevel: "error" });
 const { WELTKAMPF, INSTANZEN } = await import(pathToFileURL(ZONEN_DATEI).href);
+/** Der Stand einer Quest nach Annehmen und diesen Ereignissen (Meldungen wie im Motor) – für Tests, die mitten in einer Quest beginnen */
+export function standNach(q, meldungen, antworten = []) { let st = QB.nachFolge(q, "", { start: true, zeilen: [] }); for (const m of meldungen) st = QB.ereignis(q, st, m);
+  for (const id of antworten) st = QB.nachFolge(q, st, { erledige: [id], zeilen: [] }); return st; }
 export const gebietBei = (x, y) => WELTKAMPF.find((z) => x >= z.x0 && x < z.x0 + z.b && y >= z.y0 && y < z.y0 + z.h) || null;
 export { QB, QUESTS, xpFuer, INSTANZEN };
 
 export const STARK = 11079266; /* Level 99 */
 export const roh = () => ({ geschlecht: "mann", frisur: "kurz", bart: "ohne", haarfarbe: "braun", hautfarbe: "hell", waffe: "schwert", skill_lp: 0, lp_stand: null, quests: { die_gesperrte_strasse: { s: "fertig" } } });
-/** Ein starker Held (alle Kampfskills 99, Ritterschwert) mit diesen Berufen (Level) und Quests (fertig) */
-export function starkerHeld({ berufe = {}, fertig = [], rucksack = [] } = {}) {
-  const B = Object.fromEntries(Object.entries(berufe).map(([k, l]) => [k, xpFuer(l)])), Q = { die_gesperrte_strasse: { s: "fertig" } }; for (const id of fertig) Q[id] = { s: "fertig" };
+/** Ein starker Held (alle Kampfskills 99, Ritterschwert) mit diesen Berufen (Level), Quests (fertig) und laufenden Quests (staende: id → Stand, z. B. aus standNach) */
+export function starkerHeld({ berufe = {}, fertig = [], rucksack = [], staende = {} } = {}) {
+  const B = Object.fromEntries(Object.entries(berufe).map(([k, l]) => [k, xpFuer(l)])), Q = { die_gesperrte_strasse: { s: "fertig" } }; for (const id of fertig) Q[id] = { s: "fertig" }; for (const [id, st] of Object.entries(staende)) Q[id] = { s: st }; /* laufende Quest mitten im Stand (QB.stand) */
   return { ...roh(), quests: Q, skill_geschick: STARK, skill_staerke: STARK, skill_lp: STARK, skill_defense: STARK, skill_fernkampf: STARK, skill_magie: STARK,
     inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: [{ g: "splitter", n: 5000 }, ...rucksack], v: 2, berufe: B } }; }
 
@@ -81,11 +84,12 @@ export async function starte({ sb: SB, srv: SRV, helden, env = {} }) {
     ws.on("message", (r) => { const m = JSON.parse(String(r)); if (m.t === "z") { Z.w = m.z.w; Z.ich = m.z.ich; for (const e of m.z.ev) Z.ev.push(e); } });
     ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN[name], geraet: geraet(TOKEN[name]) })); setTimeout(() => ok(Z), 1500); }); });
   /** alle lebenden Gegner dieser Arten bekämpfen, bis bis() stimmt (Siege zählen); w: [id, ich?, art, …, x, y, …, tot] */
-  async function kaempfen(z, arten, bis, ms = 180000, nur = () => true) { let siege = 0; const t0 = Date.now();
-    while (!bis(siege) && Date.now() - t0 < ms) { const ich = z.w.find((w) => w[1] === 1), lebt = z.w.filter((w) => arten.includes(w[2]) && !w[10] && nur(w));
+  async function kaempfen(z, arten, bis, ms = 180000, nur = () => true) { let siege = 0; const t0 = Date.now(), aus = new Map(); /* Ziele, die nicht fallen (unerreichbar, fliehen), eine Weile auslassen */
+    while (!bis(siege) && Date.now() - t0 < ms) { const ich = z.w.find((w) => w[1] === 1), jetzt = Date.now(), lebt = z.w.filter((w) => arten.includes(w[2]) && !w[10] && nur(w) && !((aus.get(w[0]) || 0) > jetzt));
       if (!ich || !lebt.length) { await schlaf(300); continue; } const ziel = lebt.sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
-      const ab = z.ev.length; z.ws.send(JSON.stringify({ t: "ziel", id: ziel[0] }));
-      for (let i = 0; i < 400; i++) { await schlaf(100); if (z.ev.slice(ab).some((e) => e.a === "tot" && e.id === ziel[0])) { siege++; break; } if (bis(siege)) break; } }
+      const ab = z.ev.length; z.ws.send(JSON.stringify({ t: "ziel", id: ziel[0] })); let fiel = false;
+      for (let i = 0; i < 250; i++) { await schlaf(100); if (z.ev.slice(ab).some((e) => e.a === "tot" && e.id === ziel[0])) { siege++; fiel = true; break; } if (bis(siege)) break; }
+      if (!fiel) aus.set(ziel[0], Date.now() + 20000); }
     return siege; }
   /** Gegner an dieser Stelle bekämpfen, bis die Bedingung stimmt; schließt die Verbindung danach */
   async function kampfBis(s, wx, wy, arten, bis, ms = 240000) { await stelle(s, wx, wy); const z = await kampf(s.name, wx, wy); if (!z) return { z: null, siege: 0 };
