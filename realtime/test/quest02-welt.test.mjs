@@ -112,7 +112,8 @@ try {
   const bodenTxt = d && (d.zeilen || []).map((z) => z.text).join(" ");
   check(d && d.splitter === 20 && cora.q2 === "fertig" && ABSCHLUSS.filter((a) => a.p_user === C).length === 1 && /am Boden/.test(bodenTxt), "Voller Rucksack: Abschluss gebucht, Hinweis „liegt neben dir am Boden“");
   await new Promise((r) => setTimeout(r, 1500)); const amBoden = cora.boden.filter((x) => x.g === "splitter").reduce((n, x) => n + x.n, 0);
-  check(amBoden === 20 && Math.hypot(cora.boden[0].x - (NPC2.odo[0] + 0), cora.boden[0].y - NPC2.odo[1]) < 3, `20 Splitter liegen bei ihr am Boden (${amBoden})`);
+  { const sp = cora.boden.find((x) => x.g === "splitter") || cora.boden[0]; /* seit #81 kann auch Mooshocker-Beute in der Liste stehen */
+  check(amBoden === 20 && Math.hypot(sp.x - (NPC2.odo[0] + 0), sp.y - NPC2.odo[1]) < 3, `20 Splitter liegen bei ihr am Boden (${amBoden})`); }
   await new Promise((r) => setTimeout(r, 300)); check(!(anna2.boden || []).some((x) => x.g === "splitter"), "Anna sieht Coras Splitter nicht");
 } catch (e) { console.error(e); f++; }
 srv.kill(); sb.close(); if (f) console.log("404:", [...new Set(FEHLT)].join(" ")); if (f) console.log(log.split("\n").slice(-30).join("\n"));

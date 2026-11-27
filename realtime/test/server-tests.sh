@@ -39,6 +39,7 @@ TESTS=(
   phase4
   phase4-inhalte
   b3-welt
+  b4-welt
   phase5
   phase8-10
   abholen
