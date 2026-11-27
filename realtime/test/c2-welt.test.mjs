@@ -24,7 +24,7 @@ try {
     check(await sprich(ute, C2, "hedda", "annehmen") && stand(ute, C2).phase === "laeuft" && anzahl(ute, "moorwachs") === 1, "Ute nimmt C2 bei Hedda an und bekommt Moorglöckchen-Wachs"); z && z.ws.close(); await schlaf(2500); }
   await objekt(ute, C2, "c2_kreis_moor"); await objekt(ute, C2, "c2_kreis_insel");
   check(erl(ute, C2, "lauschen_moor") && erl(ute, C2, "lauschen_insel"), "An beiden Steinkreisen gelauscht");
-  { const t0 = Date.now(); await stelle(ute, 6243, 6733); const z = await kampf("ute", 6243, 6733); const AK = ["rabenpriester_akoluth", "rabenpriester_akoluth_speer"];
+  { const t0 = Date.now(); await stelle(ute, 6213, 6716); const z = await kampf("ute", 6213, 6716); const AK = ["rabenpriester_akoluth", "rabenpriester_akoluth_speer"];
     while (!(erl(ute, C2, "siegel") && anzahl(ute, "federsiegel") >= 3) && Date.now() - t0 < 200000) { await kaempfen(z, AK, (n) => n >= 1, 60000); await schlaf(800);
       for (const b of ute.boden.filter((x) => x.g === "federsiegel")) { await stelle(ute, b.x, b.y); sende(ute, { t: "aufheben", id: b.i }); await schlaf(500); } }
     z && z.ws.close(); await schlaf(2500);
