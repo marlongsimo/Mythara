@@ -264,7 +264,7 @@ const ADERN = [], ARENA = [], ZIEGENWEGE = [], BWQUEST = [];
   const H3IA = [iaU("eingestuerzter_stollen", 80.5, 25.4, "Hier ist der Stollen eingestürzt. Dahinter, gedämpft, ein Klopfen – und ein schwarzer Schimmer im Gestein.", { questobjekt: "eingestuerzter_stollen" }),
     iaU("morsches_grubenholz", 31.5, 37, "Das Grubenholz hier ist morsch und knackt. Es muss ersetzt werden, bevor noch mehr einstürzt.", { questobjekt: "morsches_grubenholz" }),
     ...[[74, 32], [68, 37], [61, 41]].map(([x, y], i) => iaU("verletzter_bergmann_" + (i + 1), x, y, "Ein verletzter Bergmann lehnt am Fels. „Wasser … und etwas für die Wunde.“", { questobjekt: "verletzter_bergmann_" + (i + 1) })),
-    iaU("trollhalle_eingang", HALLE.x + 6, HALLE.y + HALLE.r - 1.2, "Der Eingang zur Trollhalle. Knochen, abgenagte Grubenhölzer – und tiefe Kratzspuren im Fels.", { questobjekt: "trollhalle" })];
+    iaU("trollhalle_eingang", HALLE.x - 3, HALLE.y + HALLE.r - 3, "Der Eingang zur Trollhalle. Knochen, abgenagte Grubenhölzer – und tiefe Kratzspuren im Fels.", { questobjekt: "trollhalle" })];
   BWQUEST.push({ sperre: { ...sperreH3, x0: BW_U[0] * 32 + 77, y0: BW_U[1] * 32 + 20, x1: BW_U[0] * 32 + 87, y1: BW_U[1] * 32 + 23 }, schalter: "bergwerk_stollen_frei", verletzte: [[74, 32], [68, 37], [61, 41]].map(([x, y]) => [BW_U[0] * 32 + x, BW_U[1] * 32 + y]) });
   npc.push(...[[74, 32], [68, 37], [61, 41]].map(([x, y], i) => ({ id: "verletzter_bergmann_" + (i + 1), rolle: "Verletzter Bergmann (H3)", x: BW_U[0] * 32 + x - 1.2, y: BW_U[1] * 32 + y })));
   const dir = join(WELT, "regionen", "hochlande_bergwerk"); mkdirSync(dir, { recursive: true });
@@ -274,7 +274,7 @@ const ADERN = [], ARENA = [], ZIEGENWEGE = [], BWQUEST = [];
   writeFileSync(join(dir, "spiel.json"), JSON.stringify({ start: [[48, 57]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [sperreH3], freigeben: [] },
     interaktionen: [iaU("bergwerk_hinaus", 48, 61.2, "Hinaus ans Tageslicht.", { tat: "bergwerk_hinaus", knopf: "Hinaus", ziel: [BX, BY + 2.4] }),
       iaU("bergwerk_vorraum", 48, 54.6, "Der Füllort: Loren, Kisten, eine Tafel mit den Schichten. Die letzte Zeile ist durchgestrichen."),
-      iaU("bergwerk_trollhalle", HALLE.x + 4, HALLE.y + HALLE.r - 1.5, "Eine Halle, aus dem Fels geschlagen – zu groß für Menschenhände. Am Boden Knochen und abgenagte Grubenhölzer."),
+      iaU("bergwerk_trollhalle", HALLE.x + 2, HALLE.y + HALLE.r - 3.5, "Eine Halle, aus dem Fels geschlagen – zu groß für Menschenhände. Am Boden Knochen und abgenagte Grubenhölzer."),
       iaU("bergwerk_urkammer", KAMMER.x - 3, KAMMER.y + KAMMER.r - 1.5, "Die Urkammer. Das Gestein glänzt schwarz und schwer – Ureisen."), ...H3IA] }, null, 1) + "\n");
   console.log(`hochlande_bergwerk: 96 × 64 Felder, ${dinge.length} Dinge, ${ADERN.length} Adern`); }
 
