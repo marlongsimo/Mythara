@@ -569,6 +569,48 @@
    "region": "fl_186_169"
   },
   {
+   "id": "dornhag_nebelkraut_1",
+   "art": "nebelkraut",
+   "x": 7298.5,
+   "y": 7380.5,
+   "region": "fl_216_225"
+  },
+  {
+   "id": "dornhag_eisenhut_1",
+   "art": "eisenhut",
+   "x": 7286.5,
+   "y": 7382.5,
+   "region": "fl_216_225"
+  },
+  {
+   "id": "tafelrast_eisenhut_1",
+   "art": "eisenhut",
+   "x": 7502.5,
+   "y": 7512.5,
+   "region": "fl_231_225"
+  },
+  {
+   "id": "ockerlande_nebelkraut_1",
+   "art": "nebelkraut",
+   "x": 7079.5,
+   "y": 7178.5,
+   "region": "fl_216_211"
+  },
+  {
+   "id": "ockerlande_nebelkraut_3",
+   "art": "nebelkraut",
+   "x": 7239.5,
+   "y": 7558.5,
+   "region": "fl_216_225"
+  },
+  {
+   "id": "ockerlande_nebelkraut_4",
+   "art": "nebelkraut",
+   "x": 7569.5,
+   "y": 7318.5,
+   "region": "fl_231_225"
+  },
+  {
    "id": "kraeuterhof_ringelblume_1",
    "art": "ringelblume",
    "x": 6411.5,

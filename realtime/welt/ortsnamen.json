@@ -580,6 +580,18 @@
    "art": "Ort",
    "x": 7070,
    "y": 7180
+  },
+  {
+   "name": "Dornhag",
+   "art": "Dorf",
+   "x": 7290,
+   "y": 7404
+  },
+  {
+   "name": "Tafelrast",
+   "art": "Dorf",
+   "x": 7490,
+   "y": 7520
   }
  ]
 }

@@ -31,7 +31,7 @@ for (const n of readdirSync(join(WELT, "regionen"))) { const rp = join(WELT, "re
   for (const f of sp.figuren || []) figuren.push([f.x + x0, f.y + y0, 5]); }
 const regionAn = (x, y) => REG.find((g) => x >= g.x0 && x < g.x1 && y >= g.y0 && y < g.y1);
 const zeichen = (x, y) => { const g = regionAn(x, y); return g ? g.z[Math.floor(y) - g.y0][Math.floor(x) - g.x0] : "?"; };
-const GEHBAR = new Set(".,afjvtsuygTmhd"), WEG = new Set(["e", "k", "p"]);
+const GEHBAR = new Set(".,afjvtsuygTmhdlL"), WEG = new Set(["e", "k", "p"]);
 for (const g of [...(lies("gegnerplaetze.json").plaetze || []).filter((p) => !p.id.startsWith("gp_")), ...(lies("sueden_orte.json").gegner || [])]) hinder.push([g.x, g.y, 10 + (g.r || 0)]);
 for (const [k, [x, y]] of Object.entries(lies("glutsande_orte.json").orte || {})) if (k.startsWith("lager")) hinder.push([x, y, 16]);
 for (const s of [...(lies("troedler_standorte.json").standorte || []), ...(lies("bedienstellen.json").stationen || [])]) figuren.push([s.x, s.y, 5]);
@@ -40,7 +40,7 @@ const ORTE = { ...Object.fromEntries(Object.entries(OKO.orte || {}).filter(([, v
 const HL = lies("hochlande_orte.json");
 for (const r of HL.reisende || []) for (let i = 1; i < r.punkte.length; i++) { const [ax, ay] = r.punkte[i - 1], [bx, by] = r.punkte[i], L = Math.hypot(bx - ax, by - ay); for (let t = 0; t <= L; t += 2) hinder.push([ax + (bx - ax) * t / L, ay + (by - ay) * t / L, 3]); }   /* Wege der Reisenden (Bergleute Steinhag → Erzberg) frei halten */
 const KMO = lies("kielmund_orte.json"), STAEDTE = [HL.hauptstadt?.mauer, KMO.mauer && [6370, ...KMO.mauer.slice(1)]].filter(Boolean), STADT = STAEDTE[0], inStadt = (x, y, r = 0) => STAEDTE.some((S) => x > S[0] - r && x < S[2] + r && y > S[1] - r && y < S[3] + r);   /* Steinhag (#167), Kielmund (#174) */   /* Hauptstadt Steinhag (#167): in den Mauern keine Sammelstellen */
-const ORTSRADIUS = { rotlehm: 80, brunnenkreis: 22, grauwacht: 70, huegelgrund: 30, kohlstatt: 22, brechstein: 20, wollhag: 22, weiherhof: 26, haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 80, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
+const ORTSRADIUS = { rotlehm: 80, brunnenkreis: 22, dornhag: 26, tafelrast: 20, grauwacht: 70, huegelgrund: 30, kohlstatt: 22, brechstein: 20, wollhag: 22, weiherhof: 26, haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 80, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
 
 /* ───── Gruppen: Ort, Art (holz/erz), Arten der Bäume bzw. Adern, Name ───── */
 const fest = (liste) => liste.filter((p) => p.x !== undefined).map((p) => ({ id: p.id, art: p.art, x: p.x, y: p.y }));
@@ -123,8 +123,11 @@ const PLAN = [
   ["wollhag", "holz", ["tanne", "tanne", "eiche"], "Windbäume bei Wollhag"], ["wollhag", "erz", ["kupfer", "eisen", "eisen"], "Steine auf der Schafheide"],
   ["weiherhof", "holz", ["moorweide", "moorweide", "eibe"], "Weiden am Weiher"], ["weiherhof", "erz", ["kupfer", "eisen", "eisen"], "Senke am Weiherhof"],
   /* Ockerlande (#172, Gefahr 45–65): Holz am Strom und in den Hainen, Erz an den Tafelbergen – Stufen wie in den Glutsanden (ab 35) */
-  ["rotlehm", "holz", ["moorweide", "moorweide", "kernbaum"], "Weiden am Ockerstrom"], ["rotlehm", "erz", ["schwarzeisen", "sterneisen", "sterneisen"], "Ockerbruch bei Rotlehm"],
+  ["rotlehm", "holz", ["moorweide", "moorweide", "kernbaum"], "Weiden am Ockerstrom"], ["rotlehm", "erz", ["sterneisen", "sterneisen", "splittereisen"], "Ockerbruch bei Rotlehm"],
   ["brunnenkreis", "holz", ["kernbaum", "kernbaum", "moorweide"], "Akazien am Brunnenkreis"], ["brunnenkreis", "erz", ["sterneisen", "splittereisen", "splittereisen"], "Adern am Kleinen Tisch"],
+  ["dornhag", "holz", ["kernbaum", "moorweide", "moorweide"], "Akazienhain bei Dornhag"], ["dornhag", "erz", ["sterneisen", "sterneisen", "splittereisen"], "Adern an der Ockerkanzel"],
+  ["tafelrast", "erz", ["sterneisen", "splittereisen", "splittereisen", "splittereisen"], "Steinbruch am Roten Tisch"], ["tafelrast", "holz", ["kernbaum", "kernbaum", "weltenbaum"], "Akazien unter dem Roten Tisch"],
+  ["tafelrast", "festerz", (OKO.adern || []).map((p) => ({ ...p })), "Adern in der Höhle im Roten Tisch"],
   /* Nachtrag des Nutzers (#142): einzelne Stellen deutlich über der Gegend, sparsam, versteckt abseits der Wege (ohne Feldweg) – zum Entdecken */
   ["heckenhof", "einzeln", ["eibe"], "Einsame Eibe hinter dem Heckenhof"],
   ["summweide", "einzeln", ["moorweide"], "Alte Moorweide im Wiesengrund"],
@@ -158,6 +161,17 @@ const RE_FW = /^(Bäume|Adern) am Weg \(Fahle Weiten (\d+)\)$/, GWM = FWO.grauwa
   for (const w of (FWO.wege || [])) for (let j = 1; j < w.punkte.length; j++) { const [x0, y0] = w.punkte[j - 1], [x1, y1] = w.punkte[j], L = Math.hypot(x1 - x0, y1 - y0);
     for (let t = 0; t <= L; t += 30) { const x = x0 + (x1 - x0) * t / L, y = y0 + (y1 - y0) * t / L; if (nah(x, y) || inGrauwacht(x, y, 8)) continue; const id = "fwweg_" + ++i; ORTE[id] = [Math.round(x), Math.round(y)];
       PLAN.push(i % 2 ? [id, "holz", i % 4 === 1 ? ["eiche", "eiche", "tanne"] : ["tanne", "eibe", "eibe"], `Bäume am Weg (Fahle Weiten ${i})`] : [id, "erz", i % 4 === 2 ? ["kupfer", "kupfer", "eisen"] : ["eisen", "eisen", "schwarzeisen"], `Adern am Weg (Fahle Weiten ${i})`]); } } }
+
+/* Ockerlande (#172): an jedem Weg alle ~30 Felder eine Gruppe in Reichweite (Stufen wie Glutsande), Namen stabil, nicht in Rotlehm */
+const RE_OK = /^(Bäume|Adern) am Weg \(Ockerlande (\d+)\)$/, RL = OKO.orte?.rotlehm, inRotlehm = (x, y, r = 0) => RL && x > RL[0] - 66 - r && x < RL[0] + 74 + r && y > RL[1] - 50 - r && y < RL[1] + 54 + r;
+{ const altG = !process.argv.includes("--neu") && existsSync(DATEI) ? JSON.parse(readFileSync(DATEI, "utf8")) : { lichtungen: [], senken: [] };
+  const mitte = (g) => { const pts = g.baeume || g.adern; return [g.x ?? pts.reduce((s, p) => s + p.x, 0) / pts.length, g.y ?? pts.reduce((s, p) => s + p.y, 0) / pts.length]; };
+  let i = Math.max(0, ...[...altG.lichtungen, ...altG.senken].map((g) => +(RE_OK.exec(g.name)?.[2] || 0)));
+  for (const g of [...altG.lichtungen, ...altG.senken].filter((g) => RE_OK.test(g.name))) { const id = "okweg_alt_" + RE_OK.exec(g.name)[2]; ORTE[id] = mitte(g).map(Math.round); PLAN.push([id, g.baeume ? "holz" : "erz", (g.baeume || g.adern).map((p) => p.art), g.name]); }
+  const nah = (x, y) => PLAN.some(([o]) => ORTE[o] && Math.hypot(ORTE[o][0] - x, ORTE[o][1] - y) < 35);
+  for (const w of (OKO.wege || [])) for (let j = 1; j < w.punkte.length; j++) { const [x0, y0] = w.punkte[j - 1], [x1, y1] = w.punkte[j], L = Math.hypot(x1 - x0, y1 - y0);
+    for (let t = 0; t <= L; t += 30) { const x = x0 + (x1 - x0) * t / L, y = y0 + (y1 - y0) * t / L; if (nah(x, y) || inRotlehm(x, y, 6)) continue; const id = "okweg_" + ++i; ORTE[id] = [Math.round(x), Math.round(y)];
+      PLAN.push(i % 2 ? [id, "holz", i % 4 === 1 ? ["moorweide", "moorweide", "kernbaum"] : ["kernbaum", "kernbaum", "moorweide"], `Bäume am Weg (Ockerlande ${i})`] : [id, "erz", i % 4 === 2 ? ["sterneisen", "sterneisen", "splittereisen"] : ["splittereisen", "splittereisen", "sterneisen"], `Adern am Weg (Ockerlande ${i})`]); } } }
 
 /* vor den Toren der Hauptstadt (#167): je eine Gruppe, damit die Wege dort nicht leer sind */
 if (HL.hauptstadt) { const [wx, wy] = HL.hauptstadt.tore.west, [ox, oy] = HL.hauptstadt.tore.ost; ORTE.steinhag_westtor = [wx - 14, wy]; ORTE.steinhag_osttor = [ox + 16, oy - 6];

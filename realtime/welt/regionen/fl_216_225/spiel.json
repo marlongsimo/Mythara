@@ -1,15 +1,352 @@
 {
  "start": [
   [
-   240.0,
-   224.0
+   240,
+   224
   ]
  ],
  "figuren": [],
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 418,
+    "y0": 249,
+    "x1": 419,
+    "y1": 250
+   },
+   {
+    "art": "rechteck",
+    "x0": 413,
+    "y0": 247,
+    "x1": 414,
+    "y1": 248
+   },
+   {
+    "art": "rechteck",
+    "x0": 417,
+    "y0": 244,
+    "x1": 418,
+    "y1": 245
+   },
+   {
+    "art": "rechteck",
+    "x0": 98,
+    "y0": 393,
+    "x1": 99,
+    "y1": 394
+   },
+   {
+    "art": "rechteck",
+    "x0": 93,
+    "y0": 390,
+    "x1": 94,
+    "y1": 391
+   },
+   {
+    "art": "rechteck",
+    "x0": 97,
+    "y0": 387,
+    "x1": 98,
+    "y1": 388
+   },
+   {
+    "art": "rechteck",
+    "x0": 39,
+    "y0": 75,
+    "x1": 40,
+    "y1": 76
+   },
+   {
+    "art": "rechteck",
+    "x0": 34,
+    "y0": 73,
+    "x1": 35,
+    "y1": 74
+   },
+   {
+    "art": "rechteck",
+    "x0": 38,
+    "y0": 69,
+    "x1": 39,
+    "y1": 70
+   },
+   {
+    "art": "rechteck",
+    "x0": 262,
+    "y0": 54,
+    "x1": 263,
+    "y1": 55
+   },
+   {
+    "art": "rechteck",
+    "x0": 257,
+    "y0": 52,
+    "x1": 258,
+    "y1": 53
+   },
+   {
+    "art": "rechteck",
+    "x0": 261,
+    "y0": 48,
+    "x1": 262,
+    "y1": 49
+   },
+   {
+    "art": "rechteck",
+    "x0": 338,
+    "y0": 135,
+    "x1": 339,
+    "y1": 136
+   },
+   {
+    "art": "rechteck",
+    "x0": 333,
+    "y0": 133,
+    "x1": 334,
+    "y1": 134
+   },
+   {
+    "art": "rechteck",
+    "x0": 337,
+    "y0": 129,
+    "x1": 338,
+    "y1": 130
+   },
+   {
+    "art": "rechteck",
+    "x0": 472,
+    "y0": 250,
+    "x1": 473,
+    "y1": 251
+   },
+   {
+    "art": "rechteck",
+    "x0": 466,
+    "y0": 248,
+    "x1": 467,
+    "y1": 249
+   },
+   {
+    "art": "rechteck",
+    "x0": 471,
+    "y0": 245,
+    "x1": 472,
+    "y1": 246
+   },
+   {
+    "art": "rechteck",
+    "x0": 24,
+    "y0": 306,
+    "x1": 25,
+    "y1": 307
+   },
+   {
+    "art": "rechteck",
+    "x0": 19,
+    "y0": 304,
+    "x1": 20,
+    "y1": 305
+   },
+   {
+    "art": "rechteck",
+    "x0": 23,
+    "y0": 300,
+    "x1": 24,
+    "y1": 301
+   },
+   {
+    "art": "rechteck",
+    "x0": 161,
+    "y0": 434,
+    "x1": 162,
+    "y1": 435
+   },
+   {
+    "art": "rechteck",
+    "x0": 156,
+    "y0": 432,
+    "x1": 157,
+    "y1": 433
+   },
+   {
+    "art": "rechteck",
+    "x0": 160,
+    "y0": 428,
+    "x1": 161,
+    "y1": 429
+   },
+   {
+    "art": "rechteck",
+    "x0": 409,
+    "y0": 199,
+    "x1": 410,
+    "y1": 200
+   },
+   {
+    "art": "rechteck",
+    "x0": 405,
+    "y0": 199,
+    "x1": 406,
+    "y1": 200
+   },
+   {
+    "art": "rechteck",
+    "x0": 407,
+    "y0": 195,
+    "x1": 408,
+    "y1": 196
+   },
+   {
+    "art": "rechteck",
+    "x0": 91,
+    "y0": 375,
+    "x1": 92,
+    "y1": 376
+   },
+   {
+    "art": "rechteck",
+    "x0": 86,
+    "y0": 375,
+    "x1": 87,
+    "y1": 376
+   },
+   {
+    "art": "rechteck",
+    "x0": 88,
+    "y0": 371,
+    "x1": 89,
+    "y1": 372
+   },
+   {
+    "art": "rechteck",
+    "x0": 117,
+    "y0": 391,
+    "x1": 118,
+    "y1": 392
+   },
+   {
+    "art": "rechteck",
+    "x0": 113,
+    "y0": 391,
+    "x1": 114,
+    "y1": 392
+   },
+   {
+    "art": "rechteck",
+    "x0": 115,
+    "y0": 387,
+    "x1": 116,
+    "y1": 388
+   },
+   {
+    "art": "rechteck",
+    "x0": 86,
+    "y0": 37,
+    "x1": 87,
+    "y1": 38
+   },
+   {
+    "art": "rechteck",
+    "x0": 81,
+    "y0": 38,
+    "x1": 82,
+    "y1": 39
+   },
+   {
+    "art": "rechteck",
+    "x0": 83,
+    "y0": 34,
+    "x1": 84,
+    "y1": 35
+   },
+   {
+    "art": "rechteck",
+    "x0": 218,
+    "y0": 9,
+    "x1": 219,
+    "y1": 10
+   },
+   {
+    "art": "rechteck",
+    "x0": 213,
+    "y0": 10,
+    "x1": 214,
+    "y1": 11
+   },
+   {
+    "art": "rechteck",
+    "x0": 215,
+    "y0": 6,
+    "x1": 216,
+    "y1": 7
+   },
+   {
+    "art": "rechteck",
+    "x0": 296,
+    "y0": 89,
+    "x1": 297,
+    "y1": 90
+   },
+   {
+    "art": "rechteck",
+    "x0": 291,
+    "y0": 90,
+    "x1": 292,
+    "y1": 91
+   },
+   {
+    "art": "rechteck",
+    "x0": 293,
+    "y0": 86,
+    "x1": 294,
+    "y1": 87
+   },
+   {
+    "art": "rechteck",
+    "x0": 447,
+    "y0": 229,
+    "x1": 448,
+    "y1": 230
+   },
+   {
+    "art": "rechteck",
+    "x0": 442,
+    "y0": 230,
+    "x1": 443,
+    "y1": 231
+   },
+   {
+    "art": "rechteck",
+    "x0": 444,
+    "y0": 226,
+    "x1": 445,
+    "y1": 227
+   },
+   {
+    "art": "rechteck",
+    "x0": 61,
+    "y0": 351,
+    "x1": 62,
+    "y1": 352
+   },
+   {
+    "art": "rechteck",
+    "x0": 56,
+    "y0": 352,
+    "x1": 57,
+    "y1": 353
+   },
+   {
+    "art": "rechteck",
+    "x0": 58,
+    "y0": 348,
+    "x1": 59,
+    "y1": 349
+   }
+  ],
   "freigeben": []
  },
  "interaktionen": [
@@ -45,6 +382,104 @@
    "daten": {
     "text": "Ein Rastplatz an der Karawanenstraße. Asche, Dattelkerne, ein umgestürzter Krug."
    }
+  },
+  {
+   "id": "dornhag_bank_tuer",
+   "art": "lesen",
+   "x": 387,
+   "y": 204.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Dornhag. Die Hirten legen hier ihre Wollgelder ein."
+   }
+  },
+  {
+   "id": "dornhag",
+   "art": "lesen",
+   "x": 379.5,
+   "y": 205.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Dornhag. Hinter den Dornenhecken sind die Herden sicher vor den Hyänen – meistens."
+   }
+  },
+  {
+   "id": "fischplatz_dornhag",
+   "art": "lesen",
+   "x": 380.5,
+   "y": 183.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Im Wasserloch von Dornhag stehen Moorhechte – niemand weiß, wie sie hierher kamen.",
+    "fisch": "moorhecht",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "fischplatz_wasserloch_3",
+   "art": "lesen",
+   "x": 322.5,
+   "y": 360.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wasserloch in der Lehmsteppe. Erstaunlich, was hier im trüben Wasser schwimmt.",
+    "fisch": "moorhecht",
+    "stufe": 20
+   }
+  }
+ ],
+ "senken": [
+  {
+   "x": 407.4,
+   "y": 198.2,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 88.7,
+   "y": 374.4,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 115.6,
+   "y": 390.1,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 83.7,
+   "y": 36.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 215.7,
+   "y": 8.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 293.7,
+   "y": 88.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 444.7,
+   "y": 228.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 58.7,
+   "y": 350.9,
+   "r": 5,
+   "tiefe": 1.1
   }
  ]
 }
