@@ -231,13 +231,16 @@ WERKSTAETTEN.push({ id: "esse_haferstedt", station: "esse", x: 6201.4, y: 6992.8
   { id: "backofen_haferstedt", station: "backofen", x: 6236.8, y: 6975.4, ort: "fl_186_211" }, { id: "brunnen_haferstedt", station: "brunnen", x: 6215, y: 6977.35, ort: "fl_186_211" },
   { id: "feuer_netzbucht", station: "feuer", x: 6147, y: 6933.25, ort: "fl_186_211" }, { id: "raeucherhuette_netzbucht", station: "raeucherhuette", x: 6132, y: 6932, ort: "fl_186_211" });
 /* Phase 11: Stationen der Hochlande, wo die Welt sie gebaut hat – Steinhag: Esse und Amboss (Schmiede, Bauplan wie in der Waldmark), Werkbank, Herd und Kessel (Taverne),
-   Bindestein und Brunnen; Hohe Alm: Kessel der Käserei und Brunnen; Feuer an den Feuerkörben der Passwacht und am Bergwerk */
+   Bindestein und Brunnen; Hohe Alm: Kessel der Käserei, Herd und Brunnen; Bergwerk: Esse, Amboss und Feuer; Feuer an der Passwacht; Kessel an der Einsiedelei
+   (Welt d344565a, hochlande_orte.json → stationen) */
 WERKSTAETTEN.push({ id: "esse_steinhag", station: "esse", x: 7002.4, y: 5913.8, ort: "fl_216_183" }, { id: "amboss_steinhag", station: "amboss", x: 7005.4, y: 5913.6, ort: "fl_216_183" },
   { id: "werkbank_steinhag", station: "werkbank", x: 7011, y: 5915.5, ort: "fl_216_183" }, { id: "herd_steinhag", station: "herd", x: 7008.2, y: 5874, ort: "fl_216_183" },
   { id: "kessel_steinhag", station: "kessel", x: 7010.5, y: 5874, ort: "fl_216_183" }, { id: "bindestein_steinhag", station: "bindestein", x: 6996.5, y: 5889.5, ort: "fl_216_183" },
   { id: "brunnen_steinhag", station: "brunnen", x: 6990, y: 5888.35, ort: "fl_216_183" }, { id: "kessel_alm", station: "kessel", x: 7198, y: 6002, ort: "fl_216_183" },
-  { id: "brunnen_alm", station: "brunnen", x: 7191, y: 6005.35, ort: "fl_216_183" }, { id: "feuer_passwacht", station: "feuer", x: 6964.5, y: 5610.5, ort: "fl_216_169" },
-  { id: "feuer_bergwerk", station: "feuer", x: 7126.5, y: 5810.5, ort: "fl_216_169" });
+  { id: "brunnen_alm", station: "brunnen", x: 7191, y: 6005.35, ort: "fl_216_183" }, { id: "feuer_passwacht", station: "feuer", x: 6959, y: 5614.6, ort: "fl_216_169" },
+  { id: "feuer_bergwerk", station: "feuer", x: 7126.5, y: 5810.5, ort: "fl_216_169" }, { id: "esse_bergwerk", station: "esse", x: 7142.5, y: 5824, ort: "fl_216_169" },
+  { id: "amboss_bergwerk", station: "amboss", x: 7140, y: 5824, ort: "fl_216_169" }, { id: "herd_alm", station: "herd", x: 7178, y: 6007.4, ort: "fl_216_183" },
+  { id: "kessel_einsiedelei", station: "kessel", x: 7336, y: 5669.4, ort: "fl_216_169" });
 /* Phase 10, G-Quests (#118): G2 Lampenöl im Kessel am Wärterhaus des Leuchtturms und die Splitterglut am Bindestein; G4 das Fischernetz an der Werkbank */
 WERKSTAETTEN.push({ id: "kessel_leuchtturm", station: "kessel", x: 6190, y: 7039.5, ort: "fl_186_211" });
 dazu({ id: "lampenoel", station: "kessel", ergebnis: "lampenoel", level: 1, zutaten: [{ g: ["fisch_hering_roh"], n: 5 }], xp: 60, ticks: 5, stufe: 0, gruppe: "Das Leuchtfeuer", quest: "kueste_das_leuchtfeuer" });

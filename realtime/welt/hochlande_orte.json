@@ -38,8 +38,8 @@
    5650
   ],
   "nordklippen": [
-   7250,
-   5440
+   7290,
+   5300
   ]
  },
  "namen": [
@@ -106,8 +106,8 @@
   [
    "Die Nordklippen",
    "Landschaft",
-   7250,
-   5452
+   7290,
+   5300
   ]
  ],
  "npc": [
@@ -236,6 +236,66 @@
    "rolle": "Einsiedler",
    "x": 7341,
    "y": 5665.4
+  },
+  {
+   "id": "ziege_1",
+   "rolle": "Ziege (Stimmung)",
+   "x": 6982.5,
+   "y": 5700.5
+  },
+  {
+   "id": "ziege_2",
+   "rolle": "Ziege (Stimmung)",
+   "x": 6990.5,
+   "y": 5712.5
+  },
+  {
+   "id": "ziege_3",
+   "rolle": "Ziege (Stimmung)",
+   "x": 7120.5,
+   "y": 5770.5
+  },
+  {
+   "id": "ziege_4",
+   "rolle": "Ziege (Stimmung)",
+   "x": 7180.5,
+   "y": 5760.5
+  },
+  {
+   "id": "ziege_5",
+   "rolle": "Ziege (Stimmung)",
+   "x": 7230.5,
+   "y": 5640.5
+  },
+  {
+   "id": "murmeltier_1",
+   "rolle": "Murmeltier (Stimmung)",
+   "x": 6950.5,
+   "y": 5640.5
+  },
+  {
+   "id": "murmeltier_2",
+   "rolle": "Murmeltier (Stimmung)",
+   "x": 6976.5,
+   "y": 5590.5
+  },
+  {
+   "id": "murmeltier_3",
+   "rolle": "Murmeltier (Stimmung)",
+   "x": 7110.5,
+   "y": 5790.5
+  },
+  {
+   "id": "murmeltier_4",
+   "rolle": "Murmeltier (Stimmung)",
+   "x": 7172.5,
+   "y": 5786.5
+  },
+  {
+   "id": "murmeltier_5",
+   "rolle": "Murmeltier (Stimmung)",
+   "x": 7280.5,
+   "y": 5380.5
   }
  ],
  "fischplaetze": [
@@ -259,6 +319,72 @@
    "stehplatz": [
     7333.5,
     5658.5
+   ]
+  },
+  {
+   "id": "fischplatz_grauhornbach",
+   "fisch": "bachling",
+   "stufe": 1,
+   "x": 7010.5,
+   "y": 5743.5,
+   "stehplatz": [
+    7011.5,
+    5743.5
+   ]
+  },
+  {
+   "id": "fischplatz_grauhornbach_unten",
+   "fisch": "muehlbarsch",
+   "stufe": 10,
+   "x": 7002.5,
+   "y": 5800.5,
+   "stehplatz": [
+    7003.5,
+    5800.5
+   ]
+  },
+  {
+   "id": "fischplatz_almbach",
+   "fisch": "bachling",
+   "stufe": 1,
+   "x": 7153.5,
+   "y": 5920.5,
+   "stehplatz": [
+    7154.5,
+    5920.5
+   ]
+  },
+  {
+   "id": "fischplatz_almbach_unten",
+   "fisch": "muehlbarsch",
+   "stufe": 10,
+   "x": 7159.5,
+   "y": 6080.5,
+   "stehplatz": [
+    7160.5,
+    6080.5
+   ]
+  },
+  {
+   "id": "fischplatz_nordklippen",
+   "fisch": "klippenbarsch",
+   "stufe": 35,
+   "x": 7291.5,
+   "y": 5288.5,
+   "stehplatz": [
+    7291.5,
+    5289.5
+   ]
+  },
+  {
+   "id": "fischplatz_nordklippen_ost",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 7291.5,
+   "y": 5288.5,
+   "stehplatz": [
+    7291.5,
+    5289.5
    ]
   }
  ],
@@ -332,6 +458,62 @@
    "x": 6885.5,
    "y": 5725.5,
    "region": "fl_201_169"
+  },
+  {
+   "id": "hochlande_wegerich_11",
+   "art": "wegerich",
+   "x": 7170.5,
+   "y": 5988.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_wegerich_12",
+   "art": "wegerich",
+   "x": 7174.5,
+   "y": 5986.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_ringelblume_13",
+   "art": "ringelblume",
+   "x": 7208.5,
+   "y": 5988.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_ringelblume_14",
+   "art": "ringelblume",
+   "x": 7212.5,
+   "y": 5991.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_wegerich_15",
+   "art": "wegerich",
+   "x": 7214.5,
+   "y": 6004.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_moorgloeckchen_16",
+   "art": "moorgloeckchen",
+   "x": 7343.5,
+   "y": 5669.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_ringelblume_17",
+   "art": "ringelblume",
+   "x": 7346.5,
+   "y": 5669.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_moorgloeckchen_18",
+   "art": "moorgloeckchen",
+   "x": 7345.5,
+   "y": 5671.5,
+   "region": "fl_216_169"
   }
  ],
  "adern": [
@@ -399,6 +581,123 @@
    "region": "hochlande_bergwerk"
   }
  ],
+ "stationen": [
+  {
+   "id": "esse_bergwerk",
+   "station": "esse",
+   "x": 7142.5,
+   "y": 5824
+  },
+  {
+   "id": "amboss_bergwerk",
+   "station": "amboss",
+   "x": 7140,
+   "y": 5824
+  },
+  {
+   "id": "herd_alm",
+   "station": "herd",
+   "x": 7178,
+   "y": 6007.4
+  },
+  {
+   "id": "feuer_passwacht",
+   "station": "feuer",
+   "x": 6959,
+   "y": 5614.6
+  },
+  {
+   "id": "kessel_einsiedelei",
+   "station": "kessel",
+   "x": 7336,
+   "y": 5669.4
+  }
+ ],
+ "reisende": [
+  {
+   "id": "bergleute_steinhag_erzberg",
+   "rolle": "Bergleute auf dem Weg zur Schicht (Reisende nach der Uhr)",
+   "punkte": [
+    [
+     7040,
+     5901
+    ],
+    [
+     7060,
+     5880
+    ],
+    [
+     7100,
+     5850
+    ],
+    [
+     7126,
+     5814
+    ]
+   ]
+  }
+ ],
+ "arena": {
+  "region": "hochlande_bergwerk",
+  "x": 11607,
+  "y": 9614,
+  "r": 9.8,
+  "hinweis": "Trollhalle: freie Fläche für den Mini-Boss (Instanz nach #116), Eingang von Osten über den Querschlag"
+ },
+ "baeche": {
+  "grauhornbach": [
+   [
+    7016,
+    5694
+   ],
+   [
+    7008,
+    5730
+   ],
+   [
+    7012,
+    5770
+   ],
+   [
+    7000,
+    5806
+   ],
+   [
+    6998,
+    5838
+   ]
+  ],
+  "almbach": [
+   [
+    7162,
+    5846
+   ],
+   [
+    7150,
+    5900
+   ],
+   [
+    7158,
+    5950
+   ],
+   [
+    7150,
+    6040
+   ],
+   [
+    7166,
+    6110
+   ],
+   [
+    7160,
+    6190
+   ],
+   [
+    7166,
+    6250
+   ]
+  ]
+ },
  "wege": [
   {
    "punkte": [
@@ -637,8 +936,12 @@
      5560
     ],
     [
-     7250,
-     5480
+     7270,
+     5440
+    ],
+    [
+     7290,
+     5340
     ]
    ],
    "breite": 1.8,
