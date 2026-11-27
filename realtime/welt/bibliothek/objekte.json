@@ -10560,64 +10560,6 @@
    }
   },
   {
-   "id": "wegrand_wegkreuz_holz",
-   "name": "Wegkreuz",
-   "kategorie": "kleinteil",
-   "bild": "img/welt/stil/wegrand_wegkreuz_holz.webp",
-   "groesse": [
-    53,
-    134
-   ],
-   "anker": [
-    0.5,
-    0.9478
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "kreis",
-    "r": 0.2
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/wegrand/wegkreuz_holz.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
-   "id": "wegrand_wegkreuz_stein",
-   "name": "Wegkreuz",
-   "kategorie": "kleinteil",
-   "bild": "img/welt/stil/wegrand_wegkreuz_stein.webp",
-   "groesse": [
-    43,
-    96
-   ],
-   "anker": [
-    0.5,
-    0.9375
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "kreis",
-    "r": 0.35
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/wegrand/wegkreuz_stein.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
    "id": "wegrand_bildstock",
    "name": "Bildstock",
    "kategorie": "kleinteil",
@@ -10642,35 +10584,6 @@
    "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
    "modell3d": {
     "url": "img/objekte3d/wegrand/bildstock.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
-   "id": "wegrand_feldstein_1",
-   "name": "Feldstein",
-   "kategorie": "fels",
-   "bild": "img/welt/stil/wegrand_feldstein_1.webp",
-   "groesse": [
-    34,
-    31
-   ],
-   "anker": [
-    0.5,
-    0.8387
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "kreis",
-    "r": 0.3
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/wegrand/feldstein_1.glb",
     "wind": 0,
     "fest": true
    }
@@ -10952,38 +10865,6 @@
    }
   },
   {
-   "id": "wegrand_karren_kaputt",
-   "name": "Umgestürzter",
-   "kategorie": "kleinteil",
-   "bild": "img/welt/stil/wegrand_karren_kaputt.webp",
-   "groesse": [
-    117,
-    156
-   ],
-   "anker": [
-    0.5,
-    0.9295
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -0.8,
-    "y": -1.2,
-    "b": 1.8,
-    "h": 2.4
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/wegrand/karren_kaputt.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
    "id": "wegrand_ruine_bogen",
    "name": "Torbogen-Ruine",
    "kategorie": "sonderort",
@@ -11015,38 +10896,6 @@
     "fest": true
    },
    "hinweis": "Kollision nur am linken Mauerteil; den rechten Teil (x 0,8–2,2) im Ort ergänzen oder als zweites Rechteck setzen – der Bogen in der Mitte ist begehbar"
-  },
-  {
-   "id": "wegrand_ruine_ecke",
-   "name": "Mauerecke",
-   "kategorie": "sonderort",
-   "bild": "img/welt/stil/wegrand_ruine_ecke.webp",
-   "groesse": [
-    155,
-    173
-   ],
-   "anker": [
-    0.5,
-    0.9191
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -2.0,
-    "y": -0.3,
-    "b": 2.3,
-    "h": 0.6
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/wegrand/ruine_ecke.glb",
-    "wind": 0,
-    "fest": true
-   }
   },
   {
    "id": "wegrand_huette_feld",
@@ -11108,6 +10957,157 @@
    "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
    "modell3d": {
     "url": "img/objekte3d/wegrand/brunnen_feld.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_wegkreuz_holz",
+   "name": "Wegkreuz (Holz)",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/wegrand_wegkreuz_holz.webp",
+   "groesse": [
+    53,
+    134
+   ],
+   "anker": [
+    0.5,
+    0.9478
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/wegkreuz_holz.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_wegkreuz_stein",
+   "name": "Wegkreuz (Stein)",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/wegrand_wegkreuz_stein.webp",
+   "groesse": [
+    43,
+    96
+   ],
+   "anker": [
+    0.5,
+    0.9375
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/wegkreuz_stein.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_feldstein_1",
+   "name": "Feldstein (klein)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/wegrand_feldstein_1.webp",
+   "groesse": [
+    34,
+    31
+   ],
+   "anker": [
+    0.5,
+    0.8387
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/feldstein_1.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_karren_kaputt",
+   "name": "Umgestürzter Karren",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/wegrand_karren_kaputt.webp",
+   "groesse": [
+    117,
+    156
+   ],
+   "anker": [
+    0.5,
+    0.9295
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.8,
+    "y": -1.2,
+    "b": 1.8,
+    "h": 2.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/karren_kaputt.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_ruine_ecke",
+   "name": "Mauerecke (Ruine)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wegrand_ruine_ecke.webp",
+   "groesse": [
+    155,
+    173
+   ],
+   "anker": [
+    0.5,
+    0.9191
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.0,
+    "y": -0.3,
+    "b": 2.3,
+    "h": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/ruine_ecke.glb",
     "wind": 0,
     "fest": true
    }
