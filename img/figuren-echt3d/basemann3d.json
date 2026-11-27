@@ -629,6 +629,76 @@
     "zauber_stab"
    ],
    "datei": "basemann3d.teile/waffe.seelenfokus.glb"
+  },
+  "kopf.helm.steinvogt": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.steinvogt.glb"
+  },
+  "ruestung.brust.steinvogt": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.steinvogt.glb"
+  },
+  "ruestung.beine.steinvogt": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.beine.steinvogt.glb"
+  },
+  "schild.turm.steinvogt": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block",
+    "zauber_stab",
+    "armbrust1h",
+    "dolchwurf"
+   ],
+   "datei": "basemann3d.teile/schild.turm.steinvogt.glb"
+  },
+  "kopf.helm.sturmfeder": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.sturmfeder.glb"
+  },
+  "ruestung.brust.sturmfeder": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.sturmfeder.glb"
+  },
+  "ruestung.beine.sturmfeder": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.beine.sturmfeder.glb"
+  },
+  "kopf.helm.frostschleier": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.frostschleier.glb"
+  },
+  "ruestung.brust.frostschleier": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.frostschleier.glb"
+  },
+  "ruestung.beine.frostschleier": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.beine.frostschleier.glb"
   }
  },
  "aktionen": {
