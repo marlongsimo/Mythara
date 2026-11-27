@@ -660,3 +660,8 @@ GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /*
     VERBRAUCH[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, heilt: { fest: heil, anteil: 0 }, ...(wirkung ? { wirkung } : {}), ...mehr, flaeschchen: true, stapelbar: false, modell: TM + id + ".glb",
       werte: [...(heil ? [["Heilung", `${heil} (nicht über das maximale Leben)`] as [string, string]] : []), ["Wirkung", w], ["Danach", "leeres Fläschchen"]], text: w }; }
   VERBRAUCH.kleiner_heiltrank.flaeschchen = true; VERBRAUCH.heiltrank.flaeschchen = true; /* getrunkene Tränke geben das Fläschchen zurück */ }
+
+/* ───────── Vorbereitet (#130): Wildbret – Fleisch von Hyäne, Widder, Bär und Elch (einziger neuer Rohstoff der zehn neuen Gegner); Bild folgt (Figuren) ───────── */
+GEGENSTAENDE.wildbret = { id: "wildbret", name: "Wildbret", art: "Rohstoff", seltenheit: "gewoehnlich", wert: 12, symbol: "kristall", text: "Dunkles Fleisch vom Wild der Hochlande. Am Herd geschmort wird ein kräftiger Braten daraus." };
+GEGENSTAENDE.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", symbol: "kristall", trank: "wildbretbraten", text: "Ein kräftiger Braten aus den Hochlanden. Heilt 12 Lebenspunkte." };
+VERBRAUCH.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Ein kräftiger Braten aus den Hochlanden." };

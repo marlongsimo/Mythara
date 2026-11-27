@@ -15,7 +15,7 @@ const X = { ...NULL_XP, geschick: xpFuer(60), staerke: xpFuer(60), defense: xpFu
 const neueWelt = () => { const s = Sim.welt(16, undefined, true), U = KARTEN.welt.ursprung; s.ursprung = [U[0], U[1]]; s.wesen = s.wesen.filter((w) => w.held); return { s, U }; };
 const held = (s, U, wx, wy) => { const id = s.beitreten("schildwaechter", 0, { x: wx - U[0], y: wy - U[1] }, kampfwerte(X, startAusruestung("schwert"), 1)), h = s.nach(id); h.max = h.lp = 1e6; s.eingabe({ t: "auto", an: false }, id); return { id, h }; };
 const K = INSTANZEN.find((d) => d.id === "wrack_kajuete"), T = INSTANZEN.find((d) => d.id === "thronsaal");
-check(["thronsaal", "hauptmann_gruft", "tempel_kammer", "wrack_kajuete"].every((id) => INSTANZEN.find((d) => d.id === id)?.danach), "die vier Boss-Instanzen aus Phase 6–10 kennen den Schalter „danach“");
+check(["thronsaal", "hauptmann_gruft", "tempel_kammer", "wrack_kajuete", "federmutter_kammer"].every((id) => INSTANZEN.find((d) => d.id === id)?.danach), "die fünf Boss-Instanzen aus Phase 6–10 kennen den Schalter „danach“");
 
 console.log("\n0 · Vor der Quest: kein Boss (leerer Raum)");
 { const { s, U } = neueWelt(), { id } = held(s, U, 11504.5, 9620.5);
