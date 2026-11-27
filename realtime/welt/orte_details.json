@@ -901,21 +901,13 @@
   {
    "id": "ort_d_obstwiesen_130",
    "objekt": "hoehle_felswand_01",
-   "x": 6534.41,
-   "y": 6743.43,
-   "s": 0.37,
-   "spiegeln": true
-  },
-  {
-   "id": "ort_d_obstwiesen_131",
-   "objekt": "hoehle_felswand_01",
    "x": 6581.82,
    "y": 6680.99,
    "s": 0.4,
    "spiegeln": true
   },
   {
-   "id": "ort_d_obstwiesen_132",
+   "id": "ort_d_obstwiesen_131",
    "objekt": "hoehle_felswand_01",
    "x": 6562.79,
    "y": 6687.17,
@@ -923,15 +915,27 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_133",
+   "id": "ort_d_obstwiesen_132",
    "objekt": "hoehle_felswand_01",
-   "x": 6277.09,
-   "y": 6521.88,
-   "s": 0.37,
-   "spiegeln": true
+   "x": 6543.59,
+   "y": 6693.36,
+   "s": 0.44
+  },
+  {
+   "id": "ort_d_westmark_133",
+   "objekt": "dorf_holzstapel_01",
+   "x": 6306.1,
+   "y": 6582.8
   },
   {
    "id": "ort_d_westmark_134",
+   "objekt": "k_faesser",
+   "x": 6306.1,
+   "y": 6581,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_d_westmark_135",
    "objekt": "hoehle_felswand_01",
    "x": 6306.27,
    "y": 6624.96,
@@ -939,14 +943,14 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_135",
+   "id": "ort_d_westmark_136",
    "objekt": "hoehle_felswand_01",
    "x": 6282.47,
    "y": 6606.27,
    "s": 0.42
   },
   {
-   "id": "ort_d_westmark_136",
+   "id": "ort_d_westmark_137",
    "objekt": "hoehle_felswand_01",
    "x": 6285.84,
    "y": 6511.82,
@@ -954,33 +958,40 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_137",
+   "id": "ort_d_westmark_138",
    "objekt": "hoehle_felswand_01",
    "x": 6322.85,
    "y": 6596.98,
    "s": 0.4
   },
   {
-   "id": "ort_d_westmark_138",
+   "id": "ort_d_westmark_139",
    "objekt": "hoehle_felswand_01",
    "x": 6322.71,
    "y": 6555.07,
    "s": 0.37
   },
   {
-   "id": "ort_d_westmark_139",
+   "id": "ort_d_westmark_140",
    "objekt": "hoehle_felswand_01",
    "x": 6276.96,
    "y": 6560.58,
    "s": 0.35
   },
   {
-   "id": "ort_d_westmark_140",
+   "id": "ort_d_westmark_141",
    "objekt": "hoehle_felswand_01",
    "x": 6280.53,
    "y": 6586.52,
    "s": 0.36,
    "spiegeln": true
+  },
+  {
+   "id": "ort_d_westmark_142",
+   "objekt": "hoehle_felswand_01",
+   "x": 6282.01,
+   "y": 6530.85,
+   "s": 0.32
   }
  ]
 }

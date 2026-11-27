@@ -54,12 +54,21 @@ check(hat(/waldmark_bank/) && hat(/marktstand/) && hat(/dorf_schmiede/) && hat(/
 check(gebaeude > haferstedt && gebaeude >= 80 && gebaeude <= 130, `Hauptstadt (#167): ${gebaeude} Gebäude in den Mauern (Haferstedt ${haferstedt}), Viertel ${JSON.stringify(HO.hauptstadt.viertel)}`);
 { const tore = ["steinhag_tor_west", "steinhag_tor_ost", "steinhag_tor_nordwest"], hat = (id) => OBJ.some((o) => o.id === id);
   check(tore.every(hat) && OBJ.filter((o) => /^steinhag_mauer_/.test(o.id)).length > 150 && tore.every((id) => greifbar(IA.get(id).x, IA.get(id).y)), "Ringmauer mit Ecktürmen und drei Toren (West: Furt, Nordwest: Pass, Ost: Erzberg und Alm), alle Tore zu Fuß erreichbar");
+  { /* die Mauer ist dicht: mit geschlossenen Toren kommt man von der Furt nicht auf den Markt */
+    const zu = [[M[0] - 2, 5896, M[0] + 2, 5906], [HO.hauptstadt.tore.nordwest[0] - 4, M[1] - 2, HO.hauptstadt.tore.nordwest[0] + 4, M[1] + 2], [M[2] - 2, 5896, M[2] + 2, 5906]], s = 2, seen = new Set(), q = [[Math.floor(6799 * s), Math.floor(5761.5 * s)]];
+    while (q.length) { const [x, y] = q.pop(); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy, k = nx + "," + ny, wx = (nx + 0.5) / s, wy = (ny + 0.5) / s;
+        if (seen.has(k) || wx < BOX[0] || wy < BOX[1] || wx > BOX[2] || wy > BOX[3] || !R.begehbar(wx, wy) || zu.some((r) => wx >= r[0] && wx <= r[2] && wy >= r[1] && wy <= r[3])) continue; seen.add(k); q.push([nx, ny]); } }
+    check(!seen.has(Math.floor(6990 * s) + "," + Math.floor(5893 * s)), "die Ringmauer ist dicht (mit geschlossenen Toren kein Weg auf den Markt)"); }
   const innen = ["steinhag_vogtsburg", "steinhag_burgplatz", "steinhag_zunftbank_tuer", "steinhag_zunftschmiede", "steinhag_brennofen", "steinhag_zunftstollen_eingang", "steinhag_bank_tuer"], iw = innen.filter((id) => !IA.has(id) || !greifbar(IA.get(id).x, IA.get(id).y));
   check(["steinhag_vogtsburg_bergfried", "steinhag_vogtsburg_palas", "steinhag_zunftbank", "steinhag_zunftschmiede", "steinhag_brennofen", "steinhag_zunftstollen_eingang"].every(hat) && !iw.length, "Vogtsburg auf dem Fels, zweite Bank, Zunftschmiede, Brennofen und Stollen-Abstieg – erreichbar", iw);
   const lw = HO.hauptstadt.laeden.filter((l) => !greifbar(l.x, l.y, 1.4)), sw = HO.hauptstadt.stationen.filter((s) => !greifbar(s.x, s.y, 1.6));
   check(HO.hauptstadt.banken.length === 2 && HO.hauptstadt.laeden.length >= 5 && !lw.length && !sw.length, `${HO.hauptstadt.laeden.length} neue Ladenplätze, ${HO.hauptstadt.stationen.length} Stationen (Zunft), 2 Banken – erreichbar`, [...lw, ...sw].map((x) => x.id));
   const baum = OBJ.filter((o) => inMauer(o) && /tanne|birke|baum|busch|fels/.test(o.objekt) && !/^steinhag/.test(o.id)); check(!baum.length, "keine Bäume, Büsche und Felsbrocken in den Mauern", baum.map((o) => o.id));
   const sm = lies("sammelstellen.json"), smIn = [...sm.lichtungen, ...sm.senken].filter((g) => (g.baeume || g.adern).some((p) => inMauer(p))); check(!smIn.length, "keine Sammelstelle in den Mauern", smIn.map((g) => g.name)); }
+{ /* Reisende (Bergleute Steinhag → Bergwerk): jedes gerade Stück zwischen zwei Wegpunkten liegt auf begehbaren Feldern */
+  const zu = []; for (const r of HO.reisende) for (let i = 1; i < r.punkte.length; i++) { const [ax, ay] = r.punkte[i - 1], [bx, by] = r.punkte[i];
+    for (let t = 0; t <= 1; t += 0.05) { const x = ax + (bx - ax) * t, y = ay + (by - ay) * t; if (!R.begehbar(x, y)) { zu.push(`${r.id} ${x.toFixed(1)}|${y.toFixed(1)}`); break; } } }
+  check(HO.reisende.length && !zu.length, `Wege der Reisenden begehbar (${HO.reisende.map((r) => r.punkte.length + " Punkte").join(", ")})`, zu); }
 console.log("\nStollen der Bergmannszunft (Untergrund, #167)");
 { const ZS = region("steinhag_zunftstollen"), [ZX, ZY] = ZS.region.ursprung.map((v) => v * 32), ein = IA.get("steinhag_zunftstollen_eingang"), hin = IA.get("zunftstollen_hinaus");
   check(ZS.region.ebene === "untergrund" && R.begehbar(...ein.daten.ziel) && greifbar(...hin.daten.ziel), "Abstieg im Zunftviertel führt hinein, der Ausgang wieder hinauf");

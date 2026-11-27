@@ -96,31 +96,31 @@
    },
    {
     "art": "rechteck",
-    "x0": 34,
-    "y0": 60,
-    "x1": 35,
-    "y1": 61
+    "x0": 26,
+    "y0": 27,
+    "x1": 27,
+    "y1": 28
    },
    {
     "art": "rechteck",
-    "x0": 31,
-    "y0": 62,
-    "x1": 32,
-    "y1": 63
+    "x0": 23,
+    "y0": 28,
+    "x1": 24,
+    "y1": 29
    },
    {
     "art": "rechteck",
-    "x0": 29,
-    "y0": 58,
-    "x1": 30,
-    "y1": 59
+    "x0": 21,
+    "y0": 25,
+    "x1": 22,
+    "y1": 26
    },
    {
     "art": "rechteck",
-    "x0": 33,
-    "y0": 57,
-    "x1": 34,
-    "y1": 58
+    "x0": 25,
+    "y0": 24,
+    "x1": 26,
+    "y1": 25
    }
   ],
   "freigeben": []
@@ -184,6 +184,28 @@
    }
   },
   {
+   "id": "kielmund_tor_nord",
+   "art": "lesen",
+   "x": 23.5,
+   "y": 65,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Nordtor von Kielmund. Hier endet die Südstraße – dahinter riecht alles nach Salz und Teer."
+   }
+  },
+  {
+   "id": "kielmund_tempel",
+   "art": "lesen",
+   "x": 42.6,
+   "y": 76.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Tempel der Gezeiten. Drinnen hängen Netze voller Muscheln – Dank für jede Heimkehr."
+   }
+  },
+  {
    "id": "lehmfurt_schmiede",
    "art": "lesen",
    "x": 37.5,
@@ -237,8 +259,8 @@
    "tiefe": 1.1
   },
   {
-   "x": 32.3,
-   "y": 59.9,
+   "x": 24.2,
+   "y": 26.6,
    "r": 5,
    "tiefe": 1.1
   }

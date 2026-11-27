@@ -47,6 +47,8 @@ TESTS=(
   welt-streifgebiete
   welt-hochlande
   welt-zunft
+  welt-fahleweiten
+  welt-kielmund
   phase5
   phase8-10
   abholen

@@ -341,9 +341,10 @@
   },
   {
    "id": "zunftschmied",
-   "rolle": "Meisterschmied der Zunft",
-   "x": 7062,
-   "y": 5930.8
+   "rolle": "Meisterschmied der Zunft (in der Halle)",
+   "x": 7056.2,
+   "y": 5929,
+   "drinnen": "steinhag_zunftschmiede"
   },
   {
    "id": "zunftschmiede_wache",
@@ -511,71 +512,71 @@
   {
    "id": "hochlande_eisenhut_1",
    "art": "eisenhut",
-   "x": 6894.5,
-   "y": 5650.5,
-   "region": "fl_201_169"
+   "x": 7003.5,
+   "y": 5543.5,
+   "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_2",
    "art": "nebelkraut",
-   "x": 7014.5,
-   "y": 5566.5,
+   "x": 7107.5,
+   "y": 5799.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_3",
    "art": "eisenhut",
-   "x": 7059.5,
-   "y": 5529.5,
+   "x": 7036.5,
+   "y": 5519.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_4",
    "art": "nebelkraut",
-   "x": 7156.5,
-   "y": 5796.5,
+   "x": 7016.5,
+   "y": 5527.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_5",
    "art": "eisenhut",
-   "x": 7139.5,
-   "y": 5767.5,
+   "x": 6991.5,
+   "y": 5554.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_6",
    "art": "nebelkraut",
-   "x": 7020.5,
-   "y": 5520.5,
+   "x": 7107.5,
+   "y": 5464.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_7",
    "art": "eisenhut",
-   "x": 7167.5,
-   "y": 5782.5,
+   "x": 7030.5,
+   "y": 5505.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_8",
    "art": "nebelkraut",
-   "x": 6866.5,
-   "y": 5688.5,
-   "region": "fl_201_169"
+   "x": 6947.5,
+   "y": 5642.5,
+   "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_9",
    "art": "eisenhut",
-   "x": 7100.5,
-   "y": 5478.5,
+   "x": 6929.5,
+   "y": 5664.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_10",
    "art": "nebelkraut",
-   "x": 6999.5,
-   "y": 5596.5,
+   "x": 7062.5,
+   "y": 5528.5,
    "region": "fl_216_169"
   },
   {
@@ -735,23 +736,171 @@
  "reisende": [
   {
    "id": "bergleute_steinhag_erzberg",
-   "rolle": "Bergleute auf dem Weg zur Schicht (Reisende nach der Uhr)",
+   "rolle": "Bergleute auf dem Weg zur Schicht (Reisende nach der Uhr): vom Markt durchs Osttor zum Stolleneingang",
    "punkte": [
     [
-     7082,
-     5901
+     6992.5,
+     5900.5
     ],
     [
-     7100,
-     5884
+     6998.5,
+     5900.5
     ],
     [
-     7112,
-     5850
+     7004.5,
+     5900.5
     ],
     [
-     7126,
-     5814
+     7010.5,
+     5900.5
+    ],
+    [
+     7016.5,
+     5900.5
+    ],
+    [
+     7022.5,
+     5900.5
+    ],
+    [
+     7028.5,
+     5900.5
+    ],
+    [
+     7034.5,
+     5900.5
+    ],
+    [
+     7040.5,
+     5900.5
+    ],
+    [
+     7046.5,
+     5900.5
+    ],
+    [
+     7052.5,
+     5900.5
+    ],
+    [
+     7058.5,
+     5900.5
+    ],
+    [
+     7064.5,
+     5900.5
+    ],
+    [
+     7070.5,
+     5900.5
+    ],
+    [
+     7076.5,
+     5900.5
+    ],
+    [
+     7082.5,
+     5900.5
+    ],
+    [
+     7085.5,
+     5897.5
+    ],
+    [
+     7086.5,
+     5896.5
+    ],
+    [
+     7090.5,
+     5894.5
+    ],
+    [
+     7093.5,
+     5891.5
+    ],
+    [
+     7095.5,
+     5887.5
+    ],
+    [
+     7098.5,
+     5884.5
+    ],
+    [
+     7100.5,
+     5880.5
+    ],
+    [
+     7102.5,
+     5876.5
+    ],
+    [
+     7103.5,
+     5871.5
+    ],
+    [
+     7105.5,
+     5867.5
+    ],
+    [
+     7107.5,
+     5863.5
+    ],
+    [
+     7108.5,
+     5858.5
+    ],
+    [
+     7110.5,
+     5854.5
+    ],
+    [
+     7111.5,
+     5849.5
+    ],
+    [
+     7113.5,
+     5845.5
+    ],
+    [
+     7115.5,
+     5845.5
+    ],
+    [
+     7115.5,
+     5839.5
+    ],
+    [
+     7115.5,
+     5837.5
+    ],
+    [
+     7117.5,
+     5833.5
+    ],
+    [
+     7119.5,
+     5829.5
+    ],
+    [
+     7121.5,
+     5825.5
+    ],
+    [
+     7122.5,
+     5820.5
+    ],
+    [
+     7124.5,
+     5816.5
+    ],
+    [
+     7128.5,
+     5815.5
+    ],
+    [
+     7128.5,
+     5812.5
     ]
    ]
   }
@@ -1498,46 +1647,52 @@
   ],
   "stationen": [
    {
-    "id": "esse_zunft_1",
-    "station": "esse",
-    "x": 7055,
-    "y": 5931.2
-   },
-   {
-    "id": "esse_zunft_2",
-    "station": "esse",
-    "x": 7057.7,
-    "y": 5931.2
-   },
-   {
-    "id": "esse_zunft_3",
-    "station": "esse",
-    "x": 7060.3,
-    "y": 5931.2
-   },
-   {
-    "id": "esse_zunft_4",
-    "station": "esse",
-    "x": 7063,
-    "y": 5931.2
-   },
-   {
     "id": "amboss_zunft_1",
     "station": "amboss",
-    "x": 7056.3,
-    "y": 5932.8
+    "x": 7052.2,
+    "y": 5928.4,
+    "drinnen": "steinhag_zunftschmiede"
    },
    {
     "id": "amboss_zunft_2",
     "station": "amboss",
-    "x": 7061.7,
-    "y": 5932.8
+    "x": 7054.8,
+    "y": 5928.4,
+    "drinnen": "steinhag_zunftschmiede"
+   },
+   {
+    "id": "amboss_zunft_3",
+    "station": "amboss",
+    "x": 7057.4,
+    "y": 5928.4,
+    "drinnen": "steinhag_zunftschmiede"
+   },
+   {
+    "id": "amboss_zunft_4",
+    "station": "amboss",
+    "x": 7059.8,
+    "y": 5928.4,
+    "drinnen": "steinhag_zunftschmiede"
+   },
+   {
+    "id": "esse_zunft_1",
+    "station": "esse",
+    "x": 7052.2,
+    "y": 5926.1,
+    "drinnen": "steinhag_zunftschmiede"
+   },
+   {
+    "id": "esse_zunft_2",
+    "station": "esse",
+    "x": 7058.5,
+    "y": 5926.1,
+    "drinnen": "steinhag_zunftschmiede"
    },
    {
     "id": "brennofen_zunft",
     "station": "brennofen (neu, Systeme)",
-    "x": 7051.5,
-    "y": 5930.4
+    "x": 7066.2,
+    "y": 5932.8
    }
   ],
   "laeden": [
@@ -1570,9 +1725,9 @@
     ]
    },
    {
-    "id": "steinhag_laden_steinhaus_8",
+    "id": "steinhag_laden_hochland_ladenhaus_8",
     "art": "Ladenhaus",
-    "gebaeude": "hl_steinhaus_8",
+    "gebaeude": "hl_hochland_ladenhaus_8",
     "x": 7017,
     "y": 5900.2,
     "blick": [
@@ -1581,9 +1736,9 @@
     ]
    },
    {
-    "id": "steinhag_laden_haus_holz_7",
+    "id": "steinhag_laden_hochland_ladenhaus_7",
     "art": "Ladenhaus",
-    "gebaeude": "hl_haus_holz_7",
+    "gebaeude": "hl_hochland_ladenhaus_7",
     "x": 6962,
     "y": 5900.2,
     "blick": [
@@ -1592,9 +1747,9 @@
     ]
    },
    {
-    "id": "steinhag_laden_steinhaus_9",
+    "id": "steinhag_laden_hochland_ladenhaus_9",
     "art": "Ladenhaus",
-    "gebaeude": "hl_steinhaus_9",
+    "gebaeude": "hl_hochland_ladenhaus_9",
     "x": 7026,
     "y": 5900.2,
     "blick": [
@@ -1603,9 +1758,9 @@
     ]
    },
    {
-    "id": "steinhag_laden_steinhaus_6",
+    "id": "steinhag_laden_hochland_ladenhaus_6",
     "art": "Ladenhaus",
-    "gebaeude": "hl_steinhaus_6",
+    "gebaeude": "hl_hochland_ladenhaus_6",
     "x": 6953,
     "y": 5900.2,
     "blick": [
@@ -1614,9 +1769,9 @@
     ]
    },
    {
-    "id": "steinhag_laden_steinhaus_5",
+    "id": "steinhag_laden_hochland_ladenhaus_5",
     "art": "Ladenhaus",
-    "gebaeude": "hl_steinhaus_5",
+    "gebaeude": "hl_hochland_ladenhaus_5",
     "x": 6945,
     "y": 5900.2,
     "blick": [
@@ -1626,11 +1781,11 @@
    }
   ],
   "viertel": {
-   "Marktviertel": 30,
+   "Marktviertel": 36,
    "Burgviertel": 6,
    "Zunftviertel": 13,
-   "Seeufer": 15,
-   "Unterstadt": 18
+   "Seeufer": 16,
+   "Unterstadt": 19
   },
   "zunftstollen": {
    "region": "steinhag_zunftstollen",
@@ -1673,8 +1828,8 @@
    ],
    "bankkiste": {
     "id": "steinhag_zunftschmiede_bankkiste",
-    "x": 7067,
-    "y": 5927.4
+    "x": 7052.2,
+    "y": 5933.2
    },
    "beruf": "schmieden",
    "ab": 60
@@ -1875,8 +2030,8 @@
   }
  ],
  "zaehlung": {
-  "Nadelbäume": 225,
-  "Einzeltannen": 161,
+  "Nadelbäume": 212,
+  "Einzeltannen": 160,
   "Felsen": 140,
   "Büsche": 180
  }

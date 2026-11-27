@@ -538,6 +538,36 @@
    "art": "Landschaft",
    "x": 7290,
    "y": 5300
+  },
+  {
+   "name": "Hügelgrund",
+   "art": "Dorf",
+   "x": 6165,
+   "y": 5800
+  },
+  {
+   "name": "Kohlstatt",
+   "art": "Dorf",
+   "x": 6420,
+   "y": 5878
+  },
+  {
+   "name": "Brechstein",
+   "art": "Ort",
+   "x": 6656,
+   "y": 5946
+  },
+  {
+   "name": "Wollhag",
+   "art": "Ort",
+   "x": 6570,
+   "y": 5738
+  },
+  {
+   "name": "Weiherhof",
+   "art": "Ort",
+   "x": 6340,
+   "y": 5834
   }
  ]
 }

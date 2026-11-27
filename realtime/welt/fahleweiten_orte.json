@@ -1,0 +1,1053 @@
+{
+ "hinweis": "Fahle Weiten füllen, Schritt 1 (Welt #171): Orte, Ortsnamen, Grauwacht (Mauer, Tore, Läden), Banken und Bankkisten, Ladenplätze, Stationen, NPC-Plätze, Fischplätze, Kräuter, Wege, Rastplätze. Weltfelder. Objekte und NPCs mit ausbau gelten erst ab dieser Stadtstufe.",
+ "orte": {
+  "grauwacht": [
+   6706,
+   5748
+  ],
+  "huegelgrund": [
+   6165,
+   5800
+  ],
+  "kohlstatt": [
+   6420,
+   5878
+  ],
+  "brechstein": [
+   6656,
+   5946
+  ],
+  "wollhag": [
+   6570,
+   5738
+  ],
+  "weiherhof": [
+   6340,
+   5834
+  ]
+ },
+ "namen": [
+  [
+   "Hügelgrund",
+   "Dorf",
+   6165,
+   5800
+  ],
+  [
+   "Kohlstatt",
+   "Dorf",
+   6420,
+   5878
+  ],
+  [
+   "Brechstein",
+   "Ort",
+   6656,
+   5946
+  ],
+  [
+   "Wollhag",
+   "Ort",
+   6570,
+   5738
+  ],
+  [
+   "Weiherhof",
+   "Ort",
+   6340,
+   5834
+  ]
+ ],
+ "grauwacht": {
+  "mauer": [
+   6644,
+   5712,
+   6762,
+   5810
+  ],
+  "tore": {
+   "sued": [
+    6680,
+    5810
+   ],
+   "ost_bruecke": [
+    6727,
+    5760
+   ]
+  },
+  "laeden": [
+   {
+    "id": "grauwacht_stand_3",
+    "art": "Marktstand",
+    "x": 6697.5,
+    "y": 5756.2,
+    "blick": [
+     0,
+     -1
+    ]
+   },
+   {
+    "id": "grauwacht_stand_4",
+    "art": "Marktstand",
+    "x": 6714.5,
+    "y": 5757.7,
+    "blick": [
+     0,
+     -1
+    ]
+   },
+   {
+    "id": "grauwacht_stand_1",
+    "art": "Marktstand (vorhanden)",
+    "x": 6702,
+    "y": 5746.4
+   },
+   {
+    "id": "grauwacht_stand_2",
+    "art": "Marktstand (vorhanden)",
+    "x": 6710,
+    "y": 5746.4
+   },
+   {
+    "id": "grauwacht_stand_waffen",
+    "art": "Waffenstand (vorhanden)",
+    "x": 6710.5,
+    "y": 5754.4
+   },
+   {
+    "id": "grauwacht_taverne",
+    "art": "Taverne",
+    "x": 6729,
+    "y": 5752.4
+   },
+   {
+    "id": "grauwacht_gerberei",
+    "art": "Gerberei",
+    "x": 6722,
+    "y": 5798.2,
+    "blick": [
+     0,
+     1
+    ]
+   },
+   {
+    "id": "grauwacht_tischlerei",
+    "art": "Tischlerei",
+    "x": 6731,
+    "y": 5798.2,
+    "blick": [
+     0,
+     1
+    ]
+   },
+   {
+    "id": "grauwacht_weberei",
+    "art": "Weberei",
+    "x": 6740,
+    "y": 5798.2,
+    "blick": [
+     0,
+     1
+    ]
+   }
+  ],
+  "gebaeude": 45
+ },
+ "banken": [
+  {
+   "id": "grauwacht_bank",
+   "ort": "Grauwacht",
+   "gebaeude": "grauwacht_bank",
+   "schalter": [
+    6716,
+    5731.4
+   ],
+   "vorhanden": true,
+   "ausbau": "burg"
+  },
+  {
+   "id": "grauwacht_kaserne_bankkiste",
+   "ort": "Grauwacht",
+   "kiste": [
+    6671.5,
+    5737.8
+   ],
+   "ausbau": "burg"
+  },
+  {
+   "id": "huegelgrund_bank",
+   "ort": "Hügelgrund",
+   "gebaeude": "huegelgrund_bank",
+   "schalter": [
+    6153,
+    5804.4
+   ]
+  },
+  {
+   "id": "kohlstatt_bankkiste",
+   "ort": "Kohlstatt",
+   "kiste": [
+    6424,
+    5882.4
+   ]
+  },
+  {
+   "id": "brechstein_bankkiste",
+   "ort": "Brechstein",
+   "kiste": [
+    6661,
+    5948.4
+   ]
+  },
+  {
+   "id": "wollhag_bankkiste",
+   "ort": "Wollhag",
+   "kiste": [
+    6573,
+    5739.4
+   ]
+  },
+  {
+   "id": "weiherhof_bankkiste",
+   "ort": "Weiherhof",
+   "kiste": [
+    6343,
+    5834.4
+   ]
+  },
+  {
+   "id": "heidrast_bankkiste",
+   "ort": "Heidrast",
+   "kiste": [
+    6598,
+    5867.9
+   ]
+  }
+ ],
+ "laeden": [
+  {
+   "id": "huegelgrund_laden",
+   "ort": "Hügelgrund",
+   "art": "Marktstand",
+   "x": 6163,
+   "y": 5810.7,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "kohlstatt_laden",
+   "ort": "Kohlstatt",
+   "art": "Marktstand (Holzkohle, Beile)",
+   "x": 6415,
+   "y": 5882.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "brechstein_laden",
+   "ort": "Brechstein",
+   "art": "Marktstand (Hacken, Erz)",
+   "x": 6657.5,
+   "y": 5949.7,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "wollhag_laden",
+   "ort": "Wollhag",
+   "art": "Marktstand (Wolle, Käse)",
+   "x": 6567,
+   "y": 5740.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "weiherhof_laden",
+   "ort": "Weiherhof",
+   "art": "Marktstand (Fisch, Angeln)",
+   "x": 6337,
+   "y": 5835.7,
+   "blick": [
+    0,
+    -1
+   ]
+  }
+ ],
+ "stationen": [
+  {
+   "id": "herd_grauwacht_taverne",
+   "station": "herd",
+   "x": 6731,
+   "y": 5752.4
+  },
+  {
+   "id": "werkbank_grauwacht_tischlerei",
+   "station": "werkbank",
+   "x": 6735.5,
+   "y": 5799.6
+  },
+  {
+   "id": "herd_huegelgrund",
+   "station": "herd",
+   "x": 6183,
+   "y": 5805.4
+  },
+  {
+   "id": "feuer_kohlstatt",
+   "station": "feuer",
+   "x": 6420,
+   "y": 5880.6
+  },
+  {
+   "id": "esse_brechstein",
+   "station": "esse",
+   "x": 6652.5,
+   "y": 5955.4
+  },
+  {
+   "id": "amboss_brechstein",
+   "station": "amboss",
+   "x": 6655.5,
+   "y": 5955.4
+  },
+  {
+   "id": "kessel_wollhag",
+   "station": "kessel",
+   "x": 6576,
+   "y": 5741.4
+  },
+  {
+   "id": "raeucherhuette_weiherhof",
+   "station": "raeucherhuette",
+   "x": 6330,
+   "y": 5837.6
+  }
+ ],
+ "npc": [
+  {
+   "id": "torwache_grauwacht_1",
+   "rolle": "Torwache (Südtor)",
+   "x": 6677,
+   "y": 5813,
+   "ausbau": "burg"
+  },
+  {
+   "id": "torwache_grauwacht_2",
+   "rolle": "Torwache (Brückentor)",
+   "x": 6724,
+   "y": 5764.5,
+   "ausbau": "burg"
+  },
+  {
+   "id": "hauptmann_kaserne",
+   "rolle": "Hauptmann der Wacht (Kaserne)",
+   "x": 6666,
+   "y": 5738.4,
+   "ausbau": "burg"
+  },
+  {
+   "id": "rekrut_1",
+   "rolle": "Rekrut (übt)",
+   "x": 6659,
+   "y": 5743,
+   "ausbau": "burg"
+  },
+  {
+   "id": "rekrut_2",
+   "rolle": "Rekrut (übt)",
+   "x": 6665,
+   "y": 5747.5,
+   "ausbau": "burg"
+  },
+  {
+   "id": "wirtin_huegelgrund",
+   "rolle": "Wirtin (Gasthaus)",
+   "x": 6178,
+   "y": 5803.6
+  },
+  {
+   "id": "bankier_huegelgrund",
+   "rolle": "Bank",
+   "x": 6153,
+   "y": 5804.4
+  },
+  {
+   "id": "haendler_huegelgrund",
+   "rolle": "Händler (Laden)",
+   "x": 6163,
+   "y": 5810.7
+  },
+  {
+   "id": "kraeuterin_huegelgrund",
+   "rolle": "Kräuterin (Beet)",
+   "x": 6158,
+   "y": 5815
+  },
+  {
+   "id": "koehler_kohlstatt",
+   "rolle": "Köhler (Meiler)",
+   "x": 6414,
+   "y": 5882
+  },
+  {
+   "id": "haendlerin_kohlstatt",
+   "rolle": "Händlerin (Laden)",
+   "x": 6415,
+   "y": 5882.2
+  },
+  {
+   "id": "steinbrecher_brechstein",
+   "rolle": "Steinbrecherin",
+   "x": 6650,
+   "y": 5947.5
+  },
+  {
+   "id": "haendler_brechstein",
+   "rolle": "Händler (Laden)",
+   "x": 6657.5,
+   "y": 5949.7
+  },
+  {
+   "id": "schaeferin_wollhag",
+   "rolle": "Schäferin",
+   "x": 6569,
+   "y": 5740.5
+  },
+  {
+   "id": "scherer_wollhag",
+   "rolle": "Schafscherer",
+   "x": 6578,
+   "y": 5739
+  },
+  {
+   "id": "wollhag_schaf_1",
+   "rolle": "Schaf (Stimmung)",
+   "x": 6565,
+   "y": 5747
+  },
+  {
+   "id": "wollhag_schaf_2",
+   "rolle": "Schaf (Stimmung)",
+   "x": 6568,
+   "y": 5749
+  },
+  {
+   "id": "wollhag_schaf_3",
+   "rolle": "Schaf (Stimmung)",
+   "x": 6571,
+   "y": 5747
+  },
+  {
+   "id": "wollhag_schaf_4",
+   "rolle": "Schaf (Stimmung)",
+   "x": 6573,
+   "y": 5750
+  },
+  {
+   "id": "wollhag_schaf_5",
+   "rolle": "Schaf (Stimmung)",
+   "x": 6564,
+   "y": 5750
+  },
+  {
+   "id": "fischer_weiherhof",
+   "rolle": "Fischer (Steg)",
+   "x": 6338,
+   "y": 5837
+  },
+  {
+   "id": "haendlerin_weiherhof",
+   "rolle": "Händlerin (Laden)",
+   "x": 6337,
+   "y": 5835.7
+  }
+ ],
+ "fischplaetze": [
+  {
+   "id": "fischplatz_grauwacht",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 6744.5,
+   "y": 5778.5,
+   "stehplatz": [
+    6743.5,
+    5778.5
+   ]
+  },
+  {
+   "id": "fischplatz_weiherhof_steg",
+   "fisch": "moorhecht",
+   "stufe": 20,
+   "x": 6331.5,
+   "y": 5842.5,
+   "stehplatz": [
+    6330.5,
+    5842.5
+   ]
+  },
+  {
+   "id": "fischplatz_weiherhof_ost",
+   "fisch": "muehlbarsch",
+   "stufe": 10,
+   "x": 6353.5,
+   "y": 5844.5,
+   "stehplatz": [
+    6354.5,
+    5844.5
+   ]
+  },
+  {
+   "id": "fischplatz_weiherhof_sued",
+   "fisch": "wels",
+   "stufe": 45,
+   "x": 6343.5,
+   "y": 5849.5,
+   "stehplatz": [
+    6343.5,
+    5850.5
+   ]
+  },
+  {
+   "id": "fischplatz_nordkueste_wollhag",
+   "fisch": "klippenbarsch",
+   "stufe": 35,
+   "x": 6553.5,
+   "y": 5663.5,
+   "stehplatz": [
+    6553.5,
+    5664.5
+   ]
+  }
+ ],
+ "kraeuter": [
+  {
+   "id": "huegelgrund_wegerich_1",
+   "art": "wegerich",
+   "x": 6160.5,
+   "y": 5815.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "huegelgrund_ringelblume_2",
+   "art": "ringelblume",
+   "x": 6162.5,
+   "y": 5815.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "huegelgrund_wegerich_3",
+   "art": "wegerich",
+   "x": 6164.5,
+   "y": 5815.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "huegelgrund_ringelblume_4",
+   "art": "ringelblume",
+   "x": 6166.5,
+   "y": 5815.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "heidrast_wegerich_1",
+   "art": "wegerich",
+   "x": 6588.5,
+   "y": 5884.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "heidrast_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6604.5,
+   "y": 5884.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "kohlstatt_wegerich_1",
+   "art": "wegerich",
+   "x": 6410.5,
+   "y": 5866.5,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "kohlstatt_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6430.5,
+   "y": 5866.5,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "brechstein_wegerich_1",
+   "art": "wegerich",
+   "x": 6646.5,
+   "y": 5934.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "brechstein_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6666.5,
+   "y": 5934.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "wollhag_wegerich_1",
+   "art": "wegerich",
+   "x": 6560.5,
+   "y": 5726.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "wollhag_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6580.5,
+   "y": 5726.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "weiherhof_wegerich_1",
+   "art": "wegerich",
+   "x": 6330.5,
+   "y": 5822.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "weiherhof_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6350.5,
+   "y": 5822.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "fahleweiten_eisenhut_1",
+   "art": "eisenhut",
+   "x": 6500.5,
+   "y": 5720.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "fahleweiten_nebelkraut_2",
+   "art": "nebelkraut",
+   "x": 6380.5,
+   "y": 5740.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "fahleweiten_eisenhut_3",
+   "art": "eisenhut",
+   "x": 6560.5,
+   "y": 5800.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "fahleweiten_nebelkraut_4",
+   "art": "nebelkraut",
+   "x": 6260.5,
+   "y": 5840.5,
+   "region": "fl_186_169"
+  }
+ ],
+ "rastplaetze": [
+  "rast_talweg",
+  "rast_graeberweg",
+  "rast_nordweg"
+ ],
+ "wege": [
+  {
+   "punkte": [
+    [
+     6600,
+     5890
+    ],
+    [
+     6612,
+     5944
+    ],
+    [
+     6628,
+     6004
+    ],
+    [
+     6640,
+     6064
+    ],
+    [
+     6648,
+     6124
+    ],
+    [
+     6662,
+     6182
+    ],
+    [
+     6682,
+     6246
+    ],
+    [
+     6694,
+     6300
+    ]
+   ],
+   "breite": 2
+  },
+  {
+   "punkte": [
+    [
+     6604,
+     5866
+    ],
+    [
+     6622,
+     5846
+    ],
+    [
+     6648,
+     5826
+    ],
+    [
+     6668,
+     5818
+    ],
+    [
+     6680,
+     5814
+    ],
+    [
+     6680,
+     5801
+    ]
+   ],
+   "breite": 2
+  },
+  {
+   "punkte": [
+    [
+     6584,
+     5872
+    ],
+    [
+     6556,
+     5858
+    ],
+    [
+     6520,
+     5830
+    ],
+    [
+     6494,
+     5800
+    ],
+    [
+     6476,
+     5786
+    ]
+   ],
+   "breite": 2
+  },
+  {
+   "punkte": [
+    [
+     6444,
+     5770
+    ],
+    [
+     6400,
+     5778
+    ],
+    [
+     6344,
+     5786
+    ],
+    [
+     6288,
+     5784
+    ],
+    [
+     6252,
+     5780
+    ]
+   ],
+   "breite": 2
+  },
+  {
+   "punkte": [
+    [
+     6680,
+     5813
+    ],
+    [
+     6680,
+     5801
+    ],
+    [
+     6744,
+     5801
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6690,
+     5801
+    ],
+    [
+     6699,
+     5793
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6649,
+     5718
+    ],
+    [
+     6649,
+     5806
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6714,
+     5786
+    ],
+    [
+     6744,
+     5786
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6726,
+     5786
+    ],
+    [
+     6726,
+     5764
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6650,
+     5801
+    ],
+    [
+     6680,
+     5801
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6726,
+     5772
+    ],
+    [
+     6746,
+     5772
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     6141,
+     5806
+    ],
+    [
+     6191,
+     5806
+    ]
+   ],
+   "breite": 2.2,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     6165,
+     5804
+    ],
+    [
+     6165,
+     5806
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "k"
+  },
+  {
+   "punkte": [
+    [
+     6189,
+     5806
+    ],
+    [
+     6214,
+     5808
+    ],
+    [
+     6250,
+     5802
+    ],
+    [
+     6262,
+     5786
+    ],
+    [
+     6252,
+     5780
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6420,
+     5868
+    ],
+    [
+     6416,
+     5840
+    ],
+    [
+     6404,
+     5800
+    ],
+    [
+     6400,
+     5779
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6436,
+     5879
+    ],
+    [
+     6470,
+     5884
+    ],
+    [
+     6530,
+     5880
+    ],
+    [
+     6584,
+     5873
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6642,
+     5945
+    ],
+    [
+     6614,
+     5944
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6584,
+     5738
+    ],
+    [
+     6620,
+     5768
+    ],
+    [
+     6650,
+     5818
+    ],
+    [
+     6676,
+     5814
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6556,
+     5740
+    ],
+    [
+     6530,
+     5752
+    ],
+    [
+     6500,
+     5762
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6340,
+     5822
+    ],
+    [
+     6342,
+     5800
+    ],
+    [
+     6344,
+     5787
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  }
+ ]
+}

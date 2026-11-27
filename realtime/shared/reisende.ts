@@ -9,8 +9,7 @@ export interface Reise { id: string; /** Modell (img/figuren-echt3d) */ datei: s
 export const SUEDSTRASSE: [number, number][] = [[6444.5, 6762], [6450.5, 6840], [6456.5, 6904], [6461.5, 6960], [6466, 7008], [6467.5, 7050], [6470, 7092], [6467, 7160], [6461.5, 7230], [6449.5, 7270], [6439.5, 7286]]; /* Straßenmitte (Welt-Abgleich #126); Halt am Halben Weg auf der Kreuzung, nicht auf dem Wegweiser */
 const HALBER_WEG = 4;
 /** Phase 11: der Weg von Steinhag (Marktplatz) zum Bergwerk am Erzberg (Wegenetz der Welt, welt/hochlande_orte.json) */
-/* #167: vom Markt durchs Osttor und am Hang hinauf zum Stolleneingang – gesucht auf dem Gehraster, frei in der Stadt von Welt (ecc7ce167) wie im Stand davor */
-export const ERZWEG: [number, number][] = [[6992.5, 5900.5], [7128.5, 5896.5], [7128.5, 5812.5]];
+export const ERZWEG: [number, number][] = [[6992.5, 5900.5], [6998.5, 5900.5], [7004.5, 5900.5], [7010.5, 5900.5], [7016.5, 5900.5], [7022.5, 5900.5], [7028.5, 5900.5], [7034.5, 5900.5], [7040.5, 5900.5], [7046.5, 5900.5], [7052.5, 5900.5], [7058.5, 5900.5], [7064.5, 5900.5], [7070.5, 5900.5], [7076.5, 5900.5], [7082.5, 5900.5], [7085.5, 5897.5], [7086.5, 5896.5], [7090.5, 5894.5], [7093.5, 5891.5], [7095.5, 5887.5], [7098.5, 5884.5], [7100.5, 5880.5], [7102.5, 5876.5], [7103.5, 5871.5], [7105.5, 5867.5], [7107.5, 5863.5], [7108.5, 5858.5], [7110.5, 5854.5], [7111.5, 5849.5], [7113.5, 5845.5], [7115.5, 5845.5], [7115.5, 5839.5], [7115.5, 5837.5], [7117.5, 5833.5], [7119.5, 5829.5], [7121.5, 5825.5], [7122.5, 5820.5], [7124.5, 5816.5], [7128.5, 5815.5], [7128.5, 5812.5]]; /* Welt ecc7ce167: welt/hochlande_orte.json → reisende (Markt → Osttor → Erzweg → Stollen), jedes Stück begehbar */
 /** #174 Kielmund: am Kai entlang (Lagerhäuser im Norden, Hafenbank im Süden) und die Streife der Stadtwache vom Nordtor über den Markt zum Hafen */
 export const KIELMUND_KAI: [number, number][] = [[6409.5, 7310.5], [6409.5, 7338.5]];
 export const KIELMUND_STREIFE: [number, number][] = [[6448.5, 7266.5], [6437.5, 7284.5], [6409.5, 7309.5], [6410.5, 7333.5], [6412.5, 7336.5]]; /* Wegsuche auf dem Gehraster der Stadt */
@@ -20,7 +19,7 @@ export const REISENDE: Reise[] = [
   { id: "wanderer_sued", datei: "npc.wanderer", punkte: SUEDSTRASSE, halte: { 0: 20, [HALBER_WEG]: 40, [SUEDSTRASSE.length - 1]: 20 }, tempo: 1.2, versatz: 400 },
   /* Phase 11: zwei Bergleute pendeln zwischen Steinhag und dem Bergwerk, mit Schicht am Stollen und Pause am Markt */
   { id: "bergmann_erzweg", datei: "npc.bergmann2", punkte: ERZWEG, halte: { 0: 60, [ERZWEG.length - 1]: 180 }, tempo: 1.0, versatz: 0 },
-  { id: "bergfrau_erzweg", datei: "npc.bergfrau", punkte: ERZWEG, halte: { 0: 90, 1: 20, [ERZWEG.length - 1]: 150 }, tempo: 0.9, versatz: 500 },
+  { id: "bergfrau_erzweg", datei: "npc.bergfrau", punkte: ERZWEG, halte: { 0: 90, 14: 20 /* am Osttor */, [ERZWEG.length - 1]: 150 }, tempo: 0.9, versatz: 500 },
   /* #174 Kielmund: zwei Hafenarbeiter tragen Kisten zwischen Kai und Lagerhäusern, eine Stadtwache geht vom Nordtor zum Hafen (Wege der Welt, kielmund_orte.json) */
   { id: "hafenarbeiter_kielmund", datei: "npc.hafen_mann", punkte: KIELMUND_KAI, halte: { 0: 40, [KIELMUND_KAI.length - 1]: 40 }, tempo: 0.8, versatz: 0 },
   { id: "hafenarbeiterin_kielmund", datei: "npc.hafen_frau", punkte: KIELMUND_KAI, halte: { 0: 30, [KIELMUND_KAI.length - 1]: 50 }, tempo: 0.7, versatz: 300 },

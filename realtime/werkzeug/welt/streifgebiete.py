@@ -39,6 +39,10 @@ for o in on.get('orte', []):
     if o['art'] in RADIUS: meiden.append((o['x'], o['y'], RADIUS[o['art']], f"{o['art']} {o['name']}"))
 meiden.append((6689, 6515, 48, 'Stadt Graufurt'))
 _hs = lies('hochlande_orte.json').get('hauptstadt')
+_km = lies('kielmund_orte.json').get('mauer')
+if _km: meiden.append(((_km[0] + _km[2]) / 2, (_km[1] + _km[3]) / 2, math.hypot(_km[2] - _km[0], _km[3] - _km[1]) / 2 + 20, 'Stadt Kielmund (Stadtmauer)'))   # #174
+_gw = lies('fahleweiten_orte.json').get('grauwacht')
+if _gw: _m = _gw['mauer']; meiden.append(((_m[0] + _m[2]) / 2, (_m[1] + _m[3]) / 2, math.hypot(_m[2] - _m[0], _m[3] - _m[1]) / 2 + 8, 'Stadt Grauwacht (Stadtmauer)'))   # #171
 if _hs: _m = _hs['mauer']; meiden.append(((_m[0] + _m[2]) / 2, (_m[1] + _m[3]) / 2, math.hypot(_m[2] - _m[0], _m[3] - _m[1]) / 2 + 8, 'Stadt Steinhag (Ringmauer)'))   # #167
 meiden += IA
 S = lies('sammelstellen.json')

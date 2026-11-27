@@ -7,7 +7,7 @@ import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende"
 import { H_QUESTS } from "./hochlande";
 import TROEDLER_STANDORTE from "../welt/troedler_standorte.json";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}` | `zunft_${string}` | `kielmund_${string}`;
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}` | `zunft_${string}` | `fahleweiten_${string}` | `kielmund_${string}`;
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
   gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string;
@@ -227,6 +227,22 @@ ort("kielmund_matrosin_kai", { name: "Matrosin", spruch: "", haendler: "Matrosin
   gruss: "Wir laufen mit der Flut aus. Bis dahin: Taue spleißen.", tschuess: "Ahoi.", zeilen: ["Die Fischerzunft hat ihren eigenen Steg. Da kommt nur rein, wer was vom Fischen versteht."] });
 ort("kielmund_fischfrau", { name: "Fischfrau", spruch: "", haendler: "Fischfrau Gesine", modell: "npc.moewen_fischerin", x: 6426, y: 7321, nurReden: true,
   gruss: "Am Fischmarkt wird geschrien, nicht geflüstert!", tschuess: "Komm morgen wieder, dann ist's frischer.", zeilen: ["Die Möwen klauen mehr als die Diebe. Und sie sind schneller."] });
+/* ───── Fahle Weiten (#171, Welt e5c7f6f1): Marktstände der Dörfer an den Plätzen aus welt/fahleweiten_orte.json → laeden. Nur vorhandene Waren. ───── */
+ort("fahleweiten_huegelgrund", { name: "Hügelgrunder Markt", spruch: "Was das Land hergibt.", haendler: "Gerda Furch", modell: "npc.marktfrau", x: 6163, y: 5810.7, blick: [0, -1],
+  gruss: "Brot vom Ofen, Äpfel vom Hang. Und wer weiter will: ein Trank für unterwegs.", tschuess: "Komm gut über die Weiten.",
+  waren: [W("brot", 8), W("apfel", 3), W("krug", 5), W("kleiner_heiltrank", 40), W("leeres_flaeschchen", 2)] });
+ort("fahleweiten_kohlstatt", { name: "Köhlerstand", spruch: "Beile und Rauch.", haendler: "Marthe Glut", modell: "npc.kauffrau", x: 6415, y: 5882.2, blick: [0, -1],
+  gruss: "Hier riecht alles nach Meiler. Ein Beil? Die Bäume ringsum warten.", tschuess: "Und lass das Feuer nicht ausgehen.",
+  waren: [W("holzbeil_training", 10), W("holzbeil_einfach", 350), W("brot", 8), W("krug", 5)] });
+ort("fahleweiten_brechstein", { name: "Steinbrecherbedarf", spruch: "Hacken für den Grauen Fels.", haendler: "Bertold Spalt", modell: "npc.bergmann", x: 6657.5, y: 5949.7, blick: [0, -1],
+  gruss: "Der Graue Fels gibt Kupfer und Eisen – wer eine Hacke hat.", tschuess: "Glück auf!",
+  waren: [W("spitzhacke_training", 10), W("spitzhacke_einfach", 350), W("hammer", 10), W("brot", 8)] });
+ort("fahleweiten_wollhag", { name: "Wollhager Hofladen", spruch: "Milch und Käse von der Heide.", haendler: "Hilla Schur", modell: "npc.sennerin", x: 6567, y: 5740.2, blick: [0, -1],
+  gruss: "Die Schafe geben Wolle, die Ziegen Milch – und aus der Milch wird Käse. Probier!", tschuess: "Grüß mir die Grauwacht.",
+  waren: [W("ziegenmilch", 6), W("kaeselaib", 45), W("brot", 8)] });
+ort("fahleweiten_weiherhof", { name: "Am Weiher", spruch: "Fisch und Angeln.", haendler: "Jost Reuse", modell: "npc.fischer", x: 6337, y: 5835.7, blick: [0, -1],
+  gruss: "Hecht am Steg, Barsch am Ostufer, und im Süden liegt ein alter Wels. Angel und Würmer hab ich da.", tschuess: "Petri Heil!",
+  waren: [W("angelrute", 10), W("wurm", 2), W("fisch_muehlbarsch_gebraten", 9), W("fisch_moorhecht_gebraten", 12), W("fisch_wels_gebraten", 25)] });
 /* #160: die Läden in Steinhag öffnen erst nach H1 „Über den Pass“ (Entscheidung des Nutzers, 27.11.) – die Bank (shared/bank.ts) und die Bergvögtin bleiben immer da */
 export const STEINHAG_LAEDEN: LadenId[] = ["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter", "troedler_steinhag",
   "steinhag_waffen", "steinhag_ruestung", "steinhag_backstube", "steinhag_seefisch", "steinhag_stoffe", "steinhag_zunftbedarf", "steinhag_grubenproviant"];
