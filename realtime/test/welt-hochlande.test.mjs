@@ -50,6 +50,8 @@ check(adern.length >= 9 && new Set(adern.map((a) => a.art)).size === 3 && !au.le
 check(!innen.length, "Füllort, Trollhalle (für den Mini-Boss später) und Urkammer erreichbar", innen);
 check(existsSync(join(WURZEL, "echtzeit", "welt", "karte-hochlande_bergwerk.webp")), "Minikarte des Bergwerks gebaut");
 
+const FIG = ["hochland_stolleneingang", "hochland_lore", "hochland_schienen", "hochland_grubenholz", "hochland_kaeserad", "hochland_pass_schranke", "hochland_gipfelkreuz", "hochland_steinmann"].filter((id) => !OBJ.some((o) => o.objekt === id));
+check(!FIG.length, "Objekte von Figuren (#148, f430c667a) in der Welt: Stolleneingang, Lore, Schienen, Grubenholz, Käserad, Pass-Schranke, Gipfelkreuz, Steinmann", FIG);
 console.log("\nGegner, Streifgebiete, Namen");
 const GP = lies("gegnerplaetze.json").plaetze.filter((p) => p.land === "Die Hochlande"), arten = new Set(GP.flatMap((p) => p.gegner)), stufen = GP.map((p) => p.stufe);
 const fehltArt = ["hochlandwidder", "hochlandbaer", "bergtroll", "steppenwolf"].filter((a) => !arten.has(a));

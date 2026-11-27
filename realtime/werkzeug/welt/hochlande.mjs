@@ -132,8 +132,8 @@ const [SX, SY] = ORTE.steinhag;
 const BW_U = [362, 300], [BX, BY] = ORTE.bergwerk;
 { /* Vorplatz und Zugang aus dem Fels geschlagen (Höhlenboden), bis hinunter zum Weg */
   male(BX - 8, BY - 1, BX + 7, BY + 9, (x, y) => (Math.hypot((x - BX) / 7.5, (y - BY - 4) / 5.5) < 1 ? "h" : null)); male(BX - 6, BY + 4, BX + 2, BY + 16, (x, y) => (strecke(x, y, [[BX, BY + 4], [BX - 3, BY + 14]]) < 2.4 ? "g" : null));
-  ding("hoehle_tuer_01", BX, BY - 0.4, { id: "bergwerk_eingang" }); ding("wald_baumstamm_01", BX + 7, BY + 12, { id: "bergwerk_grubenholz_1", s: 0.7 }); ding("wald_baumstamm_02", BX + 7, BY + 9, { id: "bergwerk_grubenholz_2", s: 0.7, spiegeln: true });
-  ding("k_karren_hoch", BX - 5, BY + 4.5, { id: "bergwerk_lore" }); ding("dorf_holzstapel_01", BX + 4, BY + 6); ding("moor_feuerkorb_01", BX - 2, BY + 2);
+  ding("hochland_stolleneingang", BX, BY - 1, { id: "bergwerk_eingang" }); ding("hochland_grubenholz", BX + 5, BY + 3, { id: "bergwerk_grubenholz_1" }); ding("hochland_grubenholz", BX + 6.5, BY + 5, { id: "bergwerk_grubenholz_2", spiegeln: true });
+  ding("hochland_lore", BX - 1.5, BY + 6, { id: "bergwerk_lore" }); ding("hochland_schienen", BX - 1.5, BY + 3.5, { id: "bergwerk_schienen_1" }); ding("hochland_schienen", BX - 1.5, BY + 6, { id: "bergwerk_schienen_2" }); ding("dorf_holzstapel_01", BX + 4, BY + 6); ding("moor_feuerkorb_01", BX - 2, BY + 2);
   ding("moor_kate_02", BX - 14, BY + 12, { id: "bergwerk_kaue" });
   lies("bergwerk_eingang", BX, BY + 1.2, "Der Stollen ins Erzberg-Bergwerk. Kalte Luft, das Klopfen von Hämmern – und tief drinnen etwas Schweres, das sich bewegt.", { tat: "bergwerk", knopf: "Hineingehen", ziel: [BW_U[0] * 32 + 48, BW_U[1] * 32 + 58] });
   npc.push({ id: "steiger", rolle: "Steiger (Bergwerk)", x: BX - 4, y: BY + 3 }, { id: "bergmann_1", rolle: "Bergmann", x: BX + 3, y: BY + 4 }, { id: "bergmann_2", rolle: "Bergfrau", x: BX - 12, y: BY + 13.5 }); }
@@ -141,15 +141,15 @@ const BW_U = [362, 300], [BX, BY] = ORTE.bergwerk;
 /* ═══════ 5. Passwacht am Hochpass ═══════ */
 { const [px, py] = PASS; eben.push([px - 10, py - 8, px + 10, py + 8]);
   ding("dorf_wachturm_01", px + 7, py - 3, { id: "passwacht_turm" }); ding("moor_kate_01", px - 8, py - 2, { id: "passwacht_stube" });
-  for (const dx of [-5, -3, 3, 5]) ding("dorf_palisade_01", px + dx, py - 7, { id: "passwacht_palisade_" + (dx + 6) }); ding("dorf_tor_01", px, py - 7, { id: "passwacht_schranke" });
-  ding("moor_feuerkorb_01", px + 2, py + 2); ding("k_faesser", px - 4, py + 3); ding("moor_menhir_01", px + 14, py - 14, { id: "grauhorn_steinmann", s: 0.8 });
+  for (const dx of [-5, -3, 3, 5]) ding("dorf_palisade_01", px + dx, py - 7, { id: "passwacht_palisade_" + (dx + 6) }); ding("hochland_pass_schranke", px, py - 7, { id: "passwacht_schranke" });
+  ding("moor_feuerkorb_01", px + 2, py + 2); ding("k_faesser", px - 4, py + 3); ding("hochland_steinmann", px + 14, py - 14, { id: "grauhorn_steinmann" }); ding("hochland_gipfelkreuz", 6900, 5668, { id: "grauhorn_gipfelkreuz" });
   lies("passwacht", px + 1, py + 3.4, "Die Passwacht am Hochpass. Dahinter, im Norden, beginnt das Eis der Frostkrone. Die Schranke ist offen – wer hinüber will, geht auf eigene Gefahr.");
   lies("grauhorn_steinmann", px + 14, py - 12.6, "Ein Steinmann auf dem Grat des Grauhorns. Jeder, der hier oben war, hat einen Stein dazugelegt.");
   npc.push({ id: "passwaechterin", rolle: "Passwächterin", x: px + 2, y: py + 0.5 }, { id: "passwaechter", rolle: "Passwächter", x: px - 7, y: py - 0.4 }); }
 
 /* ═══════ 6. Almhütte mit Käserei ═══════ */
 { const [ax, ay] = ORTE.alm; eben.push([ax - 14, ay - 10, ax + 14, ay + 10]);
-  ding("moor_langhaus_01", ax - 4, ay, { id: "almhuette" }); ding("weidenhain_kate_01", ax + 8, ay - 1, { id: "kaeserei" }); ding("hand_kessel_01", ax + 8, ay + 2, { id: "kaeserei_kessel" });
+  ding("moor_langhaus_01", ax - 4, ay, { id: "almhuette" }); ding("weidenhain_kate_01", ax + 8, ay - 1, { id: "kaeserei" }); ding("hand_kessel_01", ax + 8, ay + 2, { id: "kaeserei_kessel" }); ding("hochland_kaeserad", ax + 11, ay + 3, { id: "kaeserei_kaeserad_1" }); ding("hochland_kaeserad", ax + 12.2, ay + 3.4, { id: "kaeserei_kaeserad_2" });
   ding("k_faesser", ax + 12, ay + 1); ding("dorf_heuballen_01", ax - 11, ay + 3); ding("dorf_brunnen_01", ax + 1, ay + 5, { id: "alm_brunnen" });
   for (let u = ax - 18; u <= ax + 18; u += 2.4) ding("k_zaun", u, ay + 10, { id: "alm_zaun_" + Math.round(u - ax + 20) });
   lies("almhuette", ax - 4, ay + 1.6, "Die Almhütte auf der Hohen Alm. Im Sommer weiden hier Schafe und Ziegen, und in der Käserei reifen Laibe so groß wie Wagenräder.");
@@ -209,8 +209,8 @@ const ADERN = [];
   const g = raster(96, 64, (x, y) => strecke(x, y, HAUPT) < 2.4 + 0.4 * zw(x, y) || strecke(x, y, OSTSTOLLEN) < 2.2 + 0.4 * zw(x, y) || strecke(x, y, QUER) < 1.8 + 0.3 * zw(x, y) ||
     Math.hypot(x - HALLE.x, y - HALLE.y) < HALLE.r + 0.6 * zw(x, y) || Math.hypot(x - KAMMER.x, y - KAMMER.y) < KAMMER.r + 0.5 * zw(x, y) || Math.hypot(x - VORRAUM.x, y - VORRAUM.y) < VORRAUM.r + 0.4 * zw(x, y) || (y > 56 && y < 63 && Math.abs(x - 48) < 2.5));
   let m = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(k|hoehle|moor|wz|wald|dorf)_/, "").replace(/_\d+$/, "") + "_" + ++m, objekt, x, y, ...mehr });
-  const dinge = [o("hoehle_leiter_01", 48, 59.4), o("moor_feuerkorb_01", 44, 52), o("moor_feuerkorb_01", 52, 52), o("k_karren_hoch", 45, 47, { id: "bergwerk_lore_1" }), o("k_karren", 66, 41, { id: "bergwerk_lore_2" }),
-    o("wald_baumstamm_01", 30, 37), o("wald_baumstamm_02", 60, 18.4, { spiegeln: true }), o("hoehle_steinsaeule_01", 18, 10), o("hoehle_steinsaeule_01", 27, 15), o("hoehle_steinsaeule_01", 83, 9), o("k_kiste", 51, 55), o("dorf_holzstapel_01", 40, 26)];
+  const dinge = [o("hoehle_leiter_01", 48, 59.4), o("moor_feuerkorb_01", 44, 52), o("moor_feuerkorb_01", 52, 52), o("hochland_lore", 47, 49, { id: "bergwerk_lore_1" }), o("hochland_lore", 66, 41, { id: "bergwerk_lore_2" }), o("hochland_schienen", 48, 54), o("hochland_schienen", 48, 51.5), o("hochland_schienen", 48, 49),
+    o("hochland_grubenholz", 30, 38), o("hochland_grubenholz", 60, 18.4, { spiegeln: true }), o("hochland_grubenholz", 80, 26), o("hoehle_steinsaeule_01", 18, 10), o("hoehle_steinsaeule_01", 27, 15), o("hoehle_steinsaeule_01", 83, 9), o("k_kiste", 51, 55), o("dorf_holzstapel_01", 40, 26)];
   /* Erzadern an den Stollenwänden: Sterneisen (35) im Hauptstollen, Splittereisen (45) im Querschlag, Ureisen (65) in der Kammer – für sammelstellen.mjs */
   const ader = (id, art, x, y) => { g[Math.floor(y)][Math.floor(x)] = "h"; ADERN.push({ id, art, x: BW_U[0] * 32 + x, y: BW_U[1] * 32 + y, region: "hochlande_bergwerk" }); };
   [[46, 44], [44, 42], [50, 44]].forEach(([x, y], i) => ader("bergwerk_sterneisen_" + (i + 1), "sterneisen", x + 0.5, y + 0.5));

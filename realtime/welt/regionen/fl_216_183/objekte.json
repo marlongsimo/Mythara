@@ -41,6 +41,8 @@
  {"id":"almhuette","objekt":"moor_langhaus_01","x":274.5,"y":144},
  {"id":"kaeserei","objekt":"weidenhain_kate_01","x":286,"y":143},
  {"id":"kaeserei_kessel","objekt":"hand_kessel_01","x":286,"y":146},
+ {"id":"kaeserei_kaeserad_1","objekt":"hochland_kaeserad","x":289.5,"y":147.5},
+ {"id":"kaeserei_kaeserad_2","objekt":"hochland_kaeserad","x":290.5,"y":147.5},
  {"id":"hl_faesser_29","objekt":"k_faesser","x":290,"y":145},
  {"id":"hl_heuballen_30","objekt":"dorf_heuballen_01","x":267.5,"y":147.5},
  {"id":"alm_brunnen","objekt":"dorf_brunnen_01","x":279,"y":149.35},
