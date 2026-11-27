@@ -10407,6 +10407,157 @@
     "fest": true
    },
    "hinweis": "Kollision deckt nur den Schenkel entlang x; den zweiten Schenkel (entlang y, Wasser bei +x) bitte mit kaimauer_gerade gedreht ergänzen oder Kollision im Ort setzen"
+  },
+  {
+   "id": "ocker_zelt_gross",
+   "name": "Karawanenzelt",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/stil/ocker_zelt_gross.webp",
+   "groesse": [
+    375,
+    317
+   ],
+   "anker": [
+    0.5,
+    0.9022
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.5,
+    "y": -2.0,
+    "b": 5.0,
+    "h": 4.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/zelt_gross.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "ocker_zelt_rund",
+   "name": "Rundzelt",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/stil/ocker_zelt_rund.webp",
+   "groesse": [
+    219,
+    240
+   ],
+   "anker": [
+    0.5,
+    0.9208
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 2.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/zelt_rund.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "ocker_ziehbrunnen",
+   "name": "Ziehbrunnen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/ocker_ziehbrunnen.webp",
+   "groesse": [
+    159,
+    177
+   ],
+   "anker": [
+    0.5,
+    0.9153
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 1.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/ziehbrunnen.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "ocker_akazie",
+   "name": "Akazie",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/ocker_akazie.webp",
+   "groesse": [
+    379,
+    330
+   ],
+   "anker": [
+    0.5,
+    0.9061
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/akazie.glb",
+    "wind": 0.05,
+    "fest": false
+   }
+  },
+  {
+   "id": "ocker_dornenhecke",
+   "name": "Dornenhecke",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/ocker_dornenhecke.webp",
+   "groesse": [
+    178,
+    106
+   ],
+   "anker": [
+    0.5,
+    0.8491
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.5,
+    "y": -0.3,
+    "b": 3.0,
+    "h": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/dornenhecke.glb",
+    "wind": 0.03,
+    "fest": false
+   }
   }
  ]
 }
