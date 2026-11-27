@@ -4,6 +4,7 @@
  * die Theke liegt 0–0,7 Felder nördlich davon). Der Händler steht südlich hinter der Theke und schaut nach Norden auf den Marktplatz, der Kunde davor. Bezahlt wird mit Splittern. Preise und Werte sind vorläufig (Balancing folgt).
  */
 import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende";
+import { H_QUESTS } from "./hochlande";
 import TROEDLER_STANDORTE from "../welt/troedler_standorte.json";
 
 export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}`;
@@ -118,7 +119,7 @@ ort("sandquell_quelle", { name: "Quellwächterin", spruch: "", haendler: "Ayla D
   gruss: "Die Quelle gehört niemandem. Darum wache ich über sie.", tschuess: "Geh mit Wasser.",
   zeilen: ["Seit hundert Jahren ist sie nicht versiegt. Wer Sand hineinwirft, bekommt es mit mir zu tun.", "Nachts hört man die Dünen singen. Das ist nur der Wind. Meistens."] });
 /* ───── Phase 11 (doku/konzepte/phase-11.md): die Hochlande – Steinhag, Erzberg, Passwacht, Hohe Alm, Einsiedelei. Plätze der Welt (welt/hochlande_orte.json),
-   Modelle nach der Zuordnung von Figuren (#148). Läden nur mit vorhandenen Waren; die Läden schaltet später H1 frei (vorerst offen). ───── */
+   Modelle nach der Zuordnung von Figuren (#148). Läden nur mit vorhandenen Waren; die Läden in Steinhag öffnen erst nach H1 (Entscheidung des Nutzers, 27.11.: unten), die Bank immer. ───── */
 /* Steinhag, Bergstadt am See */
 ort("steinhag_taverne", { name: "Zum Grubenlicht", spruch: "Warm, laut und voller Bergleute.", haendler: "Ruprecht Talg", modell: "npc.alter_bauer", x: 7010, y: 5879.8,
   gruss: "Setz dich zu den Kumpeln! Eintopf, Braten, Bier – such dir was aus.", tschuess: "Glück auf!",
@@ -136,6 +137,10 @@ ort("troedler_steinhag", { name: "Trödelstand", spruch: "Ich nehm alles – fas
 ort("steinhag_vogt", { name: "Bergvögtin", spruch: "", haendler: "Hilde Erzgrund", modell: "npc.kauffrau", x: 6991, y: 5880, nurReden: true,
   gruss: "Willkommen in Steinhag. Wir haben Erz, Holz und Fisch – und seit Wochen zu viele Trolle.", tschuess: "Glück auf.",
   zeilen: ["Die Passwacht hält kaum noch. Wenn du nach Norden willst, sprich mit den Wächtern am Hochpass.", "Das Bergwerk am Erzberg ist das älteste der Splitterlande. Was unten liegt, weiß keiner so genau."] });
+/* #160: die Läden in Steinhag öffnen erst nach H1 „Über den Pass“ (Entscheidung des Nutzers, 27.11.) – die Bank (shared/bank.ts) und die Bergvögtin bleiben immer da */
+export const STEINHAG_LAEDEN: LadenId[] = ["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter", "troedler_steinhag"];
+for (const id of STEINHAG_LAEDEN) Object.assign(LAEDEN[id], { wenn: { quest: H_QUESTS.h1, phase: "fertig" as const },
+  zu: "Die Läden sind zu. Seit die Trolle auf den Wegen sind, kommt keine Ware über den Pass – die Bergvögtin sucht jemanden, der hilft." });
 /* Bergwerk am Erzberg, Passwacht am Hochpass, Hohe Alm, Einsiedelei am Spiegelsee, Brücke zur Furt */
 ort("hochland_steiger", { name: "Steiger", spruch: "", haendler: "Steiger Wendel", modell: "npc.bergmann", x: 7124, y: 5811, blick: [1, 0], nurReden: true,
   gruss: "Glück auf! Unten liegt Sterneisen, Splittereisen – und ganz tief Ureisen. Wenn du Mut hast.", tschuess: "Glück auf.",

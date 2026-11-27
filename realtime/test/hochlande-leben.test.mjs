@@ -9,9 +9,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { readFileSync, existsSync } from "node:fs";
 const WURZEL = new URL("..", import.meta.url).pathname, datei = join(tmpdir(), `riftmere-hochlande-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export { LAEDEN, LADEN_ZEICHEN } from "./shared/laeden"; export { GEGENSTAENDE } from "./shared/gegenstaende"; export { WERKSTAETTEN, versperrt, werkstattErreichbar } from "./shared/handwerk"; export { BANKIERS, nahAnBank } from "./shared/bank"; export { REISENDE, ERZWEG, reiseStelle } from "./shared/reisende"; export { WEGSTEIN_ZIELE, STEINHAG_QUEST } from "./shared/wegstein"; export { QUESTS } from "./shared/quests";',
+await build({ stdin: { contents: 'export { LAEDEN, LADEN_ZEICHEN, ladenOffen, STEINHAG_LAEDEN } from "./shared/laeden"; export { H_QUESTS } from "./shared/hochlande"; export { GEGENSTAENDE } from "./shared/gegenstaende"; export { WERKSTAETTEN, versperrt, werkstattErreichbar } from "./shared/handwerk"; export { BANKIERS, nahAnBank } from "./shared/bank"; export { REISENDE, ERZWEG, reiseStelle } from "./shared/reisende"; export { WEGSTEIN_ZIELE, STEINHAG_QUEST } from "./shared/wegstein"; export { QUESTS } from "./shared/quests";',
   resolveDir: WURZEL, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
-const { LAEDEN, LADEN_ZEICHEN, GEGENSTAENDE, WERKSTAETTEN, versperrt, werkstattErreichbar, BANKIERS, nahAnBank, REISENDE, ERZWEG, reiseStelle, WEGSTEIN_ZIELE, STEINHAG_QUEST, QUESTS } = await import(datei);
+const { LAEDEN, LADEN_ZEICHEN, ladenOffen, STEINHAG_LAEDEN, H_QUESTS, GEGENSTAENDE, WERKSTAETTEN, versperrt, werkstattErreichbar, BANKIERS, nahAnBank, REISENDE, ERZWEG, reiseStelle, WEGSTEIN_ZIELE, STEINHAG_QUEST, QUESTS } = await import(datei);
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
 const frei = (x, y) => !versperrt(Math.floor(x), Math.floor(y)), modell = (m) => existsSync(join(WURZEL, "..", "img", "figuren-echt3d", m + ".glb"));
 const ORTE = JSON.parse(readFileSync(join(WURZEL, "welt", "hochlande_orte.json"), "utf8")), NPC = ORTE.npc;
@@ -39,7 +39,14 @@ console.log("\nBergleute auf dem Erzweg");
 
 console.log("\nWegstein-Ziel Steinhag");
 { const Z = WEGSTEIN_ZIELE.find((z) => z.id === "steinhag"); check(Z && frei(Z.x, Z.y) && Z.quest === STEINHAG_QUEST, "vorbereitet, Ankunft auf freiem Boden am Markt");
-  check(!QUESTS.some((q) => q.id === STEINHAG_QUEST), `noch gesperrt: die Quest ${STEINHAG_QUEST} (H1) gibt es erst mit Block H`); }
+  const H1 = QUESTS.find((q) => q.id === STEINHAG_QUEST); check(STEINHAG_QUEST === H_QUESTS.h1, `das Ziel öffnet sich mit H1 (${STEINHAG_QUEST})${H1 ? " – die Quest ist im Spiel" : " – die Quest kommt mit Block H"}`); }
+
+console.log("\nLäden in Steinhag erst nach H1 (Entscheidung des Nutzers, 27.11.), die Bank immer");
+{ const vor = (id) => "laeuft", nach = (id) => (id === H_QUESTS.h1 ? "fertig" : "");
+  check(STEINHAG_LAEDEN.length === 5 && STEINHAG_LAEDEN.every((id) => LAEDEN[id] && LAEDEN[id].wenn && LAEDEN[id].wenn.quest === H_QUESTS.h1 && !ladenOffen(LAEDEN[id], vor) && ladenOffen(LAEDEN[id], nach) && LAEDEN[id].zu),
+    `Taverne, Schmiede, Bergmarkt, Kräuter und Trödler: zu bis ${H_QUESTS.h1} fertig ist, dann offen`);
+  check(Object.values(LAEDEN).filter((l) => /^hochland_/.test(l.id)).every((l) => !l.wenn), "die übrigen Hochländer (Steiger, Passwacht, Alm …) reden immer");
+  const B = BANKIERS.find((b) => b.id === "steinhag_bank"); check(B && !B.wenn && !B.quest, "die Bank von Steinhag ist immer offen"); }
 
 console.log(f ? `\nHochlande: ${f} FEHLER` : "\nHochlande: alles in Ordnung");
 process.exit(f ? 1 : 0);

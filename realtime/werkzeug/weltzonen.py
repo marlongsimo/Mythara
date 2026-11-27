@@ -46,8 +46,8 @@ BESONDERS = {
                    "lager": [("riesenkrabbe", 6290, 7262), ("strandraeuber_saebel", 6288, 7260), ("strandraeuber_armbrust", 6290, 7260), ("strandraeuber_saebel", 6292, 7260)]},
     "fl_201_225": {"leine": 12, "wandern": 3, "lager": [("mangrovenlurch", 6500, 7580), ("mangrovenlurch", 6498, 7578), ("mangrovenlurch", 6500, 7578)]},
     # Phase 9 (#86): die Glutsande (Festland-Kacheln der Welt #79) – Sandkriecher in den Dünen, Glutskorpione an der Salzpfanne, Karawanenräuber am Kanal (F1).
-    "fl_216_211": {"leine": 12, "wandern": 3,
-                   "lager": [("sandkriecher", 7045, 6856), ("sandkriecher", 7043, 6854), ("glutskorpion", 7045, 6854), ("glutskorpion", 7047, 6854)]},
+    # #155: am Kanal standen zu viele Gegner (Sandkriecher, Skorpione, dazu die Gegnerplätze); die Skorpione stehen jetzt an der Salzpfanne, die Räuber für F1 unten in LAGER_ORT
+    "fl_216_211": {"leine": 12, "wandern": 3, "lager": []},
     "fl_216_198": {"leine": 12, "wandern": 3,
                    "lager": [("karawanenraeuber_saebel", 7209, 6728), ("karawanenraeuber_saebel", 7207, 6726), ("karawanenraeuber_bogen", 7209, 6726), ("karawanenraeuber_bogen", 7211, 6726)]},
     # Phase 9 (#86, F3): der versandete Tempel (Untergrund, Welt #79) – Glutgeister und Sandkriecher; die Sandmutter in ihrer Kammer (Instanz tempel_kammer)
@@ -129,6 +129,8 @@ for rid, l in SUEDEN.items(): BESONDERS.setdefault(rid, {"leine": 12, "wandern":
 LAGER_ORT = [
     # F2 „Fünf Glutskorpione vertreiben“ (SALZPFANNE.skorpione 7330|6646 in shared/quest_f_orte.ts): südlich der Salzbecken
     ("glutskorpion", 7330, 6648), ("glutskorpion", 7327, 6650), ("glutskorpion", 7333, 6650), ("glutskorpion", 7325, 6647), ("glutskorpion", 7335, 6647),
+    # F1 „Ende des Grases“ (KANAL 7046|6852 in shared/quest_f_orte.ts): zwei Säbel- und ein Bogenräuber am ausgetrockneten Kanal – fest, unabhängig von den Gegnerplätzen der Welt
+    ("karawanenraeuber_saebel", 7044, 6846), ("karawanenraeuber_saebel", 7048, 6846), ("karawanenraeuber_bogen", 7046, 6844),
 ]
 for (art_, lx, ly) in LAGER_ORT:
     for rid_, e_ in welt["regionen"].items():
