@@ -13,7 +13,8 @@ import { bauen, gebaeudeDrehen, type Bauplan, type Gebaeude } from "./bauten";
 import { drehe } from "../../../shared/welt/bau";
 import { modell, modellFern, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
-import { Npc3D, Wanderer, NPC3D, WANDERER, ReisenderFigur } from "./npc3d";
+import { Npc3D, Wanderer, NPC3D, WANDERER, ReisenderFigur, TierFigur } from "./npc3d";
+import { TIERPLAETZE } from "../../../shared/tiere";
 import { REISENDE } from "../../../shared/reisende";
 
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
@@ -85,8 +86,8 @@ export class Welt3D {
   drehtHier: ((x: number, z: number) => boolean) | null = null;
   ix!: Index; szene = new THREE.Scene(); kamera = new THREE.PerspectiveCamera(42, 1, 0.5, 600); r!: THREE.WebGLRenderer;
   licht = new THREE.DirectionalLight(0xffdcae, 2.9); himmelLicht = new THREE.HemisphereLight(0xc6dcff, 0x5a4a30, 1.1); fackel = new THREE.PointLight(0xffb060, 0, 16, 1.4);
-  st = new Map<string, Stueck>(); laedt = new Set<string>(); warte: string[] = []; vorhanden = new Set<string>(); naechsterBlick = 0;
-  held = { x: 0, z: 0, blick: 1, lauf: 0 }; /** Reisende auf der Südstraße (#126) */ reisende: ReisenderFigur[] | null = null; pfad: { x: number; z: number }[] = []; tasten: Record<string, boolean> = {};
+  st = new Map<string, Stueck>(); laedt = new Set<string>(); warte: string[] = []; vorhanden = new Set<string>(); naechsterBlick = 0; private naechsterAnlegen = 0;
+  held = { x: 0, z: 0, blick: 1, lauf: 0 }; /** Reisende (Südstraße #126, Erzweg Phase 11) – je Reise angelegt, sobald der Held in die Nähe ihres Weges kommt */ reisende: ReisenderFigur[] | null = null; private reiseDa = new Set<string>(); /** Tiere zur Stimmung (Phase 11), je Platz angelegt */ tiere: TierFigur[] = []; private tierDa = new Set<string>(); pfad: { x: number; z: number }[] = []; tasten: Record<string, boolean> = {};
   gieren = 0.6; neigen = 0.95; abstand = 26; ziel = new THREE.Vector3(); uhr = new THREE.Clock();
   ebene = "";
   feuerLichter: THREE.PointLight[] = [];
@@ -350,8 +351,11 @@ export class Welt3D {
       for (const s of this.st.values()) { if (s.npcs) for (const n of s.npcs) { const p = n.gruppe.position, an = Math.hypot(p.x - hx, p.z - hz) < W; n.gruppe.visible = an; if (an) n.schritt(dt); }
         if (s.wanderer) for (const w of s.wanderer) { w.schritt(dt); w.npc.gruppe.visible = Math.hypot(w.x - hx, w.z - hz) < W; } }
       /* Reisende auf der Südstraße (#126): erst anlegen, wenn der Held in die Nähe der Straße kommt; gehen nur, solange sie nah sind */
-      if (!this.reisende && hz > 6700 && hz < 7350 && Math.abs(hx - 6460) < 160) { this.reisende = REISENDE.map((r) => new ReisenderFigur(this, r)); for (const r of this.reisende) this.szene.add(r.npc.gruppe); }
-      if (this.reisende) for (const r of this.reisende) { r.schritt(Math.hypot(r.x - hx, r.z - hz) < W ? dt : 0); r.npc.gruppe.visible = Math.hypot(r.x - hx, r.z - hz) < W; } }
+      if (performance.now() > this.naechsterAnlegen) { this.naechsterAnlegen = performance.now() + 1000;
+        for (const r of REISENDE) if (!this.reiseDa.has(r.id) && r.punkte.some(([x, y]) => Math.abs(x - hx) < 160 && Math.abs(y - hz) < 160)) { this.reiseDa.add(r.id); const f = new ReisenderFigur(this, r); (this.reisende ||= []).push(f); this.szene.add(f.npc.gruppe); }
+        for (const p of TIERPLAETZE) if (!this.tierDa.has(p.id) && Math.abs(p.x - hx) < 120 && Math.abs(p.y - hz) < 120) { this.tierDa.add(p.id); for (let i = 0; i < p.anzahl; i++) { const t = new TierFigur(this, p, i); this.tiere.push(t); this.szene.add(t.npc.gruppe); } } }
+      if (this.reisende) for (const r of this.reisende) { r.schritt(Math.hypot(r.x - hx, r.z - hz) < W ? dt : 0); r.npc.gruppe.visible = Math.hypot(r.x - hx, r.z - hz) < W; }
+      for (const t of this.tiere) { const an = Math.hypot(t.x - hx, t.z - hz) < W; t.npc.gruppe.visible = an; if (an) t.schritt(dt); } /* fern der Helden: nicht gerechnet */ }
     const y = this.hoehe(H.x, H.z);
     /* Kamera folgt; Nebel bis an den Rand der geladenen Chunks */
     this.ziel.lerp(new THREE.Vector3(H.x, y + 1.1, H.z), this.ziel.lengthSq() ? 0.18 : 1);
