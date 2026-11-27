@@ -147,8 +147,21 @@ try {
   check(QB.erledigt(S2, ute.b[S2.id], "mira") && anzahl(ute, "ringelblume") === 3, "Drei Ringelblumen an Mira in der Waldmark");
   { const vor = anzahl(ute, "kleiner_heiltrank"); await zu(ute, fig(S2, "imme")); await rede(ute, "imme"); await sag(ute, "imme", "abgeben"); await schlaf(600);
     check(ute.b[S2.id] === "fertig" && anzahl(ute, "ringelblume") === 0 && anzahl(ute, "kleiner_heiltrank") === vor + 1, "S2 fertig, Lohn abgeholt: ein kleiner Heiltrank"); }
+
+  console.log("Miras Rezeptbuch (Waldmark, Rabenmoor)");
+  { const M = QUESTS.find((q) => q.id === "waldmark_miras_rezeptbuch"), WEG = [[6458.5, 6429.5, "wegerich_1"], [6453.5, 6437.5, "wegerich_3"], [6423.5, 6431.5, "wegerich_4"]];
+    await zu(ute, fig(M, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "annehmen"); await schlaf(400);
+    check(stand(ute, M).phase === "laeuft" && anzahl(ute, "leeres_flaeschchen") >= 1, "Ute nimmt Miras Rezeptbuch an und bekommt ein leeres Fläschchen");
+    let i = 0; const t0 = Date.now(); while (anzahl(ute, "wegerich") < 5 && Date.now() - t0 < 90000) { const [x, y, id] = WEG[i++ % 3]; await sammeln(ute, "kraut", id, x, y, "wegerich", Math.min(5, anzahl(ute, "wegerich") + 1), 15000); }
+    check(QB.erledigt(M, ute.b[M.id], "wegerich"), `Fünf Wegerich mit der Sichel (${anzahl(ute, "wegerich")})`);
+    const r = await herstellen(ute, 6420.9 - 1.2, 6438.6, "brauen_kleiner_heiltrank");
+    check(r === "ok" && QB.erledigt(M, ute.b[M.id], "trank"), `Kleiner Heiltrank am Kessel im Kräuterhaus (${r})`);
+    await zu(ute, fig(M, "hedda")); await rede(ute, "hedda"); await sag(ute, "hedda", "kraut_blau"); await schlaf(300);
+    check(QB.erledigt(M, ute.b[M.id], "hedda") && anzahl(ute, "rezeptheft") === 1, "Hedda prüft und gibt das Rezeptheft heraus");
+    const ht = anzahl(ute, "heiltrank"); await zu(ute, fig(M, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "abgeben"); await schlaf(600);
+    check(ute.b[M.id] === "fertig" && anzahl(ute, "rezeptheft") === 0 && anzahl(ute, "heiltrank") === ht + 3, `Miras Rezeptbuch fertig, Lohn abgeholt: 3 Heiltränke (${anzahl(ute, "heiltrank") - ht})`); }
   check(!/Server-Fehler|TypeError|ReferenceError/.test(log), "Keine Fehler im Server-Log");
 } catch (e) { console.error(e); f++; }
 srv.kill(); sb.close();
-console.log(f ? `\nSüden (S2, S4, S5, S6, S9): ${f} FEHLER` : "\nSüden (S2, S4, S5, S6, S9): alles in Ordnung");
+console.log(f ? `\nSüden (S2, S4, S5, S6, S9) und Miras Rezeptbuch: ${f} FEHLER` : "\nSüden (S2, S4, S5, S6, S9) und Miras Rezeptbuch: alles in Ordnung");
 process.exit(f ? 1 : 0);
