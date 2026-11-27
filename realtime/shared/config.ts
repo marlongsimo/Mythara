@@ -455,7 +455,7 @@ Object.assign(MONSTER, {
   /** Die Sandmutter: Mini-Boss, Stufe 60, riesiger Sandkriecher – gräbt sich ein, Ansage-Felder (Kammer im Tempel, Instanz) */
   sandmutter: { name: "Die Sandmutter", stufe: 60, bild: "img/echtzeit/bandit.webp", hoehe: 150, lp: 320, tempo: 2.6, angriffswert: { nah: 65, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 60, magie: 45 }, r: 0.9, boss: true, wiederkehr: 600,
     angriff: { name: "Kieferbiss", art: "nah", schaden: [1, 16], takt: 2.5, reich: 2.2, aushol: 0 },
-    v2: { staerke: 110, geschick: 75, defense: 70, magie: 20, staerkeBonus: 30, ticks: 5, abwehr: { nah: 30, fern: 20, magie: 0 } },
+    v2: { staerke: 110, geschick: 75, defense: 70, magie: 20, staerkeBonus: 30, ticks: 5, abwehr: { nah: 40, fern: -5, magie: 30 } /* #178: schwach gegen Fernkampf */ },
     info: "Die Mutter aller Sandkriecher. Sie schläft in der Kammer unter dem Tempel – bis jemand das Auge öffnet.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [300, 600] }] }, { wurf: [{ g: "chitin", chance: 100, anzahl: [3, 6] }] }, { wurf: [{ g: "erz_ureisen", chance: 25, anzahl: [2, 4] }] }, { wurf: [{ g: "stamm_weltenbaum", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 10 }, { g: "@episch", chance: 100 / 40 }, { g: "@legendaer", chance: 100 / 400 }] }, { stark: true, wurf: [{ g: "glutsteinschild", chance: 1 }] } /* Glutsteinschild: nur in der starken Fassung, 1 : 100 je Sieg (Entscheidung des Nutzers) */] },
   /* ───── Phase 10 (#92): Smaragdküste, Kielmund, Klippenhöhlen (doku/konzepte/phase-10.md; Beute nach den Vorschlägen, beute.md folgt) ───── */

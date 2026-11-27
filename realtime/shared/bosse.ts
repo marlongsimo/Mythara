@@ -83,7 +83,8 @@ BOSSE.tjark = { typ: "tjark", art: "schlaeger", phasen: [
 
 /* ───────── Phase 9 (#86, F3): die Sandmutter in ihrer Kammer unter dem Tempel (Region tempel_kammer, Weltfelder 11360…11391 × 9600…9631) ─────────
    Gräbt sich ein (unangreifbar), ruft Sandkriecher, Treibsand auf angesagten Feldern. Instanz je Spieler, solange „sandmutter_kammer“ an ist (F3). */
-BOSSE.sandmutter = { typ: "sandmutter", phasen: [
+/* #178: Schläger, schwach gegen Fernkampf – Kernmechaniken Gelände (Treibsand auf angezeigten Feldern) und Diener (Sandkriecher beim Eingraben); Sandschlag als Rundumschlag */
+BOSSE.sandmutter = { typ: "sandmutter", art: "schlaeger", phasen: [
   { ab: 1, ansagen: [{ name: "Sandschlag", alle: 4, felder: "rundum", schaden: [9, 15] }] },
   { ab: 0.6, text: "Die Sandmutter gräbt sich ein!", eingraben: 5, ruf: { art: "sandkriecher", n: 2, text: "Der Sand bebt überall!" },
     ansagen: [{ name: "Treibsand", sek: 3, felder: "ziel", weite: 1, vorlauf: 2, schaden: [10, 16] }] },
