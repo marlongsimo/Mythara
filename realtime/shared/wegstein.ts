@@ -4,11 +4,12 @@
  * Neue Ziele kommen nur als Eintrag dazu (Rabenmoor nach C1, Graufurt …).
  */
 import type { Bed } from "./questbau";
+import { H_QUESTS } from "./hochlande";
 
 export interface WegZiel { id: string; name: string; /** Ankunft (Weltfelder) */ x: number; y: number; region: string; /** freigeschaltet, wenn diese Bedingung für die Quest gilt */ quest: string; wenn: Bed; /** Hinweis, solange gesperrt */ sperre: string }
 export const B1_ID = "weidenhain_der_wegstein";
 /** Phase 11: das Wegstein-Ziel Steinhag hängt an H1 „Über den Pass“ (Block H, noch nicht freigegeben) – Quest-Id vorläufig */
-export const STEINHAG_QUEST = "hochlande_ueber_den_pass";
+export const STEINHAG_QUEST = H_QUESTS.h1;
 export const WEGSTEIN_ZIELE: WegZiel[] = [
   { id: "weidenhain_linde", name: "Weidenhain – die Linde", x: 6452.5, y: 6684.5, region: "weidenhain", quest: B1_ID, wenn: { phase: ["fertig"] }, sperre: "Agnes an der Linde in Weidenhain weiß, wie man einen Wegstein macht." },
   { id: "osthof_muehle", name: "Osthof – die Windmühle", x: 6562.5, y: 6429.5, region: "osthof", quest: "osthof_die_muehle_steht_still", wenn: { phase: ["fertig"] }, sperre: "Die Mühle im Osthof steht still – Till Mahler braucht Hilfe." },

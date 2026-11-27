@@ -30,5 +30,5 @@ Seltenheit: eigene Stufe über Mythisch oder „mythisch“ mit Stufe 70 – ent
 
 ## Herkunft
 
-- **Drop beim Mini-Boss der Hochlande** (alter Bergtroll in der Trollhalle des Bergwerks Erzberg, Phase 11) – kommt mit Block H.
-- Drop-Chance: legt die Integration beim Boss fest (Vorschlag 1 : 100 je Waffe in der starken Fassung nach der Quest, keine in der Quest-Fassung).
+- **Nur im Minispiel Rissgrube** (Entscheidung des Nutzers, 27.11.; `rissgrube.md`) – Drop aus der Risstruhe. Nicht bei Bossen der Hochlande.
+- Bis die Rissgrube gebaut ist, sind die Waffen fertig, aber nicht erhältlich (STUFE70_BEUTE vorbereitet, nicht aktiv).

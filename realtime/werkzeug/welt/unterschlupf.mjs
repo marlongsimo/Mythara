@@ -56,9 +56,12 @@ const spiel = { start: [[UNTEN[0] - OX, UNTEN[1] - OY]], figuren: [], spawnzonen
     lies("tuer_beutelager", TUER_LAGER.x, TUER_LAGER.y - 1.2, "Eine schwere Bohlentür mit Eisenbändern. Sie ist verschlossen – ohne den Schlüsselbund der Bande kommst du hier nicht weiter."),
     lies("kammer_tuer", 88.4, 32, "Hinter dem roten Banner liegt die Kammer des Anführers.", { tat: "kammer", knopf: "Die Kammer des Anführers betreten", ziel: KAMMER_EINGANG })],
   ausgaenge: [], kollision: { sperren: [], freigeben: [] } };   /* die Tür sperrt das Spiel je Spieler (TUER_LAGER.felder), nicht das Gehraster */
+/* nur beim Aufruf als Werkzeug schreiben – Tests importieren RAEUME, LAGER, OBEN, UNTEN (sonst überschrieb jeder Test die ausgerichteten Objekte) */
+if (process.argv[1] && process.argv[1].endsWith("unterschlupf.mjs")) {
 const dir = join(WELT, "regionen", "unterschlupf"); mkdirSync(dir, { recursive: true });
 writeFileSync(join(dir, "region.json"), JSON.stringify({ id: "unterschlupf", name: "Der Unterschlupf", untertitel: "Hauptquartier der Banditen", ursprung: URSPRUNG, chunks: [B / 32, H / 32], biom: "hoehle", stufe: 4, ebene: "untergrund" }, null, 1) + "\n");
 writeFileSync(join(dir, "gelaende.txt"), g.map((z) => z.join("")).join("\n") + "\n");
 writeFileSync(join(dir, "objekte.json"), "[\n" + dinge.sort((a, b) => a.y - b.y).map((p) => " " + JSON.stringify(p)).join(",\n") + "\n]\n");
 writeFileSync(join(dir, "spiel.json"), JSON.stringify(spiel, null, 1) + "\n");
 console.log(`unterschlupf: ${B} × ${H} Felder, 6 Räume, ${dinge.length} Dinge, ${LAGER.length} Banditen`);
+}

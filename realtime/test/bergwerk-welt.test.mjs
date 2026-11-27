@@ -24,7 +24,7 @@ const inZone = (z, [x, y]) => x >= z.x0 && y >= z.y0 && x < z.x0 + z.b && y < z.
 check(inZone(Z, ein.daten.ziel) && !inZone(Z, hin.daten.ziel), "der Eingang führt in den Untergrund, der Ausgang hinaus");
 setzeKarte(KARTEN.welt, FEIN); const U = KARTEN.welt.ursprung, s = Sim.welt(4, undefined, true), frei = ([x, y]) => begehbar(x - U[0], y - U[1]);
 check(frei(ein.daten.ziel) && frei(hin.daten.ziel), "beide Ziele sind im Gehraster der Kampfwelt begehbar");
-check(Z.lager.length === 0 && Z.stufe >= 1, `das Bergwerk ist Teil der Kampfwelt, vorerst ohne Gegner (${Z.b}×${Z.h} Felder)`);
+check(Z.lager.every((l) => l.art === "grumhold") && Z.lager.length <= 1 && Z.stufe >= 1, `das Bergwerk ist Teil der Kampfwelt (${Z.b}×${Z.h} Felder), als Gegner höchstens Grumhold in der Halle (#160, öffentlich, friedlich bis H4)`);
 console.log("\nZu Fuß durch das Bergwerk");
 s.wesen = s.wesen.filter((w) => w.held); const id = s.beitreten("schildwaechter", 0, { x: ein.daten.ziel[0] - U[0], y: ein.daten.ziel[1] - U[1] }, kampfwerte({ ...NULL_XP }, startAusruestung("schwert"), 1)), h = s.nach(id);
 const hin_ = (p) => { s.eingabe({ t: "lauf", x: p[0] - U[0], y: p[1] - U[1] }, id); for (let i = 0; i < 20 * 120 && Math.hypot(h.x - (p[0] - U[0]), h.y - (p[1] - U[1])) > 2.2; i++) s.schritt(); return Math.hypot(h.x - (p[0] - U[0]), h.y - (p[1] - U[1])) <= 2.2; };

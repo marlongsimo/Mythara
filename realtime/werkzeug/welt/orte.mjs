@@ -17,7 +17,7 @@ const ORTE = JSON.parse(readFileSync(join(RT, "welt", "orte.json"), "utf8"));
 for (const f of readdirSync(join(RT, "welt")).filter((f) => f.startsWith("orte_") && f.endsWith(".json")).sort()) { const z = JSON.parse(readFileSync(join(RT, "welt", f), "utf8"));
   for (const k of ["wege", "flaechen", "objekte", "interaktionen"]) ORTE[k] = [...(ORTE[k] || []), ...(z[k] || [])]; }
 const BIB = new Map(JSON.parse(readFileSync(join(RT, "welt", "bibliothek", "objekte.json"), "utf8")).objekte.map((o) => [o.id, o]));
-const istBewuchs = (p) => BIB.get(p.objekt)?.kategorie === "bewuchs";
+const istBewuchs = (p) => BIB.get(p.objekt)?.kategorie === "bewuchs" && !String(p.id || "").startsWith("zaun_");   /* Hecken als Einhegung (zaun_…, #168) bleiben */
 const strecke = (x, y, p) => { let d = Infinity; for (let i = 1; i < p.length; i++) { const [x0, y0] = p[i - 1], [x1, y1] = p[i], dx = x1 - x0, dy = y1 - y0, t = Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / (dx * dx + dy * dy || 1))); d = Math.min(d, Math.hypot(x - x0 - t * dx, y - y0 - t * dy)); } return d; };
 
 /* Oberwelt-Gebiete laden */

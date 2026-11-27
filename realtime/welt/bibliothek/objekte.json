@@ -12379,6 +12379,1447 @@
     "fest": true
    },
    "hinweis": "Wandarm: Ursprung am Fuß der Wand neben der Tür, das Schild ragt 0,9 m nach vorn (Süden) auf 2,0–2,5 m Höhe"
+  },
+  {
+   "id": "hochland_stadthaus_01",
+   "name": "Stadthaus (zweistöckig)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_01/gesamt.webp",
+   "groesse": [
+    487,
+    708
+   ],
+   "anker": [
+    0.3876,
+    0.8627
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.7,
+      "x1": -0.7,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.2,
+      "x1": 1.4,
+      "y0": -2.0,
+      "y1": -1.2
+     },
+     {
+      "x0": 0.9,
+      "x1": 1.9,
+      "y0": -3.7,
+      "y1": -2.7
+     },
+     {
+      "x0": -1.9,
+      "x1": -0.7,
+      "y0": -3.6,
+      "y1": -3.2
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      312
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_01/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      194
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_01/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      303,
+      187
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      375
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      95,
+      508
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      95,
+      474
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      117
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.2,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    120,
+    397,
+    619
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.2,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "hochland_stadthaus_02",
+   "name": "Stadthaus mit Giebel zur Gasse",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_02/gesamt.webp",
+   "groesse": [
+    464,
+    804
+   ],
+   "anker": [
+    0.3483,
+    0.8821
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.0,
+      "x1": 2.0,
+      "y0": -6,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.5,
+      "x1": 0.5,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.4,
+      "x1": -0.2,
+      "y0": -2.4,
+      "y1": -1.6
+     },
+     {
+      "x0": 0.7,
+      "x1": 1.7,
+      "y0": -5.6,
+      "y1": -3.6
+     },
+     {
+      "x0": -1.7,
+      "x1": -0.7,
+      "y0": -5.5,
+      "y1": -4.5
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_02/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      54,
+      315
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_02/haupt_innen.webp",
+     "tiefe": -5.98,
+     "rolle": "innen",
+     "versatz": [
+      61,
+      206
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_02/haupt_seite.webp",
+     "tiefe": -5.97,
+     "rolle": "seite",
+     "versatz": [
+      252,
+      199
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_02/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      61,
+      378
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_02/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      126,
+      604
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_02/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      126,
+      570
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_02/haupt_dach.webp",
+     "tiefe": 0.35,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      70
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -5.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    73,
+    374,
+    717
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "hochland_stadthaus_03",
+   "name": "Schmales Stadthaus mit Walmdach",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_03/gesamt.webp",
+   "groesse": [
+    433,
+    708
+   ],
+   "anker": [
+    0.3732,
+    0.8661
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.0,
+      "x1": 2.0,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.4,
+      "x1": 1.4,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.7,
+      "x1": -0.7,
+      "y0": -3.6,
+      "y1": -1.6
+     },
+     {
+      "x0": 0.2,
+      "x1": 1.4,
+      "y0": -3.0,
+      "y1": -2.2
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_03/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      54,
+      311
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_03/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      61,
+      177
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_03/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      252,
+      170
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_03/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      61,
+      358
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_03/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      169,
+      510
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_03/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      169,
+      477
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_03/haupt_dach.webp",
+     "tiefe": 0.35,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      106
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    109,
+    343,
+    621
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.9,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "hochland_stadthaus_04",
+   "name": "Stadthaus mit Anbau",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/gesamt.webp",
+   "groesse": [
+    593,
+    693
+   ],
+   "anker": [
+    0.3588,
+    0.8606
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.0,
+      "x1": 2.0,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 2.0,
+      "x1": 4.5,
+      "y0": -3.5,
+      "y1": -0.5,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -2.0,
+      "x1": -1.0,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.2,
+      "x1": 0.0,
+      "y0": -2.2,
+      "y1": -1.4
+     },
+     {
+      "x0": 0.7,
+      "x1": 1.7,
+      "y0": -3.7,
+      "y1": -2.7
+     },
+     {
+      "x0": -2.6,
+      "x1": -2.0,
+      "y0": -3.5,
+      "y1": -2.9
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      301
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      189
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      303,
+      182
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      370
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      105,
+      494
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      105,
+      460
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      117
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "anbau_seite",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/anbau_seite.webp",
+     "tiefe": -3.47,
+     "rolle": "seite",
+     "versatz": [
+      431,
+      261
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "anbau_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/anbau_vorn.webp",
+     "tiefe": -0.5,
+     "rolle": "vorn",
+     "versatz": [
+      312,
+      442
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "anbau_dach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_stadthaus_04/anbau_dach.webp",
+     "tiefe": -0.2,
+     "rolle": "dach",
+     "versatz": [
+      292,
+      237
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 1.8,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.5,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    120,
+    504,
+    605
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.5,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "hochland_ladenhaus_01",
+   "name": "Ladenhaus mit Vordach",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_01/gesamt.webp",
+   "groesse": [
+    535,
+    684
+   ],
+   "anker": [
+    0.3977,
+    0.8579
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.0,
+      "x1": 3.0,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -2.3,
+      "x1": -1.3,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -0.4,
+      "x1": 2.0,
+      "y0": -1.7,
+      "y1": -1.1
+     },
+     {
+      "x0": 0.2,
+      "x1": 1.4,
+      "y0": -3.6,
+      "y1": -3.2
+     },
+     {
+      "x0": -2.45,
+      "x1": -1.55,
+      "y0": -3.3,
+      "y1": -2.7
+     },
+     {
+      "x0": 2.1,
+      "x1": 2.7,
+      "y0": -3.5,
+      "y1": -2.9
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      295
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_01/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      189
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_01/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      351,
+      182
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      370
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      91,
+      482
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      91,
+      448
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      117
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_01/haupt_vordach.webp",
+     "tiefe": 1.5,
+     "rolle": "vordach",
+     "versatz": [
+      155,
+      451
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 2.8,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.8,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    120,
+    445,
+    651
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.8,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "hochland_ladenhaus_02",
+   "name": "Eckladen mit Auslage",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_02/gesamt.webp",
+   "groesse": [
+    503,
+    674
+   ],
+   "anker": [
+    0.3753,
+    0.8564
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.8,
+      "x1": 1.8,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.8,
+      "x1": 0.6,
+      "y0": -2.5,
+      "y1": -1.9
+     },
+     {
+      "x0": -1.8,
+      "x1": -0.6,
+      "y0": -4.6,
+      "y1": -4.2
+     },
+     {
+      "x0": 0.6,
+      "x1": 1.8,
+      "y0": -4.6,
+      "y1": -4.2
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_02/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      253
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_02/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      179
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_02/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      303,
+      172
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_02/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      409
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_02/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      215,
+      472
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_02/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      215,
+      438
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_02/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      169
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_ladenhaus_02/haupt_vordach.webp",
+     "tiefe": 1.4,
+     "rolle": "vordach",
+     "versatz": [
+      42,
+      446
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 1.3,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    172,
+    413,
+    636
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 1.3,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "hochland_zunfthaus_01",
+   "name": "Zunfthaus der Schmiede (Zunftschmiede)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/gesamt.webp",
+   "groesse": [
+    1013,
+    924
+   ],
+   "anker": [
+    0.3585,
+    0.8896
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -6.0,
+      "x1": 6.0,
+      "y0": -8,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 6.0,
+      "x1": 9.0,
+      "y0": -7.0,
+      "y1": -4.0,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.2,
+      "x1": 1.2,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -4.15,
+      "x1": -3.45,
+      "y0": -4.8,
+      "y1": -4.4
+     },
+     {
+      "x0": -1.55,
+      "x1": -0.85,
+      "y0": -4.8,
+      "y1": -4.4
+     },
+     {
+      "x0": 1.05,
+      "x1": 1.75,
+      "y0": -4.8,
+      "y1": -4.4
+     },
+     {
+      "x0": 3.45,
+      "x1": 4.15,
+      "y0": -4.8,
+      "y1": -4.4
+     },
+     {
+      "x0": 2.0,
+      "x1": 3.0,
+      "y0": -7.5,
+      "y1": -6.5
+     },
+     {
+      "x0": -4.3,
+      "x1": -3.3,
+      "y0": -7.5,
+      "y1": -6.5
+     },
+     {
+      "x0": -0.55,
+      "x1": 0.15,
+      "y0": -7.15,
+      "y1": -6.45
+     },
+     {
+      "x0": -5.6,
+      "x1": -4.4,
+      "y0": -2.4,
+      "y1": -2.0
+     },
+     {
+      "x0": 4.9,
+      "x1": 5.5,
+      "y0": -1.7,
+      "y1": -1.1
+     },
+     {
+      "x0": 4.55,
+      "x1": 5.45,
+      "y0": -2.9,
+      "y1": -2.3
+     },
+     {
+      "x0": -0.75,
+      "x1": 0.75,
+      "y0": -2.2,
+      "y1": -1.8
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      64,
+      335
+     ]
+    },
+    {
+     "name": "halle_innen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/halle_innen.webp",
+     "tiefe": -7.98,
+     "rolle": "innen",
+     "versatz": [
+      71,
+      251
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "halle_seite",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/halle_seite.webp",
+     "tiefe": -7.97,
+     "rolle": "seite",
+     "versatz": [
+      645,
+      244
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "halle_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/halle_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      70,
+      625
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      294,
+      688
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      294,
+      647
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "halle_dach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/halle_dach.webp",
+     "tiefe": 0.5,
+     "rolle": "dach",
+     "versatz": [
+      40,
+      114
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "turm_seite",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/turm_seite.webp",
+     "tiefe": -6.97,
+     "rolle": "seite",
+     "versatz": [
+      851,
+      177
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/turm_vorn.webp",
+     "tiefe": -4.0,
+     "rolle": "vorn",
+     "versatz": [
+      708,
+      317
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_dach",
+     "bild": "img/welt/gebaeude/raeumlich/hochland_zunfthaus_01/turm_dach.webp",
+     "tiefe": -3.7,
+     "rolle": "dach",
+     "versatz": [
+      687,
+      155
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -5.8,
+     "x1": 5.8,
+     "y0": -7.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    43,
+    117,
+    925,
+    830
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "samm_mondsalbei_01",
+   "name": "Mondsalbei",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_mondsalbei_01.webp",
+   "groesse": [
+    18,
+    30
+   ],
+   "anker": [
+    0.4444,
+    0.8667
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/mondsalbei.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_mondsalbei_geerntet",
+   "name": "Mondsalbei (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_mondsalbei_geerntet.webp",
+   "groesse": [
+    16,
+    15
+   ],
+   "anker": [
+    0.4688,
+    0.7333
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/mondsalbei-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_glutwurz_01",
+   "name": "Glutwurz",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_glutwurz_01.webp",
+   "groesse": [
+    19,
+    25
+   ],
+   "anker": [
+    0.5,
+    0.84
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/glutwurz.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_glutwurz_geerntet",
+   "name": "Glutwurz (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_glutwurz_geerntet.webp",
+   "groesse": [
+    16,
+    14
+   ],
+   "anker": [
+    0.4688,
+    0.7143
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/glutwurz-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_splitterlilie_01",
+   "name": "Splitterlilie",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_splitterlilie_01.webp",
+   "groesse": [
+    23,
+    47
+   ],
+   "anker": [
+    0.5217,
+    0.9149
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/splitterlilie.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_splitterlilie_geerntet",
+   "name": "Splitterlilie (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_splitterlilie_geerntet.webp",
+   "groesse": [
+    16,
+    16
+   ],
+   "anker": [
+    0.4688,
+    0.75
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/splitterlilie-geerntet.glb",
+    "wind": 0
+   }
   }
  ]
 }

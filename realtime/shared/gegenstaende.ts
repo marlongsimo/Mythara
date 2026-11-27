@@ -22,7 +22,7 @@ export const ANF_NAME: Record<AnfSkill, string> = { geschick: "Geschick", staerk
 export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
 export interface WaffenWerte { art: Art; /** Mehr Schaden gegen eine Gegnerfamilie (MONSTER.familie), z. B. { wald: 0.15 } = +15 % Max Hit */ gegen?: Record<string, number>; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
-export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number }; text: string;
+export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number; /** #160: Magieschaden in Prozent (Max Hit der Magie × (1 + p/100)) */ magieSchaden?: number }; text: string;
   /** #151 Waffen der Stufe 70: passive Fähigkeit, solange die Waffe Ladungen hat (chance je Treffer) – geladen wird sie mit 1 Splitter je Ladung, Laden bindet sie */ passiv?: Passiv;
   /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; /** Grundwert in Splittern für den Trödler (#88), wenn kein Laden ihn führt */ wert?: number; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
 
@@ -40,7 +40,9 @@ export function werteVon(G: Gegenstand): [string, string][] {
     if (G.passiv) z.push(["Geladen", `${G.passiv.name}: ${Math.round(G.passiv.chance * 100)} % je Treffer – ${G.passiv.text}`], ["Laden", "Bindestein, 1 Splitter je Ladung (höchstens 1.000) · bindet die Waffe"]); /* #151 */
     if (G.anforderung) z.push(["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`]); return z; }
   if (G.trank && VERBRAUCH[G.trank]) return VERBRAUCH[G.trank].werte;
-  if (G.abwehr) return [["Verteidigung Nahkampf", vz(G.abwehr.nah)], ["Verteidigung Fernkampf", vz(G.abwehr.fern)], ["Verteidigung Magie", vz(G.abwehr.magie)], ...(G.bonus && G.bonus.fernAngriff ? [["Fernkampf-Angriff", vz(G.bonus.fernAngriff)] as [string, string]] : []), ...(G.bonus && G.bonus.genau ? [["Magische Genauigkeit", vz(G.bonus.genau)] as [string, string]] : []), ...(G.anforderung ? [["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`] as [string, string]] : [])];
+  if (G.abwehr) return [["Verteidigung Nahkampf", vz(G.abwehr.nah)], ["Verteidigung Fernkampf", vz(G.abwehr.fern)], ["Verteidigung Magie", vz(G.abwehr.magie)], ...(G.bonus && G.bonus.fernAngriff ? [["Fernkampf-Angriff", vz(G.bonus.fernAngriff)] as [string, string]] : []), ...(G.bonus && G.bonus.genau ? [["Magische Genauigkeit", vz(G.bonus.genau)] as [string, string]] : []),
+    /* #160: Angriffsboni an Rüstung und Schild (Stufe 70, Glutsteinschild) */ ...(G.bonus && G.bonus.geschick ? [["Geschick", vz(G.bonus.geschick)] as [string, string]] : []), ...(G.bonus && G.bonus.staerke ? [["Stärke", vz(G.bonus.staerke)] as [string, string]] : []),
+    ...(G.bonus && G.bonus.fernStaerke ? [["Fernkampf-Stärke", vz(G.bonus.fernStaerke)] as [string, string]] : []), ...(G.bonus && G.bonus.magieSchaden ? [["Magieschaden", `+${G.bonus.magieSchaden} %`] as [string, string]] : []), ...(G.anforderung ? [["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`] as [string, string]] : [])];
   return G.platz === "waffe" ? [["Kampfwerte", "Werte folgen (bis dahin wie Fäuste)"]] : G.platz ? [["Verteidigung", "Werte folgen"]] : [];
 }
 
@@ -245,15 +247,17 @@ GEGENSTAENDE.rabenpanzer = { id: "rabenpanzer", name: "Rabenpanzer", platz: "bru
 GEGENSTAENDE.rabenbeinschuetzer = { id: "rabenbeinschuetzer", name: "Rabenbeinschützer", platz: "beine", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["ruestung.beine.rabe"], anforderung: { skill: "defense", level: 15 },
   abwehr: { nah: 11, fern: 11, magie: 8 }, text: "Gehärtetes Leder mit Federsaum und einem Rabenwappen am Gürtel. Teil 3 des Rabensets – Belohnung aus dem dritten Abschnitt der Raben-Trilogie." };
 RUESTUNGSGRUPPE.rabenkapuze = RUESTUNGSGRUPPE.rabenpanzer = RUESTUNGSGRUPPE.rabenbeinschuetzer = "rabenset";
-export interface SetBonus { id: string; name: string; teile: string[]; text: string; heilung: { chance: number; anteil: number } }
+export interface SetBonus { id: string; name: string; teile: string[]; text: string; /** Treffer gegen den Helden heilen (Rabenset) */ heilung?: { chance: number; anteil: number };
+  /** #160: Boni wie Gegenstand.bonus, wenn alle Teile angelegt sind (Stufe 70: +2 Stärke, +2 Fernkampf-Stärke, +2 % Magieschaden) */ bonus?: Gegenstand["bonus"] }
 export const SETS: Record<string, SetBonus> = {
   rabenset: { id: "rabenset", name: "Rabenset", teile: ["rabenkapuze", "rabenpanzer", "rabenbeinschuetzer"], heilung: { chance: 0.15, anteil: 0.5 },
     text: "Alle drei Teile angelegt: Jeder Treffer, der Schaden macht, heilt mit 15 % Wahrscheinlichkeit um 50 % dieses Schadens (nicht über das maximale Leben)." },
+  /* #160: die Rüstung der Stufe 70 hat keinen Set-Bonus (Entscheidung des Nutzers, 27.11.) – die Boni stecken in den Teilen */
 };
 /** Aktive Set-Boni bei diesen angelegten Gegenständen */
 export const aktiveSets = (angelegt: (string | undefined)[]) => Object.values(SETS).filter((s) => s.teile.every((t) => angelegt.includes(t)));
 /** Heilung durch den Set-Bonus für einen Treffer (zufall: 0..1, z. B. Math.random()); 0 bei Schaden 0 oder ohne Glück */
-export const setHeilung = (s: SetBonus, schaden: number, zufall: number) => (schaden > 0 && zufall < s.heilung.chance ? Math.round(schaden * s.heilung.anteil) : 0);
+export const setHeilung = (s: SetBonus, schaden: number, zufall: number) => (s.heilung && schaden > 0 && zufall < s.heilung.chance ? Math.round(schaden * s.heilung.anteil) : 0);
 /** Angriffsbewegung der 3D-Figur je Waffenart (nur Darstellung – der Kampf rechnet weiter mit dem Ausrüstungssatz der Startwaffe) */
 export const ANGRIFF_JE_ART: Record<string, string> = { Holzbeil: "angriff", Spitzhacke: "angriff", Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Kurzbogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
 /** Angriffsbewegung zu den angelegten Figurenebenen (die Waffe in der Hand) – oder null, wenn keine bekannte Waffe angelegt ist */
@@ -549,7 +553,7 @@ export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math
 /* ───────── #151 Waffen der Stufe 70 (doku/konzepte/waffen-70.md, Entscheidung des Nutzers): Echoschneide, Seelenbogen, Seelenfokus ─────────
    Mythisch mit Anforderung 70 (Rahmen wie Mythisch). Am Bindestein mit 1 Splitter je Ladung laden (höchstens 1.000), Laden bindet die Waffe, jeder Angriff kostet 1 Ladung;
    solange Ladung da ist: 15 % je Treffer die Passive (sim.ts treffen). Geladen wirkt nur die Passive (kein × 1,1 wie bei den anderen geladenen Waffen).
-   Herkunft: Mini-Boss der Hochlande (Block H) – vorbereitet in STUFE70_BEUTE, noch in keiner Drop-Tabelle. Modelle aus den Vorlagen des Nutzers (Figuren d50193d6e): Teile waffe.<name>, Bilder img/objekte3d/ausruestung/stufe70/. */
+   Herkunft: nur das Minispiel Rissgrube (später, Entscheidung des Nutzers 27.11.2026) – vorbereitet in STUFE70_BEUTE, noch in keiner Drop-Tabelle. Modelle aus den Vorlagen des Nutzers (Figuren d50193d6e): Teile waffe.<name>, Bilder img/objekte3d/ausruestung/stufe70/. */
 export type PassivId = "nachhall" | "seelenzug" | "seelenbrand";
 export interface Passiv { id: PassivId; name: string; chance: number; text: string }
 export const PASSIVE: Record<PassivId, Passiv> = {
@@ -570,7 +574,57 @@ export const WAFFEN_STUFE70 = ["echoschneide", "seelenbogen", "seelenfokus"];
   GEGENSTAENDE.seelenfokus = { id: "seelenfokus", name: "Seelenfokus", platz: "waffe", art: "Stab", seltenheit: "mythisch", ebenen: ["waffe.seelenfokus"], bild: B + "seelenfokus.webp", zweihand: true /* Zweihand-Stab (Figuren) */,
     anforderung: { skill: "magie", level: 70 }, waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 30, magieStaerke: 216 }, passiv: PASSIVE.seelenbrand,
     text: "Ein Stab mit einem Herz aus kaltem Feuer. Wen er trifft, der brennt von innen. " + T }; }
-/** Vorbereitet für den Mini-Boss der Hochlande (Block H): je Waffe 1 : 100 in der starken Fassung, keine in der Quest-Fassung – noch nicht eingetragen */
+/* ───────── #160 (Block H): Rüstung der Stufe 70 – je Hüter der Hochlande ein Satz (doku/konzepte/phase-11.md, Richtwerte aus gipfelgericht.md) ─────────
+   Anforderung Defense 70; Entscheidung des Nutzers (27.11.): defensiv etwa 85 % von Mythisch, dafür Angriffsboni in den Teilen, kein Set-Bonus, kein Schild –
+   Löwenwacht (Nahkampf, Kennungen steinvogt_*) +2/+3/+3 Stärke, Sturmfeder +2/+3/+3 Fernkampf-Stärke, Frostschleier +1/+2/+2 % Magieschaden (neu, kampfwerte.ts). Nur aus der starken Fassung der Hüter (HUETER_BEUTE in shared/bosse.ts, insgesamt 1 : 75 je Sieg), handelbar.
+   Teile und Rucksackbilder von Figuren (#159, abe4736cc: img/figuren-echt3d/<figur>.teile/<ebene>.glb, img/objekte3d/ausruestung/stufe70/<ebene>.webp). Namen sind Vorschläge. */
+export const RUESTUNG_STUFE70: Record<"steinvogt" | "sturmfeder" | "frostschleier", string[]> = {
+  steinvogt: ["steinvogt_helm", "steinvogt_platte", "steinvogt_beinschienen"],
+  sturmfeder: ["sturmfeder_haube", "sturmfeder_wams", "sturmfeder_hose"],
+  frostschleier: ["frostschleier_kapuze", "frostschleier_robe", "frostschleier_rock"] };
+{ const EBENE70: Record<string, string> = { steinvogt_helm: "kopf.helm.steinvogt", steinvogt_platte: "ruestung.brust.steinvogt", steinvogt_beinschienen: "ruestung.beine.steinvogt",
+    sturmfeder_haube: "kopf.helm.sturmfeder", sturmfeder_wams: "ruestung.brust.sturmfeder", sturmfeder_hose: "ruestung.beine.sturmfeder",
+    frostschleier_kapuze: "kopf.helm.frostschleier", frostschleier_robe: "ruestung.brust.frostschleier", frostschleier_rock: "ruestung.beine.frostschleier" };
+  const T = (id: string, name: string, platz: Platz, art: string, vorbild: string, ab: [number, number, number], bonus: Gegenstand["bonus"], text: string, gruppe: "nahkampf" | "fernkampf" | "magie") => {
+    const V = GEGENSTAENDE[vorbild], ebene = EBENE70[id]; /* #159: eigene Teile von Figuren (abe4736cc); sonst die mythischen */
+    GEGENSTAENDE[id] = { id, name, platz, art, seltenheit: "mythisch", ebenen: ebene ? [ebene] : V ? V.ebenen : [], ...(ebene ? { bild: "img/objekte3d/ausruestung/stufe70/" + ebene + ".webp" } : V && V.bild ? { bild: V.bild } : {}), anforderung: { skill: "defense", level: 70 },
+      abwehr: { nah: ab[0], fern: ab[1], magie: ab[2] }, bonus, text }; RUESTUNGSGRUPPE[id] = gruppe; };
+  const S = "Teil der Löwenwacht – Grumhold trug sie, ehe der Berg ihn verschluckte.", F = "Teil der Sturmfeder – aus dem Horst der Sturmschwinge.", E = "Teil des Frostschleiers – kalt wie der Atem der Frostwitwe.";
+  /* Entscheidung des Nutzers (27.11.): defensiv etwa 85 % von Mythisch, dafür Angriffsboni in den Teilen (+8 Stärke / +8 Fernkampf-Stärke / +5 % Magieschaden je Satz); Treffer-Boni und Abzüge wie Mythisch */
+  T("steinvogt_helm", "Löwenwacht-Helm", "kopf", "Schwere Rüstung", "eisenwachthelm_mythisch", [38, 39, -1], { fernAngriff: -3, genau: -6, staerke: 2 }, "Ein Helm mit Löwenkopf und Lorbeer, schwer wie ein Fels. " + S, "nahkampf");
+  T("steinvogt_platte", "Löwenwacht-Harnisch", "brust", "Schwere Rüstung", "eisenwacht_mythisch", [88, 90, -6], { fernAngriff: -15, genau: -30, staerke: 3 }, "Ein Harnisch mit Löwenköpfen auf den Schultern, darüber ein roter Umhang. " + S, "nahkampf");
+  T("steinvogt_beinschienen", "Löwenwacht-Beinschutz", "beine", "Schwere Rüstung", "eisenbeinschienen_mythisch", [56, 56, -4], { fernAngriff: -11, genau: -21, staerke: 3 }, "Beinschutz mit goldenem Lorbeer. " + S, "nahkampf");
+  T("sturmfeder_haube", "Sturmfeder-Haube", "kopf", "Leichte Rüstung", "jaegerkapuze_mythisch", [10, 10, 8], { fernAngriff: 10, genau: -1, fernStaerke: 2 }, "Leder mit grauen Schwungfedern, leicht wie ein Windstoß. " + F, "fernkampf");
+  T("sturmfeder_wams", "Sturmfeder-Wams", "brust", "Leichte Rüstung", "jaegerwams_mythisch", [46, 47, 42], { fernAngriff: 30, genau: -15, fernStaerke: 3 }, "Federn in Lagen, die jeden Windhauch spüren. " + F, "fernkampf");
+  T("sturmfeder_hose", "Sturmfeder-Hose", "beine", "Leichte Rüstung", "jaegerhose_mythisch", [21, 23, 20], { fernAngriff: 17, genau: -10, fernStaerke: 3 }, "Gehärtetes Leder, gesäumt mit Sturmfedern. " + F, "fernkampf");
+  T("frostschleier_kapuze", "Frostschleier-Kapuze", "kopf", "Stoffrüstung", "magierkapuze_mythisch", [13, 13, 5], { genau: 6, magieSchaden: 1 }, "Ein Schleier aus Eisfäden, der nie taut. " + E, "magie");
+  T("frostschleier_robe", "Frostschleier-Robe", "brust", "Stoffrüstung", "magierrobe_mythisch", [43, 43, 26], { genau: 30, magieSchaden: 2 }, "Eine Robe, auf der Raureif wächst. " + E, "magie");
+  T("frostschleier_rock", "Frostschleier-Rock", "beine", "Stoffrüstung", "magierrock_mythisch", [28, 28, 19], { genau: 22, magieSchaden: 2 }, "Weißer Stoff, schwer wie Schnee. " + E, "magie"); }
+
+/* Glutsteinschild (Entscheidung des Nutzers, 27.11.): seltener Schild, Defense 40, als einziger Schild mit Angriffsboni (+5 Geschick, +3 Stärke), handelbar.
+   Nur von der Sandmutter in der starken Fassung (nach F3), etwa 1 : 100 je Sieg (config.ts). Modell von Figuren (#165, e94e69282): Ebene schild.glutstein. */
+GEGENSTAENDE.glutsteinschild = { id: "glutsteinschild", name: "Glutsteinschild", platz: "nebenhand", art: "Schild", seltenheit: "selten", ebenen: ["schild.glutstein"],
+  bild: "img/objekte3d/ausruestung/stufe40/schild.glutstein.webp", anforderung: { skill: "defense", level: 40 }, abwehr: { nah: 34, fern: 34, magie: -1 }, bonus: { geschick: 5, staerke: 3 },
+  text: "Ein Schild aus Glutstein, in dem noch die Hitze des Tempels glimmt. Er schützt – und er treibt den Arm nach vorn." };
+
+/* #160 (Block H): Bausteine der Hochlande-Quests (shared/hochlande.ts, Kennungen nach doku/quests/h-bausteine.md) – Bilder vorerst aus dem Bestand */
+{ const E = "img/objekte3d/skilling/erzeugnisse/", K = "img/objekte3d/skilling/kochen/symbole/", P = (g: string, f: string) => (GEGENSTAENDE[g] && GEGENSTAENDE[g].bild) || f;
+  GEGENSTAENDE.ziegenmilch = { id: "ziegenmilch", name: "Ziegenmilch", art: "Rohstoff", seltenheit: "gewoehnlich", bild: P("krug_wasser", K + "krug_wasser.webp"), wert: 5,
+    text: "Ein Krug frischer Milch von den Ziegen der Hohen Alm. Mit Lab am Herd wird daraus Käse." };
+  GEGENSTAENDE.lab = { id: "lab", name: "Lab", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P("leeres_flaeschchen", E + "leeres_flaeschchen.webp"),
+    text: "Ein Fläschchen Lab von Mette Heider. Ein paar Tropfen, und die Milch wird dick." };
+  GEGENSTAENDE.kaeselaib = { id: "kaeselaib", name: "Käselaib", art: "Essen", seltenheit: "selten", bild: P("bauerneintopf", K + "bauerneintopf.webp"), trank: "kaeselaib", wert: 30,
+    text: "Ein Laib Käse von der Hohen Alm, würzig und fest. Die Passwacht schwört darauf. Heilt 15 Lebenspunkte." };
+  VERBRAUCH.kaeselaib = { id: "kaeselaib", name: "Käselaib", art: "Essen", seltenheit: "selten", heilt: { fest: 15, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "15 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
+    text: "Ein Laib Käse von der Hohen Alm, würzig und fest." };
+  GEGENSTAENDE.grubenstempel = { id: "grubenstempel", name: "Grubenstempel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 10, bild: E + "stamm_kernbaum.webp",
+    text: "Ein zugeschnittener Stempel aus Kernbaum. Er hält einen Stollen, wenn der Berg drückt." };
+  GEGENSTAENDE.erzprobe_leuchtend = { id: "erzprobe_leuchtend", name: "Leuchtende Erzprobe", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: E + "erz_splittereisen.webp",
+    text: "Ein Brocken aus der Tiefe des Erzbergs. Im Dunkeln glimmt er – Hedda wird wissen, was das bedeutet." };
+  GEGENSTAENDE.eisrunen_abschrift = { id: "eisrunen_abschrift", name: "Abschrift der Eisrunen", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P("hinweispergament", E + "pergament.webp"),
+    text: "Die Runen vom Höhlenmund am Hochpass, mit klammen Fingern abgezeichnet. Der Einsiedler kann sie lesen." }; }
+
+/** Vorbereitet für das Minispiel Rissgrube (später): Würfe je Waffe 1 : 100 – noch nicht eingetragen, bleibt inaktiv, bis die Rissgrube gebaut wird (nicht beim Mini-Boss der Hochlande) */
 export const STUFE70_BEUTE = { wurf: WAFFEN_STUFE70.map((g) => ({ g, chance: 1 })) };
 
 /* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
@@ -579,7 +633,7 @@ export const beutePlatzhalter = (g: string): boolean => g.startsWith("@");
 /** Platzhalter auflösen: eine zufällige Waffe oder Rüstung dieser Seltenheit (ohne Werkzeuge, Questlohn und Set-Teile); Art-Filter über GegenstandDef.art (Teilwort) */
 export function beuteAufloesen(g: string, zufall: () => number = Math.random): string | null { if (!beutePlatzhalter(g)) return g;
   const [sel, art] = g.slice(1).split(":"), werkzeug = /^(holzbeil|spitzhacke|angel)/;
-  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !G.passiv /* #151: Stufe 70 nur vom Mini-Boss */ && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
+  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !G.passiv /* #151: Stufe 70 nur aus der Rissgrube (später) */ && !(G.anforderung && G.anforderung.level >= 70) /* #160: Rüstung 70 nur von den Hütern */ && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
   return L.length ? L[Math.floor(zufall() * L.length)].id : null; }
 
 /* ───────── Phase 7 (#40): Graufurt, Ostufer, Turm – Bilder img/objekte3d/graufurt/symbole/ und Wels img/objekte3d/skilling/angeln/symbole/ (Figuren #37) ───────── */
@@ -638,6 +692,18 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
     GEGENSTAENDE[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", bild: A10 + `fisch_${f}_gebraten.webp`, trank: `fisch_${f}_gebraten`, text: `Knusprig gebraten. Heilt ${heil} Lebenspunkte.` };
     GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${n}`, art: "Abfall", seltenheit: "anfaenger", bild: A10 + `fisch_${f}_verbrannt.webp`, text: "Kohle mit Gräten." };
     VERBRAUCH[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: heil, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ["Stapelbar", "nein"]], text: "Knusprig gebraten." }; }
+  /* #176 Zunft-Fische und ihre Gerichte: Heilung fest + Anteil des Höchstlebens (18 + 3 %, 20 + 4 %, 22 + 5 %) */
+  const F176: [string, string, string, string, string, number, number, Seltenheit, string][] = [
+    ["silberbarsch", "Silberbarsch", "fisch_silberbarsch_gebraten", "Gebratener Silberbarsch", "Glänzt wie eine neue Münze. Beißt nur am Steg der Fischerzunft.", 18, 0.03, "episch", "Am Feuer gebraten, mit Meersalz."],
+    ["sturmhecht", "Sturmhecht", "sturmhecht_kraeuterkruste", "Sturmhecht in Kräuterkruste", "Ein Hecht, der bei Sturm an die Oberfläche kommt. Zäh und kräftig.", 20, 0.04, "episch", "Am Herd in einer Kruste aus Wegerich gegart."],
+    ["tiefseeaal", "Tiefseeaal", "tiefseeaal_suppe", "Tiefseeaal-Suppe", "Ein Aal aus der Tiefe vor Kielmund, schwarz wie die See bei Nacht.", 22, 0.05, "legendaer", "Die Suppe der Zunftfischer, im Kessel gezogen."]];
+  /* Bilder und Modelle von Figuren (#176, claude/tender-heisenberg-bruby2): rohe Fische in skilling/angeln, Gerichte in skilling/kochen; verbrannt wie Klippenbarsch bzw. Seeaal */
+  const KO = "img/objekte3d/skilling/kochen/", AN = "img/objekte3d/skilling/angeln/";
+  for (const [f, n, gid, gname, t, fest, anteil, selt, gt] of F176) { const heil = `${fest} Lebenspunkte und ${Math.round(anteil * 100)} % des Höchstlebens`, datei = gid.replace(/^fisch_/, "");
+    GEGENSTAENDE[`fisch_${f}_roh`] = { id: `fisch_${f}_roh`, name: `${n} (roh)`, art: "Rohstoff", seltenheit: "selten", bild: A10 + `fisch_${f}_roh.webp`, modell3d: AN + `fisch_${f}_roh.glb`, text: `${t}` };
+    GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${n}`, art: "Abfall", seltenheit: "anfaenger", bild: A10 + (f === "silberbarsch" ? "fisch_klippenbarsch_verbrannt.webp" : "fisch_seeaal_verbrannt.webp"), text: "Kohle mit Gräten." };
+    GEGENSTAENDE[gid] = { id: gid, name: gname, art: "Essen", seltenheit: selt, bild: KO + "symbole/" + datei + ".webp", modell3d: KO + datei + ".glb", trank: gid, text: `${gt} Heilt ${heil}.` };
+    VERBRAUCH[gid] = { id: gid, name: gname, art: "Essen", seltenheit: selt, heilt: { fest, anteil }, stapelbar: false, modell: "", werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ["Stapelbar", "nein"]], text: gt }; }
   GEGENSTAENDE.raeucherhering = { id: "raeucherhering", name: "Räucherhering", art: "Essen", seltenheit: "gewoehnlich", bild: K10 + "raeucherhering.webp", modell3d: "img/objekte3d/kueste/raeucherhering.glb", trank: "raeucherhering",
     text: "Goldbraun aus der Räucherhütte der Möwenbucht, hält wochenlang. Heilt 8 Lebenspunkte; 20 Minuten lang erholt sich die Ausdauer 15 % schneller." };
   GEGENSTAENDE.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", bild: K10 + "barsch_salzkruste.webp", modell3d: "img/objekte3d/kueste/barsch_salzkruste.glb", trank: "barsch_salzkruste",
@@ -681,6 +747,10 @@ GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /*
   const KR: [string, string, number, string][] = [["wegerich", "Wegerich", 2, "Breite Blätter vom Wegrand. Die Grundlage jedes Heiltranks."], ["ringelblume", "Ringelblume", 4, "Orange Blüten aus den Obstwiesen. Heilt Wunden, sagt Mira."],
     ["moorgloeckchen", "Moorglöckchen", 8, "Kleine blaue Glocken aus dem Rabenmoor. Wer daran riecht, atmet freier."], ["eisenhut", "Eisenhut", 12, "Dunkle Blüten vom Friedhof im Nordwald. Giftig – nur gebraut zu gebrauchen."],
     ["nebelkraut", "Nebelkraut", 18, "Ein graues Kraut aus den Nebelfeldern des Rabenmoors. Es riecht nach Regen."], ["lindenbluete", "Lindenblüte", 30, "Eine Blüte der alten Linde in Weidenhain. Sie wächst nur langsam nach."]];
+  /* #176: Zunft-Kräuter (nur im Kräutergarten der Heilkundigen) */
+  KR.push(["mondsalbei", "Mondsalbei", 45, "Silbrige Blätter, die nachts schimmern. Wächst nur im Kräutergarten der Heilkundigen."],
+    ["glutwurz", "Glutwurz", 65, "Eine rote Wurzel, warm in der Hand. Wer sie kaut, spürt Feuer in den Armen."],
+    ["splitterlilie", "Splitterlilie", 90, "Eine Lilie, die blau leuchtet wie ein Splitter. Die Heilkundigen hüten sie wie einen Schatz."]);
   for (const [id, name, wert, text] of KR) GEGENSTAENDE[id] = { id, name, art: "Kraut", seltenheit: "anfaenger", bild: KS + id + ".webp", wert, text };
   /* Questgegenstände um die Kräuter: Miras Rezeptbuch (quest_mira.ts) und der Kräuterhof (quest_kraeuterhof.ts) */
   GEGENSTAENDE.rezeptheft = { id: "rezeptheft", name: "Miras Rezeptheft", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
@@ -704,7 +774,13 @@ GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /*
     ["nebelschleier_schwach", "Nebelschleier (schwach)", "gewoehnlich", 0, "nebelschleier_schwach", {}, "Gegner bemerken dich ein Viertel später (5 Minuten)"],
     ["nebelschleier_stark", "Nebelschleier (stark)", "selten", 0, "nebelschleier_stark", {}, "Gegner bemerken dich erst halb so weit (5 Minuten) · Nebenwirkung: Fernkampf −3"],
     ["lindentau_schwach", "Lindentau (schwach)", "selten", 15, undefined, {}, "heilt 15"],
-    ["lindentau_stark", "Lindentau (stark)", "episch", 20, undefined, { nebenAuf: true }, "heilt 20 und hebt Nebenwirkungen auf"]];
+    ["lindentau_stark", "Lindentau (stark)", "episch", 20, undefined, { nebenAuf: true }, "heilt 20 und hebt Nebenwirkungen auf"],
+    /* #176: Zunft-Tränke (Kräuterkunde 70–90) */
+    ["mondsalbei_elixier", "Mondsalbei-Elixier", "episch", 25, undefined, {}, "heilt 25"],
+    ["staerketrank_stark", "Trank der Stärke (stark)", "episch", 0, "staerketrank_stark", {}, "Stärke +7 für 5 Minuten"],
+    ["glutwurz_feuertrank", "Glutwurz-Feuertrank", "episch", 0, "glutwurz_feuertrank", {}, "Fernkampf +7 für 5 Minuten"],
+    ["splittersicht", "Splittersicht", "episch", 0, "splittersicht", {}, "Magieschaden +5 % für 5 Minuten"],
+    ["splitterlilien_trank", "Splitterlilien-Trank", "legendaer", 30, undefined, { nebenAuf: true }, "heilt 30 und hebt alle Nebenwirkungen auf"]];
   for (const [id, name, selt, heil, wirkung, mehr, w] of T) {
     GEGENSTAENDE[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, bild: TS + id + ".webp", modell3d: TM + id + ".glb", trank: id, text: `${w}.` };
     VERBRAUCH[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, heilt: { fest: heil, anteil: 0 }, ...(wirkung ? { wirkung } : {}), ...mehr, flaeschchen: true, stapelbar: false, modell: TM + id + ".glb",

@@ -78,8 +78,9 @@ const BAEUME_W = ["stil_eiche_01", "stil_eiche_02", "stil_linde_01", "stil_laub_
   ding("k_karren", mx - 10, my + 3); ding("dorf_fass_01", mx + 10, my - 4); ding("dorf_kiste_01", mx + 11, my - 3); ding("dorf_bank_01", mx - 5, my - 6); ding("dorf_bank_01", mx + 5, my - 6);
   lies("bl_haferstedt", mx + 2.5, my - 1.5, "Haferstedt. Ein Marktflecken mitten in den Feldern – wer zwischen Rabenmoor und der Küste Korn, Wolle oder Fisch verkaufen will, kommt am Markttag hierher.");
   /* Häuser nördlich der Hauptgasse (Tür nach Süden zur Gasse) */
-  const nord = [[-40, "weidenhain_fachwerk_02"], [-31, "dorf_haus_holz_01"], [-22, "weidenhain_fachwerk_03"], [-4, "dorf_taverne_01", "bl_haferstedt_taverne"], [20, "dorf_baeckerei_01", "bl_haferstedt_baeckerei"], [31, "dorf_haus_holz_02"], [40, "weidenhain_bauernhaus_01"]];
+  const nord = [[-40, "weidenhain_fachwerk_02"], [-31, "dorf_haus_holz_01"], [-22, "weidenhain_fachwerk_03"], [-4, "dorf_taverne_01", "bl_haferstedt_taverne"], [20, "dorf_baeckerei_01", "bl_haferstedt_baeckerei"], [31, "waldmark_bank_01", "bl_haferstedt_bank"], [40, "weidenhain_bauernhaus_01"]];   /* Bank (#169: jede größere Stadt mit Bankschalter) */
   for (const [dx, o, id] of nord) ding(o, mx + dx, my - 9 + (dx === -4 ? 0 : 7), id ? { id } : {}, 6);
+  lies("bl_haferstedt_bank_tuer", mx + 31, my - 1.4, "Die Bank von Haferstedt. Dasselbe Konto wie in der Stadt – und am Markttag eine lange Schlange.");
   ding("dorf_kapelle_01", mx - 3, my - 26, { id: "bl_haferstedt_kapelle" }, 6); weg([[mx + 3, my - 18], [mx + 3, my - 9]], 1.6, "k");
   /* Häuser zwischen den Gassen (Tür zur Hintergasse) */
   const mitte = [[-30, "dorf_haus_holz_03"], [-21, "weidenhain_kate_01"], [-12, "dorf_schmiede_01", "bl_haferstedt_schmiede"], [14, "weidenhain_fachwerk_02"], [23, "dorf_haus_holz_01"], [32, "weidenhain_kate_01"]];
@@ -98,7 +99,7 @@ const BAEUME_W = ["stil_eiche_01", "stil_eiche_02", "stil_linde_01", "stil_laub_
   weg([[mx + 46, my + 1], [6290, 6992], [6340, 7004], [6378, 7010]], 1.8);
   weg([[mx, my + 17], [mx - 4, my + 36], [6204, 7040], [6197, 7070]], 1.8);
   weg([[mx - 46, my + 1], [6168, 6960], [6152, 6940]], 1.6);
-  npc.push({ id: "marktvogt_haferstedt", rolle: "Marktvogt (Markt)", x: mx + 2, y: my + 1.5 }, { id: "wirtin_haferstedt", rolle: "Wirtin (Taverne)", x: mx - 4, y: my - 7.5 },
+  npc.push({ id: "marktvogt_haferstedt", rolle: "Marktvogt (Markt)", x: mx + 2, y: my + 1.5 }, { id: "bankier_haferstedt", rolle: "Bank (Schalter, Systeme)", x: mx + 31, y: my - 0.6 }, { id: "wirtin_haferstedt", rolle: "Wirtin (Taverne)", x: mx - 4, y: my - 7.5 },
     { id: "baecker_haferstedt", rolle: "Bäcker", x: mx + 20, y: my - 0.6 }, { id: "schmiedin_haferstedt", rolle: "Schmiedin", x: mx - 12, y: my + 16.5 }, { id: "mueller_haferstedt", rolle: "Müller", x: mx + 30, y: my - 28.5 },
     { id: "haendler_haferstedt_1", rolle: "Händler am Marktstand", x: mx - 8, y: my + 7.4 }, { id: "haendler_haferstedt_2", rolle: "Händlerin am Marktstand", x: mx + 8, y: my + 7.4 }); }
 
@@ -150,9 +151,10 @@ streu(WEST, 1500, (x, y) => { if (zaehl.Steine >= 30 || !westlich(x, y) || !frei
   male(sx - 12, sy - 10, sx + 12, sy + 10, (x, y) => { const d = Math.hypot((x - sx) / 11, (y - sy) / 9); return d >= 0.5 && d < 1 ? "p" : null; });
   for (let a = 0; a < 6.3; a += 0.7) ding(wahl(["stil_laub_oliv", "stil_laub_gold"]), sx + Math.cos(a) * 7.2, sy + Math.sin(a) * 5.6 + 0.4, { s: 0.9 }, 0.8);
   ding("moor_kahn_01", sx - 1.5, sy + 0.5, {}, 0.5);
+  lies("bl_sandquell_bank_tuer", sx + 22.5, sy - 9.4, "Die Bank von Sandquell. Kühl hinter dicken Mauern – Karawanen legen hier ihr Salzgeld ein.");
   lies("bl_sandquell", sx + 1, sy + 5.6, "Sandquell. Eine Quelle mitten in den Dünen – hier tränken die Karawannen zwischen Glutbrunn, der Salzpfanne und dem Nordstrand ihre Tiere.");
   /* Häuser im Ring (Tür nach Süden) */
-  for (const [dx, dy, o, id] of [[-22, -10, "graufurt_steinhaus_01"], [-12, -14, "graufurt_steinhaus_02", "bl_sandquell_herberge"], [12, -14, "graufurt_steinhaus_01"], [22, -10, "graufurt_steinhaus_02"],
+  for (const [dx, dy, o, id] of [[-22, -10, "graufurt_steinhaus_01"], [-12, -14, "graufurt_steinhaus_02", "bl_sandquell_herberge"], [12, -14, "graufurt_steinhaus_01"], [22.5, -10, "waldmark_bank_01", "bl_sandquell_bank"],
     [-24, 10, "moor_kate_01"], [-14, 18, "graufurt_steinhaus_01", "bl_sandquell_karawanserei"], [14, 18, "graufurt_steinhaus_02"], [25, 11, "weidenhain_kate_01"], [0, -20, "dorf_kapelle_01", "bl_sandquell_schrein"]]) ding(o, sx + dx, sy + dy, id ? { id } : {}, 6);
   for (const [dx, dy] of [[-30, -2], [-30, 4], [30, -2], [30, 4], [-6, 24], [6, 24]]) ding("welt_zelt_01", sx + dx, sy + dy, {}, 2);
   ding("dorf_marktstand_01", sx - 6, sy + 12, { id: "bl_sandquell_stand_1" }); ding("dorf_marktstand_03", sx + 6, sy + 12, { id: "bl_sandquell_stand_2" });
@@ -164,7 +166,7 @@ streu(WEST, 1500, (x, y) => { if (zaehl.Steine >= 30 || !westlich(x, y) || !frei
   weg([[7246, 6806], [7300, 6790], [7340, 6770], [sx - 12, sy + 4]], 1.8);
   weg([[7322, 6646], [7350, 6680], [7370, 6712], [sx - 2, sy - 10]], 1.8);
   weg([[sx + 4, sy - 22], [7410, 6640], [7428, 6580], [7446, 6520]], 1.6);
-  npc.push({ id: "quellwaechterin_sandquell", rolle: "Quellwächterin", x: sx + 2, y: sy + 5 }, { id: "wirt_sandquell", rolle: "Wirt der Herberge", x: sx - 12, y: sy - 12.6 },
+  npc.push({ id: "quellwaechterin_sandquell", rolle: "Quellwächterin", x: sx + 2, y: sy + 5 }, { id: "bankier_sandquell", rolle: "Bank (Schalter, Systeme)", x: sx + 22.5, y: sy - 8.6 }, { id: "wirt_sandquell", rolle: "Wirt der Herberge", x: sx - 12, y: sy - 12.6 },
     { id: "karawanenmeister_sandquell", rolle: "Karawanenmeister", x: sx - 14, y: sy + 19.6 }, { id: "haendler_sandquell", rolle: "Händler am Marktstand", x: sx - 6, y: sy + 13.4 }); }
 { /* ───── Nordstrand: ein grüner Saum am Meer mit Rastplatz ───── */
   const [bx, by] = ORTE.nordstrand; flaechen.push([bx - 12, by - 8, bx + 12, by + 10]);

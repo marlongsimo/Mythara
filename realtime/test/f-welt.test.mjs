@@ -36,10 +36,13 @@ try {
     check(!(await mitHeld(tom, F1, "kord", "annehmen")), "Tom (ohne „Das grüne Licht“): Kord bietet F1 nicht an");
     check(await mitHeld(ida, F1, "kord", "annehmen") && stand(ida, F1).phase === "laeuft" && anzahl(ida, "kords_brief") === 1, "Ida nimmt F1 an und bekommt Kords Brief");
     await objekt(ida, F1, "f1_grasende"); check(erl(ida, F1, "gras"), "Die Wegmarke „Ende des Grases“ gelesen");
-    { const [x, y] = F1.schritte.find((x) => x.id === "raeuber_saebel").wo; await stelle(ida, x, y); const z = await kampf("ida", x, y); let n = 0;
-      if (z) { n += await kaempfen(z, ["karawanenraeuber_saebel", "karawanenraeuber_bogen"], () => erl(ida, F1, "raeuber_saebel") && erl(ida, F1, "raeuber_bogen"), 400000); /* #154: beide zusammen – wer vom Bogenschützen beschossen wird, ist an ihn gebunden (Einzelkampf) und kann erst nach ihm einen Säbelräuber angreifen */
-        { const ich = (z.w.find((w) => w[1] === 1) || [])[0]; check(!z.ev.some((e) => e.a === "tot" && e.id === ich), "Ida überlebt den Kanal"); } z.ws.close(); await schlaf(2500); } const r = { z, siege: n };
-      check(erl(ida, F1, "raeuber_saebel") && erl(ida, F1, "raeuber_bogen"), `Karawanenräuber am Kanal besiegt (${r.siege} Siege${r.z ? "" : ", kein Kampfgebiet"})`); }
+    { const [x, y] = F1.schritte.find((x) => x.id === "raeuber_saebel").wo, beide = () => erl(ida, F1, "raeuber_saebel") && erl(ida, F1, "raeuber_bogen"); let n = 0, tot = false, z = null; const t0 = Date.now();
+      /* in Runden (wie G3): bleibt ein Ziel hängen (Leine, Flucht), neu verbinden; beide Arten zugleich – sie stehen zusammen im Lager */
+      while (!beide() && Date.now() - t0 < 270000) { await stelle(ida, x, y); z = await kampf("ida", x, y); if (!z) break;
+        n += await kaempfen(z, ["karawanenraeuber_saebel", "karawanenraeuber_bogen"], beide, 90000);
+        { const ich = (z.w.find((w) => w[1] === 1) || [])[0]; if (z.ev.some((e) => e.a === "tot" && e.id === ich)) tot = true; } z.ws.close(); await schlaf(2500); }
+      check(!tot, "Ida überlebt den Kanal");
+      check(beide(), `Karawanenräuber am Kanal besiegt (${n} Siege${z ? "" : ", kein Kampfgebiet"}, Stand ${ida.b[F1.id]})`); }
     check(await sprich(ida, F1, "selma", "brief_geben") && fertig(ida, F1) && anzahl(ida, "kords_brief") === 0, "F1 fertig: Selma liest den Brief, Lohn abgeholt");
 
   }
@@ -63,7 +66,7 @@ try {
     console.log("F4 „Der Strom trägt“");
     check(await sprich(dora, F4, "nalia", "annehmen") && stand(dora, F4).phase === "laeuft", "Dora nimmt F4 an (nach F2, Fischen und Kochen 65)");
     check(await fischen(dora, "glutstrom", "fisch_glutwels_roh", 2) && erl(dora, F4, "welse"), `Zwei Glutwelse aus dem Strom (${anzahl(dora, "fisch_glutwels_roh")})`);
-    { const r = await herstellen(dora, 7121 - 1.2, 6946, "glutwels_salzkruste"); check(r === "ok" && anzahl(dora, "glutwels_salzkruste") === 1 && erl(dora, F4, "kruste"), `Glutwels in Salzkruste am Herd von Glutbrunn (${r})`); }
+    { let r = await herstellen(dora, 7121 - 1.2, 6946, "glutwels_salzkruste"); if (!erl(dora, F4, "kruste") && anzahl(dora, "fisch_glutwels_roh") > 0) r = await herstellen(dora, null, null, "glutwels_salzkruste"); /* verbrannt: noch ein Wels */ check(r === "ok" && anzahl(dora, "glutwels_salzkruste") === 1 && erl(dora, F4, "kruste"), `Glutwels in Salzkruste am Herd von Glutbrunn (${r})`); }
     check(await sprich(dora, F4, "nalia", "abgeben") && fertig(dora, F4) && anzahl(dora, "glutwels_salzkruste") === 0, "F4 fertig, Lohn abgeholt");
 
   }

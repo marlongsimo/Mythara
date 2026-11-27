@@ -86,12 +86,12 @@ INSTANZEN.push(THRON); TUEREN.push(TUER);
 { const { s, h } = welt(17, P.x, P.y); let siegel = 0; const beutel = { hat: (g) => g === "federsiegel" && siegel > 0, abgeben: (g) => (g === "federsiegel" && siegel > 0 ? (siegel--, true) : false) }, an = () => true;
   const W = (dx) => weltJeSpieler(s, h.id, "anna", P.x + dx, P.y, an, beutel);
   W(0); check(tuerenZu(TUEREN, an, { hat: beutel.hat, x: P.x, y: P.y }, INSTANZEN).some((t) => t.id === "test_tuer6"), "ohne Siegel: die Tür davor ist zu");
-  siegel = 2; check(!tuerenZu(TUEREN, an, { hat: beutel.hat, x: P.x, y: P.y }, INSTANZEN).length, "mit Siegel dabei: die Tür ist offen");
+  siegel = 2; check(!tuerenZu(TUEREN, an, { hat: beutel.hat, x: P.x, y: P.y }, INSTANZEN).some((t) => t.id === TUER.id), "mit Siegel dabei: die Tür ist offen"); /* nur diese Tür (die Zunft-Türen bleiben ohne Berufsstufe zu) */
   siegel = 0; let t = W(5); check(t === "Der Altar verlangt ein Federsiegel." && !h.instanz && !s.instanzDa("test_saal6:anna"), "ohne Siegel im Raum (z. B. hineinteleportiert): keine Kopie, Hinweis");
   check(W(5) === null, "der Hinweis kommt nur einmal");
   W(0); siegel = 2; t = W(5); check(siegel === 1 && h.instanz === "test_saal6:anna" && s.instanzDa("test_saal6:anna") && /verbraucht/.test(t) && /Thronsaal/.test(t), `Betreten: ein Siegel verbraucht, eigene Kopie („${t}“)`);
   W(6); W(7); check(siegel === 1, "im Raum bleiben kostet nichts weiter");
-  check(!tuerenZu(TUEREN, an, { hat: () => false, x: P.x + 5, y: P.y }, INSTANZEN).length && !tuerenZu(TUEREN, an, { hat: () => false, x: TUER.feld[0] + 0.5, y: P.y }, INSTANZEN).length, "im Raum oder in der Tür: hinaus geht es auch ohne Siegel");
+  check(!tuerenZu(TUEREN, an, { hat: () => false, x: P.x + 5, y: P.y }, INSTANZEN).some((t) => t.id === TUER.id) && !tuerenZu(TUEREN, an, { hat: () => false, x: TUER.feld[0] + 0.5, y: P.y }, INSTANZEN).some((t) => t.id === TUER.id), "im Raum oder in der Tür: hinaus geht es auch ohne Siegel");
   W(0); check(!h.instanz && !s.instanzDa("test_saal6:anna"), "hinausgehen beendet den Versuch: die Kopie ist sofort weg");
   W(5); check(siegel === 0 && s.instanzDa("test_saal6:anna"), "wieder hinein: der nächste Versuch kostet das nächste Siegel");
   h.lp = 0; h.tot = true; h.wieder = 99; lauf(s, 0.2); check(!s.instanzDa("test_saal6:anna"), "im Raum gefallen: der Versuch ist vorbei");

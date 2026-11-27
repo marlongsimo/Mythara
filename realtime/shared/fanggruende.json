@@ -315,6 +315,108 @@
    ]
   },
   {
+   "id": "fischerzunft_seeaal",
+   "name": "Fischerzunft: Aalsteg",
+   "art": "seeaal",
+   "region": "fl_186_225",
+   "aktiv": 2,
+   "felder": [
+    [
+     6386.5,
+     7350.5
+    ],
+    [
+     6384.5,
+     7353.5
+    ],
+    [
+     6380.5,
+     7353.5
+    ],
+    [
+     6378.5,
+     7350.5
+    ]
+   ]
+  },
+  {
+   "id": "fischerzunft_klippenbarsch",
+   "name": "Fischerzunft: Klippenbarsch am Steg",
+   "art": "klippenbarsch",
+   "region": "fl_186_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6382.5,
+     7350.5
+    ]
+   ]
+  },
+  {
+   "id": "fischerzunft_hering",
+   "name": "Fischerzunft: Heringsplatz",
+   "art": "hering",
+   "region": "fl_186_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6377.5,
+     7353.5
+    ]
+   ]
+  },
+  {
+   "id": "fischerzunft_silberbarsch",
+   "name": "Fischerzunft: Silberbarsch",
+   "art": "silberbarsch",
+   "region": "fl_186_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6375.5,
+     7350.5
+    ],
+    [
+     6374.5,
+     7353.5
+    ]
+   ]
+  },
+  {
+   "id": "fischerzunft_sturmhecht",
+   "name": "Fischerzunft: Sturmhecht",
+   "art": "sturmhecht",
+   "region": "fl_186_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6373.5,
+     7350.5
+    ],
+    [
+     6372.5,
+     7353.5
+    ]
+   ]
+  },
+  {
+   "id": "fischerzunft_tiefseeaal",
+   "name": "Fischerzunft: Tiefseeaal",
+   "art": "tiefseeaal",
+   "region": "fl_186_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6371.5,
+     7350.5
+    ],
+    [
+     6370.5,
+     7353.5
+    ]
+   ]
+  },
+  {
    "id": "moewenbucht_steg",
    "name": "Die Möwenbucht",
    "art": "hering",
@@ -808,6 +910,71 @@
     [
      7290.5,
      5285.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_grauwacht",
+   "name": "Am Wasser vor Grauwacht",
+   "art": "hering",
+   "region": "fl_201_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6744.5,
+     5778.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_weiherhof_steg",
+   "name": "Weiherhof: am Steg",
+   "art": "moorhecht",
+   "region": "fl_186_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6331.5,
+     5842.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_weiherhof_ost",
+   "name": "Weiherhof: Ostufer",
+   "art": "muehlbarsch",
+   "region": "fl_186_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6353.5,
+     5844.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_weiherhof_sued",
+   "name": "Weiherhof: Südufer",
+   "art": "wels",
+   "region": "fl_186_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6343.5,
+     5849.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_nordkueste_wollhag",
+   "name": "Nordküste bei Wollhag",
+   "art": "klippenbarsch",
+   "region": "fl_201_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6553.5,
+     5663.5
     ]
    ]
   }

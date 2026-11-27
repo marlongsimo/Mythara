@@ -14,6 +14,7 @@
  * ziehen = Kamera drehen und neigen · Mausrad/zwei Finger = Zoom.
  */
 import * as THREE from "three";
+import GELAENDE from "../../../welt/bibliothek/gelaende.json";
 import { bauen, gebaeudeDrehen, type Bauplan, type Gebaeude } from "./bauten";
 import { modell, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
@@ -68,6 +69,8 @@ function wasserMaterial(farbe: number, deck: number, tempo: number) {
       #include <opaque_fragment>`); };
   return m; }
 const WASSER = wasserMaterial(0x2c6680, 0.9, 1), MOORWASSER = wasserMaterial(0x26342c, 0.94, 0.35);
+FARBE.i = FARBE.i || "#c7e5f6"; FARBE.I = FARBE.I || "#8cbbe0"; FARBE.wolke = "#e4ecf3"; /* #164: Eisboden der Frostwitwe, Wolken um den Horst */
+for (const A of (GELAENDE as { arten: { zeichen: string; farbe?: string }[] }).arten) if (A.farbe && !FARBE[A.zeichen]) FARBE[A.zeichen] = A.farbe; /* #164: neue Geländearten der Welt ohne Code-Änderung (eigene Farben oben gehen vor) */
 const FARBEN = new Map<string, THREE.Color>(Object.entries(FARBE).map(([k, v]) => [k, new THREE.Color(v)]));
 const farbe = (z: string) => FARBEN.get(z) || FARBEN.get(".")!;
 
@@ -148,9 +151,9 @@ export class Welt3D {
 
   /* ───────── Gelände eines Chunks ───────── */
   gelaende(s: Stueck) {
-    const d = s.d, W = C + 3, x0 = d.cx * C, y0 = d.cy * C, unten = d.ebene !== "oberwelt";
+    const d = s.d, W = C + 3, x0 = d.cx * C, y0 = d.cy * C, unten = d.ebene !== "oberwelt" && d.art !== "draussen", wolken = d.art === "draussen";
     const z = (tx: number, ty: number) => d.boden[ty + 1]?.[tx + 1] ?? " ", h = (lx: number, ly: number) => d.hoehe[(ly + 1) * W + lx + 1] / 100;
-    const unter = (q: string) => (AUFLAGE.has(q) ? "." : q);
+    const unter = (q: string) => (AUFLAGE.has(q) ? "." : wolken && (q === "X" || q === " ") ? "wolke" : q); /* #164: um den Horst Wolken statt Schwarz */
     const U: number[][] = []; for (let ly = 0; ly <= C; ly++) for (let lx = 0; lx <= C; lx++) { let r = 0, g = 0, b = 0;
       for (const [dx, dy] of [[-1, -1], [0, -1], [-1, 0], [0, 0]]) { const f = farbe(unter(z(lx + dx, ly + dy))); r += f.r; g += f.g; b += f.b; }
       const j = 1 + (zufall((lx + x0) * 0.7, (ly + y0) * 1.3) - 0.5) * 0.14 + (zufall(Math.floor((lx + x0) / 3), Math.floor((ly + y0) / 3)) - 0.5) * 0.1 + (zufall(Math.floor((lx + x0) / 9), Math.floor((ly + y0) / 9)) - 0.5) * 0.12;
@@ -296,8 +299,8 @@ export class Welt3D {
       this.zurueck.style.opacity = anders ? "1" : "0"; this.zurueck.style.pointerEvents = anders ? "auto" : "none"; } }
   /** Licht und Himmel je Ebene: Oberwelt am Tag, Untergrund dunkel mit Fackelschein */
   art = "oberwelt";
-  stimmung(ebene: string, art: string) { if (ebene === this.ebene) return; this.ebene = ebene; this.art = art; const unten = art !== "oberwelt", f = this.szene.fog as THREE.Fog;
-    const himmel = new THREE.Color(art === "innen" ? "#0c0907" : unten ? "#0e0c0a" : "#b9cfe0"); this.szene.background = himmel; f.color.copy(himmel);
+  stimmung(ebene: string, art: string) { if (ebene === this.ebene) return; this.ebene = ebene; this.art = art; const unten = art !== "oberwelt" && art !== "draussen" /* #164: Horst unter freiem Himmel */, f = this.szene.fog as THREE.Fog;
+    const himmel = new THREE.Color(art === "innen" ? "#0c0907" : unten ? "#0e0c0a" : art === "draussen" ? "#cfdeea" : "#b9cfe0"); this.szene.background = himmel; f.color.copy(himmel);
     this.himmelLicht.intensity = unten ? 0.62 : 1.1; this.himmelLicht.color.set(unten ? 0xb09a82 : 0xc6dcff); this.licht.intensity = unten ? 0.35 : 2.9; this.fackel.intensity = unten ? 30 : 0; this.fackel.distance = 20;
     if (art === "innen") { this.himmelLicht.intensity = 1.0; this.himmelLicht.color.set(0xffe2c0); this.licht.intensity = 1.1; this.fackel.intensity = 10; }   /* Innenraum: warmes Licht wie durch Fenster und Kerzen */ }
 

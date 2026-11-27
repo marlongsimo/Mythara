@@ -1,0 +1,1473 @@
+{
+ "hinweis": "Bestandsaufnahme (Messung, nichts gebaut): werkzeug/welt/bestandsaufnahme.py. Abstände zu Fuß in halber Auflösung, 4er-Nachbarschaft (etwas zu lang).",
+ "orte": [
+  {
+   "name": "Grauwacht",
+   "art": "Stadt",
+   "x": 6706,
+   "y": 5740,
+   "gebaeude": 12,
+   "land": "Fahle Weiten",
+   "teil": "Norden",
+   "region": "fl_201_169",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 1,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": false
+  },
+  {
+   "name": "Heidrast",
+   "art": "Dorf",
+   "x": 6596,
+   "y": 5872,
+   "gebaeude": 5,
+   "land": "Fahle Weiten",
+   "teil": "Norden",
+   "region": "fl_201_183",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Gehöft",
+   "art": "Weiler/Ort",
+   "x": 6150,
+   "y": 6236,
+   "gebaeude": 1,
+   "land": "Fahle Weiten",
+   "teil": "Norden",
+   "region": "fl_186_183",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Mühle am Bach",
+   "art": "Weiler/Ort",
+   "x": 6224,
+   "y": 6282,
+   "gebaeude": 1,
+   "land": "Fahle Weiten",
+   "teil": "Norden",
+   "region": "fl_186_183",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Köhlerhütte",
+   "art": "Weiler/Ort",
+   "x": 6188,
+   "y": 6262,
+   "gebaeude": 1,
+   "land": "Fahle Weiten",
+   "teil": "Norden",
+   "region": "fl_186_183",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Der Turm mit dem grünen Licht",
+   "art": "Weiler/Ort",
+   "x": 6840,
+   "y": 6518,
+   "gebaeude": 1,
+   "land": "Fahle Weiten",
+   "teil": "Norden",
+   "region": "ostufer",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Weidenhain",
+   "art": "Dorf",
+   "x": 6464,
+   "y": 6704,
+   "gebaeude": 35,
+   "grenze": [
+    6400,
+    6656,
+    6528,
+    6752
+   ],
+   "land": "Grenzland",
+   "teil": "Norden",
+   "region": "weidenhain",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 1,
+   "bankier": 1,
+   "laeden": 1,
+   "stationen": [
+    "backofen",
+    "bindestein",
+    "feuer",
+    "kessel",
+    "werkbank"
+   ],
+   "groesser": true,
+   "ohne_bank": false
+  },
+  {
+   "name": "Die Waldmark",
+   "art": "Stadt",
+   "x": 6448,
+   "y": 6432,
+   "gebaeude": 18,
+   "grenze": [
+    6400,
+    6400,
+    6496,
+    6464
+   ],
+   "land": "Grenzland",
+   "teil": "Norden",
+   "region": "waldmark",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 2,
+   "bankier": 2,
+   "laeden": 5,
+   "stationen": [
+    "amboss",
+    "backofen",
+    "brunnen",
+    "esse",
+    "herd",
+    "kessel"
+   ],
+   "groesser": true,
+   "ohne_bank": false
+  },
+  {
+   "name": "Graufurt",
+   "art": "Stadt",
+   "x": 6720,
+   "y": 6576,
+   "gebaeude": 11,
+   "grenze": [
+    6656,
+    6400,
+    6784,
+    6752
+   ],
+   "land": "Grenzland",
+   "teil": "Norden",
+   "region": "graufurt",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 1,
+   "stationen": [
+    "amboss",
+    "backofen",
+    "herd",
+    "kessel",
+    "werkbank"
+   ],
+   "groesser": true,
+   "ohne_bank": false
+  },
+  {
+   "name": "Rabenmoor",
+   "art": "Dorf",
+   "x": 6336,
+   "y": 6704,
+   "gebaeude": 7,
+   "grenze": [
+    6272,
+    6656,
+    6400,
+    6752
+   ],
+   "land": "Grenzland",
+   "teil": "Norden",
+   "region": "rabenmoor",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [
+    "feuer",
+    "kessel"
+   ],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Der Osthof",
+   "art": "Gehöft",
+   "x": 6544,
+   "y": 6432,
+   "gebaeude": 3,
+   "grenze": [
+    6496,
+    6400,
+    6592,
+    6464
+   ],
+   "land": "Grenzland",
+   "teil": "Norden",
+   "region": "osthof",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [
+    "backofen",
+    "brunnen",
+    "werkbank"
+   ],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Steinhag",
+   "art": "Stadt",
+   "x": 6990,
+   "y": 5892,
+   "gebaeude": 21,
+   "land": "Hochlande",
+   "teil": "Norden",
+   "region": "fl_216_183",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 0,
+   "bankier": 1,
+   "laeden": 6,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": false
+  },
+  {
+   "name": "Hohe Alm",
+   "art": "Gehöft",
+   "x": 7190,
+   "y": 6000,
+   "gebaeude": 2,
+   "land": "Hochlande",
+   "teil": "Norden",
+   "region": "fl_216_183",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 2,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Erzberg-Bergwerk",
+   "art": "Weiler/Ort",
+   "x": 7128,
+   "y": 5808,
+   "gebaeude": 2,
+   "land": "Hochlande",
+   "teil": "Norden",
+   "region": "fl_216_169",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 3,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Passwacht",
+   "art": "Weiler/Ort",
+   "x": 6962,
+   "y": 5608,
+   "gebaeude": 2,
+   "land": "Hochlande",
+   "teil": "Norden",
+   "region": "fl_216_169",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 2,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Einsiedelei",
+   "art": "Weiler/Ort",
+   "x": 7340,
+   "y": 5664,
+   "gebaeude": 1,
+   "land": "Hochlande",
+   "teil": "Norden",
+   "region": "fl_216_169",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 1,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Glutbrunn",
+   "art": "Stadt",
+   "x": 7160,
+   "y": 6950,
+   "gebaeude": 9,
+   "land": "Glutsande",
+   "teil": "Süden",
+   "region": "fl_216_211",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": false
+  },
+  {
+   "name": "Sandquell",
+   "art": "Dorf",
+   "x": 7384,
+   "y": 6740,
+   "gebaeude": 9,
+   "land": "Glutsande",
+   "teil": "Süden",
+   "region": "fl_216_198",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 4,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Salzpfanne",
+   "art": "Weiler/Ort",
+   "x": 7330,
+   "y": 6642,
+   "gebaeude": 3,
+   "land": "Glutsande",
+   "teil": "Süden",
+   "region": "fl_216_198",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Möwenbucht",
+   "art": "Dorf",
+   "x": 6214,
+   "y": 7160,
+   "gebaeude": 4,
+   "land": "Küste",
+   "teil": "Süden",
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [
+    "feuer",
+    "raeucherhuette"
+   ],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Netzbucht",
+   "art": "Weiler/Ort",
+   "x": 6146,
+   "y": 6930,
+   "gebaeude": 3,
+   "land": "Küste",
+   "teil": "Süden",
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 2,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Haferstedt",
+   "art": "Dorf",
+   "x": 6215,
+   "y": 6980,
+   "gebaeude": 11,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 7,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Kielmund",
+   "art": "Stadt",
+   "x": 6426,
+   "y": 7314,
+   "gebaeude": 9,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_186_225",
+   "bank_gebaeude": 1,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": false
+  },
+  {
+   "name": "Summweide",
+   "art": "Weiler/Ort",
+   "x": 6418,
+   "y": 6904,
+   "gebaeude": 3,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 1,
+   "stationen": [],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Leuchtturm",
+   "art": "Weiler/Ort",
+   "x": 6176,
+   "y": 7036,
+   "gebaeude": 2,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Heckenhof",
+   "art": "Gehöft",
+   "x": 6490,
+   "y": 6812,
+   "gebaeude": 2,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_201_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [
+    "herd"
+   ],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Erlengrund",
+   "art": "Dorf",
+   "x": 6392,
+   "y": 7004,
+   "gebaeude": 2,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Lehmfurt",
+   "art": "Dorf",
+   "x": 6466,
+   "y": 7244,
+   "gebaeude": 2,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_201_225",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Lämmerhang",
+   "art": "Weiler/Ort",
+   "x": 6292,
+   "y": 7096,
+   "gebaeude": 2,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Kräuterhof",
+   "art": "Weiler/Ort",
+   "x": 6418,
+   "y": 7064,
+   "gebaeude": 1,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_186_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [
+    "kessel"
+   ],
+   "groesser": true,
+   "ohne_bank": true
+  },
+  {
+   "name": "Schilfsee",
+   "art": "Weiler/Ort",
+   "x": 6450,
+   "y": 7188,
+   "gebaeude": 1,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_201_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  },
+  {
+   "name": "Distelhof",
+   "art": "Gehöft",
+   "x": 6560,
+   "y": 6966,
+   "gebaeude": 1,
+   "land": "Süden/Westen",
+   "teil": "Süden",
+   "region": "fl_201_211",
+   "bank_gebaeude": 0,
+   "bankschalter_im_spiel": 0,
+   "bankier": 0,
+   "laeden": 0,
+   "stationen": [],
+   "groesser": false,
+   "ohne_bank": false
+  }
+ ],
+ "groessere_orte_ohne_bank": [
+  "Rabenmoor",
+  "Der Osthof",
+  "Hohe Alm",
+  "Erzberg-Bergwerk",
+  "Passwacht",
+  "Einsiedelei",
+  "Sandquell",
+  "Möwenbucht",
+  "Netzbucht",
+  "Haferstedt",
+  "Summweide",
+  "Heckenhof",
+  "Kräuterhof"
+ ],
+ "bank_gebaeude_ohne_schalter": [
+  "Grauwacht",
+  "Graufurt",
+  "Steinhag",
+  "Glutbrunn",
+  "Kielmund"
+ ],
+ "luecke_weg": {
+  "x": 6258,
+  "y": 5780,
+  "bis_ort": 430.0,
+  "luecke_ca": 860.0,
+  "land": "Fahle Weiten"
+ },
+ "leer_ueber_150": [
+  {
+   "land": "Ockerlande",
+   "flaeche": 1690944,
+   "weitester": [
+    7752,
+    7838
+   ],
+   "bis_ort": 1790.0
+  },
+  {
+   "land": "Drachenarm",
+   "flaeche": 679268,
+   "weitester": [
+    7872,
+    6138
+   ],
+   "bis_ort": 1646.0
+  },
+  {
+   "land": "Hochlande",
+   "flaeche": 18344,
+   "weitester": [
+    7036,
+    6168
+   ],
+   "bis_ort": 322.0
+  },
+  {
+   "land": "Süden/Westen",
+   "flaeche": 15552,
+   "weitester": [
+    6240,
+    6760
+   ],
+   "bis_ort": 246.0
+  },
+  {
+   "land": "Glutsande",
+   "flaeche": 13116,
+   "weitester": [
+    7508,
+    6464
+   ],
+   "bis_ort": 356.0
+  },
+  {
+   "land": "Küste",
+   "flaeche": 2620,
+   "weitester": [
+    6032,
+    6818
+   ],
+   "bis_ort": 226.0
+  }
+ ],
+ "unerreichbar_von_orten": 154476,
+ "gegner": {
+  "Drachenarm": {
+   "max": 23.8,
+   "stelle": [
+    8052,
+    6092
+   ],
+   "plaetze": 149
+  },
+  "Fahle Weiten": {
+   "max": 23.5,
+   "stelle": [
+    6255,
+    5485
+   ],
+   "plaetze": 521
+  },
+  "Frostkrone": {
+   "max": 23.3,
+   "stelle": [
+    7272,
+    5444
+   ],
+   "plaetze": 175
+  },
+  "Glutsande": {
+   "max": 24.0,
+   "stelle": [
+    7272,
+    7034
+   ],
+   "plaetze": 662
+  },
+  "Grenzland": {
+   "max": 25.8,
+   "stelle": [
+    6276,
+    6701
+   ],
+   "plaetze": 275
+  },
+  "Hochlande": {
+   "max": 26.2,
+   "stelle": [
+    6769,
+    5761
+   ],
+   "plaetze": 546
+  },
+  "Küste": {
+   "max": 24.0,
+   "stelle": [
+    6632,
+    7714
+   ],
+   "plaetze": 81
+  },
+  "Ockerlande": {
+   "max": 23.9,
+   "stelle": [
+    7174,
+    7792
+   ],
+   "plaetze": 573
+  },
+  "Süden/Westen": {
+   "max": 23.9,
+   "stelle": [
+    6372,
+    7271
+   ],
+   "plaetze": 233
+  }
+ },
+ "arbeit": {
+  "Drachenarm": {
+   "Holz": {
+    "max": 873.5,
+    "stelle": [
+     8213,
+     6037
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "eiche (1)",
+     "tanne (10)",
+     "eibe (20)",
+     "moorweide (35)",
+     "kernbaum (45)",
+     "weltenbaum (65)"
+    ]
+   },
+   "Erz": {
+    "max": 881.4,
+    "stelle": [
+     8220,
+     6049
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "kupfer (1)",
+     "eisen (10)",
+     "schwarzeisen (20)",
+     "sterneisen (35)",
+     "splittereisen (45)",
+     "ureisen (65)"
+    ]
+   },
+   "Kraut": {
+    "max": 1108.0,
+    "stelle": [
+     8282,
+     6299
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "wegerich (1)",
+     "ringelblume (10)",
+     "moorgloeckchen (20)",
+     "eisenhut (35)",
+     "nebelkraut (45)",
+     "lindenbluete (65)"
+    ]
+   },
+   "Fisch": {
+    "max": 1143.2,
+    "stelle": [
+     8282,
+     6299
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "bachling (1)",
+     "muehlbarsch (10)",
+     "moorhecht (20)",
+     "hering (20)",
+     "klippenbarsch (35)",
+     "seeaal (45)",
+     "wels (45)",
+     "glutwels (65)"
+    ]
+   }
+  },
+  "Fahle Weiten": {
+   "Holz": {
+    "max": 614.7,
+    "stelle": [
+     6631,
+     5137
+    ],
+    "stellen": 4,
+    "davon_live": 0,
+    "stufen": [
+     45
+    ],
+    "fehlt": [
+     "eiche (1)",
+     "tanne (10)",
+     "eibe (20)",
+     "moorweide (35)",
+     "weltenbaum (65)"
+    ]
+   },
+   "Erz": {
+    "max": 692.9,
+    "stelle": [
+     5995,
+     5759
+    ],
+    "stellen": 5,
+    "davon_live": 0,
+    "stufen": [
+     10,
+     20
+    ],
+    "fehlt": [
+     "kupfer (1)",
+     "sterneisen (35)",
+     "splittereisen (45)",
+     "ureisen (65)"
+    ]
+   },
+   "Kraut": {
+    "max": 557.0,
+    "stelle": [
+     6598,
+     5170
+    ],
+    "stellen": 6,
+    "davon_live": 0,
+    "stufen": [
+     35
+    ],
+    "fehlt": [
+     "wegerich (1)",
+     "ringelblume (10)",
+     "moorgloeckchen (20)",
+     "nebelkraut (45)",
+     "lindenbluete (65)"
+    ]
+   },
+   "Fisch": {
+    "max": 1009.0,
+    "stelle": [
+     5995,
+     5754
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "bachling (1)",
+     "muehlbarsch (10)",
+     "moorhecht (20)",
+     "hering (20)",
+     "klippenbarsch (35)",
+     "seeaal (45)",
+     "wels (45)",
+     "glutwels (65)"
+    ]
+   }
+  },
+  "Frostkrone": {
+   "Holz": {
+    "max": 591.6,
+    "stelle": [
+     6840,
+     5048
+    ],
+    "stellen": 6,
+    "davon_live": 0,
+    "stufen": [
+     10,
+     20
+    ],
+    "fehlt": [
+     "eiche (1)",
+     "moorweide (35)",
+     "kernbaum (45)",
+     "weltenbaum (65)"
+    ]
+   },
+   "Erz": {
+    "max": 483.0,
+    "stelle": [
+     6844,
+     5044
+    ],
+    "stellen": 14,
+    "davon_live": 3,
+    "stufen": [
+     10,
+     20,
+     35,
+     45,
+     65
+    ],
+    "fehlt": [
+     "kupfer (1)"
+    ]
+   },
+   "Kraut": {
+    "max": 507.2,
+    "stelle": [
+     6844,
+     5044
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "wegerich (1)",
+     "ringelblume (10)",
+     "moorgloeckchen (20)",
+     "eisenhut (35)",
+     "nebelkraut (45)",
+     "lindenbluete (65)"
+    ]
+   },
+   "Fisch": {
+    "max": 552.6,
+    "stelle": [
+     6760,
+     5136
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "bachling (1)",
+     "muehlbarsch (10)",
+     "moorhecht (20)",
+     "hering (20)",
+     "klippenbarsch (35)",
+     "seeaal (45)",
+     "wels (45)",
+     "glutwels (65)"
+    ]
+   }
+  },
+  "Glutsande": {
+   "Holz": {
+    "max": 836.6,
+    "stelle": [
+     8282,
+     6300
+    ],
+    "stellen": 14,
+    "davon_live": 14,
+    "stufen": [
+     35,
+     45,
+     65
+    ],
+    "fehlt": [
+     "eiche (1)",
+     "tanne (10)",
+     "eibe (20)"
+    ]
+   },
+   "Erz": {
+    "max": 848.4,
+    "stelle": [
+     8282,
+     6300
+    ],
+    "stellen": 17,
+    "davon_live": 17,
+    "stufen": [
+     35,
+     45,
+     65
+    ],
+    "fehlt": [
+     "kupfer (1)",
+     "eisen (10)",
+     "schwarzeisen (20)"
+    ]
+   },
+   "Kraut": {
+    "max": 1430.2,
+    "stelle": [
+     7875,
+     7303
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "wegerich (1)",
+     "ringelblume (10)",
+     "moorgloeckchen (20)",
+     "eisenhut (35)",
+     "nebelkraut (45)",
+     "lindenbluete (65)"
+    ]
+   },
+   "Fisch": {
+    "max": 1143.9,
+    "stelle": [
+     8255,
+     6411
+    ],
+    "stellen": 9,
+    "davon_live": 9,
+    "stufen": [
+     65
+    ],
+    "fehlt": [
+     "bachling (1)",
+     "muehlbarsch (10)",
+     "moorhecht (20)",
+     "hering (20)",
+     "klippenbarsch (35)",
+     "seeaal (45)",
+     "wels (45)"
+    ]
+   }
+  },
+  "Grenzland": {
+   "Holz": {
+    "max": 286.2,
+    "stelle": [
+     6783,
+     6465
+    ],
+    "stellen": 38,
+    "davon_live": 34,
+    "stufen": [
+     1,
+     10,
+     15,
+     20,
+     35,
+     45
+    ],
+    "fehlt": [
+     "weltenbaum (65)"
+    ]
+   },
+   "Erz": {
+    "max": 364.8,
+    "stelle": [
+     6783,
+     6336
+    ],
+    "stellen": 21,
+    "davon_live": 18,
+    "stufen": [
+     1,
+     10,
+     20,
+     35
+    ],
+    "fehlt": [
+     "splittereisen (45)",
+     "ureisen (65)"
+    ]
+   },
+   "Kraut": {
+    "max": 302.0,
+    "stelle": [
+     6033,
+     6359
+    ],
+    "stellen": 33,
+    "davon_live": 33,
+    "stufen": [
+     1,
+     10,
+     20,
+     35,
+     45,
+     65
+    ],
+    "fehlt": []
+   },
+   "Fisch": {
+    "max": 474.8,
+    "stelle": [
+     6040,
+     6336
+    ],
+    "stellen": 48,
+    "davon_live": 48,
+    "stufen": [
+     1,
+     10,
+     20,
+     45
+    ],
+    "fehlt": [
+     "klippenbarsch (35)",
+     "glutwels (65)"
+    ]
+   }
+  },
+  "Hochlande": {
+   "Holz": {
+    "max": 601.7,
+    "stelle": [
+     6815,
+     5062
+    ],
+    "stellen": 58,
+    "davon_live": 12,
+    "stufen": [
+     1,
+     10,
+     20,
+     35,
+     45,
+     65
+    ],
+    "fehlt": []
+   },
+   "Erz": {
+    "max": 489.1,
+    "stelle": [
+     6843,
+     5038
+    ],
+    "stellen": 65,
+    "davon_live": 13,
+    "stufen": [
+     1,
+     10,
+     20,
+     35,
+     45,
+     65
+    ],
+    "fehlt": []
+   },
+   "Kraut": {
+    "max": 513.1,
+    "stelle": [
+     6843,
+     5038
+    ],
+    "stellen": 18,
+    "davon_live": 18,
+    "stufen": [
+     1,
+     10,
+     20,
+     35,
+     45
+    ],
+    "fehlt": [
+     "lindenbluete (65)"
+    ]
+   },
+   "Fisch": {
+    "max": 554.7,
+    "stelle": [
+     6765,
+     5113
+    ],
+    "stellen": 28,
+    "davon_live": 20,
+    "stufen": [
+     1,
+     10,
+     20,
+     35,
+     45
+    ],
+    "fehlt": [
+     "glutwels (65)"
+    ]
+   }
+  },
+  "Küste": {
+   "Holz": {
+    "max": 526.9,
+    "stelle": [
+     6639,
+     7757
+    ],
+    "stellen": 6,
+    "davon_live": 6,
+    "stufen": [
+     1,
+     20
+    ],
+    "fehlt": [
+     "tanne (10)",
+     "moorweide (35)",
+     "kernbaum (45)",
+     "weltenbaum (65)"
+    ]
+   },
+   "Erz": {
+    "max": 484.7,
+    "stelle": [
+     6639,
+     7757
+    ],
+    "stellen": 13,
+    "davon_live": 13,
+    "stufen": [
+     1,
+     10,
+     20
+    ],
+    "fehlt": [
+     "sterneisen (35)",
+     "splittereisen (45)",
+     "ureisen (65)"
+    ]
+   },
+   "Kraut": {
+    "max": 721.1,
+    "stelle": [
+     6639,
+     7757
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "wegerich (1)",
+     "ringelblume (10)",
+     "moorgloeckchen (20)",
+     "eisenhut (35)",
+     "nebelkraut (45)",
+     "lindenbluete (65)"
+    ]
+   },
+   "Fisch": {
+    "max": 305.2,
+    "stelle": [
+     6027,
+     6824
+    ],
+    "stellen": 20,
+    "davon_live": 15,
+    "stufen": [
+     20,
+     35,
+     45
+    ],
+    "fehlt": [
+     "bachling (1)",
+     "muehlbarsch (10)",
+     "glutwels (65)"
+    ]
+   }
+  },
+  "Ockerlande": {
+   "Holz": {
+    "max": 1121.7,
+    "stelle": [
+     7249,
+     8059
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "eiche (1)",
+     "tanne (10)",
+     "eibe (20)",
+     "moorweide (35)",
+     "kernbaum (45)",
+     "weltenbaum (65)"
+    ]
+   },
+   "Erz": {
+    "max": 1129.0,
+    "stelle": [
+     7647,
+     7955
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "kupfer (1)",
+     "eisen (10)",
+     "schwarzeisen (20)",
+     "sterneisen (35)",
+     "splittereisen (45)",
+     "ureisen (65)"
+    ]
+   },
+   "Kraut": {
+    "max": 1589.5,
+    "stelle": [
+     7881,
+     7702
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "wegerich (1)",
+     "ringelblume (10)",
+     "moorgloeckchen (20)",
+     "eisenhut (35)",
+     "nebelkraut (45)",
+     "lindenbluete (65)"
+    ]
+   },
+   "Fisch": {
+    "max": 1107.8,
+    "stelle": [
+     7796,
+     7862
+    ],
+    "stellen": 0,
+    "davon_live": 0,
+    "stufen": [],
+    "fehlt": [
+     "bachling (1)",
+     "muehlbarsch (10)",
+     "moorhecht (20)",
+     "hering (20)",
+     "klippenbarsch (35)",
+     "seeaal (45)",
+     "wels (45)",
+     "glutwels (65)"
+    ]
+   }
+  },
+  "Süden/Westen": {
+   "Holz": {
+    "max": 438.7,
+    "stelle": [
+     6623,
+     7667
+    ],
+    "stellen": 61,
+    "davon_live": 61,
+    "stufen": [
+     1,
+     10,
+     20,
+     35,
+     45
+    ],
+    "fehlt": [
+     "weltenbaum (65)"
+    ]
+   },
+   "Erz": {
+    "max": 400.0,
+    "stelle": [
+     6623,
+     7667
+    ],
+    "stellen": 47,
+    "davon_live": 47,
+    "stufen": [
+     1,
+     10,
+     20,
+     35,
+     45
+    ],
+    "fehlt": [
+     "ureisen (65)"
+    ]
+   },
+   "Kraut": {
+    "max": 630.6,
+    "stelle": [
+     6623,
+     7667
+    ],
+    "stellen": 14,
+    "davon_live": 14,
+    "stufen": [
+     1,
+     10,
+     20,
+     35,
+     45
+    ],
+    "fehlt": [
+     "lindenbluete (65)"
+    ]
+   },
+   "Fisch": {
+    "max": 275.3,
+    "stelle": [
+     6639,
+     6977
+    ],
+    "stellen": 9,
+    "davon_live": 3,
+    "stufen": [
+     1,
+     10
+    ],
+    "fehlt": [
+     "moorhecht (20)",
+     "hering (20)",
+     "klippenbarsch (35)",
+     "seeaal (45)",
+     "wels (45)",
+     "glutwels (65)"
+    ]
+   }
+  }
+ }
+}

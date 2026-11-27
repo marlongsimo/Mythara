@@ -10,7 +10,8 @@
 import { levelAus } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { hiebChance, SammelArt, SammelWerkzeug, SPLITTER_CHANCE, SPLITTER_MIN, SPLITTER_MAX } from "../../shared/sammeln";
-import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, besitzt, freieFaecher, platzFuer } from "./inventar";
+import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, besitzt, freieFaecher, platzFuer, petsVon, petDazu } from "./inventar";
+import { petFuerBeruf, petChance, petAnsage } from "../../shared/pets";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
 export interface SammelSpieler { nutzer: string; gast: boolean; wx?: number; wy?: number }
@@ -56,6 +57,7 @@ export function sammelBeruf(B: SammelBeruf) {
     for (const [o, w] of [...sitzungen]) if (ruhend.has(w.ziel.id)) stop(o, B.grundLeer); }
   const MOMENT = process.env[B.env + "_KERN"] !== undefined ? Number(process.env[B.env + "_KERN"]) : B.momentChance;
   const FAKTOR = process.env[B.env + "_FALL"] !== undefined ? Number(process.env[B.env + "_FALL"]) : 1;
+  const PET_ZWANG = process.env.PET_CHANCE !== undefined ? Number(process.env.PET_CHANCE) : -1; /* #170: nur für Tests – feste Chance je Abbau statt petChance */
   const level = (nutzer: string): number => levelAus(berufXp(nutzer, B.beruf));
   const daNoch = (id: string, jetzt = Date.now()) => { verteilen(jetzt); return !(leer.get(id)! > jetzt) && !ruhend.has(id); };
   /** Die leeren Ziele (für die Anzeige): [id, Sekunden bis nachgewachsen] */
@@ -90,6 +92,9 @@ export function sammelBeruf(B: SammelBeruf) {
     if (!stuecke) { stop(s, A.koeder && anzahlVon(s.nutzer, A.koeder) <= 0 ? "koeder" : "voll"); return false; }
     const vorher = level(s.nutzer), xp = A.xp * stuecke * (moment ? 1.5 : 1); berufXpDazu(sb, s.nutzer, B.beruf, xp); const nachher = level(s.nutzer);
     senden(s, { t: B.t, tat: B.tatErtrag, id: ziel.id, g: A.ertrag, name: G ? G.name : A.ertrag, n: stuecke, xp, splitter, [B.tatMoment]: moment, level: nachher, aufstieg: nachher > vorher ? nachher : 0 });
+    { const P = petFuerBeruf(B.beruf); /* #170: Skilling-Pet – je abgebautem Stück ein Wurf, Chance nach der Stufe der Ressource; je Beruf nur eins */
+      if (P && !A.quest && !petsVon(s.nutzer).includes(P.id)) for (let i = 0; i < stuecke; i++) if (wuerfel() < (PET_ZWANG >= 0 ? PET_ZWANG : petChance(A.level))) {
+        if (petDazu(sb, s.nutzer, P.id)) { senden(s, { t: "pet", tat: "fund", id: P.id }); const text = petAnsage((s as { name?: string }).name || "Jemand", P); for (const o of alle()) senden(o, { t: "chat", kanal: "system", text, zeit: Date.now() }); } break; } }
     if (!A.quest) for (let i = 0; i < stuecke; i++) SAMMEL_QUEST.ertrag(s.nutzer, ziel.art, ""); /* Quests mit „anzahl“ (2 Flachs, 4 Kupfer …): jedes Stück zählt */
     if (B.selten) for (let i = 0; i < stuecke; i++) { const R = B.selten(s.nutzer, ziel.id); if (R && aufnehmen(sb, s.nutzer, R.g, 1)) { if (R.ziel) SAMMEL_QUEST.ertrag(s.nutzer, R.ziel, ""); senden(s, { t: "chat", kanal: "system", text: R.text, zeit: Date.now() }); break; } } /* #126: seltener Fang */
     if (A.quest) { SAMMEL_QUEST.ertrag(s.nutzer, ziel.art, A.quest); stop(s, "fertig"); return false; } /* Questziel: ein Stück, fertig – das Ziel bleibt für andere stehen */

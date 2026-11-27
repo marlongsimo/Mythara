@@ -23,7 +23,12 @@ REALTIME = os.path.join(WURZEL, 'realtime')
 def _palette():
     ts = open(os.path.join(REALTIME, 'client', 'src', 'welt3d', 'welt3d.ts'), encoding='utf8').read()
     m = re.search(r'const FARBE: Record<string, string> = \{(.*?)\};', ts, re.S).group(1)
-    return {k.strip('"'): tuple(int(v[i:i + 2], 16) for i in (1, 3, 5)) for k, v in re.findall(r'("[^"]+"|\w+):\s*"(#[0-9a-fA-F]{6})"', m)}
+    P = {k.strip('"'): tuple(int(v[i:i + 2], 16) for i in (1, 3, 5)) for k, v in re.findall(r'("[^"]+"|\w+):\s*"(#[0-9a-fA-F]{6})"', m)}
+    # Geländearten, die die 3D-Palette (noch) nicht kennt (z. B. Eis i/I, #162): Farbe aus der Bibliothek
+    for a in json.load(open(os.path.join(REALTIME, 'welt', 'bibliothek', 'gelaende.json'), encoding='utf8'))['arten']:
+        f = a.get('farbe', '')
+        if a['zeichen'] not in P and len(f) == 7: P[a['zeichen']] = tuple(int(f[i:i + 2], 16) for i in (1, 3, 5))
+    return P
 
 
 def gelaende_grund(rid, R, pf):

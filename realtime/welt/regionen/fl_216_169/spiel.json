@@ -12,6 +12,27 @@
   "sperren": [
    {
     "art": "rechteck",
+    "x0": 139,
+    "y0": 440,
+    "x1": 140,
+    "y1": 441
+   },
+   {
+    "art": "rechteck",
+    "x0": 134,
+    "y0": 438,
+    "x1": 135,
+    "y1": 439
+   },
+   {
+    "art": "rechteck",
+    "x0": 138,
+    "y0": 435,
+    "x1": 139,
+    "y1": 436
+   },
+   {
+    "art": "rechteck",
     "x0": 447,
     "y0": 255,
     "x1": 448,
@@ -40,24 +61,31 @@
    },
    {
     "art": "rechteck",
-    "x0": 139,
-    "y0": 440,
-    "x1": 140,
-    "y1": 441
+    "x0": 72,
+    "y0": 403,
+    "x1": 73,
+    "y1": 404
    },
    {
     "art": "rechteck",
-    "x0": 134,
-    "y0": 438,
-    "x1": 135,
-    "y1": 439
+    "x0": 67,
+    "y0": 402,
+    "x1": 68,
+    "y1": 403
    },
    {
     "art": "rechteck",
-    "x0": 138,
-    "y0": 435,
-    "x1": 139,
-    "y1": 436
+    "x0": 68,
+    "y0": 397,
+    "x1": 69,
+    "y1": 398
+   },
+   {
+    "art": "rechteck",
+    "x0": 72,
+    "y0": 398,
+    "x1": 73,
+    "y1": 399
    },
    {
     "art": "rechteck",
@@ -250,6 +278,27 @@
    },
    {
     "art": "rechteck",
+    "x0": 42,
+    "y0": 433,
+    "x1": 43,
+    "y1": 434
+   },
+   {
+    "art": "rechteck",
+    "x0": 37,
+    "y0": 433,
+    "x1": 38,
+    "y1": 434
+   },
+   {
+    "art": "rechteck",
+    "x0": 39,
+    "y0": 429,
+    "x1": 40,
+    "y1": 430
+   },
+   {
+    "art": "rechteck",
     "x0": 264,
     "y0": 373,
     "x1": 265,
@@ -327,10 +376,10 @@
    },
    {
     "art": "rechteck",
-    "x0": 153,
-    "y0": 431,
-    "x1": 154,
-    "y1": 432
+    "x0": 125,
+    "y0": 404,
+    "x1": 126,
+    "y1": 405
    },
    {
     "art": "rechteck",
@@ -352,27 +401,6 @@
     "y0": 110,
     "x1": 26,
     "y1": 111
-   },
-   {
-    "art": "rechteck",
-    "x0": 42,
-    "y0": 433,
-    "x1": 43,
-    "y1": 434
-   },
-   {
-    "art": "rechteck",
-    "x0": 37,
-    "y0": 433,
-    "x1": 38,
-    "y1": 434
-   },
-   {
-    "art": "rechteck",
-    "x0": 39,
-    "y0": 429,
-    "x1": 40,
-    "y1": 430
    },
    {
     "art": "rechteck",
@@ -526,6 +554,17 @@
  },
  "interaktionen": [
   {
+   "id": "bergwerk_bankkiste",
+   "art": "lesen",
+   "x": 206.5,
+   "y": 413.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste an der Kaue. Wer sein Erz nicht bis Steinhag schleppen will, legt es hier ein – es liegt auf demselben Konto."
+   }
+  },
+  {
    "id": "bergwerk_eingang",
    "art": "eingang",
    "x": 216,
@@ -668,9 +707,119 @@
     "fisch": "muehlbarsch",
     "stufe": 10
    }
+  },
+  {
+   "id": "steinhag_tor_nordwest",
+   "art": "lesen",
+   "x": 35.5,
+   "y": 415,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Nordwesttor von Steinhag. Dahinter steigt der Weg zum Hochpass an."
+   }
+  },
+  {
+   "id": "steinhag_vogtsburg",
+   "art": "lesen",
+   "x": 135,
+   "y": 435.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Vogtsburg auf dem Fels über dem See. Im Saal hängen die Wappen der Bergvögte – zwei gekreuzte Hämmer unter einem Berg."
+   }
+  },
+  {
+   "id": "fischplatz_steinhagsee_west",
+   "art": "lesen",
+   "x": 43.5,
+   "y": 440.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Westufer des Steinhagsees ziehen Mühlbarsche durchs Schilf.",
+    "fisch": "muehlbarsch",
+    "stufe": 10
+   }
+  },
+  {
+   "id": "horst",
+   "art": "lesen",
+   "x": 118,
+   "y": 133.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Horst der Sturmschwinge auf dem Gipfel des Grauhorns. Federn, so lang wie ein Arm, und Knochen von Steinböcken. Der Wind reißt an deinem Mantel."
+   }
+  },
+  {
+   "id": "horst_aufstieg",
+   "art": "eingang",
+   "x": 116,
+   "y": 140.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Gipfel des Grauhorns. Wer der Sturmschwinge allein begegnen will, geht hier hinauf.",
+    "tat": "horst",
+    "knopf": "Zum Horst",
+    "ziel": [
+     11728,
+     9628
+    ]
+   }
+  },
+  {
+   "id": "eishoehle_eingang",
+   "art": "eingang",
+   "x": 38,
+   "y": 224.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spalt im Grauhorn, aus dem eisige Luft strömt. Drinnen knistert es, als würde jemand flüstern.",
+    "tat": "eishoehle",
+    "knopf": "Hineingehen",
+    "ziel": [
+     11760,
+     9628
+    ]
+   }
+  },
+  {
+   "id": "eisrunen",
+   "art": "lesen",
+   "x": 41,
+   "y": 225.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Runen, ins Eis geritzt. Der Einsiedler vom Spiegelsee könnte sie deuten.",
+    "questobjekt": "eisrunen"
+   }
+  },
+  {
+   "id": "erzwagen_lager",
+   "art": "lesen",
+   "x": 225,
+   "y": 423.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Volle Erzwagen – seit Wochen ist keiner nach Grauwacht gefahren.",
+    "questobjekt": "erzwagen"
+   }
   }
  ],
  "senken": [
+  {
+   "x": 39.7,
+   "y": 432.3,
+   "r": 5,
+   "tiefe": 1.1
+  },
   {
    "x": 261.8,
    "y": 372.4,
@@ -690,20 +839,14 @@
    "tiefe": 1.1
   },
   {
-   "x": 153.2,
-   "y": 431.1,
+   "x": 125.1,
+   "y": 405,
    "r": 3,
    "tiefe": 1.1
   },
   {
    "x": 25.7,
    "y": 112.9,
-   "r": 5,
-   "tiefe": 1.1
-  },
-  {
-   "x": 39.7,
-   "y": 432.3,
    "r": 5,
    "tiefe": 1.1
   },

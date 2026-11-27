@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 
 const HIER = dirname(fileURLToPath(import.meta.url)), RT = join(HIER, "..", ".."), REG = join(RT, "welt", "regionen"), PROT = join(RT, "welt", "naehte"), C = 32;
 const BIB = new Map(JSON.parse(readFileSync(join(RT, "welt", "bibliothek", "objekte.json"), "utf8")).objekte.map((o) => [o.id, o]));
-const istBewuchs = (p) => BIB.get(p.objekt)?.kategorie === "bewuchs" && !p.id.startsWith("ort_");
+const istBewuchs = (p) => BIB.get(p.objekt)?.kategorie === "bewuchs" && !p.id.startsWith("ort_") && !p.id.startsWith("zaun_");
 const NATUR = new Set([..."f.,vtgsmyTuSj"]), MOOR = "o";   /* Moorwasser: darf sich ausbreiten, wird aber in alten Gebieten nie zu Land */
 const BAND = 32, AMP = 21, AUSKLANG = 34;
 

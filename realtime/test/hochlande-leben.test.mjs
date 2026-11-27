@@ -9,15 +9,18 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { readFileSync, existsSync } from "node:fs";
 const WURZEL = new URL("..", import.meta.url).pathname, datei = join(tmpdir(), `riftmere-hochlande-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export { LAEDEN, LADEN_ZEICHEN } from "./shared/laeden"; export { GEGENSTAENDE } from "./shared/gegenstaende"; export { WERKSTAETTEN, versperrt, werkstattErreichbar } from "./shared/handwerk"; export { BANKIERS, nahAnBank } from "./shared/bank"; export { REISENDE, ERZWEG, reiseStelle } from "./shared/reisende"; export { WEGSTEIN_ZIELE, STEINHAG_QUEST } from "./shared/wegstein"; export { QUESTS } from "./shared/quests";',
+await build({ stdin: { contents: 'export { LAEDEN, LADEN_ZEICHEN, ladenOffen, STEINHAG_LAEDEN } from "./shared/laeden"; export { H_QUESTS } from "./shared/hochlande"; export { GEGENSTAENDE } from "./shared/gegenstaende"; export { WERKSTAETTEN, versperrt, werkstattErreichbar } from "./shared/handwerk"; export { BANKIERS, nahAnBank } from "./shared/bank"; export { REISENDE, ERZWEG, reiseStelle } from "./shared/reisende"; export { WEGSTEIN_ZIELE, STEINHAG_QUEST } from "./shared/wegstein"; export { QUESTS } from "./shared/quests";',
   resolveDir: WURZEL, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
-const { LAEDEN, LADEN_ZEICHEN, GEGENSTAENDE, WERKSTAETTEN, versperrt, werkstattErreichbar, BANKIERS, nahAnBank, REISENDE, ERZWEG, reiseStelle, WEGSTEIN_ZIELE, STEINHAG_QUEST, QUESTS } = await import(datei);
+const { LAEDEN, LADEN_ZEICHEN, ladenOffen, STEINHAG_LAEDEN, H_QUESTS, GEGENSTAENDE, WERKSTAETTEN, versperrt, werkstattErreichbar, BANKIERS, nahAnBank, REISENDE, ERZWEG, reiseStelle, WEGSTEIN_ZIELE, STEINHAG_QUEST, QUESTS } = await import(datei);
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
 const frei = (x, y) => !versperrt(Math.floor(x), Math.floor(y)), modell = (m) => existsSync(join(WURZEL, "..", "img", "figuren-echt3d", m + ".glb"));
 const ORTE = JSON.parse(readFileSync(join(WURZEL, "welt", "hochlande_orte.json"), "utf8")), NPC = ORTE.npc;
 
 console.log("\nBewohner und Läden");
-const L = Object.values(LAEDEN).filter((l) => /^(steinhag_|hochland_)|^troedler_steinhag$/.test(l.id));
+/* die Hauptstadt (#167: Läden der Hauptgasse und des Zunftviertels, Wachen) prüft test/steinhag-stadt.test.mjs */
+const HAUPTSTADT = new Set(["steinhag_waffen", "steinhag_ruestung", "steinhag_backstube", "steinhag_seefisch", "steinhag_stoffe", "steinhag_zunftbedarf", "steinhag_grubenproviant",
+  "steinhag_torwache_west", "steinhag_torwache_ost", "steinhag_torwache_nordwest", "steinhag_burgvogt", "steinhag_burgwache_1", "steinhag_burgwache_2", "steinhag_zunftmeisterin", "steinhag_stollenwache"]);
+const L = Object.values(LAEDEN).filter((l) => /^(steinhag_|hochland_)|^troedler_steinhag$/.test(l.id) && !HAUPTSTADT.has(l.id));
 check(L.length === 15, `15 Bewohner in den Hochlanden (${L.length})`);
 check(L.every((l) => NPC.some((n) => Math.hypot(n.x - l.x, n.y - l.y) <= 3)), "jeder steht an einem Platz der Welt (höchstens 3 Felder daneben)");
 { const schlecht = L.filter((l) => !frei(l.x, l.y) || !frei(l.vor[0], l.vor[1])).map((l) => l.id); check(!schlecht.length, `auf freiem Boden, der Platz davor erreichbar (${schlecht.join(", ") || "alle"})`); }
@@ -25,7 +28,7 @@ check(L.every((l) => l.waren.every((w) => GEGENSTAENDE[w.g] && !GEGENSTAENDE[w.g
 check(["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter"].every((id) => LAEDEN[id].waren.length && LADEN_ZEICHEN[id]) && LAEDEN.troedler_steinhag.troedler, "Wirt, Schmied, zwei Marktstände mit Kartensymbol, ein Trödler");
 check(L.filter((l) => l.nurReden).every((l) => (l.zeilen || []).length >= 1 && l.gruss && l.tschuess), "die übrigen reden nur – jeder mit Gruß, Abschied und eigenen Zeilen");
 check(L.every((l) => modell(l.modell)), `Modelle aus dem Bestand und von Figuren (${[...new Set(L.map((l) => l.modell))].join(", ")})`);
-{ const B = BANKIERS.find((b) => b.id === "steinhag_bank"); check(B && B.bank === "Bank von Steinhag" && nahAnBank("waldmark", 6969, 5881.5) && modell(B.modell), "die Bank von Steinhag"); }
+{ const B = BANKIERS.find((b) => b.id === "steinhag_bank"); check(B && B.bank === "Bank von Steinhag" && nahAnBank("waldmark", 6967.6, 5876.6) && modell(B.modell), "die Bank von Steinhag"); }
 
 console.log("\nStationen");
 { const S = WERKSTAETTEN.filter((w) => /_(steinhag|alm|passwacht|bergwerk|einsiedelei)$/.test(w.id)), naechstes = (W) => { for (let r = 1; r <= 3; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const x = Math.floor(W.x) + dx, y = Math.floor(W.y) + dy; if (frei(x, y)) return [x + 0.5, y + 0.5]; } return null; };
@@ -39,7 +42,16 @@ console.log("\nBergleute auf dem Erzweg");
 
 console.log("\nWegstein-Ziel Steinhag");
 { const Z = WEGSTEIN_ZIELE.find((z) => z.id === "steinhag"); check(Z && frei(Z.x, Z.y) && Z.quest === STEINHAG_QUEST, "vorbereitet, Ankunft auf freiem Boden am Markt");
-  check(!QUESTS.some((q) => q.id === STEINHAG_QUEST), `noch gesperrt: die Quest ${STEINHAG_QUEST} (H1) gibt es erst mit Block H`); }
+  const H1 = QUESTS.find((q) => q.id === STEINHAG_QUEST); check(STEINHAG_QUEST === H_QUESTS.h1, `das Ziel öffnet sich mit H1 (${STEINHAG_QUEST})${H1 ? " – die Quest ist im Spiel" : " – die Quest kommt mit Block H"}`); }
+
+console.log("\nLäden in Steinhag erst nach H1 (Entscheidung des Nutzers, 27.11.), die Bank immer");
+{ const vor = (id) => "laeuft", nach = (id) => (id === H_QUESTS.h1 ? "fertig" : "");
+  check(["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter", "troedler_steinhag"].every((id) => STEINHAG_LAEDEN.includes(id)) && STEINHAG_LAEDEN.every((id) => LAEDEN[id] && LAEDEN[id].wenn && LAEDEN[id].wenn.quest === H_QUESTS.h1 && !ladenOffen(LAEDEN[id], vor) && ladenOffen(LAEDEN[id], nach) && LAEDEN[id].zu),
+    `Taverne, Schmiede, Bergmarkt, Kräuter und Trödler: zu bis ${H_QUESTS.h1} fertig ist, dann offen`);
+  check(Object.values(LAEDEN).filter((l) => /^hochland_/.test(l.id) && l.id !== "hochland_sennerin").every((l) => !l.wenn), "die übrigen Hochländer (Steiger, Passwacht, Alm …) reden immer");
+  /* #118: Afras Laden öffnet erst nach H2 „Käse für die Passwacht“ */
+  check(LAEDEN.hochland_sennerin.wenn && LAEDEN.hochland_sennerin.wenn.quest === H_QUESTS.h2 && LAEDEN.hochland_sennerin.waren.length > 0, "Afras Laden (Sennerin) erst nach H2");
+  const B = BANKIERS.find((b) => b.id === "steinhag_bank"); check(B && !B.wenn && !B.quest, "die Bank von Steinhag ist immer offen"); }
 
 console.log(f ? `\nHochlande: ${f} FEHLER` : "\nHochlande: alles in Ordnung");
 process.exit(f ? 1 : 0);

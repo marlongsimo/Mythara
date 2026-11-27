@@ -1,0 +1,46 @@
+{
+ "start": [
+  [
+   16,
+   28
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "eishoehle_hinaus",
+   "art": "eingang",
+   "x": 16,
+   "y": 30,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinaus an den Hochpass.",
+    "tat": "eishoehle_hinaus",
+    "knopf": "Hinaus",
+    "ziel": [
+     6950,
+     5634
+    ]
+   }
+  },
+  {
+   "id": "eishoehle_altar",
+   "art": "lesen",
+   "x": 16,
+   "y": 6.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Altar aus Eis. Darauf ein Kranz aus gefrorenen Blumen.",
+    "questobjekt": "frostwitwe_altar"
+   }
+  }
+ ]
+}

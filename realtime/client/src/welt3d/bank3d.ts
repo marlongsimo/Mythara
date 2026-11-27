@@ -42,7 +42,7 @@ export class BankWelt {
       f.nm.hidden = !sichtbar || !schildAn(f.nm, M, f.b.x, M.hoehe(f.b.x, f.b.y) + 2.35, f.b.y); } }
   /** Bank-Symbol auf der Minikarte (einmal je Bank, nicht je Mitarbeiter) */
   karteMarken(c: HTMLCanvasElement, felder: number, o: { x: number; y: number }, g: number): void { const x = c.getContext("2d"); if (!x) return; const n = c.width, k = n / felder, rand = n / 2 / 1.5, gr = Math.max(13, n * 0.075);
-    const orte = [{ x: 6478, y: 6428 }, { x: 6436.5, y: 6675.5 }];
+    const orte = BANKSCHALTER.filter((s, i) => !BANKSCHALTER.slice(0, i).some((t) => Math.hypot(t.x - s.x, t.y - s.y) < 8)); /* #169: je Bank ein Symbol (die zwei Schalter der Waldmark zählen einmal) */
     x.save(); x.textAlign = "center"; x.textBaseline = "middle"; x.font = `${gr * 0.62}px sans-serif`;
     for (const p of orte) { const dx = p.x - o.x, dy = p.y - o.y, px = (dx * Math.cos(g) + dy * -Math.sin(g)) * k, py = -(dx * -Math.sin(g) + dy * -Math.cos(g)) * k; if (Math.hypot(px, py) > rand - gr / 2) continue;
       const sx = n / 2 + px, sy = n / 2 + py; x.beginPath(); x.arc(sx, sy, gr / 2, 0, Math.PI * 2); x.fillStyle = "#2a1f12"; x.fill(); x.lineWidth = Math.max(1.5, gr * 0.09); x.strokeStyle = "#e9c46a"; x.stroke();

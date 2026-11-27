@@ -32,8 +32,17 @@ frei = lambda p: p in seen and sum((p[0] + dx, p[1] + dy) in seen for dx in (-1,
 WEG = set('ekpd')
 nahWeg = lambda p, r: any(Z.get((p[0] + dx, p[1] + dy)) in WEG for dx in range(-r, r + 1) for dy in range(-r, r + 1))
 rng = random.Random(3505); gewaehlt = []
+# Stabil (27.11.): Stellen aus dem letzten Lauf behalten ihren Platz, solange er noch passt – Quests und Tests nennen sie beim Namen (z. B. wegerich_1 bei Mira)
+_alt_datei = os.path.join(RT, 'welt', 'kraeuter_standorte.json')
+ALT = {}
+if os.path.exists(_alt_datei):
+    for _s in json.load(open(_alt_datei, encoding='utf8')).get('stellen', []):
+        _m = _s['id'].rsplit('_', 1)
+        if len(_m) == 2 and _m[1].isdigit() and _m[0] == _s['art']: ALT.setdefault(_s['art'], []).append((int(_m[1]), (int(_s['x'] - 0.5), int(_s['y'] - 0.5))))
 def waehle(art, n, kand, abstand=6):
     kand = sorted(set(kand)); rng.shuffle(kand); aus = []
+    kset = set(kand); vorn = [p for _, p in sorted(ALT.get(art, [])) if p in kset]
+    kand = vorn + [p for p in kand if p not in set(vorn)]
     for p in kand:
         if len(aus) >= n: break
         if not frei(p) or any(abs(p[0] - q[0]) + abs(p[1] - q[1]) < abstand for q in aus + gewaehlt): continue
@@ -66,6 +75,12 @@ if os.path.exists(_sp): stellen += json.load(open(_sp, encoding='utf8')).get('kr
 # Hochlande (#147): Stellen aus hochlande.mjs (Kennung hochlande_…)
 _hp = os.path.join(RT, 'welt', 'hochlande_orte.json')
 if os.path.exists(_hp): stellen += json.load(open(_hp, encoding='utf8')).get('kraeuter', [])
+# Zunfthäuser (#168): Beete im Kräutergarten der Heilkundigen (zunfthaeuser.mjs, Kennung kraeutergarten_…)
+_zp = os.path.join(RT, 'welt', 'zunft_orte.json')
+if os.path.exists(_zp): stellen += json.load(open(_zp, encoding='utf8')).get('kraeuter', [])
+# Fahle Weiten füllen (#171): Kräuter an den neuen Orten und auf der Heide (fahleweiten_fuellen.mjs)
+_fp = os.path.join(RT, 'welt', 'fahleweiten_orte.json')
+if os.path.exists(_fp): stellen += json.load(open(_fp, encoding='utf8')).get('kraeuter', [])
 # Phase 10 (#82, #133): Kräuterhof an der Küste (kueste.mjs, Hof 6418 · 7064) – Beete („a“, 6410–6425 × 7065–7070) mit vorhandenen Kräutern der Stufe 20–45
 # und Ringelblume für die Zucht-Quest; keine neuen Arten. Kessel vor dem Kräuterhaus (Objekt kraeuterhof_kessel).
 _beet = {'ringelblume': [(6411.5, 7066.5), (6415.5, 7069.5)], 'moorgloeckchen': [(6415.5, 7066.5), (6419.5, 7069.5)],

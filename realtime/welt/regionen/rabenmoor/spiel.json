@@ -137,6 +137,17 @@
    "daten": {
     "text": "Heddas Hütte auf der letzten trockenen Insel. Getrocknete Kräuter hängen unter dem Vordach."
    }
+  },
+  {
+   "id": "rabenmoor_bankkiste",
+   "art": "lesen",
+   "x": 40.5,
+   "y": 49.15,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste von Rabenmoor, mit Eisen beschlagen und am Pfahl angekettet. Was du einlegst, liegt auf deinem Konto."
+   }
   }
  ],
  "ausgaenge": [],

@@ -23,9 +23,9 @@ import { wegZiel, WEGSTEIN_PAUSE_MS, HEIM } from "../../shared/wegstein";
 import { wegzielFrei } from "../../shared/quests";
 import { faehreAnfrage } from "./faehre";
 import { bossWahlSetzen } from "./bosse";
-import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen, reisekarteFrei, reisekarteNutzen } from "./inventar";
+import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen, reisekarteFrei, reisekarteNutzen , petAktiv, petAktivSetzen } from "./inventar";
 import { aufnehmen, trankWirkungWeg, inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, wirkungSetzen, bankEinzahlen, bankReiter, bankAbheben, bankAlles, bankTauschen, bankPlatzhalterSetzen, bankPlatzhalterEntfernen } from "./inventar";
-import { nahAnBank, BANK_MAX } from "../../shared/bank";
+import { nahAnBank, nahAnBankkiste, KISTE_TATEN, BANK_MAX } from "../../shared/bank";
 import { holzEinrichten, holzStart, holzStop, holzKern, holzTakt, holzWeg, gefaellte } from "./holz";
 import { bergEinrichten, bergStart, bergStop, bergRiss, bergTakt, bergWeg, leereAdern } from "./bergbau";
 import { pflanzenEinrichten, pflueckStart, pflueckStop, pflueckTakt, pflueckWeg, abgeerntete } from "./pflanzen";
@@ -213,14 +213,14 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Einkaufen geht mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
       const L = LAEDEN[String(e.laden) as LadenId], w = L && L.waren.find((x) => x.g === e.g), nutzerK = s.nutzer; let fehler: string | null = null;
       if (!L || !w) fehler = "Das gibt es hier nicht.";
-      else if (!ladenOffen(L, (id) => questStand(nutzerK, id))) fehler = L.zu || "Hier ist zu.";
+      else if (!ladenOffen(L, (id) => questStand(nutzerK, id), (x) => schalter(nutzerK, x))) fehler = L.zu || "Hier ist zu.";
       else if (s.ort !== "waldmark" || s.wx === undefined || s.wy === undefined || Math.hypot(s.wx - L.x, s.wy - L.y) > KAUF_WEIT) fehler = `Geh näher an den Stand von ${L.haendler}.`;
       else fehler = kaufen(H.sb, s.nutzer, w.g, w.preis, WAEHRUNG);
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt });
       else senden(s, { t: "gekauft", laden: L.id, g: w!.g, preis: w!.preis }); }
     else if (e.t === "verkaufen") { /* #87/#88: an einen Händler verkaufen – nur was er führt (80 %) bzw. beim Trödler alles Handelbare (50 % des Grundwerts) */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Verkaufen geht mit Konto (Menü → Anmelden).", zeit: jetzt }); return; } const nutzerK = s.nutzer;
-      const r = ladenVerkauf(H.sb, s.nutzer, e.laden, e.i, (e as { n?: unknown }).n, s.wx, s.wy, (id) => questStand(nutzerK, id));
+      const r = ladenVerkauf(H.sb, s.nutzer, e.laden, e.i, (e as { n?: unknown }).n, s.wx, s.wy, (id) => questStand(nutzerK, id), (x) => schalter(nutzerK, x));
       if ("fehler" in r) senden(s, { t: "chat", kanal: "system", text: r.fehler, zeit: jetzt }); else { senden(s, { t: "verkauft", ...r }); senden(s, { t: "chat", kanal: "system", text: `Verkauft: ${r.n > 1 ? r.n + " × " : ""}${r.name} für ${r.splitter} Splitter.`, zeit: jetzt }); } }
     else if (e.t === "holz") { /* Holzfällerei (holz.ts): fällen, Kernschlag, aufhören */
       if (e.tat === "start" && typeof e.id === "string") { alleStop(s); const f = holzStart(s, e.id); if (f) senden(s, { t: "holz", tat: "nein", id: e.id, text: f }); }
@@ -248,10 +248,15 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     else if (e.t === "handwerk") { /* Handwerk an Esse, Amboss und Werkbank (handwerk.ts) */
       if (e.tat === "start" && typeof e.rezept === "string") { alleStop(s); const f = handwerkStart(s, e.rezept, Number(e.menge) || 1); if (f) senden(s, { t: "handwerk", tat: "nein", rezept: e.rezept, text: f }); }
       else if (e.tat === "glut") handwerkGlut(s); else if (e.tat === "stop") handwerkStop(s); }
+    else if (e.t === "pet") { /* #170: Skilling-Pet rufen oder wegschicken (shared/pets.ts) */
+      if (s.gast) return; const id = (e as { id?: unknown }).id, f = petAktivSetzen(H.sb, s.nutzer, e.tat === "rufen" && typeof id === "string" ? id : null);
+      if (f) senden(s, { t: "chat", kanal: "system", text: f, zeit: jetzt }); else s.geaendert = true; }
     else if (e.t === "bank") { /* Bank (shared/bank.ts): nur mit Konto, nur nah an einem Schalter oder Bankmitarbeiter; Mengen prüft inventar.ts */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Eine Bank gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
       let fehler: string | null = null; const g = typeof e.g === "string" ? e.g : "", n = Number.isInteger(e.menge) && (e.menge as number) >= 0 && (e.menge as number) <= BANK_MAX ? (e.menge as number) : -1; /* 0 = alle */
-      if (s.wx === undefined || s.wy === undefined || !nahAnBank(s.ort, s.wx, s.wy)) fehler = "Geh näher an einen Bankschalter.";
+      const kiste = s.wx !== undefined && s.wy !== undefined && !nahAnBank(s.ort, s.wx, s.wy) && nahAnBankkiste(s.ort, s.wx, s.wy); /* #167: Bankkiste der Zunft */
+      if (s.wx === undefined || s.wy === undefined || (!nahAnBank(s.ort, s.wx, s.wy) && !kiste)) fehler = "Geh näher an einen Bankschalter.";
+      else if (kiste && !KISTE_TATEN.has(String(e.tat))) fehler = "An der Bankkiste kannst du nur ablegen und abheben.";
       else if (e.tat === "ein" && g && n >= 0) fehler = bankEinzahlen(H.sb, s.nutzer, g, n, Number(e.tab) || 0);
       else if (e.tat === "tab" && g) fehler = bankReiter(H.sb, s.nutzer, g, Number(e.tab));
       else if (e.tat === "ab" && g && n >= 0) fehler = bankAbheben(H.sb, s.nutzer, g, n, Number.isInteger(e.fach) ? Number(e.fach) : undefined); /* fach: welches Bankfach (gleicher Gegenstand mit Daten) */
@@ -347,7 +352,7 @@ let runde = 0;
 setInterval(() => { runde++; const jetzt = Date.now(), alle: Spieler[] = [];
   for (const s of spieler) { if (jetzt - s.zuletzt > 5.5 * 60 * 1000) { /* Inaktivität: der Browser meldet nach 5 Minuten selbst ab (abmeldung.ts), der Server nach 5½ – das gibt das Konto frei */ Sitz.abmelden(s.ws); try { s.ws.close(1000, "ruhe"); } catch { /* zu */ } continue; } alle.push(s); }
   /* jedem die Spieler in Sichtweite (offene Welt: nach Abstand, über Regionsgrenzen hinweg) – nur wenn sich dort etwas geändert hat, sonst alle 2 Sekunden */
-  const daten = new Map(alle.map((s) => [s, { i: s.id, n: s.name, h: s.held, ...(s.a ? { a: s.a } : {}), s: s.stufe, x: s.x, y: s.y, ...(s.wx !== undefined && s.wy !== undefined ? { wx: s.wx, wy: s.wy } : {}), b: s.b, l: s.l, ...(s.w ? { w: s.w } : {}), ...(s.max ? { lp: s.lp, max: s.max } : {}) }]));
+  const daten = new Map(alle.map((s) => [s, { i: s.id, n: s.name, h: s.held, ...(s.a ? { a: s.a } : {}), s: s.stufe, x: s.x, y: s.y, ...(s.wx !== undefined && s.wy !== undefined ? { wx: s.wx, wy: s.wy } : {}), b: s.b, l: s.l, ...(s.w ? { w: s.w } : {}), ...(s.max ? { lp: s.lp, max: s.max } : {}), ...(() => { const p = s.gast ? undefined : petAktiv(s.nutzer); return p ? { p } : {}; })() /* #170: das Pet, das ihm folgt */ }]));
   const schicken: Spieler[] = [];
   for (const s of alle) { const nah = alle.filter((o) => o !== s && sehen(s, o)), key = nah.map((o) => o.id).join(",");
     if (!(s.geaendert || key !== s.sichtKey || nah.some((o) => o.geaendert) || runde % 10 === 0)) continue; s.sichtKey = key;

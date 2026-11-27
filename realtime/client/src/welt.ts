@@ -25,7 +25,7 @@ import { gruppe, serverAdresse } from "./gruppe";
 import { KanalWs } from "./kanal";
 import { kanalFabrikSetzen } from "./netz";
 
-export interface Fremder { /** arbeitet gerade (#67, shared/arbeit.ts) */ w?: Arbeit; i: number; n: string; h: string; /** gewähltes Aussehen (Heldeneditor) */ a?: Held; s: number; x: number; y: number; /** Weltfelder (offene Welt) – gilt vor x/y, auch über Regionsgrenzen */ wx?: number; wy?: number; b: number; l: number; lp?: number; max?: number }
+export interface Fremder { /** #170: das Pet, das ihm folgt (shared/pets.ts) */ p?: string; /** arbeitet gerade (#67, shared/arbeit.ts) */ w?: Arbeit; i: number; n: string; h: string; /** gewähltes Aussehen (Heldeneditor) */ a?: Held; s: number; x: number; y: number; /** Weltfelder (offene Welt) – gilt vor x/y, auch über Regionsgrenzen */ wx?: number; wy?: number; b: number; l: number; lp?: number; max?: number }
 export interface Ich { id: number; name: string; held: string; stufe: number; ort: string; festerHeld?: boolean; gast?: boolean; /** zuletzt gemerkte Stelle in der Welt (Weltfelder; null = Start der Region) */ pos?: { region: string; x: number | null; y: number | null } }
 type Kanal = "oeffentlich" | "gruppe" | "system" | "fluestern";
 export interface Hand { spieler?(l: Fremder[]): void; fort?(id: number): void; ich?(i: Ich): void; blase?(id: number, text: string, von?: string): void }
@@ -96,6 +96,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "teleport") { const f = teleportWarten; teleportWarten = null; if (f) f(Boolean(m.ok), Number(m.rest) || 0, Boolean(m.gast)); }
     else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); if (m.abholen) window.dispatchEvent(new CustomEvent("ez-quest-abholen", { detail: String(m.abholen) })); }
+    else if (m.t === "pet") window.dispatchEvent(new CustomEvent("ez-pet", { detail: m })); /* #170: Pet gefunden (Freude) */
     else if (m.t === "handel") window.dispatchEvent(new CustomEvent("ez-handel", { detail: m })); /* #65: Handel (client/src/handel.ts) */
     else if (m.t === "abgeholt") { /* #77: der Server hat den Lohn gebucht (genau einmal) */ if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>);
       if (m.amBoden) chatSystem(`Dein Rucksack ist voll – ${m.amBoden} ${Number(m.amBoden) === 1 ? "Gegenstand liegt" : "Gegenstände liegen"} zu deinen Füßen.`); if (typeof m.gesamtPunkte === "number") questPunkte = m.gesamtPunkte as number;

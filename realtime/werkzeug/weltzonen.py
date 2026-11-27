@@ -27,7 +27,13 @@ BESONDERS = {
     "tempel_kammer": {"leine": 14, "wandern": 0, "mehrkampf": [[11360, 9600, 11391, 9631]], "lager": [("sandmutter", 11376, 9612)]},
     "wrack_kajuete": {"leine": 14, "wandern": 0, "mehrkampf": [[11488, 9600, 11519, 9631]], "lager": [("wrackkapitaen", 11504, 9614)]},
     # #147 (Welt c51186c7): das Erzberg-Bergwerk unter den Hochlanden (Untergrund) – Stollen, Trollhalle, Urkammer; vorerst ohne Gegner und ohne Boss (die Trollhalle für den Mini-Boss später)
-    "hochlande_bergwerk": {"leine": 10, "wandern": 2, "lager": []},
+    # #160 (Block H, Welt 75b65e38): die Halle im Bergwerk ist Grumholds Raum (Instanz trollhalle) und nach H4 seine öffentliche Arena (friedlich gegen alle ohne grumhold_danach)
+    "hochlande_bergwerk": {"leine": 10, "wandern": 2, "mehrkampf": [[11595, 9602, 11618, 9624]], "lager": [("grumhold", 11607, 9611)]},
+    # die Räume der Sturmschwinge und der Frostwitwe als eigene Gebiete (Instanzen in shared/bosse.ts): Mehrkampf; die Eishöhle ist zugleich der öffentliche Ort der Frostwitwe
+    "horst_grauhorn": {"leine": 14, "wandern": 0, "mehrkampf": [[11712, 9600, 11743, 9631]], "lager": []},
+    "eishoehle_hochpass": {"leine": 14, "wandern": 0, "mehrkampf": [[11744, 9600, 11775, 9631]], "lager": [("frostwitwe", 11760, 9611)]},
+    # öffentlich auf dem Gipfel des Grauhorns (Nest, Welt a897bc23): die Sturmschwinge nach H4
+    "fl_216_169": {"leine": 14, "wandern": 4, "mehrkampf": [[7016, 5522, 7044, 5550]], "lager": [("sturmschwinge", 7030, 5536)]},
     # Phase 10 (#92): Klippenhöhlen (Untergrund, Welt #82) – Strandräuber im Schmugglerversteck, Krabben im Gezeitenbecken; der Wrackkapitän in der Kajüte (Instanz wrack_kajuete)
     "klippenhoehlen": {"leine": 10, "wandern": 2,
                        "lager": [("strandraeuber_saebel", 11442, 9618), ("strandraeuber_armbrust", 11444, 9614), ("strandraeuber_saebel", 11470, 9616), ("strandraeuber_armbrust", 11468, 9614),
@@ -40,14 +46,10 @@ BESONDERS = {
                    "lager": [("riesenkrabbe", 6290, 7262), ("strandraeuber_saebel", 6288, 7260), ("strandraeuber_armbrust", 6290, 7260), ("strandraeuber_saebel", 6292, 7260)]},
     "fl_201_225": {"leine": 12, "wandern": 3, "lager": [("mangrovenlurch", 6500, 7580), ("mangrovenlurch", 6498, 7578), ("mangrovenlurch", 6500, 7578)]},
     # Phase 9 (#86): die Glutsande (Festland-Kacheln der Welt #79) – Sandkriecher in den Dünen, Glutskorpione an der Salzpfanne, Karawanenräuber am Kanal (F1).
-    "fl_216_211": {"leine": 12, "wandern": 3,
-                   "lager": [("sandkriecher", 7045, 6856), ("sandkriecher", 7043, 6854), ("glutskorpion", 7045, 6854), ("glutskorpion", 7047, 6854)]},
+    # #155: am Kanal standen zu viele Gegner (Sandkriecher, Skorpione, dazu die Gegnerplätze); die Skorpione stehen jetzt an der Salzpfanne, die Räuber für F1 unten in LAGER_ORT
+    "fl_216_211": {"leine": 12, "wandern": 3, "lager": []},
     "fl_216_198": {"leine": 12, "wandern": 3,
                    "lager": [("karawanenraeuber_saebel", 7209, 6728), ("karawanenraeuber_saebel", 7207, 6726), ("karawanenraeuber_bogen", 7209, 6726), ("karawanenraeuber_bogen", 7211, 6726)]},
-    # #155: die Salzpfanne liegt seit dem Neuzuschnitt der Welt in der Kachel fl_228_198 (vorher fl_216_198) – die Glutskorpione für F2 („Fünf Glutskorpione vertreiben“,
-    # SALZPFANNE.skorpione 7330|6646 in shared/quest_f_orte.ts) stehen daher hier, südlich der Salzbecken
-    "fl_228_198": {"leine": 12, "wandern": 3,
-                   "lager": [("glutskorpion", 7330, 6648), ("glutskorpion", 7327, 6650), ("glutskorpion", 7333, 6650), ("glutskorpion", 7325, 6647), ("glutskorpion", 7335, 6647)]},
     # Phase 9 (#86, F3): der versandete Tempel (Untergrund, Welt #79) – Glutgeister und Sandkriecher; die Sandmutter in ihrer Kammer (Instanz tempel_kammer)
     "tempel": {"leine": 10, "wandern": 2, "lager": [("glutgeist", 11294, 9622), ("sandkriecher", 11292, 9620), ("glutgeist", 11328, 9618), ("glutgeist", 11326, 9616), ("sandkriecher", 11312, 9640)]},
     # Phase 8 (#58): die Fahlen Weiten (Festland-Kacheln der Welt #50) – Heidewölfe in der offenen Heide, der Rudelführer mit Rudel (E1),
@@ -122,6 +124,21 @@ SUEDEN = {
     "fl_201_225": [("steinschlucker", 6500, 7237), ("steinschlucker", 6498, 7235), ("steinschlucker", 6500, 7235)],
 }
 for rid, l in SUEDEN.items(): BESONDERS.setdefault(rid, {"leine": 12, "wandern": 3, "lager": []})["lager"] += l
+# Lager nach Weltkoordinaten (#155): sie kommen in das erste Gebiet der Oberwelt, das die Stelle enthält – unabhängig vom Zuschnitt der Kacheln
+# (die Salzpfanne lag erst in fl_216_198, dann in fl_228_198, je nach Stand der Welt)
+LAGER_ORT = [
+    # F2 „Fünf Glutskorpione vertreiben“ (SALZPFANNE.skorpione 7330|6646 in shared/quest_f_orte.ts): südlich der Salzbecken
+    ("glutskorpion", 7330, 6648), ("glutskorpion", 7327, 6650), ("glutskorpion", 7333, 6650), ("glutskorpion", 7325, 6647), ("glutskorpion", 7335, 6647),
+    # F1 „Ende des Grases“ (KANAL 7046|6852 in shared/quest_f_orte.ts): zwei Säbel- und ein Bogenräuber am ausgetrockneten Kanal – fest, unabhängig von den Gegnerplätzen der Welt
+    ("karawanenraeuber_saebel", 7044, 6846), ("karawanenraeuber_saebel", 7048, 6846), ("karawanenraeuber_bogen", 7046, 6844),
+]
+for (art_, lx, ly) in LAGER_ORT:
+    for rid_, e_ in welt["regionen"].items():
+        R_ = e_["region"]
+        if R_.get("ebene"): continue
+        ux_, uy_ = R_["ursprung"]; bw_, bh_ = R_["chunks"]
+        if ux_ * C <= lx < (ux_ + bw_) * C and uy_ * C <= ly < (uy_ + bh_) * C:
+            BESONDERS.setdefault(rid_, {"leine": 12, "wandern": 3, "lager": []}).setdefault("lager", []).append((art_, lx, ly)); break
 # #130 Gegnerdichte (Welt, welt/gegnerplaetze.json): spätestens alle ~25 Felder ein Gegnerplatz. Plätze mit quelle „fehlt“ (Modell nötig: Ockerlande, Hochlande,
 # Frostkrone, Drachenarm) vorerst ausgelassen, die des Südens stehen schon oben. Namen der Welt → Gegner (abwechselnd bei Gruppen); unbekannte Gegner fallen weg.
 GP_DATEI = os.path.join(WURZEL, "realtime", "welt", "gegnerplaetze.json")

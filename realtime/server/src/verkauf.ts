@@ -9,9 +9,9 @@ import { verkaufen } from "./inventar";
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
 export type Verkauft = { laden: string; g: string; name: string; n: number; splitter: number };
 /** n Stück aus Rucksackfach i an den Händler laden verkaufen. wx/wy: Stelle des Spielers (Weltfelder), stand: Queststände (Laden offen?) */
-export function ladenVerkauf(sb: Sb, nutzer: string, laden: unknown, i: unknown, n: unknown, wx: number | undefined, wy: number | undefined, stand: (id: string) => string): { fehler: string } | Verkauft {
+export function ladenVerkauf(sb: Sb, nutzer: string, laden: unknown, i: unknown, n: unknown, wx: number | undefined, wy: number | undefined, stand: (id: string) => string, schalter?: (id: string) => boolean): { fehler: string } | Verkauft {
   const L = LAEDEN[String(laden) as LadenId]; if (!L) return { fehler: "Diesen Händler gibt es nicht." };
-  if (!ladenOffen(L, stand)) return { fehler: L.zu || "Hier ist zu." };
+  if (!ladenOffen(L, stand, schalter)) return { fehler: L.zu || "Hier ist zu." };
   if (wx === undefined || wy === undefined || Math.hypot(wx - L.x, wy - L.y) > KAUF_WEIT) return { fehler: `Geh näher an ${L.haendler}.` };
   const r = verkaufen(sb, nutzer, Number(i), Number(n), (g, d) => ankaufPreis(L, g, d));
   if (typeof r === "string") return { fehler: r === "Das kauft dieser Händler nicht." ? `${L.haendler} kauft das nicht.` : r };

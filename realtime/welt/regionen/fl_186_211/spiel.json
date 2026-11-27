@@ -292,6 +292,55 @@
    },
    {
     "art": "rechteck",
+    "x0": 441,
+    "y0": 261,
+    "x1": 442,
+    "y1": 262
+   },
+   {
+    "art": "rechteck",
+    "x0": 447,
+    "y0": 262,
+    "x1": 448,
+    "y1": 263
+   },
+   {
+    "art": "rechteck",
+    "x0": 453,
+    "y0": 261,
+    "x1": 454,
+    "y1": 262
+   },
+   {
+    "art": "rechteck",
+    "x0": 455,
+    "y0": 266,
+    "x1": 456,
+    "y1": 267
+   },
+   {
+    "art": "rechteck",
+    "x0": 442,
+    "y0": 267,
+    "x1": 443,
+    "y1": 268
+   },
+   {
+    "art": "rechteck",
+    "x0": 448,
+    "y0": 268,
+    "x1": 449,
+    "y1": 269
+   },
+   {
+    "art": "rechteck",
+    "x0": 452,
+    "y0": 270,
+    "x1": 453,
+    "y1": 271
+   },
+   {
+    "art": "rechteck",
     "x0": 335,
     "y0": 213,
     "x1": 336,
@@ -496,6 +545,17 @@
    }
   },
   {
+   "id": "bl_haferstedt_bank_tuer",
+   "art": "lesen",
+   "x": 294,
+   "y": 226.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Haferstedt. Dasselbe Konto wie in der Stadt – und am Markttag eine lange Schlange."
+   }
+  },
+  {
    "id": "bl_netzbucht",
    "art": "lesen",
    "x": 195,
@@ -568,6 +628,17 @@
    "daten": {
     "text": "Die Räucherhütte. Heringe hängen in Reihen im Rauch – hier wird Räucherhering gemacht.",
     "station": "raeucherhuette"
+   }
+  },
+  {
+   "id": "moewenbucht_bankkiste",
+   "art": "lesen",
+   "x": 271.5,
+   "y": 404.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Möwenbucht. Eisenbeschlagen, und der Schlüssel hängt beim Fischer – was du einlegst, liegt auf deinem Konto."
    }
   },
   {
@@ -700,6 +771,61 @@
    },
    "art": "lesen",
    "abgleich": "keiner"
+  },
+  {
+   "id": "holzfaellerhof",
+   "art": "lesen",
+   "x": 443.5,
+   "y": 256.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Holzfällerhof. Ein Schild am Tor: „Hain der Zunft – nur für Meister der Holzfällerei (ab Stufe 60).“"
+   }
+  },
+  {
+   "id": "holzfaellerhof_bankkiste",
+   "art": "lesen",
+   "x": 454,
+   "y": 271.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Holzfäller. Was du hier einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "holzfaellerhof_werkbank",
+   "art": "lesen",
+   "x": 445.5,
+   "y": 271.1,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkbank des Holzfällerhofs. Hier werden Stämme zu Brettern und Bögen."
+   }
+  },
+  {
+   "id": "kochzunft",
+   "art": "lesen",
+   "x": 276.2,
+   "y": 215.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Kochhof der Zunft. „Herde und Öfen für Meisterköche – ab Stufe 60 im Kochen.“"
+   }
+  },
+  {
+   "id": "kochzunft_bankkiste",
+   "art": "lesen",
+   "x": 282,
+   "y": 217.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Kochzunft. Was du hier einlegst, liegt auf deinem Konto."
+   }
   }
  ],
  "senken": [

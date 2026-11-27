@@ -20,7 +20,7 @@ const greifbar = (f, x, y, w = 1.8) => { for (let r = 0; r <= w; r += 0.1) for (
 const O = JSON.parse(readFileSync(join(WELT, "kueste_orte.json"), "utf8"));
 console.log("\nSmaragdküste");
 const [WX, WY] = ur("weidenhain"), K = flut(WX + reg.weidenhain.spiel.start[0][0], WY + reg.weidenhain.spiel.start[0][1], [6000, 6650, 6700, 7700]);
-const pflicht = ["suedstrasse_schild", "kiel_quelle", "kielmund", "kai", "werft", "taverne_ankerkraut", "kuestenhaus", "kielmund_bank_tuer", "kielmund_werkstatt", "fischmarkt", "mole", "kielmund_wegstein", "kielmund_bindestein",
+const pflicht = ["suedstrasse_schild", "kiel_quelle", "kielmund", "kai", "werft", "taverne_ankerkraut", "kuestenhaus", "kielmund_bank_tuer", "kielmund_werkstatt", "fischmarkt", "kielmund_mole", "kielmund_wegstein", "kielmund_bindestein",
   "leuchtturm", "waerterhaus", "klippenhoehlen_eingang", "moewenbucht", "raeucherhuette", "kraeuterhof", "wrack", "mangroven"];
 const fehlt = pflicht.filter((id) => !IA.has(id)), weg = pflicht.filter((id) => IA.has(id) && !greifbar(K, IA.get(id).x, IA.get(id).y));
 check(!fehlt.length, `${pflicht.length} Lesestellen vorhanden`, fehlt); check(!weg.length, "alle zu Fuß von Weidenhain aus erreichbar (über die Südstraße, offene Welt)", weg);

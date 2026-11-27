@@ -35,14 +35,17 @@ const GEHBAR = new Set(".,afjvtsuygTmhd"), WEG = new Set(["e", "k", "p"]);
 for (const g of [...(lies("gegnerplaetze.json").plaetze || []).filter((p) => !p.id.startsWith("gp_")), ...(lies("sueden_orte.json").gegner || [])]) hinder.push([g.x, g.y, 10 + (g.r || 0)]);
 for (const [k, [x, y]] of Object.entries(lies("glutsande_orte.json").orte || {})) if (k.startsWith("lager")) hinder.push([x, y, 16]);
 for (const s of [...(lies("troedler_standorte.json").standorte || []), ...(lies("bedienstellen.json").stationen || [])]) figuren.push([s.x, s.y, 5]);
-const ORTE = { ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, ...lies("hochlande_orte.json").orte };
+const FWO = lies("fahleweiten_orte.json");
+const ORTE = { ...(FWO.orte || {}), ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, ...lies("hochlande_orte.json").orte };
 const HL = lies("hochlande_orte.json");
-const ORTSRADIUS = { haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 34, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
+for (const r of HL.reisende || []) for (let i = 1; i < r.punkte.length; i++) { const [ax, ay] = r.punkte[i - 1], [bx, by] = r.punkte[i], L = Math.hypot(bx - ax, by - ay); for (let t = 0; t <= L; t += 2) hinder.push([ax + (bx - ax) * t / L, ay + (by - ay) * t / L, 3]); }   /* Wege der Reisenden (Bergleute Steinhag → Erzberg) frei halten */
+const KMO = lies("kielmund_orte.json"), STAEDTE = [HL.hauptstadt?.mauer, KMO.mauer && [6370, ...KMO.mauer.slice(1)]].filter(Boolean), STADT = STAEDTE[0], inStadt = (x, y, r = 0) => STAEDTE.some((S) => x > S[0] - r && x < S[2] + r && y > S[1] - r && y < S[3] + r);   /* Steinhag (#167), Kielmund (#174) */   /* Hauptstadt Steinhag (#167): in den Mauern keine Sammelstellen */
+const ORTSRADIUS = { grauwacht: 70, huegelgrund: 30, kohlstatt: 22, brechstein: 20, wollhag: 22, weiherhof: 26, haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 80, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
 
 /* ───── Gruppen: Ort, Art (holz/erz), Arten der Bäume bzw. Adern, Name ───── */
 const fest = (liste) => liste.filter((p) => p.x !== undefined).map((p) => ({ id: p.id, art: p.art, x: p.x, y: p.y }));
 const S = lies("sueden_orte.json"), K = lies("kueste_orte.json"), GL = lies("glutsande_orte.json");
-const ureisen = fest(GL.adern || []);
+const ureisen = fest(GL.adern || []), ZO = lies("zunft_orte.json");
 const PLAN = [
   /* Süden an der Südstraße (Stufe 1–35) */
   ["heckenhof", "holz", ["eiche", "eiche", "eiche", "eiche"], "Eichen am Heckenhof"],
@@ -93,7 +96,9 @@ const PLAN = [
   ["nordstrand", "holz", ["kernbaum", "kernbaum", "moorweide"], "Kernbäume am Nordstrand"],
   ["nordstrand", "erz", ["sterneisen", "sterneisen", "splittereisen"], "Felsen am Nordstrand"],
   /* Hochlande (Phase 11, #147): Stufe 40–65 – Bergbau im Bergwerk und an den Geröllhängen, Holz in den Tälern, einzelne alte Bäume */
+  ...(ZO.holzgruppen || []).map((g) => [g.ort, "fest", g.baeume.map((p) => ({ ...p })), g.name]),   /* Zunfthäuser #168: Hain des Holzfällerhofs */
   ["bergwerk", "festerz", (HL.adern || []).map((p) => ({ ...p })), "Erzadern im Erzberg-Bergwerk"],
+  ...[...new Set((HL.zunft_adern || []).map((p) => p.gruppe))].map((gr) => ["steinhag", "festerz", HL.zunft_adern.filter((p) => p.gruppe === gr).map(({ gruppe, ...p }) => p), `Adern im Stollen der Bergmannszunft: ${gr}`]),   /* #167, ab Stufe 60 */
   ["erzberg", "erz", ["sterneisen", "sterneisen", "splittereisen", "splittereisen"], "Geröllhang am Erzberg"],
   ["hochpass", "erz", ["sterneisen", "splittereisen", "splittereisen"], "Erzgrat am Hochpass"],   /* Ureisen nur unter Tage (Konzept „Hochlande füllen“) */
   ["steinhag", "holz", ["kernbaum", "kernbaum", "eibe", "eibe"], "Bergwald unter Steinhag"],
@@ -111,6 +116,12 @@ const PLAN = [
   ["bergwerk", "erz", ["kupfer", "eisen", "schwarzeisen", "schwarzeisen"], "Halde am Stollen"],
   ["steinhag", "einzeln", ["splittereisen"], "Splitterfels über dem Steinhagsee"],
   ["hinterpass", "erz", ["sterneisen", "splittereisen", "splittereisen"], "Felsen hinter dem Hochpass"],
+  /* Fahle Weiten füllen (#171): Gruppen an den neuen Orten, je nach Beruf des Orts (Stufe 1–35 wie Süden/Westen) */
+  ["huegelgrund", "holz", ["eiche", "eiche", "tanne"], "Eichen bei Hügelgrund"], ["huegelgrund", "erz", ["kupfer", "kupfer", "eisen"], "Kupfersenke bei Hügelgrund"],
+  ["kohlstatt", "holz", ["eiche", "tanne", "tanne", "eibe"], "Köhlerwald bei Kohlstatt"], ["kohlstatt", "holz", ["eibe", "eibe", "moorweide"], "Eiben hinter den Meilern"],
+  ["brechstein", "erz", ["eisen", "eisen", "schwarzeisen"], "Eisenbruch am Grauen Fels"], ["brechstein", "erz", ["schwarzeisen", "sterneisen", "sterneisen"], "Sterneisen im Grauen Fels"],
+  ["wollhag", "holz", ["tanne", "tanne", "eiche"], "Windbäume bei Wollhag"], ["wollhag", "erz", ["kupfer", "eisen", "eisen"], "Steine auf der Schafheide"],
+  ["weiherhof", "holz", ["moorweide", "moorweide", "eibe"], "Weiden am Weiher"], ["weiherhof", "erz", ["kupfer", "eisen", "eisen"], "Senke am Weiherhof"],
   /* Nachtrag des Nutzers (#142): einzelne Stellen deutlich über der Gegend, sparsam, versteckt abseits der Wege (ohne Feldweg) – zum Entdecken */
   ["heckenhof", "einzeln", ["eibe"], "Einsame Eibe hinter dem Heckenhof"],
   ["summweide", "einzeln", ["moorweide"], "Alte Moorweide im Wiesengrund"],
@@ -121,15 +132,38 @@ const PLAN = [
 ];
 ORTE.leuchtturm ??= [6176, 7036];
 ORTE.hinterpass = [6922, 5524];   /* Ende des Passwegs Richtung Frostkrone */
-/* Hochlande füllen: an jedem Weg alle ~70 Felder eine Gruppe in Reichweite – fehlt eine, kommt abwechselnd Holz (Eiche bis Eibe) oder Erz (Eisen bis Sterneisen) dazu */
-{ const nah = (x, y) => PLAN.some(([o]) => ORTE[o] && Math.hypot(ORTE[o][0] - x, ORTE[o][1] - y) < 35); let i = 0;
+/* Hochlande füllen: an jedem Weg alle ~30 Felder eine Gruppe in Reichweite – fehlt eine, kommt abwechselnd Holz (Eiche bis Eibe) oder Erz (Eisen bis Sterneisen) dazu.
+   Die schon gesetzten Gruppen „… am Weg (Hochlande n)“ behalten Namen und Platz (shared/ hat sie übernommen); neue Punkte bekommen die nächste freie Nummer. */
+const RE_WEG = /^(Bäume|Adern) am Weg \(Hochlande (\d+)\)$/;
+{ const altG = !process.argv.includes("--neu") && existsSync(DATEI) ? JSON.parse(readFileSync(DATEI, "utf8")) : { lichtungen: [], senken: [] };
+  const mitte = (g) => { const pts = g.baeume || g.adern; return [g.x ?? pts.reduce((s, p) => s + p.x, 0) / pts.length, g.y ?? pts.reduce((s, p) => s + p.y, 0) / pts.length]; };
+  const bisher = [...altG.lichtungen, ...altG.senken].filter((g) => RE_WEG.test(g.name) && !(g.baeume || g.adern).some((p) => inStadt(p.x, p.y, 6)));
+  let i = Math.max(0, ...[...altG.lichtungen, ...altG.senken].map((g) => +(RE_WEG.exec(g.name)?.[2] || 0)));
+  for (const g of bisher) { const id = g.ort?.startsWith("hlweg_") ? g.ort : "hlweg_alt_" + RE_WEG.exec(g.name)[2]; ORTE[id] = mitte(g).map(Math.round); PLAN.push([id, g.baeume ? "holz" : "erz", (g.baeume || g.adern).map((p) => p.art), g.name]); }
+  const nah = (x, y) => PLAN.some(([o]) => ORTE[o] && Math.hypot(ORTE[o][0] - x, ORTE[o][1] - y) < 35);
   for (const w of (HL.wege || [])) for (let j = 1; j < w.punkte.length; j++) { const [x0, y0] = w.punkte[j - 1], [x1, y1] = w.punkte[j], L = Math.hypot(x1 - x0, y1 - y0);
-    for (let t = 0; t <= L; t += 30) { const x = x0 + (x1 - x0) * t / L, y = y0 + (y1 - y0) * t / L; if (nah(x, y)) continue; const id = "hlweg_" + ++i; ORTE[id] = [Math.round(x), Math.round(y)];
+    for (let t = 0; t <= L; t += 30) { const x = x0 + (x1 - x0) * t / L, y = y0 + (y1 - y0) * t / L; if (nah(x, y) || inStadt(x, y, 8)) continue; const id = "hlweg_" + ++i; ORTE[id] = [Math.round(x), Math.round(y)];
       PLAN.push(i % 2 ? [id, "holz", i % 4 === 1 ? ["eiche", "tanne", "tanne"] : ["tanne", "eibe", "eibe"], `Bäume am Weg (Hochlande ${i})`] : [id, "erz", i % 4 === 2 ? ["eisen", "eisen", "schwarzeisen"] : ["schwarzeisen", "sterneisen", "sterneisen"], `Adern am Weg (Hochlande ${i})`]); } } }
+/* Fahle Weiten (#171): wie in den Hochlanden an jedem Weg alle ~30 Felder eine Gruppe in Reichweite (Stufe wie Süden/Westen), Namen stabil, nicht in Grauwachts Mauern */
+const RE_FW = /^(Bäume|Adern) am Weg \(Fahle Weiten (\d+)\)$/, GWM = FWO.grauwacht?.mauer, inGrauwacht = (x, y, r = 0) => GWM && x > GWM[0] - r && x < GWM[2] + r && y > GWM[1] - r && y < GWM[3] + r;
+{ const altG = !process.argv.includes("--neu") && existsSync(DATEI) ? JSON.parse(readFileSync(DATEI, "utf8")) : { lichtungen: [], senken: [] };
+  const mitte = (g) => { const pts = g.baeume || g.adern; return [g.x ?? pts.reduce((s, p) => s + p.x, 0) / pts.length, g.y ?? pts.reduce((s, p) => s + p.y, 0) / pts.length]; };
+  const bisher = [...altG.lichtungen, ...altG.senken].filter((g) => RE_FW.test(g.name) && !(g.baeume || g.adern).some((p) => inGrauwacht(p.x, p.y, 6)));
+  let i = Math.max(0, ...[...altG.lichtungen, ...altG.senken].map((g) => +(RE_FW.exec(g.name)?.[2] || 0)));
+  for (const g of bisher) { const id = "fwweg_alt_" + RE_FW.exec(g.name)[2]; ORTE[id] = mitte(g).map(Math.round); PLAN.push([id, g.baeume ? "holz" : "erz", (g.baeume || g.adern).map((p) => p.art), g.name]); }
+  const nah = (x, y) => PLAN.some(([o]) => ORTE[o] && Math.hypot(ORTE[o][0] - x, ORTE[o][1] - y) < 35);
+  for (const w of (FWO.wege || [])) for (let j = 1; j < w.punkte.length; j++) { const [x0, y0] = w.punkte[j - 1], [x1, y1] = w.punkte[j], L = Math.hypot(x1 - x0, y1 - y0);
+    for (let t = 0; t <= L; t += 30) { const x = x0 + (x1 - x0) * t / L, y = y0 + (y1 - y0) * t / L; if (nah(x, y) || inGrauwacht(x, y, 8)) continue; const id = "fwweg_" + ++i; ORTE[id] = [Math.round(x), Math.round(y)];
+      PLAN.push(i % 2 ? [id, "holz", i % 4 === 1 ? ["eiche", "eiche", "tanne"] : ["tanne", "eibe", "eibe"], `Bäume am Weg (Fahle Weiten ${i})`] : [id, "erz", i % 4 === 2 ? ["kupfer", "kupfer", "eisen"] : ["eisen", "eisen", "schwarzeisen"], `Adern am Weg (Fahle Weiten ${i})`]); } } }
+
+/* vor den Toren der Hauptstadt (#167): je eine Gruppe, damit die Wege dort nicht leer sind */
+if (HL.hauptstadt) { const [wx, wy] = HL.hauptstadt.tore.west, [ox, oy] = HL.hauptstadt.tore.ost; ORTE.steinhag_westtor = [wx - 14, wy]; ORTE.steinhag_osttor = [ox + 16, oy - 6];
+  PLAN.push(["steinhag_osttor", "erz", ["eisen", "eisen", "schwarzeisen"], "Adern vor dem Osttor"], ["steinhag_westtor", "holz", ["eiche", "tanne", "tanne"], "Bäume vor dem Westtor"]); }
 
 /* ───── Suche ───── */
 const alt = !process.argv.includes("--neu") && existsSync(DATEI) ? JSON.parse(readFileSync(DATEI, "utf8")) : { lichtungen: [], senken: [] };
 const altNach = new Map([...alt.lichtungen.map((l) => [l.name, { ...l, typ: "holz" }]), ...alt.senken.map((s) => [s.name, { ...s, typ: "erz" }])]);
+for (const [n, g] of altNach) { const pts = g.baeume || g.adern; if (pts.some((p) => inStadt(p.x, p.y, 6) || inGrauwacht(p.x, p.y, 6))) altNach.delete(n); }   /* in der Stadtmauer: neu setzen */
 const gesetzt = []; /* [x, y, r] */
 for (const g of altNach.values()) { const pts = g.baeume || g.adern, mx = g.x ?? pts.reduce((s, p) => s + p.x, 0) / pts.length, my = g.y ?? pts.reduce((s, p) => s + p.y, 0) / pts.length; gesetzt.push([mx, my, g.r ?? 6]); }
 const wegNah = (x, y, r) => { for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (WEG.has(zeichen(x + dx, y + dy))) return true; return false; };
@@ -144,7 +178,7 @@ function suche(ort, arten, erz, einzeln = false) {
     const pts = einzeln ? [{ art: arten[0], x: Math.floor(cx) + 0.5, y: Math.floor(cy) + 0.5 }] : anordnen(arten, cx, cy, erz); if (pts.some((p) => !GEHBAR.has(zeichen(p.x, p.y)) || "a".includes(zeichen(p.x, p.y)) || wegNah(p.x, p.y, einzeln ? 9 : 1))) continue;
     let gut = 0, alle = 0; for (let y = cy - R; y <= cy + R; y++) for (let x = cx - R; x <= cx + R; x++) if (Math.hypot(x - cx, y - cy) <= R) { alle++; if (GEHBAR.has(zeichen(x, y)) && zeichen(x, y) !== "a") gut++; } if (gut < alle * 0.85) continue;
     if (hinder.some(([x, y, r]) => Math.hypot(x - cx, y - cy) < R + r) || figuren.some(([x, y, r]) => Math.hypot(x - cx, y - cy) < R + r)) continue;
-    if (Object.entries(ORTE).some(([k, [x, y]]) => Math.hypot(x - cx, y - cy) < (ORTSRADIUS[k] ?? 12) + R - 2)) continue;
+    if (Object.entries(ORTE).some(([k, [x, y]]) => Math.hypot(x - cx, y - cy) < (ORTSRADIUS[k] ?? 12) + R - 2) || inStadt(cx, cy, R + 8) || inGrauwacht(cx, cy, R + 8)) continue;
     if (gesetzt.some(([x, y, r]) => Math.hypot(x - cx, y - cy) < r + R + 6)) continue;
     if (!wegErreichbar(cx, cy, einzeln ? 140 : 60)) continue;
     best = { cx, cy, R, pts, region: g.n }; }
