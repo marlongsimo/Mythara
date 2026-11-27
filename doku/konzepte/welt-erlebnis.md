@@ -1,6 +1,12 @@
 # Die offene Welt verdichten: Reisen und Erlebnis
 
-*Entwurf Konzept-Chat, 27.11.2026, noch nicht abgesegnet.* Eigener Riftmere-Entwurf.
+*Konzept-Chat, 27.11.2026. Eigener Riftmere-Entwurf.*
+
+> **Entschieden (Nutzer, 27.11.):**
+> - **Sperren in der Welt** wie vorgeschlagen (Bergsturz am Hals des Drachenarms, Schneesturm an der Frostkrone). **Freigeschaltet wird später über Quests**, bis dahin bleibt es gesperrt.
+> - **Schiffslinien: ja**, Preise passen (20–60 Splitter), Häfen werden nach dem ersten Besuch Ziel.
+> - **Kutschennetz: zurückgestellt**, weil es die Wegsteine schon gibt.
+> - **Keine Aussichtspunkte.** Mit „Erlebnis“ ist gemeint: **dichtere Welt** – mehr Bäume und Bewuchs, überall mal etwas zu sehen, und **Dörfer, in denen man etwas machen kann**. Siehe Abschnitt 2 (neu).
 
 ## Richtungsentscheidung des Nutzers (27.11.)
 
@@ -31,36 +37,34 @@ Der Kanon sagt „Offene Welt statt Sperren“. Für den Drachenarm (und die Fro
 
 Zusammen mit Wegstein (Teleport mit Ladung) und Fähre gibt es dann drei Arten zu reisen: **schnell und teuer** (Wegstein), **gemütlich und günstig** (Kutsche, Schiff) und **zu Fuß** (Entdecken).
 
-## 2. Verdichten und verschönern
+## 2. Verdichten und verschönern (nach der Entscheidung des Nutzers)
 
-Der Kanon hat schon: Gegnerplatz alle ~25 Felder, Arbeitsstellen nah an den Orten, Streifgebiete, mehr Dörfer in den Fahlen Weiten. Dazu kommt, was **das Laufen zum Erlebnis** macht:
+Die Welt soll beim Laufen **nie leer** wirken. Drei Dinge:
 
-| Baustein | Was | Lohn |
+| Baustein | Was | Richtwert |
 |---|---|---|
-| **Aussichtspunkte** | erhöhte Stellen mit Blick über die Region (Felsnase, Turmruine, Klippe); beim ersten Besuch schwenkt die Kamera kurz | Eintrag im Entdeckungsbuch, kleine XP |
-| **Geheimnisse am Weg** | versteckte Truhen, alte Steintafeln mit Geschichte (Wacht, Magierkrieg, Himmelsriss), ein vergessener Schrein | Splitter, Seelenlichter, Bruchstücke der Weltgeschichte |
-| **Leben am Weg** | Reisende, Händlerkarren, Hirten mit Herden, Pilger, Wachen auf Streife zwischen den Orten | Stimmung, manchmal ein kleiner Tauschhandel |
-| **Rastplätze** | Feuer, Bank zum Sitzen, manchmal ein Wanderhändler | Kochen unterwegs, Erholung |
-| **Landmarken je Region** | ein großes, von weitem sichtbares Ding: Riesenbaum, Wrack an der Küste, eingestürzter Turm, Splitterkrater | Orientierung ohne Karte |
-| **Kleine Weltereignisse** | z. B. Wegelagerer überfallen einen Händler, ein Splitter fällt vom Himmel und lockt Gegner an, ein Wanderzirkus im Dorf | Belohnung für alle, die mitmachen |
-| **Entdeckungsbuch** | sammelt Aussichtspunkte, Geheimnisse und Landmarken je Region | Meilensteine: Titel, kosmetische Kleinigkeiten |
+| **Bewuchs** | Bäume, Baumgruppen, Hecken, Büsche, Felder, Blumenwiesen, Schilf an Wasser; Wälder dichter, Wege mit Alleen | auf freiem Land kaum eine Stelle ohne Bewuchs im Blickfeld |
+| **Kleinigkeiten am Weg** | Brunnen, Zäune, Heuhaufen, Karren, Wegweiser, Grenzsteine, Ruinen, Hütten, Stege, Lagerfeuer, Tiere auf Weiden | etwa alle 15–25 Felder entlang der Wege etwas |
+| **Dörfer mit Tätigkeit** | kleine Orte, in denen man **etwas tun** kann: je Dorf ein eigener Beruf mit Arbeitsstellen (wie Kohlstatt, Brechstein, Wollhag, Weiherhof), Laden oder Bankkiste, ein Herd oder eine Werkbank, 1–2 kleine Aufgaben der Bewohner | in jeder offenen Region genug Dörfer, dass man nie weit zum nächsten hat |
+
+Das passt zum Kanon (Gegner alle ~25 Felder, Arbeitsstellen nah an den Orten, Streifgebiete, „Welt lebendiger“).
+**Nicht jetzt:** Aussichtspunkte (gestrichen). Geheimnisse, Weltereignisse und Entdeckungsbuch nur als Idee für später.
 
 ### Vorgehen
-Region für Region, mit den Gebieten, die schon offen sind: zuerst die meistbesuchten (Grenzland, Waldland, Westmark), dann Moor und Ostufer, Fahle Weiten, Glutsande, Smaragdküste, Hochlande.
-Je Region: **3–5 Aussichtspunkte, 5–8 Geheimnisse, 1 Landmarke, 1–2 Weltereignisse**, Leben am Weg.
+Region für Region in der offenen Karte. Je Region: Bewuchs verdichten, Kleinigkeiten an die Wege, Dörfer mit Tätigkeit dort, wo Lücken sind.
+Reihenfolge (Vorschlag): Grenzland, Waldland und Westmark zuerst (dort sind die meisten Spieler), dann Moor und Ostufer, Glutsande, Smaragdküste, Hochlande. Die Fahlen Weiten sind schon dran (`fahle-weiten.md`).
 
 ## Wer was macht (wenn freigegeben)
 | Rolle | Aufgabe |
 |---|---|
-| Welt | Sperren Drachenarm/Frostkrone, Häfen und Stege, Kutschenstationen, Aussichtspunkte, Geheimnisse, Landmarken, Rastplätze |
-| Systeme | Schiffs- und Kutschenreise (Ziele freischalten, Preis, kurze Überfahrt), Weltereignisse, Entdeckungsbuch |
-| Figuren | Schiff, Kapitäne, Reisende, Händlerkarren (Kutsche gibt es) |
-| Oberfläche | Reiseziel-Fenster, Entdeckungsbuch |
-| Quests | Geschichtstafeln (Texte), kleine Wegquests |
-| Integration | Preise, Beute der Geheimnisse, Einbau |
+| Welt | Sperren Drachenarm/Frostkrone, Häfen und Stege, Bewuchs, Kleinigkeiten am Weg, neue Dörfer |
+| Systeme | Schiffsreise (Ziele nach dem ersten Besuch, Preis, kurze Überfahrt), Sperren mit Hinweis |
+| Figuren | Schiff, Kapitäne, fehlende Kleinteile (Brunnen, Karren …) und Bewohner der Dörfer |
+| Oberfläche | Reiseziel-Fenster am Hafen |
+| Quests | kleine Aufgaben der Dorfbewohner; später die Freischalt-Quests für Drachenarm und Frostkrone |
+| Integration | Preise, Läden der Dörfer, Einbau |
 
 ## Offen
-1. Sperren in der Welt (Bergsturz, Schneesturm) so recht?
-2. Schiff **und** Kutsche, oder erst nur das Schiff?
-3. Preise (Schiff 20–60, Kutsche 10–30 Splitter) und „Ziel erst nach dem ersten Besuch“?
-4. Welche Bausteine aus Abschnitt 2 willst du, und mit welcher Region fangen wir an?
+- Mit welcher Region beginnen (Vorschlag: Grenzland, Waldland, Westmark)?
+- Welche Häfen genau (Welt prüft die Lage).
+- Freischalt-Quests für Drachenarm und Frostkrone (später).
