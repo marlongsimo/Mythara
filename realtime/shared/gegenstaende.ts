@@ -566,3 +566,24 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
     text: "Das Gericht von Glutbrunn: Glutwels, im Salz gegart. Heilt 18 Lebenspunkte." };
   VERBRAUCH.fisch_glutwels_gebraten = { id: "fisch_glutwels_gebraten", name: "Gebratener Glutwels", art: "Essen", seltenheit: "selten", heilt: { fest: 15, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "15 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Feurig und fett." };
   VERBRAUCH.glutwels_salzkruste = { id: "glutwels_salzkruste", name: "Glutwels in Salzkruste", art: "Essen", seltenheit: "episch", heilt: { fest: 18, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "18 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Das Gericht von Glutbrunn." }; }
+
+/* ───────── Phase 10 (#92): Smaragdküste und Kielmund – Fische img/objekte3d/skilling/angeln/symbole/, Gerichte und Wrackkiste img/objekte3d/kueste/symbole/ (Figuren #83) ───────── */
+{ const A10 = "img/objekte3d/skilling/angeln/symbole/", K10 = "img/objekte3d/kueste/symbole/";
+  const F10: [string, string, string, number, string][] = [["hering", "Hering", "Gebratener Hering", 6, "Silbrig und fett, frisch vom Kai."], ["klippenbarsch", "Klippenbarsch", "Gebratener Klippenbarsch", 9, "Fest und weiß, aus dem Kehrwasser unter der Klippe."], ["seeaal", "Seeaal", "Gebratener Seeaal", 11, "Lang und zäh, aus dem Wrack gezogen."]];
+  for (const [f, n, nb, heil, t] of F10) {
+    GEGENSTAENDE[`fisch_${f}_roh`] = { id: `fisch_${f}_roh`, name: `${n} (roh)`, art: "Rohstoff", seltenheit: "gewoehnlich", bild: A10 + `fisch_${f}_roh.webp`, text: `${t} Gebraten heilt er ${heil} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", bild: A10 + `fisch_${f}_gebraten.webp`, trank: `fisch_${f}_gebraten`, text: `Knusprig gebraten. Heilt ${heil} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${n}`, art: "Abfall", seltenheit: "anfaenger", bild: A10 + `fisch_${f}_verbrannt.webp`, text: "Kohle mit Gräten." };
+    VERBRAUCH[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: heil, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ["Stapelbar", "nein"]], text: "Knusprig gebraten." }; }
+  GEGENSTAENDE.raeucherhering = { id: "raeucherhering", name: "Räucherhering", art: "Essen", seltenheit: "gewoehnlich", bild: K10 + "raeucherhering.webp", modell3d: "img/objekte3d/kueste/raeucherhering.glb", trank: "raeucherhering",
+    text: "Goldbraun aus der Räucherhütte der Möwenbucht, hält wochenlang. Heilt 8 Lebenspunkte; 20 Minuten lang erholt sich die Ausdauer 15 % schneller." };
+  GEGENSTAENDE.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", bild: K10 + "barsch_salzkruste.webp", modell3d: "img/objekte3d/kueste/barsch_salzkruste.glb", trank: "barsch_salzkruste",
+    text: "Klippenbarsch, in Salz aus den Glutsanden in der Glut gegart. Heilt 12 Lebenspunkte." };
+  GEGENSTAENDE.aalsuppe = { id: "aalsuppe", name: "Aalsuppe", art: "Essen", seltenheit: "selten", bild: K10 + "aalsuppe.webp", modell3d: "img/objekte3d/kueste/aalsuppe.glb", trank: "aalsuppe",
+    text: "Die Suppe der Hafenleute von Kielmund. Heilt 13 Lebenspunkte." };
+  GEGENSTAENDE.wrackkiste = { id: "wrackkiste", name: "Kiste mit dem Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: K10 + "wrackkiste.webp",
+    text: "Eine Kiste aus dem Wrack, versiegelt mit dem Zeichen des Rabenordens. Darin Rechnungen über Splitter – gekauft über Kielmund." };
+  VERBRAUCH.raeucherhering = { id: "raeucherhering", name: "Räucherhering", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 8, anteil: 0 }, wirkung: "raeucherhering", stapelbar: false, modell: "",
+    werte: [["Heilung", "8 (nicht über das maximale Leben)"], ["Wirkung", "Ausdauer erholt sich 20 Minuten lang 15 % schneller (ersetzt anderes Essen)"], ["Stapelbar", "nein"]], text: "Goldbraun geräuchert." };
+  VERBRAUCH.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "In der Glut gegart." };
+  VERBRAUCH.aalsuppe = { id: "aalsuppe", name: "Aalsuppe", art: "Essen", seltenheit: "selten", heilt: { fest: 13, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "13 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Die Suppe der Hafenleute." }; }

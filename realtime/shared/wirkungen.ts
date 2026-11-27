@@ -15,6 +15,8 @@ export interface WirkDef { id: string; art: WirkArt; werte: Partial<Record<WirkW
 const B = "img/objekte3d/skilling/symbole/";
 export const WIRKUNGEN: Record<string, WirkDef> = {
   fischsuppe: { id: "fischsuppe", art: "essen", werte: { defense: 2 }, ms: 5 * 60_000, name: "Fischsuppe", text: "Defense +2", symbol: B + "kochen_klein.webp" },
+  /* Phase 10 (#92): Räucherhering – lange haltbar, kleine Wirkung „Ausdauer“ */
+  raeucherhering: { id: "raeucherhering", art: "essen", werte: { ausdauer: 0.15 }, ms: 20 * 60_000, name: "Räucherhering", text: "Ausdauer erholt sich 15 % schneller", symbol: B + "kochen_klein.webp" },
   bauerneintopf: { id: "bauerneintopf", art: "essen", werte: { ausdauer: 0.25 }, ms: 10 * 60_000, name: "Bauerneintopf", text: "Ausdauer erholt sich 25 % schneller", symbol: B + "kochen_klein.webp" },
 };
 const SKILL_WERTE: Skill[] = ["geschick", "staerke", "fernkampf", "magie", "lp", "defense"];

@@ -22,6 +22,15 @@ export const TUEREN: Tuer[] = [];
 TUEREN.push({ id: "turm_wappentuer", feld: [6840, 6519, 6840, 6519], schalter: "wappentuer_offen", eingang: "turm_wappentuer",
   zu: "Die Tür trägt ein Wappen – ein Turm über drei Wellen. Sie ist verschlossen. Vielleicht weiß jemand in Graufurt, wer hier hineindarf." });
 
+/* ───────── Phase 10 (#92, G3): der Wrackkapitän in seiner Kajüte (Region wrack_kajuete, Weltfelder 11488…11519 × 9600…9631) ─────────
+   Geist eines Kapitäns: Säbelwirbel rundum, ruft unter 60 % zwei Strandräuber, unter 30 % schwappt Geisterwasser durch die Kajüte (Deckung hinter Kisten). Instanz je Spieler (Schalter aus G3). */
+BOSSE.wrackkapitaen = { typ: "wrackkapitaen", phasen: [
+  { ab: 1, ansagen: [{ name: "Säbelwirbel", alle: 4, felder: "rundum", schaden: [6, 11] }] },
+  { ab: 0.6, text: "Der Wrackkapitän ruft seine Mannschaft!", ruf: { art: "strandraeuber_saebel", n: 2, text: "Alle Mann an Deck!" }, ansagen: [{ name: "Säbelwirbel", alle: 3, felder: "rundum", schaden: [6, 11] }] },
+  { ab: 0.3, text: "Geisterwasser flutet die Kajüte!", ansagen: [{ name: "Geisterflut", sek: 4, felder: "raum", deckung: true, vorlauf: 2, schaden: [9, 15] }] } ] };
+INSTANZEN.push({ id: "wrack_kajuete", name: "Die Kajüte des Kapitäns", feld: [11488, 9600, 11519, 9631], schalter: "wrackkapitaen_kajuete",
+  gegner: [{ art: "wrackkapitaen", x: 11504.5, y: 9614.5 }], text: "Die Tür der Kajüte fällt ins Schloss. Am Kartentisch sitzt jemand, durch den man hindurchsieht." });
+
 /* ───────── Phase 9 (#86, F3): die Sandmutter in ihrer Kammer unter dem Tempel (Region tempel_kammer, Weltfelder 11360…11391 × 9600…9631) ─────────
    Gräbt sich ein (unangreifbar), ruft Sandkriecher, Treibsand auf angesagten Feldern. Instanz je Spieler, solange „sandmutter_kammer“ an ist (F3). */
 BOSSE.sandmutter = { typ: "sandmutter", phasen: [

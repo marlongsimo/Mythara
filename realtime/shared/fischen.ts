@@ -12,7 +12,7 @@ import type { SammelArt, SammelWerkzeug } from "./sammeln";
 import ORTE from "./fanggruende.json";
 
 export const BERUF_FISCHEN = "fischen", BERUF_KOCHEN = "kochen";
-export type FischArt = "bachling" | "muehlbarsch" | "moorhecht" | "wels" | "glutwels";
+export type FischArt = "bachling" | "muehlbarsch" | "moorhecht" | "wels" | "glutwels" | "hering" | "klippenbarsch" | "seeaal";
 export interface FischDef extends SammelArt { art: FischArt; /** nur mit diesem Gerät */ werkzeug: string; /** verbraucht je Fisch (fehlt = ohne Köder) */ koeder?: string }
 export const FISCHE: Record<FischArt, FischDef> = {
   bachling: { art: "bachling", name: "Bachling", level: 1, xp: 20, lo: 100, hi: 250, fall: 0.12, nachwachsen: 0, ertrag: "fisch_bachling_roh", werkzeug: "angelrute", koeder: "wurm" },
@@ -21,6 +21,10 @@ export const FISCHE: Record<FischArt, FischDef> = {
   /* Phase 7 (#40, D3): Graufurter Wels im Fährhafen, Fischen 45, mit Angelrute und Wurm */
   /* Phase 9 (#86): Glutwels im Strom bei Glutbrunn, Fischen 65, mit der Reuse */
   glutwels: { art: "glutwels", name: "Glutwels", level: 65, xp: 180, lo: 25, hi: 170, fall: 0.12, nachwachsen: 0, ertrag: "fisch_glutwels_roh", werkzeug: "reuse" },
+  /* Phase 10 (#92): Smaragdküste – Hering (20) am Kai und in der Möwenbucht, Klippenbarsch (35) unter dem Leuchtturm, beide mit Angelrute und Wurm; Seeaal (45) am Wrack und in den Mangroven mit der Reuse */
+  hering: { art: "hering", name: "Hering", level: 20, xp: 50, lo: 60, hi: 220, fall: 0.12, nachwachsen: 0, ertrag: "fisch_hering_roh", werkzeug: "angelrute", koeder: "wurm" },
+  klippenbarsch: { art: "klippenbarsch", name: "Klippenbarsch", level: 35, xp: 85, lo: 45, hi: 200, fall: 0.12, nachwachsen: 0, ertrag: "fisch_klippenbarsch_roh", werkzeug: "angelrute", koeder: "wurm" },
+  seeaal: { art: "seeaal", name: "Seeaal", level: 45, xp: 115, lo: 35, hi: 190, fall: 0.12, nachwachsen: 0, ertrag: "fisch_seeaal_roh", werkzeug: "reuse" },
   wels: { art: "wels", name: "Graufurter Wels", level: 45, xp: 110, lo: 35, hi: 190, fall: 0.12, nachwachsen: 0, ertrag: "fisch_wels_roh", werkzeug: "angelrute", koeder: "wurm" },
 };
 /** Die Geräte (ohne Stufen): Angelrute ab Level 1, Reuse ab Level 20 */

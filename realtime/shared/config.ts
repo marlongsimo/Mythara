@@ -408,6 +408,50 @@ Object.assign(MONSTER, {
     info: "Die Mutter aller Sandkriecher. Sie schläft in der Kammer unter dem Tempel – bis jemand das Auge öffnet.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [250, 450] }] }, { wurf: [{ g: "leder_gehaertet", chance: 60, anzahl: [2, 4] }] }, { wurf: [{ g: "seelenlicht", chance: 50, anzahl: [5, 10] }] },
       { wurf: [{ g: "@selten", chance: 100 / 10 }, { g: "@episch", chance: 100 / 40 }, { g: "@legendaer", chance: 100 / 500 }] }] },
+  /* ───── Phase 10 (#92): Smaragdküste, Kielmund, Klippenhöhlen (doku/konzepte/phase-10.md; Beute nach den Vorschlägen, beute.md folgt) ───── */
+  /** Strandkrabbe: Stufe 22, Panzer (stark gegen Nahkampf), Strände und Wrack */
+  strandkrabbe: { name: "Strandkrabbe", stufe: 22, bild: "img/echtzeit/bandit.webp", hoehe: 55, lp: 32, tempo: 2.8, angriffswert: { nah: 22, fern: 0, magie: 0 }, abwehr: { nah: 30, fern: 15, magie: 10 }, r: 0.4,
+    angriff: { name: "Zwicken", art: "nah", schaden: [1, 4], takt: 2, reich: 1.3, aushol: 0 },
+    v2: { staerke: 26, geschick: 22, defense: 30, magie: 1, ticks: 4, abwehr: { nah: 15, fern: 5, magie: -10 } },
+    info: "Eine Krabbe so groß wie ein Schild. Am Strand rennen sie seitwärts davon – bis eine zurückzwickt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 60, anzahl: [2, 6] }] }, { wurf: [{ g: "krebsschere", chance: 20 }] }] },
+  /** Riesenkrabbe: Stufe 34, Panzer, Wrack und Buchten */
+  riesenkrabbe: { name: "Riesenkrabbe", stufe: 34, bild: "img/echtzeit/bandit.webp", hoehe: 85, lp: 65, tempo: 2.6, angriffswert: { nah: 35, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 25, magie: 15 }, r: 0.6,
+    angriff: { name: "Scherenschlag", art: "nah", schaden: [1, 7], takt: 2.5, reich: 1.5, aushol: 0 },
+    v2: { staerke: 45, geschick: 32, defense: 50, magie: 1, ticks: 5, abwehr: { nah: 25, fern: 10, magie: -10 } },
+    info: "Seepocken und Tang auf dem Panzer – die hier ist älter als das Wrack, unter dem sie wohnt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [6, 14] }] }, { wurf: [{ g: "krebsschere", chance: 30, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 128 }] }] },
+  /** Seevogel: Stufe 26, Sturzflug von den Klippen (wie der Moorrabe), schwach gegen Fernkampf */
+  seevogel: { name: "Seevogel", stufe: 26, bild: "img/echtzeit/bandit.webp", hoehe: 75, lp: 30, tempo: 4.6, angriffswert: { nah: 26, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 10, magie: 20 }, r: 0.4,
+    angriff: { name: "Sturzflug", art: "nah", schaden: [1, 5], takt: 2, reich: 1.4, aushol: 0 },
+    v2: { geschick: 30, staerke: 32, defense: 18, magie: 5, ticks: 4, abwehr: { nah: 0, fern: -10, magie: 5 } }, aggroReich: 6,
+    info: "Eine Möwe mit der Spannweite eines Mannes. Sie stößt herab, wo jemand ihren Klippen zu nahe kommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 55, anzahl: [2, 6] }] }] },
+  /** Strandräuber mit Säbel: Stufe 30, wie Banditen, Wrack und Klippenhöhlen (G1, G3) */
+  strandraeuber_saebel: { name: "Strandräuber", stufe: 30, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 52, tempo: 3.2, angriffswert: { nah: 32, fern: 0, magie: 0 }, abwehr: { nah: 28, fern: 26, magie: 20 }, r: 0.4,
+    angriff: { name: "Säbelhieb", art: "nah", schaden: [1, 6], takt: 2.4, reich: 1.5, aushol: 0 },
+    v2: { staerke: 40, geschick: 36, defense: 28, magie: 5, ticks: 4, abwehr: { nah: 10, fern: 5, magie: 0 } },
+    info: "Was das Meer anspült, gehört ihnen – und was die Straße bringt, nehmen sie sich.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [5, 12] }] }, { wurf: [{ g: "garn", chance: 15, anzahl: [3, 8] }, { g: "heiltrank", chance: 5 }] }, { wurf: [{ g: "@selten:Schwert", chance: 100 / 128 }] }] },
+  /** Strandräuber mit Armbrust: Stufe 32, Fernkampf */
+  strandraeuber_armbrust: { name: "Strandräuber", stufe: 32, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 48, tempo: 3.0, angriffswert: { nah: 10, fern: 36, magie: 0 }, abwehr: { nah: 24, fern: 32, magie: 20 }, r: 0.4,
+    angriff: { name: "Bolzen", art: "fern", schaden: [1, 7], takt: 3, reich: 6, aushol: 0 },
+    v2: { fernkampf: 55, geschick: 25, staerke: 15, defense: 28, magie: 5, ticks: 6, abwehr: { nah: 0, fern: 15, magie: 0 } },
+    info: "Er hockt hinter Treibholz und wartet, bis jemand den Kopf hebt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [5, 12] }] }, { wurf: [{ g: "garn", chance: 15, anzahl: [3, 8] }, { g: "heiltrank", chance: 5 }] }, { wurf: [{ g: "@selten:Armbrust", chance: 100 / 128 }] }] },
+  /** Mangrovenlurch: Stufe 38, leichtes Gift, Mangroven */
+  mangrovenlurch: { name: "Mangrovenlurch", stufe: 38, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 75, tempo: 2.8, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 35, fern: 30, magie: 25 }, r: 0.55,
+    angriff: { name: "Schnappen", art: "nah", schaden: [1, 8], takt: 2.5, reich: 1.5, aushol: 0 }, gift: { chance: 0.2, jeSek: 1, dauer: 5 },
+    v2: { staerke: 55, geschick: 40, defense: 35, magie: 5, ticks: 5, abwehr: { nah: 10, fern: 5, magie: 0 } },
+    info: "Ein Lurch, halb so lang wie ein Boot, schleimig und still. Sein Biss brennt noch lange nach.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [8, 16] }] }, { wurf: [{ g: "leder_weich", chance: 15, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 128 }] }] },
+  /** Der Wrackkapitän: Stufe 40, Geist, Mini-Boss in der Kajüte (Instanz wrack_kajuete, G3); ruft Strandräuber */
+  wrackkapitaen: { name: "Der Wrackkapitän", stufe: 40, bild: "img/echtzeit/bandit.webp", hoehe: 130, lp: 200, tempo: 3.0, angriffswert: { nah: 48, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 40, magie: 35 }, r: 0.5, untot: true, boss: true, wiederkehr: 999999,
+    angriff: { name: "Geistersäbel", art: "nah", schaden: [1, 12], takt: 2.5, reich: 1.7, aushol: 0 },
+    v2: { staerke: 75, geschick: 55, defense: 45, magie: 30, staerkeBonus: 20, ticks: 5, abwehr: { nah: 20, fern: 20, magie: 0 } },
+    info: "Der Kapitän des Wracks. Er ist mit seinem Schiff untergegangen – und hat es nie verlassen.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [120, 240] }] }, { wurf: [{ g: "seelenlicht", chance: 50, anzahl: [3, 6] }] },
+      { wurf: [{ g: "@selten", chance: 100 / 16 }, { g: "@episch", chance: 100 / 64 }, { g: "@legendaer", chance: 100 / 800 }] }] },
 } as Record<string, MonsterDef>);
 
 

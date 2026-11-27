@@ -292,6 +292,111 @@
      6989.5
     ]
    ]
+  },
+  {
+   "id": "kielmund_kai",
+   "name": "Am Kai von Kielmund",
+   "art": "hering",
+   "region": "fl_186_225",
+   "aktiv": 2,
+   "felder": [
+    [
+     6383.5,
+     7310.5
+    ],
+    [
+     6382.5,
+     7310.5
+    ],
+    [
+     6384.5,
+     7310.5
+    ]
+   ]
+  },
+  {
+   "id": "moewenbucht_steg",
+   "name": "Die Möwenbucht",
+   "art": "hering",
+   "region": "fl_186_211",
+   "aktiv": 2,
+   "felder": [
+    [
+     6189.5,
+     7158.5
+    ],
+    [
+     6188.5,
+     7158.5
+    ],
+    [
+     6190.5,
+     7158.5
+    ]
+   ]
+  },
+  {
+   "id": "leuchtturm_klippe",
+   "name": "Kehrwasser unter dem Leuchtturm",
+   "art": "klippenbarsch",
+   "region": "fl_186_211",
+   "aktiv": 2,
+   "felder": [
+    [
+     6150.5,
+     7105.5
+    ],
+    [
+     6149.5,
+     7105.5
+    ],
+    [
+     6151.5,
+     7105.5
+    ]
+   ]
+  },
+  {
+   "id": "wrack_strand",
+   "name": "Am Wrack",
+   "art": "seeaal",
+   "region": "fl_186_225",
+   "aktiv": 2,
+   "felder": [
+    [
+     6273.5,
+     7258.5
+    ],
+    [
+     6272.5,
+     7258.5
+    ],
+    [
+     6274.5,
+     7258.5
+    ]
+   ]
+  },
+  {
+   "id": "mangroven_wasser",
+   "name": "Wasserwege der Mangroven",
+   "art": "seeaal",
+   "region": "fl_201_225",
+   "aktiv": 2,
+   "felder": [
+    [
+     6506.5,
+     7590.5
+    ],
+    [
+     6505.5,
+     7590.5
+    ],
+    [
+     6507.5,
+     7590.5
+    ]
+   ]
   }
  ],
  "wurmacker": {

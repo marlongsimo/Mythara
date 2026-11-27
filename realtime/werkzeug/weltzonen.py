@@ -20,6 +20,18 @@ import subprocess
 US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"],
                                cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])  # die Quelle meldet zuerst ihren Umfang
 BESONDERS = {
+    # Phase 10 (#92): Klippenhöhlen (Untergrund, Welt #82) – Strandräuber im Schmugglerversteck, Krabben im Gezeitenbecken; der Wrackkapitän in der Kajüte (Instanz wrack_kajuete)
+    "klippenhoehlen": {"leine": 10, "wandern": 2,
+                       "lager": [("strandraeuber_saebel", 11442, 9618), ("strandraeuber_armbrust", 11444, 9614), ("strandraeuber_saebel", 11470, 9616), ("strandraeuber_armbrust", 11468, 9614),
+                                 ("riesenkrabbe", 11450, 9645), ("strandkrabbe", 11448, 9643)]},
+    # Phase 10 (#92): Smaragdküste (Festland-Kacheln) – Krabben am Strand und Wrack, Seevögel an den Klippen, Strandräuber am Wrack, Lurche in den Mangroven.
+    # WARTEN wie Phase 8/9: erst wirksam, wenn das Festland Kampfgebiet wird
+    "fl_186_211": {"leine": 12, "wandern": 3,
+                   "lager": [("strandkrabbe", 6230, 7150), ("strandkrabbe", 6228, 7148), ("strandkrabbe", 6230, 7148),
+                             ("seevogel", 6160, 7060), ("seevogel", 6158, 7058), ("seevogel", 6140, 7110)]},
+    "fl_186_225": {"leine": 12, "wandern": 3,
+                   "lager": [("riesenkrabbe", 6290, 7262), ("strandraeuber_saebel", 6288, 7260), ("strandraeuber_armbrust", 6290, 7260), ("strandraeuber_saebel", 6292, 7260)]},
+    "fl_201_225": {"leine": 12, "wandern": 3, "lager": [("mangrovenlurch", 6500, 7580), ("mangrovenlurch", 6498, 7578), ("mangrovenlurch", 6500, 7578)]},
     # Phase 9 (#86): die Glutsande (Festland-Kacheln der Welt #79) – Sandkriecher in den Dünen, Glutskorpione an der Salzpfanne, Karawanenräuber am Kanal (F1).
     # WARTEN wie Phase 8: Festland-Kacheln sind noch kein Kampfgebiet – die Lager wirken, wenn das Festland Teil der Kampfwelt wird
     "fl_216_211": {"leine": 12, "wandern": 3,

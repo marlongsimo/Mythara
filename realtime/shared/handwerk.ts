@@ -169,6 +169,11 @@ fisch("muehlbarsch", 10, 50, "Fisch");
 fisch("moorhecht", 20, 80, "Fisch");
 fisch("wels", 45, 140, "Fisch"); /* Phase 7 (#40) */
 fisch("glutwels", 65, 220, "Fisch"); /* Phase 9 (#86): Kochen 65 */
+/* Phase 10 (#92): Küstenfische und -gerichte. Räucherhering in der Räucherhütte der Möwenbucht (Wartezeit statt Anbrennen, nach G4) */
+fisch("hering", 20, 60, "Fisch"); fisch("klippenbarsch", 35, 100, "Fisch"); fisch("seeaal", 45, 140, "Fisch");
+dazu({ id: "raeucherhering", station: "raeucherhuette", ergebnis: "raeucherhering", level: 25, zutaten: [{ g: ["fisch_hering_roh"], n: 1 }], xp: 70, ticks: 2, stufe: 0, gruppe: "Räuchern", warten: 180 });
+dazu({ id: "barsch_salzkruste", station: "feuer", ergebnis: "barsch_salzkruste", level: 40, zutaten: [{ g: ["fisch_klippenbarsch_roh"], n: 1 }, { g: ["salz"], n: 1 }], xp: 130, ticks: 5, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_klippenbarsch_verbrannt" });
+dazu({ id: "aalsuppe", station: "kessel", ergebnis: "aalsuppe", level: 50, zutaten: [{ g: ["fisch_seeaal_roh"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 170, ticks: 6, stufe: 0, gruppe: "Suppe", verbrannt: "suppe_verbrannt" });
 dazu({ id: "glutwels_salzkruste", station: "herd", ergebnis: "glutwels_salzkruste", level: 65, zutaten: [{ g: ["fisch_glutwels_roh"], n: 1 }, { g: ["salz"], n: 2 }], xp: 260, ticks: 6, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_glutwels_verbrannt" });
 /* Phase 7 (#40): D3 Welspastete am Herd (Kochen 45), D1 Kettenglieder am Amboss (Schmieden 45, Quest-Rezept: 1 Splittereisenbarren → 1 Glied) */
 dazu({ id: "welspastete", station: "herd", ergebnis: "welspastete", level: 45, zutaten: [{ g: ["fisch_wels_roh"], n: 1 }, { g: ["mehl"], n: 1 }], xp: 160, ticks: 6, stufe: 0, gruppe: "Pastete", verbrannt: "fisch_wels_verbrannt" });
