@@ -1,8 +1,0 @@
-{
-  "id": "gegner.heidewolf",
-  "name": "Heidewolf",
-  "kategorie": "gegner",
-  "aktuell": "v001",
-  "status": "v001 (Fahle Weiten): ruhe, gehen, laufen, angriff (Sprungbiss), treffer, tod – fabrik/ostufer_tiere.py, Spieldatei img/figuren-echt3d/heidewolf3d.glb",
-  "herkunft": "in Blender aus Grundformen gebaut"
-}

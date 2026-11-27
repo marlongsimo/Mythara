@@ -1,8 +1,0 @@
-{
-  "id": "wegelagerer.knueppel",
-  "name": "Wegelagerer mit Knüppel",
-  "kategorie": "gegner",
-  "aktuell": "v001",
-  "status": "v001: ruhe, gehen, laufen, angriff_axt, block, treffer, tod – img/figuren-echt3d/wegelagerer_knueppel3d.glb",
-  "herkunft": "bandit3d.schlaeger"
-}

@@ -1,8 +1,0 @@
-{
-  "id": "raeuber.saebel",
-  "name": "Karawanenräuber mit Krummsäbel (St. 50)",
-  "kategorie": "gegner",
-  "aktuell": "v001",
-  "status": "v001: ruhe, gehen, laufen, angriff, block, treffer, tod",
-  "herkunft": "bandit3d"
-}
