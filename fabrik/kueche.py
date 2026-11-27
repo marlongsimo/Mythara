@@ -1,13 +1,14 @@
 """Mythara Fabrik – Gegenstände für Fischen und Kochen in Blender bauen (als glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   python3 fabrik/kueche.py -- <art> <ziel.glb>
-  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt | salz | glutwels_salzkruste | raeucherhering | barsch_salzkruste | aalsuppe | hasenfleisch | wildschweinfleisch | wolfsfleisch | hasenbraten | rinderbraten | wildschweinbraten | wolfsgulasch | fleisch_verbrannt
+  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt | salz | glutwels_salzkruste | raeucherhering | barsch_salzkruste | aalsuppe | hasenfleisch | wildschweinfleisch | wolfsfleisch | hasenbraten | rinderbraten | wildschweinbraten | wolfsgulasch | fleisch_verbrannt | wildbret | wildbretbraten
 
 wuermer: Holzschälchen mit Erde und rosa Würmern · fischsuppe: Holzschale, helle Brühe, Fischstücke, Kräuter, Löffel ·
 bauerneintopf: Tonschale, braune Soße, Fleisch, Möhren, Kartoffeln · kuhfleisch: rotes Stück mit Fettrand und Knochen ·
 mehl: Leinensack, zugebunden, Mehl obenauf und daneben · krug_wasser: Tonkrug mit Henkel, Wasser oben · kessel: eiserner Kessel mit Bügel.
 Phase 9: salz (offener Beutel Salz mit Kristallen) · glutwels_salzkruste (Glutwels in aufgebrochener Salzkruste auf dem Tonteller).
 Süden (#121): hasenfleisch · wildschweinfleisch · wolfsfleisch (Form des Kuhfleischs) · hasenbraten · rinderbraten · wildschweinbraten (auf dem Tonteller) · wolfsgulasch (Schale des Bauerneintopfs)
+Rucksackbilder (#166): wildbret (mageres, dunkelrotes Stück mit Knochen) · wildbretbraten (Scheiben wie der Rinderbraten, dunkler, mit Preiselbeeren)
 Phase 10: raeucherhering (zwei Räucherheringe auf dem Brett) · barsch_salzkruste (Klippenbarsch in Salzkruste) · aalsuppe (Holzschale mit Aalstücken).
 """
 import math, os, random, sys
@@ -72,21 +73,21 @@ elif ART in ("fischsuppe", "bauerneintopf", "wolfsgulasch"):
         for i in range(4): kugel((random.uniform(-.05, .05), random.uniform(-.05, .05), z + 0.004), 0.011, mat("moehre", (225, 120, 35), 0.5), (1.6, 0.9, 0.9), 8)
         for i in range(4): kugel((random.uniform(-.05, .05), random.uniform(-.05, .05), z + 0.004), 0.014, mat("kartoffel", (225, 200, 130), 0.6), (1, 1, 0.8), 10)
         for i in range(6): kugel((random.uniform(-.06, .06), random.uniform(-.06, .06), z + 0.006), 0.005, mat("kraut", (60, 130, 40), 0.6), (1.6, 0.7, 0.3), 6)
-elif ART in ("hasenfleisch", "wildschweinfleisch", "wolfsfleisch"):                               # Süden #121: Form des Kuhfleischs, je Tier eigene Größe und Farbe
+elif ART in ("hasenfleisch", "wildschweinfleisch", "wolfsfleisch", "wildbret"):                               # Süden #121: Form des Kuhfleischs, je Tier eigene Größe und Farbe
     G_, FL, FE_, KN_ = {"hasenfleisch": (0.7, (214, 118, 108), (240, 220, 205), True), "wildschweinfleisch": (1.05, (140, 38, 34), (230, 214, 196), False),
-                        "wolfsfleisch": (0.95, (118, 36, 34), (205, 190, 180), True)}[ART]
+                        "wolfsfleisch": (0.95, (118, 36, 34), (205, 190, 180), True), "wildbret": (1.0, (104, 28, 34), (214, 196, 184), True)}[ART]
     bpy.ops.mesh.primitive_cylinder_add(vertices=40, radius=0.07 * G_, depth=0.04 * G_, location=(0, 0, 0.02 * G_)); o = glatt(bpy.context.object); o.scale = (1.35, 1.0, 1); o.data.materials.append(mat("fleisch_" + ART, FL, 0.45))
     for v in o.data.vertices: v.co.x += 0.008 * G_ * math.sin(v.co.y * 60); v.co.y += 0.006 * G_ * math.sin(v.co.x * 50)
     if ART == "wildschweinfleisch":                                                                        # Schwarte mit Borsten
         dreh("schwarte", [(0.071 * G_, 0.0), (0.082 * G_, 0.006), (0.082 * G_, 0.036 * G_), (0.071 * G_, 0.042 * G_)], mat("schwarte", (70, 50, 40), 0.9)).scale = (1.35, 1, 1)
         for i in range(30): a = random.uniform(0, 6.3); rohr([(0.083 * G_ * 1.35 * math.cos(a), 0.083 * G_ * math.sin(a), 0.03 * G_), (0.09 * G_ * 1.35 * math.cos(a), 0.09 * G_ * math.sin(a), 0.038 * G_)], 0.0015, mat("borste", (30, 24, 20), 0.9), 4)
     else: dreh("fett", [(0.071 * G_, 0.0), (0.075 * G_, 0.004), (0.075 * G_, 0.036 * G_), (0.071 * G_, 0.04 * G_)], mat("fett_" + ART, FE_, 0.5)).scale = (1.35, 1, 1)
-    for i in range(6 if ART == "wolfsfleisch" else 12):                                                     # Marmorierung (Wolf mager)
+    for i in range(6 if ART in ("wolfsfleisch", "wildbret") else 12):                                                     # Marmorierung (Wolf mager)
         a = random.uniform(0, 6.3); r = random.uniform(0.01, 0.055) * G_
         o = kugel((r * 1.3 * math.cos(a), r * math.sin(a), 0.04 * G_), 0.004, mat("fett_" + ART, FE_), (random.uniform(1.5, 3), 0.7, 0.15), 8); o.rotation_euler.z = random.uniform(0, 3.14)
     if KN_:
         rohr([(-0.11 * G_, 0.0, 0.02 * G_), (-0.08 * G_, 0.0, 0.02 * G_), (-0.05 * G_, 0.0, 0.02 * G_)], 0.011 * G_, mat("knochen", (240, 230, 205), 0.5)); kugel((-0.11 * G_, 0, 0.02 * G_), 0.018 * G_, mat("knochen", (240, 230, 205)), (1, 1.2, 1), 10)
-elif ART in ("hasenbraten", "rinderbraten", "wildschweinbraten"):                                   # Süden #121: Braten auf dem flachen Tonteller (wie Barsch in Salzkruste)
+elif ART in ("hasenbraten", "rinderbraten", "wildschweinbraten", "wildbretbraten"):                                   # Süden #121: Braten auf dem flachen Tonteller (wie Barsch in Salzkruste)
     TON_ = mat("tonteller", (120, 62, 36), 0.75); KRUSTE_ = mat("bratenkruste", (128, 66, 30), 0.45); INNEN = mat("bratenfleisch", (196, 110, 96), 0.55)
     SOSSE = mat("bratensosse", (90, 46, 22), 0.25); MOE = mat("moehre", (225, 120, 35), 0.5); KART = mat("kartoffel", (225, 200, 130), 0.6); KR = mat("kraut", (60, 130, 40), 0.6)
     bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=0.15, depth=0.012, location=(0, 0, 0.006)); t = bpy.context.object; t.data.materials.append(TON_)
@@ -97,12 +98,18 @@ elif ART in ("hasenbraten", "rinderbraten", "wildschweinbraten"):               
             o = kugel((x, y, 0.035), 0.035, KRUSTE_, (1.6, 1.0, 0.8), 14); o.rotation_euler.z = a
             rohr([(x - 0.05 * math.cos(a), y - 0.05 * math.sin(a), 0.03), (x - 0.085 * math.cos(a), y - 0.085 * math.sin(a), 0.03)], 0.008, mat("knochen", (240, 230, 205), 0.5))
         for k in range(3): kugel((0.08, -0.06 + 0.04 * k, 0.022), 0.012, MOE, (1.8, 0.8, 0.8), 8).rotation_euler.z = 0.5
-    elif ART == "rinderbraten":                                                                            # aufgefächerte Scheiben: braune Kruste, rosa Kern
+    elif ART in ("rinderbraten", "wildbretbraten"):                                                                            # aufgefächerte Scheiben: braune Kruste, rosa Kern
         for k in range(4):
             x = -0.06 + k * 0.03
             bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.045, depth=0.012, location=(x, 0.0, 0.03 + 0.004 * k), rotation=(0, math.radians(70), 0)); o = bpy.context.object; o.scale = (1, 1.3, 1); o.data.materials.append(INNEN)
             ring((x, 0.0, 0.03 + 0.004 * k), 0.045, 0.006, KRUSTE_, (0, math.radians(70), 0), (1, 1.3, 1))
-        for x, y in ((0.08, 0.05), (0.09, -0.04), (0.06, 0.08)): kugel((x, y, 0.028), 0.018, KART, (1, 1, 0.85), 10)
+        if ART == "wildbretbraten":                                                                    # dunkleres Wildfleisch, Preiselbeeren statt Kartoffeln
+            for o in bpy.context.scene.objects:
+                if o.data and hasattr(o.data, "materials") and o.data.materials and o.data.materials[0] == INNEN: o.data.materials[0] = mat("wildbret_innen", (150, 62, 60), 0.55)
+            for k in range(9): kugel((0.075 + random.uniform(-0.02, 0.02), random.uniform(-0.05, 0.05), 0.024), 0.008, mat("preiselbeere", (170, 20, 30), 0.3), n=8)
+            kugel((0.06, 0.07, 0.026), 0.012, KR, (2.2, 0.6, 0.3), 8)
+        else:
+            for x, y in ((0.08, 0.05), (0.09, -0.04), (0.06, 0.08)): kugel((x, y, 0.028), 0.018, KART, (1, 1, 0.85), 10)
     else:                                                                                                  # Wildschweinbraten: Rollbraten mit Kruste (Rautenmuster), Apfel
         o = dreh("braten", [(0, 0), (0.05, 0), (0.055, 0.04), (0.05, 0.075), (0, 0.08)], KRUSTE_, 24); o.scale = (1.5, 1, 0.8); o.location = (-0.01, 0, 0.012)
         for k in range(5): ring((-0.01 - 0.06 + 0.03 * k, 0, 0.045), 0.052, 0.004, mat("garn", (230, 220, 200), 0.8), (0, math.radians(90), 0), (1, 1, 0.8))
