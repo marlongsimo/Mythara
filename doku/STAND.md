@@ -21,7 +21,7 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | 8 | Der Weg nach Grauwacht: Fahle Weiten (W3), Grauwacht im Wiederaufbau, Quests E1–E4, Wachtrüstung | ✅ live (27.11., main e53962ed) – alle Quests im Spiel; Welt-Tests zum Durchspielen folgen (Quests) – **bitte testen** |
 | 9 | Glut und Strom: Glutsande (W2), Glutbrunn, Quests F1–F4, Quer-Quest „Die Karte des Boten“ | ✅ live (27.11., main e53962ed) – alle Quests im Spiel; Welt-Tests zum Durchspielen folgen (Quests) – **bitte testen** |
 | 10 | Salz und Segel: Smaragdküste (W4), Kielmund, Quests G1–G4, Fischen an der Küste | ✅ live (27.11., main e53962ed) – alle Quests im Spiel; Welt-Tests zum Durchspielen folgen (Quests) – **bitte testen** |
-| 11 | Über den Pass: Hochlande (W5), Hauptort Steinhag, Bergwerk, Almen, Hochpass – Gegner 46–58 | 🟡 Vorarbeit **live** (Orte, Bergwerk, 145 Bäume/162 Adern, Bewohner, Läden, Tiere); Block H (H1–H7, Grumhold + drei Rüstungs-Bosse) wartet auf Freigabe – `doku/konzepte/phase-11.md` |
+| 11 | Über den Pass: Hochlande (W5), Hauptort Steinhag, Bergwerk, Almen, Hochpass – Gegner 46–58 | 🟡 Vorarbeit **live** (Orte, Bergwerk, 145 Bäume/162 Adern, Bewohner, Läden, Tiere); Block H (H1–H4 + Nebenquest, drei Hüter) **freigegeben**, in Arbeit (#159–#162) – `doku/konzepte/phase-11.md` |
 | Süden | Dörfer, Arbeits- und Gegnerplätze, kurze Quests S1–S9 entlang der Südstraße | ✅ live (27.11.): Orte, Gegner, Fleisch/Gerichte, Reisende, S1–S9 |
 | — | Ganze Welt als Kampfwelt, Gegnerplätze über die ganze Welt (#122, #130), 10 neue Gegner aus Modellen des Nutzers (#138) | ✅ live: Kampfwelt, 10 neue Gegner, Streifgebiete (#143), Orte Haferstedt/Netzbucht/Sandquell (#140/#141), 158 Holz-/Erzstellen (#142) |
 

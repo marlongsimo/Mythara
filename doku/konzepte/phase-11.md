@@ -60,7 +60,7 @@ Ziel: von **jedem Ort** und von **jedem Weg** aus ist in kurzer Zeit etwas zu tu
 
 Gegnerplätze (533) und Streifgebiete bleiben; Arbeitsplätze in Gruppen (3–6), nicht auf Wegen/Orten/Questorten; Erreichbarkeit per Test.
 
-## Block H – Quests der Hochlande (Entwurf)
+## Block H – Quests der Hochlande (vom Nutzer freigegeben 27.11.)
 
 Alle mit **Querverbindung** zu bekannten Orten (Kanon „Quests über Regionsgrenzen“). Bosse nach der Boss-Regel (#116): vor der Quest leer, in der Quest allein und schwächer, danach öffentlich oder eigene Instanz.
 
@@ -81,14 +81,14 @@ Alle mit **Querverbindung** zu bekannten Orten (Kanon „Quests über Regionsgre
 | **Die Frostwitwe** (Eismagierin) | Eishöhle am Hochpass | Fernkampf (Eiswand fängt Geschosse) | **Nahkampf** | friert Bodenfelder ein (verlangsamt, wer zu lange steht, erstarrt); Eissplitter-Wächter; Frostnova (angezeigt) | **Magie-Rüstung Stufe 70** (Kapuze, Robe, Rock) |
 
 **Rüstung Stufe 70:** etwa **+8 % über Mythisch (65)**, **Set-Bonus** bei 3 Teilen (Nahkampf +2 Stärke; Fernkampf +2 Fernkampf-Stärke; Magie +2 % Magieschaden – neu). Richtwerte wie im Vorschlag `gipfelgericht.md`. Namen der Sätze offen (Vorschlag: Steinvogt-Platte, Sturmfeder, Frostschleier).
-**Drops:** jeder Hüter nur **seinen** Satz, etwa **1 : 40 je Teil** in der starken Fassung (Vorschlag), kein Pech-Schutz, handelbar (Vorschlag). Dazu immer Splitter, hochstufige Erze/Barren, Wildbret.
+**Drops:** jeder Hüter nur **seinen** Satz, **insgesamt 1 : 75 je Sieg** in der starken Fassung, überhaupt ein Teil zu bekommen (Entscheidung des Nutzers); welches Teil, wird gleich verteilt gewürfelt, kein Pech-Schutz, handelbar (Vorschlag). Dazu immer Splitter, hochstufige Erze/Barren, Wildbret.
 **Die Waffen der Stufe 70** (Echoschneide, Seelenbogen, Seelenfokus) gibt es **nur im Minispiel Rissgrube** (Entscheidung des Nutzers, 27.11.) – nicht bei den Hütern.
 
 ## Was der Nutzer liefern bzw. entscheiden muss
 
 1. **Freigabe Block H** (H1–H4 + Nebenquest) und Namen (Steinhag, Grumhold, Sturmschwinge, Frostwitwe, Quest-Titel, Namen der Rüstungssätze).
 2. **Modelle** der drei Hüter und der drei Rüstungssätze: vom Nutzer (Blender) oder Figuren aus Vorlagen (Grumhold aus dem Bergtroll, Sturmschwinge aus dem Klippenadler, Frostwitwe aus Menschenfigur + Eis-Material).
-3. **Drop-Chance** der Rüstung (Vorschlag 1 : 40 je Teil).
+3. ~~Drop-Chance~~ – entschieden: insgesamt 1 : 75 je Sieg.
 4. Optional: eigene Wünsche für Läden in Steinhag (sonst nur vorhandene Waren).
 
 ## Wer macht was
