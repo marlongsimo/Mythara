@@ -1,0 +1,10 @@
+{
+  "id": "waffe.seelenbogen",
+  "name": "Seelenbogen",
+  "kategorie": "waffe",
+  "stufe": 70,
+  "art": "Bogen",
+  "aktuell": "v001",
+  "status": "v001: Meshy-Modell des Nutzers (27.11.2026, quelle/meshy.glb), ausgerichtet mit fabrik/waffe_ausrichten.py; Teil waffe.seelenbogen an basemann3d/basefrau3d (Griff wie waffe.bogen), Rucksackbild img/objekte3d/ausruestung/stufe70/seelenbogen.webp – Werte und Fähigkeiten folgen (Nutzer)",
+  "herkunft": "Meshy (Nutzer)"
+}
