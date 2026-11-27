@@ -27,7 +27,8 @@ try {
   check(await sprich(ute, C1, "gisbert", "weiden_frage") && erl(ute, C1, "gisbert"), "Gisbert Ast weiß, welche Moorweiden taugen (quer: Obstwiesen)");
   { let i = 0; const t0 = Date.now(); while (anzahl(ute, "stamm_moorweide") < 4 && Date.now() - t0 < 120000) { const [id, x, y] = WEIDEN[i++ % 3]; await sammeln(ute, "holz", id, x, y, "stamm_moorweide", anzahl(ute, "stamm_moorweide") + 1, 20000); }
     check(erl(ute, C1, "weiden") && anzahl(ute, "stamm_moorweide") >= 4, `Vier Moorweiden gefällt (${anzahl(ute, "stamm_moorweide")})`); }
-  { const r = await herstellen(ute, 6310.7, 6703.5, "brueckenplanke", 4); check(r === "ok" && anzahl(ute, "brueckenplanke") === 4, `Vier Brückenplanken an der Werkbank neben Harm (${r}, ${anzahl(ute, "brueckenplanke")})`); }
+  { let r = "ok"; for (let i = 0; i < 4 && r === "ok"; i++) r = await herstellen(ute, 6310.7, 6703.5, "brueckenplanke"); /* ein Quest-Rezept stellt je Auftrag so viele her, wie die Quest noch braucht – hier zählt erst Harm */
+    check(r === "ok" && anzahl(ute, "brueckenplanke") === 4, `Vier Brückenplanken an der Werkbank neben Harm (${r}, ${anzahl(ute, "brueckenplanke")})`); }
   check(await sprich(ute, C1, "harm", "planken_geben") && erl(ute, C1, "planken") && anzahl(ute, "brueckenplanke") === 0, "Harm nimmt die vier Planken");
   check(await sprich(ute, C1, "ulf", "tannen") && erl(ute, C1, "pech") && anzahl(ute, "meilerpech") === 1, "Köhler Ulf brennt Meilerpech für fünf Tannenstämme");
   { const t = await objekt(ute, C1, "c1_bruecke"); check(erl(ute, C1, "bruecke") && an(C1, ute, "bruecke_aschenwerth"), `Brücke geflickt, sie trägt (Schalter bruecke_aschenwerth) – ${t.slice(0, 40)}`); }
