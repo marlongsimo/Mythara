@@ -1,0 +1,16 @@
+{
+ "id": "federmutter_kammer",
+ "name": "Die Kammer unter dem Steinkreis",
+ "untertitel": "Federmutter Ravena (Instanz)",
+ "ursprung": [
+  360,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 7,
+ "ebene": "untergrund"
+}

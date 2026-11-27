@@ -8,6 +8,7 @@
  *                eingestürzte Türme, ein überwachsener Friedhof mit Gruft, ein Menhirkreis, tote Bäume, Irrlichter und Nebel.
  * Aufruf (im Ordner realtime): node werkzeug/welt/aschenwerth.mjs     danach: node werkzeug/welt/bauen.mjs westried aschenwerth
  */
+import { EINGANG as FEDERMUTTER_EINGANG } from "./federmutter.mjs";
 import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { WELT } from "./laden.mjs";
@@ -110,6 +111,7 @@ lesen.push({ id: "heiligtum_tor", x: H.tor, y: H.y1 + 2, text: "Das eingestürzt
 lesen.push({ id: "altar", x: H.tor, y: H.y0 + 7.4, text: "Ein Altar aus schwarzem Stein, rissig von Frost und Feuer. In der Mulde liegt Asche, die nie kalt zu werden scheint." });
 lesen.push({ id: "gruft", x: FRIEDHOF.x, y: FRIEDHOF.y + 0.6, text: "Eine Gruft, halb im Torf versunken. Die Tür ist mit Ketten verschlossen – von innen.", tat: "abstieg", knopf: "In die Gruft hinabsteigen", ziel: RABENGRUND_UNTEN });   /* Eingang zum Rabengrund, das Spiel öffnet ihn erst nach C2 */
 lesen.push({ id: "steinkreis", x: KREIS.x, y: KREIS.y + 2.4, text: "Sieben Steine im Kreis, mit Spiralen bedeckt wie die beim Schrein im Rabenmoor. Hier ist es still, selbst die Frösche schweigen." });
+lesen.push({ id: "federmutter_abstieg", x: KREIS.x, y: KREIS.y - 3.6, text: "Zwischen den Spiralsteinen klafft ein Spalt im Torf. Darunter: Federn, Kälte, ein Rascheln.", tat: "federmutter_kammer", knopf: "Hinabsteigen", ziel: FEDERMUTTER_EINGANG });   /* #132: Kammer der Federmutter (federmutter.mjs) */
 lesen.push({ id: "steinkreis_2", x: KREIS2.x, y: KREIS2.y + 1.2, text: "Ein zweiter, kleinerer Kreis: fünf Steine, die Spiralen tiefer eingeschlagen. Der Torf zwischen ihnen ist festgetreten, als tanze hier jemand." });
 for (const s of SPIRALSTEINE) lesen.push({ id: s.id, x: s.x, y: s.y, text: "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar." });
 
