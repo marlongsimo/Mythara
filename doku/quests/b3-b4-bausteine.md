@@ -7,12 +7,12 @@ Der Prüfer (`test/questbau.test.mjs`) prüft sie mit und listet fehlende Bauste
 
 | # | Baustein | Warum | Vorschlag |
 |---|---|---|---|
-| 1 | **Figur in mehreren Quests** | Othmar Rehn ist Figur in Quest 1 (Abgabe), B3 (Abgabe) und B4 (Geber). `motorReden` nimmt heute die erste Quest, die die Figur nennt. Damit sprechen B3 und B4 nie | Die Figur gehört zu mehreren Quests. Beim Ansprechen gewinnt die erste Quest, deren Rede etwas zu tun hat (läuft und nicht nur die Standard-Rede, oder ist neu, die Voraussetzungen sind erfüllt und sie lässt sich annehmen). Sonst die letzte fertige. Im Browser ein Modell für alle. Der Prüfer meldet das als „Figur in mehreren Quests“ |
-| 2 | **Ereignis für die Wellen** | B4 „halle“: 2 Wellen à 3 in der Versammlungshalle | Wenn eine Welle fällt, meldet der Server `{ art: "erlegen", typ: "unterschlupf_welle" }`. Der Schritt zählt 2 |
+| 1 | ~~Figur in mehreren Quests~~ | erledigt mit #48 (`questbau.figurQuest`, Zweig `claude/systeme`): Othmar spricht in Quest 1, B3 und B4 | – |
+| 2 | **Wellen in der Halle** | B4 „halle“: 2 Wellen à 3 in einer eigenen Kopie der Versammlungshalle | Schalter `halle_instanz` (läuft, Schlüssel erledigt, Halle offen; #61). Die Integration trägt die Halle mit `welle: "unterschlupf_welle"` in `shared/bosse.ts` ein, jede gefallene Welle meldet `erlegen` `unterschlupf_welle` |
 | 3 | **Instanz der Kammer** | B4 „rotmantel“: Kammer `rotmantel_kammer` je Spieler | Schalter `rotmantel_instanz` (Quest läuft) → `kammer_tuer` führt in die eigene Kopie. Danach `rotmantel_oeffentlich` (Quest fertig) → gemeinsame Kammer mit dem Mini-Boss |
 | 4 | **Tür mit Schlüssel** | Tür zum Beutelager (Felder 10270–10275 \| 9644) | Schalter `beutelager_offen`: an mit dem Schlüssel (Schritt erledigt) oder nach der Quest |
 | 5 | **Boss Rotmantel** | B4 „rotmantel“ | Gegnertyp `rotmantel`, meldet `erlegen`. Werte und Phasen laut `phase-4.md` |
-| 6 | **Bedingte Beute** | Bedingungen in der Quest (`beute`) | `b3_karrenbrief` (Späher; **garantiert beim 5.**: chance 100 ab Zähler 4), `b4_schluessel` (Wachstubenführer), `b4_rabenbrief` (Rotmantel in der Instanz, chance 100) |
+| 6 | **Bedingte Beute** | Bedingungen in der Quest (`beute`) | `b3_karrenbrief` (Späher, kleine Chance) und `b3_karrenbrief_sicher` (ab Zähler 4, **Chance 100**: garantiert beim 5., #61), `b4_schluessel` (Wachstubenführer), `b4_rabenbrief` (Rotmantel in der Instanz, chance 100) |
 | 7 | **Schalter** | B3 | `leiter_unterschlupf` (Leiter in der Hütte erst nach den Kisten), `gisbert_aepfel` (Gisbert verkauft Äpfel) |
 
 Gegnertypen: `bandit_spaeher` (B3 zählt 5), dazu `bandit_schlaeger`, `bandit_armbrust` für die Wachstube und die Wellen. Die Modelle kommen aus #19: `bandit3d_spaeher`, `bandit3d_schlaeger`, `bandit3d_armbrust`, `banditenboss3d`.

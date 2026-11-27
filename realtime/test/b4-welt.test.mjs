@@ -129,7 +129,7 @@ try {
   zo = await kampf(TA, OTH.x + 1, OTH.y, "weidenhain"); await schlaf(1000);
   await stelle(ida, OTH.x + 1, OTH.y); await rede(ida, "othmar"); await sag(ida, "othmar", "zeigen"); const vorSp = anzahl(ida, "splitter");
   d = await sag(ida, "othmar", "wahl_schwert"); await schlaf(600); zo.ws.close();
-  check(stand(ida, Q).phase === "fertig" && anzahl(ida, "eidschwert") === 1 && anzahl(ida, "rabenbrief") === 0 && anzahl(ida, "silberleuchter") === 0, "Abschluss: das seltene Schwert gewählt, Brief und Leuchter abgegeben");
+  check(stand(ida, Q).phase === "fertig" && anzahl(ida, "eidschwert") === 1 && anzahl(ida, "rabenbrief") === 1 && anzahl(ida, "silberleuchter") === 0, "Abschluss: das seltene Schwert gewählt, Leuchter abgegeben, den Rabenbrief behält Ida (für C1)");
   check(anzahl(ida, "splitter") === vorSp + 500 && ABSCHLUSS.some((a) => a.p_quest === Q.id && a.p_xp && a.p_xp.staerke === 1000), `Lohn: 500 Splitter, je 1.000 XP (Splitter +${anzahl(ida, "splitter") - vorSp})`);
   await schlaf(500); z = await kampf(TA, 10448, 9624, "rotmantel_kammer"); await schlaf(2000);
   check(z.w.some((w) => w[2] === "rotmantel" && !w[10]), "Danach steht Rotmantel öffentlich in der Kammer"); z.ws.close();
