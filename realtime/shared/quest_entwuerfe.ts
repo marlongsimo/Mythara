@@ -28,6 +28,15 @@ import { QUEST_G2 } from "./quest_g2";
 import { QUEST_G3 } from "./quest_g3";
 import { QUEST_G4 } from "./quest_g4";
 import { QUEST_KRAEUTERHOF } from "./quest_kraeuterhof";
+import { QUEST_S1 } from "./quest_s1";
+import { QUEST_S2 } from "./quest_s2";
+import { QUEST_S3 } from "./quest_s3";
+import { QUEST_S4 } from "./quest_s4";
+import { QUEST_S5 } from "./quest_s5";
+import { QUEST_S6 } from "./quest_s6";
+import { QUEST_S7 } from "./quest_s7";
+import { QUEST_S8 } from "./quest_s8";
+import { QUEST_S9 } from "./quest_s9";
 
 /** Entwurf → worauf er wartet (Issue) */
 export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
@@ -56,4 +65,13 @@ export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_G3, wartet: "Phase 10: Wrack, Klippenhöhlen mit Instanz, Wrackkapitän" },
   { q: QUEST_G4, wartet: "Phase 10: Möwenbucht, Räucherhütte, Rezepte fischernetz und raeucherhering" },
   { q: QUEST_KRAEUTERHOF, wartet: "Phase 10: Kräuterhof mit Kessel; Kräuterkunde (5c)" },
+  { q: QUEST_S1, wartet: "Süden (#124): Heckenhof (#120), Rike (#121), Gegner kraehenschwarm" },
+  { q: QUEST_S2, wartet: "Süden (#124): Summweide (#120), Imme (#121), Ringelblume (Kräuterkunde 5c), Imme als Händlerin" },
+  { q: QUEST_S3, wartet: "Süden (#124): Schilfsee und Reusenkate (#120), Ebba (#121), seltener Fang alter_hecht, Trophäe" },
+  { q: QUEST_S4, wartet: "Süden (#124): Erlengrund mit Sägemühle (#120), Bodo (#121), Rezept eisenbaender auch für S4, Werkbank mit Schalter" },
+  { q: QUEST_S5, wartet: "Süden (#124): Lehmfurt mit Steinbruch und Furt (#120), Kuno (#121), Trittsteine mit Schalter" },
+  { q: QUEST_S6, wartet: "Süden (#124): Heckenhof mit Pferch (#120), Tamme und Schafe (#121), Folgen für Questfiguren" },
+  { q: QUEST_S7, wartet: "Süden (#124): Wegkapelle mit Wiesenlichtern (#120), Odila (#121), Heilstelle kreuzstein" },
+  { q: QUEST_S8, wartet: "Süden (#124): Erlengrund-Wald und Waldsenke (#120), Gegner graupelz mit seltener Wiederkehr, Trophäe" },
+  { q: QUEST_S9, wartet: "Süden (#124): die Orte und Figuren des Südens (#120, #121)" },
 ];
