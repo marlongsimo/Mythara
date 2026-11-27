@@ -6,7 +6,7 @@
 import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende";
 import TROEDLER_STANDORTE from "../welt/troedler_standorte.json";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}`;
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}`;
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
   gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string;
@@ -117,12 +117,53 @@ ort("troedler_sandquell", { name: "Karawanenlager", spruch: "Wir kaufen, was sic
 ort("sandquell_quelle", { name: "Quellwächterin", spruch: "", haendler: "Ayla Dünenruh", modell: "npc.glutbrunn_frau", x: 7386, y: 6745, nurReden: true,
   gruss: "Die Quelle gehört niemandem. Darum wache ich über sie.", tschuess: "Geh mit Wasser.",
   zeilen: ["Seit hundert Jahren ist sie nicht versiegt. Wer Sand hineinwirft, bekommt es mit mir zu tun.", "Nachts hört man die Dünen singen. Das ist nur der Wind. Meistens."] });
+/* ───── Phase 11 (doku/konzepte/phase-11.md): die Hochlande – Steinhag, Erzberg, Passwacht, Hohe Alm, Einsiedelei. Plätze der Welt (welt/hochlande_orte.json),
+   Modelle nach der Zuordnung von Figuren (#148). Läden nur mit vorhandenen Waren; die Läden schaltet später H1 frei (vorerst offen). ───── */
+/* Steinhag, Bergstadt am See */
+ort("steinhag_taverne", { name: "Zum Grubenlicht", spruch: "Warm, laut und voller Bergleute.", haendler: "Ruprecht Talg", modell: "npc.alter_bauer", x: 7010, y: 5879.8,
+  gruss: "Setz dich zu den Kumpeln! Eintopf, Braten, Bier – such dir was aus.", tschuess: "Glück auf!",
+  zeilen: ["Seit die Trolle auf den Wegen sind, kommen keine Erzwagen mehr durch. Das Bier geht trotzdem weg.", "Herd und Kessel stehen jedem offen, der selbst kochen kann."],
+  waren: [W("brot", 8), W("bauerneintopf", 20), W("wildbretbraten", 20), W("fischsuppe", 15), W("krug", 5)] });
+ort("steinhag_schmiede", { name: "Hammer und Stollen", spruch: "Werkzeug für Berg und Wald.", haendler: "Konrad Hauer", modell: "npc.schmied", x: 7006, y: 5917.6,
+  gruss: "Eine Hacke, die durch Sterneisen geht? Die schmiedest du selbst. Für den Anfang hab ich das hier.", tschuess: "Glück auf – und pass auf die Trolle auf.",
+  zeilen: ["Esse und Amboss stehen dir offen. Hammer nicht vergessen."], waren: [W("holzbeil_training", 10), W("holzbeil_einfach", 350), W("spitzhacke_training", 10), W("spitzhacke_einfach", 350), W("hammer", 10), W("sichel", 10)] });
+ort("steinhag_allerlei", { name: "Bergmarkt", spruch: "Was man in den Bergen braucht.", haendler: "Jakob Kiesel", modell: "npc.haendler_sued", x: 6982, y: 5897.4, blick: [0, -1], vor: [6982, 5894.6],
+  gruss: "Krüge, Angeln, Würmer, Äpfel aus dem Tal – alles den Pass herauf getragen.", tschuess: "Komm wieder, wenn die Wagen fahren.", waren: [W("apfel", 3), W("krug", 6), W("angelrute", 10), W("wurm", 2), W("sichel", 10), W("leeres_flaeschchen", 2)] });
+ort("steinhag_kraeuter", { name: "Bergkräuter und Tränke", spruch: "Gegen Kälte und Wunden.", haendler: "Edda Moos", modell: "npc.kauffrau", x: 6998, y: 5897.4, blick: [0, -1], vor: [6998, 5894.6],
+  gruss: "Oben am Pass wird's kalt. Ein Trank wärmt – von innen.", tschuess: "Bleib warm.", waren: [W("kleiner_heiltrank", 35), W("heiltrank", 150), W("leeres_flaeschchen", 2)] });
+ort("troedler_steinhag", { name: "Trödelstand", spruch: "Ich nehm alles – fast alles.", haendler: "Die Trödlerin", modell: "npc.troedlerin", x: 6974, y: 5894, blick: [1, 0], troedler: true,
+  gruss: "Was die Bergleute nicht brauchen, kauf ich. Und was du nicht brauchst, auch.", tschuess: "Komm wieder, wenn der Rucksack drückt." });
+ort("steinhag_vogt", { name: "Bergvögtin", spruch: "", haendler: "Hilde Erzgrund", modell: "npc.kauffrau", x: 6991, y: 5880, nurReden: true,
+  gruss: "Willkommen in Steinhag. Wir haben Erz, Holz und Fisch – und seit Wochen zu viele Trolle.", tschuess: "Glück auf.",
+  zeilen: ["Die Passwacht hält kaum noch. Wenn du nach Norden willst, sprich mit den Wächtern am Hochpass.", "Das Bergwerk am Erzberg ist das älteste der Splitterlande. Was unten liegt, weiß keiner so genau."] });
+/* Bergwerk am Erzberg, Passwacht am Hochpass, Hohe Alm, Einsiedelei am Spiegelsee, Brücke zur Furt */
+ort("hochland_steiger", { name: "Steiger", spruch: "", haendler: "Steiger Wendel", modell: "npc.bergmann", x: 7124, y: 5811, blick: [1, 0], nurReden: true,
+  gruss: "Glück auf! Unten liegt Sterneisen, Splittereisen – und ganz tief Ureisen. Wenn du Mut hast.", tschuess: "Glück auf.",
+  zeilen: ["In der großen Halle haben wir Knochen gefunden. Zu groß für einen Menschen. Seitdem geht keiner mehr allein runter."] });
+ort("hochland_bergmann", { name: "Bergmann", spruch: "", haendler: "Bergmann Lutz", modell: "npc.bergmann2", x: 7131, y: 5812, blick: [-1, 0], nurReden: true,
+  gruss: "Die Lore? Die schiebt sich nicht von allein. Hilf mit oder geh aus dem Weg.", tschuess: "Glück auf.", zeilen: ["Das Licht am Helm geht aus, wenn's unten zieht. Dann heißt es: rauf, und zwar schnell."] });
+ort("hochland_bergfrau", { name: "Bergfrau", spruch: "", haendler: "Bergfrau Gesche", modell: "npc.bergfrau", x: 7116, y: 5821.5, nurReden: true,
+  gruss: "Zwanzig Jahre unter Tage. Die Berge reden, wenn man zuhört.", tschuess: "Glück auf.", zeilen: ["Kupfer und Eisen gibt's hier vorn am Eingang. Für das Gute musst du tiefer."] });
+ort("hochland_passwaechterin", { name: "Passwächterin", spruch: "", haendler: "Wächterin Brun", modell: "npcfrau3d", x: 6964, y: 5608.5, nurReden: true,
+  gruss: "Halt. Hinter dem Pass beginnt die Kälte. Wer weitergeht, tut es auf eigene Gefahr.", tschuess: "Bleib auf dem Weg.",
+  zeilen: ["Das Feuer brennt Tag und Nacht. Wärm dich, bevor du weitergehst."] });
+ort("hochland_passwaechter", { name: "Passwächter", spruch: "", haendler: "Wächter Ansgar", modell: "npc.passwaechter", x: 6955, y: 5607.6, nurReden: true,
+  gruss: "Drei von uns, und der Pass ist breit. Die Trolle wissen das.", tschuess: "Mögen die Steine stillhalten.", zeilen: ["Die Schranke hält niemanden auf. Sie ist für die Ordnung."] });
+ort("hochland_sennerin", { name: "Sennerin", spruch: "", haendler: "Sennerin Afra", modell: "npc.sennerin", x: 7199.5, y: 6001.5, nurReden: true,
+  gruss: "Grüß dich! Frische Milch, Käse im Rad – aber erst, wenn die Ziegen wieder da sind.", tschuess: "Pfiat di.", zeilen: ["Der Kessel ist für den Käse. Wenn du was kochen willst – bitte, aber mach ihn sauber."] });
+ort("hochland_senn", { name: "Senn", spruch: "", haendler: "Senn Bartl", modell: "npc.hirte1", x: 7185, y: 6002.4, nurReden: true,
+  gruss: "Hier oben ist die Luft so dünn, dass man die Gedanken hört.", tschuess: "Pfiat di.", zeilen: ["Die Murmeltiere pfeifen, wenn ein Adler kommt. Hör auf sie."] });
+ort("hochland_einsiedler", { name: "Einsiedler", spruch: "", haendler: "Der Einsiedler", modell: "npc.hirte2", x: 7341, y: 5665.4, nurReden: true,
+  gruss: "Ah, ein Wanderer. Setz dich. Der See erzählt dir mehr als ich.", tschuess: "Geh mit den Steinen.",
+  zeilen: ["Ich schreibe die Geschichte der Hochlande auf. Sie ist älter als die Splitter.", "Am Grauhorn stehen Steinmänner. Jeder erzählt von einem, der nicht zurückkam."] });
+ort("hochland_furtwache", { name: "Wache an der Furt", spruch: "", haendler: "Wache Odo", modell: "stadtwache3d", x: 6725, y: 5763, blick: [1, 0], nurReden: true,
+  gruss: "Die Brücke trägt. Drüben beginnen die Hochlande – und die Trolle.", tschuess: "Pass auf dich auf.", zeilen: ["Früher kamen hier jeden Tag Erzwagen aus Steinhag. Seit Wochen keiner mehr."] });
 export const LADEN_LISTE = Object.values(LAEDEN);
 /** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */
 export const ladenOffen = (L: Laden, stand: (id: string) => string): boolean => !L.wenn || stand(L.wenn.quest) === L.wenn.phase;
 /** Symbol je Laden (Minikarte und Karte) */
 export const LADEN_ZEICHEN: Record<string, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
-  haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺", graufurt_alma: "🥧" };
+  haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺", graufurt_alma: "🥧", steinhag_taverne: "🍲", steinhag_schmiede: "🔨", steinhag_allerlei: "🧺", steinhag_kraeuter: "🧪" };
 for (const L of LADEN_LISTE) if (L.troedler) LADEN_ZEICHEN[L.id] = "🪙"; /* Trödler (#88) */
 /* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */
 /** Ein Händler zahlt für seine eigenen Waren so viel von seinem Preis; der Trödler so viel vom Grundwert */

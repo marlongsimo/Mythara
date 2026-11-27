@@ -25,11 +25,13 @@ export const BANKSCHALTER: Bankschalter[] = [
 ];
 export const istBankschalter = (id: string): boolean => BANKSCHALTER.some((b) => b.id === id);
 
-export interface Bankier { id: string; name: string; titel: string; ort: "waldmark" | "weidenhain"; modell: string; x: number; y: number; blick: [number, number]; schalter: string }
+export interface Bankier { id: string; name: string; titel: string; ort: "waldmark" | "weidenhain"; modell: string; x: number; y: number; blick: [number, number]; schalter: string; /** Name der Bank im Fenster (sonst nach ort) */ bank?: string }
 /** Die Bankmitarbeiter, je einer hinter jedem Schalter (Figuren-Fabrik: npc.bankmitarbeiter), Blick nach Süden zum Kunden */
 export const BANKIERS: Bankier[] = [
   { id: "lorenz", name: "Lorenz Gülden", titel: "Bankmitarbeiter", ort: "waldmark", modell: "npc.bankmitarbeiter", x: 6476.6, y: 6427.3, blick: [0, 1], schalter: "bankschalter_links" },
   { id: "edwin", name: "Edwin Pfennig", titel: "Bankmitarbeiter", ort: "waldmark", modell: "npc.bankmitarbeiter", x: 6479.4, y: 6427.3, blick: [0, 1], schalter: "bankschalter_rechts" },
+  /* Phase 11: die Bank von Steinhag (Welt: steinhag_bank, Platz aus welt/hochlande_orte.json); ort gilt für die eine Kampfwelt wie in der Waldmark */
+  { id: "steinhag_bank", name: "Greta Pfand", titel: "Bankmitarbeiterin", ort: "waldmark", modell: "npc.bankmitarbeiter", x: 6969, y: 5880, blick: [0, 1], schalter: "steinhag_bank", bank: "Bank von Steinhag" },
   { id: "mattis", name: "Mattis Schober", titel: "Bankmitarbeiter", ort: "weidenhain", modell: "npc.bankmitarbeiter", x: 6436.5, y: 6675.1, blick: [0, 1], schalter: "bankschalter" },
 ];
 
