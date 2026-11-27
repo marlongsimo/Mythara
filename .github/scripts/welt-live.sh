@@ -30,7 +30,8 @@ if not l: print("fehlt"); sys.exit()
 l.sort(key=lambda r: r.get("started_at") or "", reverse=True); r = l[0]
 print(r.get("conclusion") or "laeuft")' || echo unbekannt
 }
-ERZEUGT='^(echtzeit/(spiel\.js|index\.html|figurentest\.(html|js))|realtime/shared/weltzonen\.ts|realtime/server/dist/.*|realtime/test/sim\.gebaut\.mjs)$'
+# alles direkt unter echtzeit/ schreibt realtime/build.mjs (Seiten mit Versionsstempel, Skripte, Manifest)
+ERZEUGT='^(echtzeit/[^/]+|realtime/shared/weltzonen\.ts|realtime/server/dist/.*|realtime/test/sim\.gebaut\.mjs)$'
 NAME="marlongsimo"; MAIL="208301081+marlongsimo@users.noreply.github.com"
 REPO_URL="${REPO_URL:-https://github.com/${GITHUB_REPOSITORY:-marlongsimo/mythara}.git}"
 ARBEIT="${ARBEIT:-$(mktemp -d)}"
