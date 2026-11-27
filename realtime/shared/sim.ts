@@ -34,7 +34,7 @@ export type Eingabe =
 
 interface Dauer { t: number; jeSek: number; von: number; art: "blut" | "gift" | "brand" }
 /** Boss-Baukasten: Stand eines Bosskampfes (Phase, Grundangriffe und Sekunden seit der letzten Ansage, benutzte Heilorte „Phase:Nr“, Beginn des Kampfes) */
-interface BossLauf { phase: number; angriffe: number; t: number; heil: Record<string, number>; seit?: number; /** Schweben bis zu dieser Simulationszeit */ schwebBis?: number; /** eingegraben bis (BossPhase.eingraben) */ grabBis?: number; /** #160: nach dem Sturzflug am Boden bis */ bodenBis?: number; /** #175: Schwächefenster bis */ schwachBis?: number }
+interface BossLauf { phase: number; angriffe: number; t: number; heil: Record<string, number>; seit?: number; /** Schweben bis zu dieser Simulationszeit */ schwebBis?: number; /** eingegraben bis (BossPhase.eingraben) */ grabBis?: number; /** #160: nach dem Sturzflug am Boden bis */ bodenBis?: number; /** #175: Schwächefenster bis */ schwachBis?: number; /** #178: Sekunden je Ansage nach sek (Index in der Phase) – jede hat ihren eigenen Zähler */ tJe?: Record<number, number> }
 interface Spec { /** #151: der Nachhall selbst (löst keine Passive aus) */ nachhall?: boolean; grund: number; min?: number; /* Höchst- und Mindestschaden; ohne min: FAEHIG_MIN × grund */ art: Schadensart; flaeche?: boolean; wucht?: boolean; sicher?: boolean; mal?: number; untot?: number; nach?: string } // sicher: kein Trefferwurf (räumlich getroffen)
 /** #122/#130: Gegner weiter als so viele Felder von jedem Helden ruhen (werden nicht gerechnet); jeder Spieler sieht Wesen bis SICHT_WEIT Felder */
 /** #143 Streifgebiet: so weit (Felder) liegt das nächste Ziel höchstens, Pause dazwischen (s) */
@@ -608,7 +608,7 @@ export class Sim {
     if (!ziel) { if (w.lp >= w.max && (L.phase || L.seit !== undefined)) this.bossZurueck(w); return false; } /* abgeschüttelt und wieder heil: alles von vorn */
     if (L.seit === undefined) L.seit = this.zeit;
     const soll = Math.min(B.phasen.length - 1, phaseBei(B, w.lp / w.max));
-    while (L.phase < soll) { L.phase++; const N = B.phasen[L.phase]; this.ev.push(N.text ? { a: "bossphase", id: w.id, nr: L.phase, text: N.text } : { a: "bossphase", id: w.id, nr: L.phase }); if (N.ruf) this.rufen(w, N.ruf); L.angriffe = 0; L.t = 0;
+    while (L.phase < soll) { L.phase++; L.tJe = {}; const N = B.phasen[L.phase]; this.ev.push(N.text ? { a: "bossphase", id: w.id, nr: L.phase, text: N.text } : { a: "bossphase", id: w.id, nr: L.phase }); if (N.ruf) this.rufen(w, N.ruf); L.angriffe = 0; L.t = 0;
       if (N.eingraben && N.eingraben > 0) { L.grabBis = this.zeit + N.eingraben; w.pfad = []; w.aushol = 0; this.ev.push({ a: "eingraben", id: w.id, t: N.eingraben }); }
       if (N.schweben && N.schweben > 0) { L.schwebBis = this.zeit + N.schweben; w.pfad = []; w.aushol = 0; this.ev.push({ a: "schweben", id: w.id, t: N.schweben }); } else L.schwebBis = undefined; }
     if (L.schwebBis !== undefined && L.schwebBis <= this.zeit) { L.schwebBis = undefined; const T = B.phasen[L.phase].landen; this.ev.push(T ? { a: "landen", id: w.id, text: T } : { a: "landen", id: w.id }); }
@@ -619,8 +619,9 @@ export class Sim {
       const hx = H.x - this.ursprung[0], hy = H.y - this.ursprung[1];
       if (Math.hypot(w.x - hx, w.y - hy) <= H.r) { L.heil[k] = (L.heil[k] || 0) + 1; w.trinkT = H.dauer ?? 1.5; w.trinkN = H.menge; w.pfad = []; this.ev.push(H.text ? { a: "trinken", id: w.id, t: w.trinkT, text: H.text } : { a: "trinken", id: w.id, t: w.trinkT }); return true; }
       if (H.hingehen) { w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, { x: hx, y: hy }); w.neuWeg = 0.5; } return true; } }
-    for (const A of P.ansagen || []) { if (!(A.alle ? L.angriffe >= A.alle : A.sek ? L.t >= A.sek : false)) continue;
-      if (A.alle) L.angriffe = 0; else L.t = 0; /* #160: je Auslöser eigener Zähler – eine Ansage nach Sekunden setzt die nach Angriffen nicht zurück */ const I = w.instanz ? this.inst.get(w.instanz) : undefined, o = this.ursprung, R = I ? [I.def.feld[0] - o[0], I.def.feld[1] - o[1], I.def.feld[2] - o[0], I.def.feld[3] - o[1]] as [number, number, number, number] : undefined;
+    const tJe = L.tJe || (L.tJe = {}); (P.ansagen || []).forEach((A, i) => { if (A.sek) tJe[i] = (tJe[i] || 0) + DT; });
+    for (const [i, A] of (P.ansagen || []).entries()) { if (!(A.alle ? L.angriffe >= A.alle : A.sek ? (tJe[i] || 0) >= A.sek : false)) continue;
+      if (A.alle) L.angriffe = 0; else { L.t = 0; tJe[i] = 0; } /* #160: je Auslöser eigener Zähler – eine Ansage nach Sekunden setzt die nach Angriffen nicht zurück */ const I = w.instanz ? this.inst.get(w.instanz) : undefined, o = this.ursprung, R = I ? [I.def.feld[0] - o[0], I.def.feld[1] - o[1], I.def.feld[2] - o[0], I.def.feld[3] - o[1]] as [number, number, number, number] : undefined;
       const t = (A.vorlauf ?? ANSAGE_VORLAUF) * KAMPF_TICK, felder = ansageFelder(A, w.x, w.y, ziel.x, ziel.y, R).filter(([x, y]) => !fels(Math.floor(x), Math.floor(y)) && (!A.deckung || frei(w, { x, y }))); /* Deckung: Windschatten hinter Säulen bleibt frei */
       const zone = new Set(felder.map(([x, y]) => Math.floor(x) + "," + Math.floor(y))), drin = this.feinde(w).filter((o) => zone.has(Math.floor(o.x) + "," + Math.floor(o.y))).map((o) => o.id);
       w.ansage = { t, felder, a: A, drin }; w.pfad = []; w.aushol = 0; w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); this.ev.push(A.bewegung ? { a: "ansage", id: w.id, name: A.name, felder, t, b: A.bewegung } : { a: "ansage", id: w.id, name: A.name, felder, t }); return true; }

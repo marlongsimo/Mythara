@@ -74,12 +74,12 @@ BOSSE.wrackkapitaen = { typ: "wrackkapitaen", art: "schlaeger", phasen: [
 INSTANZEN.push({ id: "wrack_kajuete", name: "Die Kajüte des Kapitäns", feld: [11488, 9600, 11519, 9631], schalter: "wrackkapitaen_kajuete", danach: "wrackkapitaen_danach",
   gegner: [{ art: "wrackkapitaen", x: 11504.5, y: 9614.5 }], text: "Die Tür der Kajüte fällt ins Schloss. Am Kartentisch sitzt jemand, durch den man hindurchsieht." });
 
-/* ───────── #178 (midgame-bosse.md): Tjark Sölde am Grenzposten (E3) – Schläger, schwach gegen Nahkampf. Ansturm in angezeigter Linie (ausweichen: zur Seite),
+/* ───────── #178 (midgame-bosse.md): Tjark Sölde am Grenzposten (E3) – Schläger, schwach gegen Nahkampf. Ansturm in angezeigter Linie (ausweichen: zur Seite; er bleibt dabei stehen – am Grenzposten trüge ihn der Sprung sonst mitten ins Lager),
    ab 60 % der Sammelruf: angezeigt geladen (4 s) – wer ihn mit genug Schaden unterbricht, bekommt das Schwächefenster; sonst eilt ein Deserteur herbei (E3 ist offene Welt ohne Quest-Fassung – daher milder als die Instanz-Bosse). ───────── */
 BOSSE.tjark = { typ: "tjark", art: "schlaeger", phasen: [
-  { ab: 1, ansagen: [{ name: "Ansturm", sek: 12, felder: "linie", weite: 6, vorlauf: 3, schaden: [5, 10], ansturm: true }] },
-  { ab: 0.6, text: "Tjark reißt das Horn an die Lippen!", ansagen: [{ name: "Ansturm", sek: 11, felder: "linie", weite: 6, vorlauf: 3, schaden: [5, 10], ansturm: true },
-    { name: "Sammelruf", sek: 14, felder: "keine", vorlauf: 8, schaden: [0, 0], unterbrechen: 8, ruf: { art: "deserteur_schwert", n: 1, weite: 3, text: "Ein Deserteur eilt herbei!" } }] } ] };
+  { ab: 1, ansagen: [{ name: "Ansturm", sek: 12, felder: "linie", weite: 6, vorlauf: 3, schaden: [4, 8] }] },
+  { ab: 0.6, text: "Tjark reißt das Horn an die Lippen!", ansagen: [{ name: "Ansturm", sek: 12, felder: "linie", weite: 6, vorlauf: 3, schaden: [4, 8] },
+    { name: "Sammelruf", sek: 18, felder: "keine", vorlauf: 8, schaden: [0, 0], unterbrechen: 8, ruf: { art: "deserteur_schwert", n: 1, weite: 3, text: "Ein Deserteur eilt herbei!" } }] } ] };
 
 /* ───────── Phase 9 (#86, F3): die Sandmutter in ihrer Kammer unter dem Tempel (Region tempel_kammer, Weltfelder 11360…11391 × 9600…9631) ─────────
    Gräbt sich ein (unangreifbar), ruft Sandkriecher, Treibsand auf angesagten Feldern. Instanz je Spieler, solange „sandmutter_kammer“ an ist (F3). */

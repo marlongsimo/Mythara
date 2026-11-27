@@ -87,6 +87,7 @@ TESTS=(
   hueter
   gegner-stufe
   gefahr
+  midgame-bosse
   zunft-rohstoffe
   zunft
   bank-orte

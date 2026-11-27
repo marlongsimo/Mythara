@@ -403,7 +403,7 @@ Object.assign(MONSTER, {
   /** Tjark Sölde: Anführer der Deserteure (E3, „besiegen“) – wie Rotmantel: Rundumschlag, ruft seine Leute, trinkt */
   tjark: { name: "Tjark Sölde", stufe: 46, bild: "img/echtzeit/bandit.webp", hoehe: 128, lp: 220, tempo: 3.2, angriffswert: { nah: 55, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 50, magie: 35 }, r: 0.5, boss: true, wiederkehr: 600,
     angriff: { name: "Zweihänder", art: "nah", schaden: [1, 13], takt: 3, reich: 1.9, aushol: 0 },
-    v2: { staerke: 95, geschick: 60, defense: 55, magie: 15, staerkeBonus: 12, ticks: 6, abwehr: { nah: -5, fern: 35, magie: 30 } /* #178: leichte Söldnerrüstung – schwach gegen Nahkampf */ },
+    v2: { staerke: 95, geschick: 60, defense: 55, magie: 15, staerkeBonus: 6, ticks: 6, abwehr: { nah: -5, fern: 35, magie: 30 } /* #178: leichte Söldnerrüstung – schwach gegen Nahkampf */ },
     info: "Der Anführer der Deserteure. Einst ein guter Wachtmann, sagen sie in Grauwacht.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [120, 220] }] }, { wurf: [{ g: "wachtstein", chance: 60, anzahl: [2, 4] }] }, { wurf: [{ g: "@selten", chance: 10 }, { g: "@episch", chance: 1 }] }] },
   /** Grabwächter: Stufe 48, Steinfigur der Grabkammern, Rundumschlag mit Ansage */
