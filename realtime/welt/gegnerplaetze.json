@@ -2538,8 +2538,8 @@
    "id": "gp_fl_216_155_164",
    "region": "fl_216_155",
    "land": "Die Frostkrone",
-   "x": 7052.5,
-   "y": 5388.5,
+   "x": 7054.5,
+   "y": 5391.5,
    "gegner": [
     "tundraelch"
    ],
@@ -3963,13 +3963,13 @@
    "id": "gp_fl_216_169_259",
    "region": "fl_216_169",
    "land": "Die Hochlande",
-   "x": 6952.5,
-   "y": 5490.5,
+   "x": 6953.5,
+   "y": 5492.5,
    "gegner": [
     "hochlandwidder"
    ],
    "modell": "hochlandwidder",
-   "anzahl": 3,
+   "anzahl": 2,
    "stufe": 52,
    "gelaende": "heide",
    "quelle": "vorhanden (Systeme)"
@@ -4878,7 +4878,7 @@
    "id": "gp_fl_201_169_320",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
-   "x": 6872.5,
+   "x": 6871.5,
    "y": 5558.5,
    "gegner": [
     "tundraelch"
@@ -5343,7 +5343,7 @@
    "id": "gp_fl_201_169_351",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
-   "x": 6852.5,
+   "x": 6854.5,
    "y": 5592.5,
    "gegner": [
     "tundraelch"
@@ -13938,13 +13938,13 @@
    "id": "gp_fl_246_183_924",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
-   "x": 7993.5,
-   "y": 6032.5,
+   "x": 7989.5,
+   "y": 6030.5,
    "gegner": [
     "klippenadler"
    ],
    "modell": "klippenadler",
-   "anzahl": 3,
+   "anzahl": 2,
    "stufe": 56,
    "gelaende": "küste",
    "quelle": "vorhanden (Systeme)"
@@ -43020,22 +43020,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_216_169_2863",
-   "region": "fl_216_169",
-   "land": "Die Hochlande",
-   "x": 6932.5,
-   "y": 5504.5,
-   "gegner": [
-    "steppenwolf"
-   ],
-   "modell": "steppenwolf",
-   "anzahl": 2,
-   "stufe": 46,
-   "gelaende": "heide",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_186_169_2864",
+   "id": "gp_fl_186_169_2863",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6235.5,
@@ -43050,22 +43035,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_169_2865",
-   "region": "fl_216_169",
-   "land": "Die Hochlande",
-   "x": 6950.5,
-   "y": 5514.5,
-   "gegner": [
-    "steppenwolf"
-   ],
-   "modell": "steppenwolf",
-   "anzahl": 1,
-   "stufe": 46,
-   "gelaende": "heide",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_231_169_2866",
+   "id": "gp_fl_231_169_2864",
    "region": "fl_231_169",
    "land": "Die Hochlande",
    "x": 7470.5,
@@ -43080,7 +43050,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2867",
+   "id": "gp_fl_216_169_2865",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7255.5,
@@ -43095,7 +43065,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2868",
+   "id": "gp_fl_216_169_2866",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7254.5,
@@ -43110,7 +43080,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2869",
+   "id": "gp_fl_216_169_2867",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7269.5,
@@ -43125,7 +43095,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2870",
+   "id": "gp_fl_216_169_2868",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7269.5,
@@ -43140,7 +43110,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_169_2871",
+   "id": "gp_fl_201_169_2869",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6727.5,
@@ -43155,7 +43125,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2872",
+   "id": "gp_fl_216_169_2870",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7170.5,
@@ -43170,7 +43140,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2873",
+   "id": "gp_fl_216_169_2871",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7168.5,
@@ -43185,7 +43155,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2874",
+   "id": "gp_fl_216_169_2872",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7165.5,
@@ -43200,7 +43170,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2875",
+   "id": "gp_fl_216_169_2873",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7153.5,
@@ -43215,7 +43185,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2876",
+   "id": "gp_fl_216_169_2874",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7152.5,
@@ -43230,7 +43200,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_169_2877",
+   "id": "gp_fl_186_169_2875",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6194.5,
@@ -43245,22 +43215,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_201_169_2878",
-   "region": "fl_201_169",
-   "land": "Die Frostkrone",
-   "x": 6790.5,
-   "y": 5650.5,
-   "gegner": [
-    "frostwolf"
-   ],
-   "modell": "frostwolf",
-   "anzahl": 3,
-   "stufe": 64,
-   "gelaende": "schnee",
-   "quelle": "vorhanden (Systeme)"
-  },
-  {
-   "id": "gp_fl_216_169_2879",
+   "id": "gp_fl_216_169_2876",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7350.5,
@@ -43275,7 +43230,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_169_2880",
+   "id": "gp_fl_186_169_2877",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6147.5,
@@ -43290,7 +43245,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_169_2881",
+   "id": "gp_fl_216_169_2878",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 7235.5,
@@ -43305,7 +43260,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_169_2882",
+   "id": "gp_fl_201_169_2879",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6790.5,
@@ -43320,7 +43275,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_169_2883",
+   "id": "gp_fl_186_169_2880",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6142.5,
@@ -43335,7 +43290,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_169_2884",
+   "id": "gp_fl_186_169_2881",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6054.5,
@@ -43350,7 +43305,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_169_2885",
+   "id": "gp_fl_186_169_2882",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6134.5,
@@ -43365,7 +43320,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_169_2886",
+   "id": "gp_fl_186_169_2883",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6132.5,
@@ -43380,7 +43335,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_169_2887",
+   "id": "gp_fl_201_169_2884",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6770.5,
@@ -43395,7 +43350,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_169_2888",
+   "id": "gp_fl_201_169_2885",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6889.5,
@@ -43410,7 +43365,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_169_2889",
+   "id": "gp_fl_186_169_2886",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6208.5,
@@ -43425,7 +43380,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_169_2890",
+   "id": "gp_fl_201_169_2887",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6888.5,
@@ -43440,7 +43395,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_169_2891",
+   "id": "gp_fl_186_169_2888",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6408.5,
@@ -43455,7 +43410,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_186_169_2892",
+   "id": "gp_fl_186_169_2889",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6408.5,
@@ -43470,7 +43425,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_186_169_2893",
+   "id": "gp_fl_186_169_2890",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6402.5,
@@ -43485,7 +43440,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_169_2894",
+   "id": "gp_fl_186_169_2891",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6401.5,
@@ -43500,7 +43455,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_186_169_2895",
+   "id": "gp_fl_186_169_2892",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6395.5,
@@ -43515,7 +43470,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_169_2896",
+   "id": "gp_fl_201_169_2893",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6508.5,
@@ -43530,7 +43485,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_169_2897",
+   "id": "gp_fl_201_169_2894",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6508.5,
@@ -43545,7 +43500,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_169_2898",
+   "id": "gp_fl_201_169_2895",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6587.5,
@@ -43560,7 +43515,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_169_2899",
+   "id": "gp_fl_201_169_2896",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6789.5,
@@ -43575,7 +43530,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_169_2900",
+   "id": "gp_fl_201_169_2897",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6795.5,
@@ -43590,7 +43545,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_169_2901",
+   "id": "gp_fl_186_169_2898",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6090.5,
@@ -43605,7 +43560,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_169_2902",
+   "id": "gp_fl_186_169_2899",
    "region": "fl_186_169",
    "land": "Die Fahlen Weiten",
    "x": 6198.5,
@@ -43620,7 +43575,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_201_169_2903",
+   "id": "gp_fl_201_169_2900",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6687.5,
@@ -43635,7 +43590,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_169_2904",
+   "id": "gp_fl_201_169_2901",
    "region": "fl_201_169",
    "land": "Die Frostkrone",
    "x": 6672.5,
@@ -43650,7 +43605,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_169_2905",
+   "id": "gp_fl_216_169_2902",
    "region": "fl_216_169",
    "land": "Die Hochlande",
    "x": 6913.5,
@@ -43665,7 +43620,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_183_2906",
+   "id": "gp_fl_231_183_2903",
    "region": "fl_231_183",
    "land": "Die Hochlande",
    "x": 7792.5,
@@ -43680,7 +43635,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_183_2907",
+   "id": "gp_fl_231_183_2904",
    "region": "fl_231_183",
    "land": "Die Hochlande",
    "x": 7832.5,
@@ -43695,7 +43650,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2908",
+   "id": "gp_fl_186_183_2905",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6090.5,
@@ -43710,7 +43665,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_201_183_2909",
+   "id": "gp_fl_201_183_2906",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6818.5,
@@ -43725,7 +43680,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_201_183_2910",
+   "id": "gp_fl_201_183_2907",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6826.5,
@@ -43740,7 +43695,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_183_2911",
+   "id": "gp_fl_201_183_2908",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6856.5,
@@ -43755,7 +43710,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_183_2912",
+   "id": "gp_fl_201_183_2909",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6648.5,
@@ -43770,7 +43725,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_183_2913",
+   "id": "gp_fl_201_183_2910",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6645.5,
@@ -43785,7 +43740,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_183_2914",
+   "id": "gp_fl_201_183_2911",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6638.5,
@@ -43800,7 +43755,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_183_2915",
+   "id": "gp_fl_201_183_2912",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6634.5,
@@ -43815,7 +43770,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_183_2916",
+   "id": "gp_fl_231_183_2913",
    "region": "fl_231_183",
    "land": "Die Hochlande",
    "x": 7644.5,
@@ -43830,7 +43785,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2917",
+   "id": "gp_fl_246_183_2914",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8172.5,
@@ -43845,7 +43800,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2918",
+   "id": "gp_fl_246_183_2915",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 7922.5,
@@ -43860,7 +43815,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2919",
+   "id": "gp_fl_186_183_2916",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6169.5,
@@ -43875,7 +43830,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_183_2920",
+   "id": "gp_fl_216_183_2917",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 6930.5,
@@ -43890,7 +43845,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2921",
+   "id": "gp_fl_186_183_2918",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6168.5,
@@ -43905,7 +43860,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_183_2922",
+   "id": "gp_fl_186_183_2919",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6168.5,
@@ -43920,7 +43875,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_246_183_2923",
+   "id": "gp_fl_246_183_2920",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8216.5,
@@ -43935,7 +43890,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2924",
+   "id": "gp_fl_246_183_2921",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8221.5,
@@ -43950,7 +43905,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2925",
+   "id": "gp_fl_246_183_2922",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8029.5,
@@ -43965,7 +43920,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2926",
+   "id": "gp_fl_246_183_2923",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8230.5,
@@ -43980,7 +43935,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2927",
+   "id": "gp_fl_246_183_2924",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8230.5,
@@ -43995,7 +43950,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2928",
+   "id": "gp_fl_186_183_2925",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6150.5,
@@ -44010,7 +43965,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_246_183_2929",
+   "id": "gp_fl_246_183_2926",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8127.5,
@@ -44025,7 +43980,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_183_2930",
+   "id": "gp_fl_216_183_2927",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 7132.5,
@@ -44040,7 +43995,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2931",
+   "id": "gp_fl_246_183_2928",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8067.5,
@@ -44055,7 +44010,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2932",
+   "id": "gp_fl_246_183_2929",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8066.5,
@@ -44070,7 +44025,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_183_2933",
+   "id": "gp_fl_216_183_2930",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 6955.5,
@@ -44085,7 +44040,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2934",
+   "id": "gp_fl_186_183_2931",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6111.5,
@@ -44100,7 +44055,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_183_2935",
+   "id": "gp_fl_216_183_2932",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 7391.5,
@@ -44115,7 +44070,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_183_2936",
+   "id": "gp_fl_216_183_2933",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 6950.5,
@@ -44130,7 +44085,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2937",
+   "id": "gp_fl_246_183_2934",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 7971.5,
@@ -44145,7 +44100,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2938",
+   "id": "gp_fl_246_183_2935",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8093.5,
@@ -44160,7 +44115,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_183_2939",
+   "id": "gp_fl_216_183_2936",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 6981.5,
@@ -44175,7 +44130,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_183_2940",
+   "id": "gp_fl_216_183_2937",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 7290.5,
@@ -44190,7 +44145,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2941",
+   "id": "gp_fl_246_183_2938",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8211.5,
@@ -44205,7 +44160,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2942",
+   "id": "gp_fl_246_183_2939",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8216.5,
@@ -44220,7 +44175,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2943",
+   "id": "gp_fl_246_183_2940",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8207.5,
@@ -44235,7 +44190,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2944",
+   "id": "gp_fl_246_183_2941",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8206.5,
@@ -44250,7 +44205,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2945",
+   "id": "gp_fl_246_183_2942",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8204.5,
@@ -44265,7 +44220,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2946",
+   "id": "gp_fl_246_183_2943",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8202.5,
@@ -44280,7 +44235,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_183_2947",
+   "id": "gp_fl_231_183_2944",
    "region": "fl_231_183",
    "land": "Die Hochlande",
    "x": 7436.5,
@@ -44295,7 +44250,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2948",
+   "id": "gp_fl_246_183_2945",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8144.5,
@@ -44310,7 +44265,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2949",
+   "id": "gp_fl_246_183_2946",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8197.5,
@@ -44325,7 +44280,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2950",
+   "id": "gp_fl_246_183_2947",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8148.5,
@@ -44340,7 +44295,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2951",
+   "id": "gp_fl_246_183_2948",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8033.5,
@@ -44355,7 +44310,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2952",
+   "id": "gp_fl_186_183_2949",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6152.5,
@@ -44370,7 +44325,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_183_2953",
+   "id": "gp_fl_186_183_2950",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6163.5,
@@ -44385,7 +44340,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_183_2954",
+   "id": "gp_fl_186_183_2951",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6134.5,
@@ -44400,7 +44355,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_183_2955",
+   "id": "gp_fl_201_183_2952",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6775.5,
@@ -44415,7 +44370,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_246_183_2956",
+   "id": "gp_fl_246_183_2953",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8047.5,
@@ -44430,7 +44385,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2957",
+   "id": "gp_fl_186_183_2954",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6136.5,
@@ -44445,7 +44400,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_246_183_2958",
+   "id": "gp_fl_246_183_2955",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8137.5,
@@ -44460,7 +44415,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2959",
+   "id": "gp_fl_186_183_2956",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6142.5,
@@ -44475,7 +44430,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_183_2960",
+   "id": "gp_fl_186_183_2957",
    "region": "fl_186_183",
    "land": "Die Fahlen Weiten",
    "x": 6144.5,
@@ -44490,7 +44445,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_183_2961",
+   "id": "gp_fl_216_183_2958",
    "region": "fl_216_183",
    "land": "Die Hochlande",
    "x": 6947.5,
@@ -44505,7 +44460,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2962",
+   "id": "gp_fl_246_183_2959",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8082.5,
@@ -44520,7 +44475,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_183_2963",
+   "id": "gp_fl_246_183_2960",
    "region": "fl_246_183",
    "land": "Der Drachenarm",
    "x": 8210.5,
@@ -44535,7 +44490,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_183_2964",
+   "id": "gp_fl_201_183_2961",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6808.5,
@@ -44550,7 +44505,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_183_2965",
+   "id": "gp_fl_201_183_2962",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6819.5,
@@ -44565,7 +44520,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_183_2966",
+   "id": "gp_fl_201_183_2963",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6822.5,
@@ -44580,7 +44535,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_183_2967",
+   "id": "gp_fl_201_183_2964",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6799.5,
@@ -44595,7 +44550,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_201_183_2968",
+   "id": "gp_fl_201_183_2965",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6824.5,
@@ -44610,7 +44565,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_201_183_2969",
+   "id": "gp_fl_201_183_2966",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6798.5,
@@ -44625,7 +44580,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_183_2970",
+   "id": "gp_fl_201_183_2967",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6826.5,
@@ -44640,7 +44595,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_183_2971",
+   "id": "gp_fl_201_183_2968",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6793.5,
@@ -44655,7 +44610,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_183_2972",
+   "id": "gp_fl_201_183_2969",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6830.5,
@@ -44670,7 +44625,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_201_183_2973",
+   "id": "gp_fl_201_183_2970",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6752.5,
@@ -44685,7 +44640,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_201_183_2974",
+   "id": "gp_fl_201_183_2971",
    "region": "fl_201_183",
    "land": "Die Fahlen Weiten",
    "x": 6789.5,
@@ -44700,7 +44655,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_nordsaum_2975",
+   "id": "gp_nordsaum_2972",
    "region": "nordsaum",
    "land": "nordsaum",
    "x": 6455.5,
@@ -44715,7 +44670,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_nordsaum_2976",
+   "id": "gp_nordsaum_2973",
    "region": "nordsaum",
    "land": "nordsaum",
    "x": 6714.5,
@@ -44730,7 +44685,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_graufurt_2977",
+   "id": "gp_graufurt_2974",
    "region": "graufurt",
    "land": "graufurt",
    "x": 6715.5,
@@ -44745,7 +44700,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_waldmark_2978",
+   "id": "gp_waldmark_2975",
    "region": "waldmark",
    "land": "waldmark",
    "x": 6488.5,
@@ -44760,7 +44715,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_2979",
+   "id": "gp_fl_216_198_2976",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7074.5,
@@ -44775,7 +44730,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_198_2980",
+   "id": "gp_fl_231_198_2977",
    "region": "fl_231_198",
    "land": "Die Glutsande",
    "x": 7472.5,
@@ -44790,7 +44745,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_198_2981",
+   "id": "gp_fl_231_198_2978",
    "region": "fl_231_198",
    "land": "Die Glutsande",
    "x": 7473.5,
@@ -44805,7 +44760,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_nordwald_2982",
+   "id": "gp_nordwald_2979",
    "region": "nordwald",
    "land": "nordwald",
    "x": 6350.5,
@@ -44820,7 +44775,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_231_198_2983",
+   "id": "gp_fl_231_198_2980",
    "region": "fl_231_198",
    "land": "Die Glutsande",
    "x": 7393.5,
@@ -44835,7 +44790,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_198_2984",
+   "id": "gp_fl_231_198_2981",
    "region": "fl_231_198",
    "land": "Die Glutsande",
    "x": 7392.5,
@@ -44850,7 +44805,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_198_2985",
+   "id": "gp_fl_216_198_2982",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7071.5,
@@ -44865,7 +44820,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_2986",
+   "id": "gp_fl_216_198_2983",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7390.5,
@@ -44880,7 +44835,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_waldweg_2987",
+   "id": "gp_waldweg_2984",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6394.5,
@@ -44895,7 +44850,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_graufurt_2988",
+   "id": "gp_graufurt_2985",
    "region": "graufurt",
    "land": "graufurt",
    "x": 6717.5,
@@ -44910,7 +44865,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_waldweg_2989",
+   "id": "gp_waldweg_2986",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6397.5,
@@ -44925,7 +44880,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_ostufer_2990",
+   "id": "gp_ostufer_2987",
    "region": "ostufer",
    "land": "ostufer",
    "x": 6911.5,
@@ -44940,7 +44895,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_2991",
+   "id": "gp_fl_216_198_2988",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 6918.5,
@@ -44955,7 +44910,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_2992",
+   "id": "gp_fl_216_198_2989",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 6982.5,
@@ -44970,7 +44925,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_198_2993",
+   "id": "gp_fl_216_198_2990",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 6924.5,
@@ -44985,7 +44940,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_2994",
+   "id": "gp_fl_216_198_2991",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7133.5,
@@ -45000,7 +44955,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_waldweg_2995",
+   "id": "gp_waldweg_2992",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6404.5,
@@ -45015,7 +44970,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_waldweg_2996",
+   "id": "gp_waldweg_2993",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6510.5,
@@ -45030,7 +44985,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_osthang_2997",
+   "id": "gp_osthang_2994",
    "region": "osthang",
    "land": "osthang",
    "x": 6632.5,
@@ -45045,7 +45000,7 @@
    "quelle": "vorhanden (bandit_spaeher)"
   },
   {
-   "id": "gp_fl_216_198_2998",
+   "id": "gp_fl_216_198_2995",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 6978.5,
@@ -45060,7 +45015,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_2999",
+   "id": "gp_fl_216_198_2996",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7171.5,
@@ -45075,7 +45030,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_waldweg_3000",
+   "id": "gp_waldweg_2997",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6406.5,
@@ -45090,7 +45045,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_waldweg_3001",
+   "id": "gp_waldweg_2998",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6473.5,
@@ -45105,7 +45060,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3002",
+   "id": "gp_fl_216_198_2999",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 6972.5,
@@ -45120,7 +45075,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_waldweg_3003",
+   "id": "gp_waldweg_3000",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6409.5,
@@ -45135,7 +45090,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_waldweg_3004",
+   "id": "gp_waldweg_3001",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6471.5,
@@ -45150,7 +45105,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_waldweg_3005",
+   "id": "gp_waldweg_3002",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6454.5,
@@ -45165,7 +45120,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_waldweg_3006",
+   "id": "gp_waldweg_3003",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6492.5,
@@ -45180,7 +45135,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_osthang_3007",
+   "id": "gp_osthang_3004",
    "region": "osthang",
    "land": "osthang",
    "x": 6614.5,
@@ -45195,7 +45150,7 @@
    "quelle": "vorhanden (bandit_spaeher)"
   },
   {
-   "id": "gp_fl_231_198_3008",
+   "id": "gp_fl_231_198_3005",
    "region": "fl_231_198",
    "land": "Die Glutsande",
    "x": 7492.5,
@@ -45210,7 +45165,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_waldweg_3009",
+   "id": "gp_waldweg_3006",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6434.5,
@@ -45225,7 +45180,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_ostufer_3010",
+   "id": "gp_ostufer_3007",
    "region": "ostufer",
    "land": "ostufer",
    "x": 6909.5,
@@ -45240,7 +45195,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_waldweg_3011",
+   "id": "gp_waldweg_3008",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6434.5,
@@ -45255,7 +45210,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_ostufer_3012",
+   "id": "gp_ostufer_3009",
    "region": "ostufer",
    "land": "ostufer",
    "x": 6909.5,
@@ -45270,7 +45225,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_graufurt_3013",
+   "id": "gp_graufurt_3010",
    "region": "graufurt",
    "land": "graufurt",
    "x": 6694.5,
@@ -45285,7 +45240,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_graufurt_3014",
+   "id": "gp_graufurt_3011",
    "region": "graufurt",
    "land": "graufurt",
    "x": 6693.5,
@@ -45300,7 +45255,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_198_3015",
+   "id": "gp_fl_186_198_3012",
    "region": "fl_186_198",
    "land": "Grenzland",
    "x": 6054.5,
@@ -45315,7 +45270,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_waldweg_3016",
+   "id": "gp_waldweg_3013",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6495.5,
@@ -45330,7 +45285,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3017",
+   "id": "gp_fl_216_198_3014",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7009.5,
@@ -45345,7 +45300,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_waldweg_3018",
+   "id": "gp_waldweg_3015",
    "region": "waldweg",
    "land": "waldweg",
    "x": 6512.5,
@@ -45360,7 +45315,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_aschenwerth_3019",
+   "id": "gp_aschenwerth_3016",
    "region": "aschenwerth",
    "land": "aschenwerth",
    "x": 6151.5,
@@ -45375,7 +45330,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_weidenhain_3020",
+   "id": "gp_weidenhain_3017",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6452.5,
@@ -45390,7 +45345,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3021",
+   "id": "gp_fl_216_198_3018",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7090.5,
@@ -45405,7 +45360,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_198_3022",
+   "id": "gp_fl_216_198_3019",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7132.5,
@@ -45420,7 +45375,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_3023",
+   "id": "gp_fl_216_198_3020",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7097.5,
@@ -45435,7 +45390,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_weidenhain_3024",
+   "id": "gp_weidenhain_3021",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6452.5,
@@ -45450,7 +45405,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3025",
+   "id": "gp_fl_216_198_3022",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7084.5,
@@ -45465,7 +45420,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_3026",
+   "id": "gp_fl_216_198_3023",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7099.5,
@@ -45480,7 +45435,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_198_3027",
+   "id": "gp_fl_216_198_3024",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7124.5,
@@ -45495,7 +45450,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_3028",
+   "id": "gp_fl_216_198_3025",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7081.5,
@@ -45510,7 +45465,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_216_198_3029",
+   "id": "gp_fl_216_198_3026",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7146.5,
@@ -45525,7 +45480,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_3030",
+   "id": "gp_fl_216_198_3027",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7079.5,
@@ -45540,7 +45495,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_rabenmoor_3031",
+   "id": "gp_rabenmoor_3028",
    "region": "rabenmoor",
    "land": "rabenmoor",
    "x": 6350.5,
@@ -45555,7 +45510,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_weidenhain_3032",
+   "id": "gp_weidenhain_3029",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6427.5,
@@ -45570,7 +45525,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_weidenhain_3033",
+   "id": "gp_weidenhain_3030",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6469.5,
@@ -45585,7 +45540,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3034",
+   "id": "gp_fl_216_198_3031",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7075.5,
@@ -45600,7 +45555,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_weidenhain_3035",
+   "id": "gp_weidenhain_3032",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6465.5,
@@ -45615,7 +45570,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_198_3036",
+   "id": "gp_fl_216_198_3033",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7149.5,
@@ -45630,7 +45585,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_aschenwerth_3037",
+   "id": "gp_aschenwerth_3034",
    "region": "aschenwerth",
    "land": "aschenwerth",
    "x": 6236.5,
@@ -45645,7 +45600,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_weidenhain_3038",
+   "id": "gp_weidenhain_3035",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6426.5,
@@ -45660,7 +45615,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3039",
+   "id": "gp_fl_216_198_3036",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7150.5,
@@ -45675,7 +45630,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_aschenwerth_3040",
+   "id": "gp_aschenwerth_3037",
    "region": "aschenwerth",
    "land": "aschenwerth",
    "x": 6250.5,
@@ -45690,7 +45645,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_weidenhain_3041",
+   "id": "gp_weidenhain_3038",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6498.5,
@@ -45702,6 +45657,51 @@
    "anzahl": 2,
    "stufe": 1,
    "gelaende": "wiese",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_rabenmoor_3039",
+   "region": "rabenmoor",
+   "land": "rabenmoor",
+   "x": 6370.5,
+   "y": 6706.5,
+   "gegner": [
+    "schlammkroete"
+   ],
+   "modell": "schlammkroete",
+   "anzahl": 1,
+   "stufe": 8,
+   "gelaende": "moor",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_rabenmoor_3040",
+   "region": "rabenmoor",
+   "land": "rabenmoor",
+   "x": 6370.5,
+   "y": 6706.5,
+   "gegner": [
+    "schlammkroete"
+   ],
+   "modell": "schlammkroete",
+   "anzahl": 1,
+   "stufe": 8,
+   "gelaende": "moor",
+   "quelle": "vorhanden"
+  },
+  {
+   "id": "gp_rabenmoor_3041",
+   "region": "rabenmoor",
+   "land": "rabenmoor",
+   "x": 6370.5,
+   "y": 6706.5,
+   "gegner": [
+    "schlammkroete"
+   ],
+   "modell": "schlammkroete",
+   "anzahl": 1,
+   "stufe": 8,
+   "gelaende": "moor",
    "quelle": "vorhanden"
   },
   {
@@ -45723,51 +45723,6 @@
    "id": "gp_rabenmoor_3043",
    "region": "rabenmoor",
    "land": "rabenmoor",
-   "x": 6370.5,
-   "y": 6706.5,
-   "gegner": [
-    "schlammkroete"
-   ],
-   "modell": "schlammkroete",
-   "anzahl": 1,
-   "stufe": 8,
-   "gelaende": "moor",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_rabenmoor_3044",
-   "region": "rabenmoor",
-   "land": "rabenmoor",
-   "x": 6370.5,
-   "y": 6706.5,
-   "gegner": [
-    "schlammkroete"
-   ],
-   "modell": "schlammkroete",
-   "anzahl": 1,
-   "stufe": 8,
-   "gelaende": "moor",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_rabenmoor_3045",
-   "region": "rabenmoor",
-   "land": "rabenmoor",
-   "x": 6370.5,
-   "y": 6706.5,
-   "gegner": [
-    "schlammkroete"
-   ],
-   "modell": "schlammkroete",
-   "anzahl": 1,
-   "stufe": 8,
-   "gelaende": "moor",
-   "quelle": "vorhanden"
-  },
-  {
-   "id": "gp_rabenmoor_3046",
-   "region": "rabenmoor",
-   "land": "rabenmoor",
    "x": 6366.5,
    "y": 6716.5,
    "gegner": [
@@ -45780,7 +45735,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_231_198_3047",
+   "id": "gp_fl_231_198_3044",
    "region": "fl_231_198",
    "land": "Die Glutsande",
    "x": 7407.5,
@@ -45795,7 +45750,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_rabenmoor_3048",
+   "id": "gp_rabenmoor_3045",
    "region": "rabenmoor",
    "land": "rabenmoor",
    "x": 6370.5,
@@ -45810,7 +45765,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_weidenhain_3049",
+   "id": "gp_weidenhain_3046",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6484.5,
@@ -45825,7 +45780,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_weidenhain_3050",
+   "id": "gp_weidenhain_3047",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6483.5,
@@ -45840,7 +45795,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_weidenhain_3051",
+   "id": "gp_weidenhain_3048",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6480.5,
@@ -45855,7 +45810,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_weidenhain_3052",
+   "id": "gp_weidenhain_3049",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6477.5,
@@ -45870,7 +45825,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_weidenhain_3053",
+   "id": "gp_weidenhain_3050",
    "region": "weidenhain",
    "land": "weidenhain",
    "x": 6472.5,
@@ -45885,7 +45840,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_aschenwerth_3054",
+   "id": "gp_aschenwerth_3051",
    "region": "aschenwerth",
    "land": "aschenwerth",
    "x": 6184.5,
@@ -45900,7 +45855,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_aschenwerth_3055",
+   "id": "gp_aschenwerth_3052",
    "region": "aschenwerth",
    "land": "aschenwerth",
    "x": 6188.5,
@@ -45915,7 +45870,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_graufurt_3056",
+   "id": "gp_graufurt_3053",
    "region": "graufurt",
    "land": "graufurt",
    "x": 6715.5,
@@ -45930,7 +45885,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_198_3057",
+   "id": "gp_fl_216_198_3054",
    "region": "fl_216_198",
    "land": "Die Glutsande",
    "x": 7354.5,
@@ -45945,7 +45900,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_216_211_3058",
+   "id": "gp_fl_216_211_3055",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7359.5,
@@ -45960,7 +45915,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_186_211_3059",
+   "id": "gp_fl_186_211_3056",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6116.5,
@@ -45975,7 +45930,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_211_3060",
+   "id": "gp_fl_201_211_3057",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6715.5,
@@ -45990,7 +45945,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_211_3061",
+   "id": "gp_fl_186_211_3058",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6113.5,
@@ -46005,7 +45960,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3062",
+   "id": "gp_fl_186_211_3059",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6292.5,
@@ -46020,7 +45975,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_211_3063",
+   "id": "gp_fl_186_211_3060",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6112.5,
@@ -46035,7 +45990,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_216_211_3064",
+   "id": "gp_fl_216_211_3061",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7365.5,
@@ -46050,7 +46005,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3065",
+   "id": "gp_fl_186_211_3062",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6111.5,
@@ -46065,7 +46020,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3066",
+   "id": "gp_fl_186_211_3063",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6253.5,
@@ -46080,7 +46035,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_211_3067",
+   "id": "gp_fl_186_211_3064",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6337.5,
@@ -46095,7 +46050,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_211_3068",
+   "id": "gp_fl_216_211_3065",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7369.5,
@@ -46110,7 +46065,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_186_211_3069",
+   "id": "gp_fl_186_211_3066",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6110.5,
@@ -46125,7 +46080,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3070",
+   "id": "gp_fl_186_211_3067",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6332.5,
@@ -46140,7 +46095,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_211_3071",
+   "id": "gp_fl_186_211_3068",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6049.5,
@@ -46155,7 +46110,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3072",
+   "id": "gp_fl_186_211_3069",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6094.5,
@@ -46170,7 +46125,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_246_211_3073",
+   "id": "gp_fl_246_211_3070",
    "region": "fl_246_211",
    "land": "Das Splittermeer",
    "x": 7895.5,
@@ -46185,7 +46140,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_186_211_3074",
+   "id": "gp_fl_186_211_3071",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6027.5,
@@ -46200,7 +46155,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_211_3075",
+   "id": "gp_fl_201_211_3072",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6594.5,
@@ -46215,7 +46170,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_211_3076",
+   "id": "gp_fl_201_211_3073",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6592.5,
@@ -46230,7 +46185,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_211_3077",
+   "id": "gp_fl_231_211_3074",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7652.5,
@@ -46245,7 +46200,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_211_3078",
+   "id": "gp_fl_246_211_3075",
    "region": "fl_246_211",
    "land": "Das Splittermeer",
    "x": 7872.5,
@@ -46260,7 +46215,7 @@
    "quelle": "vorhanden (bandit_armbrust)"
   },
   {
-   "id": "gp_fl_231_211_3079",
+   "id": "gp_fl_231_211_3076",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7614.5,
@@ -46275,7 +46230,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_211_3080",
+   "id": "gp_fl_201_211_3077",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6872.5,
@@ -46290,7 +46245,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_211_3081",
+   "id": "gp_fl_216_211_3078",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 6912.5,
@@ -46305,7 +46260,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_211_3082",
+   "id": "gp_fl_201_211_3079",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6812.5,
@@ -46320,7 +46275,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_201_211_3083",
+   "id": "gp_fl_201_211_3080",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6855.5,
@@ -46335,7 +46290,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_216_211_3084",
+   "id": "gp_fl_216_211_3081",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 6928.5,
@@ -46350,7 +46305,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_211_3085",
+   "id": "gp_fl_216_211_3082",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7050.5,
@@ -46365,7 +46320,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_211_3086",
+   "id": "gp_fl_216_211_3083",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7210.5,
@@ -46380,7 +46335,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_211_3087",
+   "id": "gp_fl_216_211_3084",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7207.5,
@@ -46395,7 +46350,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_186_211_3088",
+   "id": "gp_fl_186_211_3085",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6208.5,
@@ -46410,7 +46365,7 @@
    "quelle": "vorhanden (bandit_spaeher)"
   },
   {
-   "id": "gp_fl_186_211_3089",
+   "id": "gp_fl_186_211_3086",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6171.5,
@@ -46425,7 +46380,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_211_3090",
+   "id": "gp_fl_186_211_3087",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6170.5,
@@ -46440,7 +46395,7 @@
    "quelle": "vorhanden (bandit_spaeher)"
   },
   {
-   "id": "gp_fl_186_211_3091",
+   "id": "gp_fl_186_211_3088",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6172.5,
@@ -46455,7 +46410,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_211_3092",
+   "id": "gp_fl_186_211_3089",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6188.5,
@@ -46470,7 +46425,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_211_3093",
+   "id": "gp_fl_186_211_3090",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6190.5,
@@ -46485,7 +46440,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_211_3094",
+   "id": "gp_fl_216_211_3091",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7109.5,
@@ -46500,7 +46455,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_211_3095",
+   "id": "gp_fl_216_211_3092",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7117.5,
@@ -46515,7 +46470,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_211_3096",
+   "id": "gp_fl_186_211_3093",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6190.5,
@@ -46530,7 +46485,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_216_211_3097",
+   "id": "gp_fl_216_211_3094",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7118.5,
@@ -46545,7 +46500,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_211_3098",
+   "id": "gp_fl_216_211_3095",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7169.5,
@@ -46560,7 +46515,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_211_3099",
+   "id": "gp_fl_201_211_3096",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6454.5,
@@ -46575,7 +46530,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_211_3100",
+   "id": "gp_fl_231_211_3097",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7472.5,
@@ -46590,7 +46545,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_211_3101",
+   "id": "gp_fl_216_211_3098",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7195.5,
@@ -46605,7 +46560,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_211_3102",
+   "id": "gp_fl_216_211_3099",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7211.5,
@@ -46620,7 +46575,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_211_3103",
+   "id": "gp_fl_216_211_3100",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7308.5,
@@ -46635,7 +46590,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_201_211_3104",
+   "id": "gp_fl_201_211_3101",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6652.5,
@@ -46650,7 +46605,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_211_3105",
+   "id": "gp_fl_231_211_3102",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7532.5,
@@ -46665,7 +46620,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_211_3106",
+   "id": "gp_fl_231_211_3103",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7572.5,
@@ -46680,7 +46635,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_211_3107",
+   "id": "gp_fl_186_211_3104",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6273.5,
@@ -46695,7 +46650,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_211_3108",
+   "id": "gp_fl_186_211_3105",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6274.5,
@@ -46710,7 +46665,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_211_3109",
+   "id": "gp_fl_186_211_3106",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6349.5,
@@ -46725,7 +46680,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_201_211_3110",
+   "id": "gp_fl_201_211_3107",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6669.5,
@@ -46740,7 +46695,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_211_3111",
+   "id": "gp_fl_231_211_3108",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7634.5,
@@ -46755,7 +46710,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_211_3112",
+   "id": "gp_fl_186_211_3109",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6274.5,
@@ -46770,7 +46725,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_201_211_3113",
+   "id": "gp_fl_201_211_3110",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6509.5,
@@ -46785,7 +46740,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_211_3114",
+   "id": "gp_fl_186_211_3111",
    "region": "fl_186_211",
    "land": "Süden",
    "x": 6349.5,
@@ -46800,7 +46755,7 @@
    "quelle": "vorhanden (bandit_spaeher)"
   },
   {
-   "id": "gp_fl_201_211_3115",
+   "id": "gp_fl_201_211_3112",
    "region": "fl_201_211",
    "land": "Die Glutsande",
    "x": 6492.5,
@@ -46815,7 +46770,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_211_3116",
+   "id": "gp_fl_186_211_3113",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6170.5,
@@ -46830,7 +46785,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_211_3117",
+   "id": "gp_fl_216_211_3114",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7253.5,
@@ -46845,7 +46800,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_211_3118",
+   "id": "gp_fl_231_211_3115",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7612.5,
@@ -46860,7 +46815,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_211_3119",
+   "id": "gp_fl_231_211_3116",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7611.5,
@@ -46875,7 +46830,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_211_3120",
+   "id": "gp_fl_186_211_3117",
    "region": "fl_186_211",
    "land": "Küste",
    "x": 6188.5,
@@ -46890,7 +46845,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_211_3121",
+   "id": "gp_fl_231_211_3118",
    "region": "fl_231_211",
    "land": "Die Ockerlande",
    "x": 7596.5,
@@ -46905,7 +46860,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_211_3122",
+   "id": "gp_fl_216_211_3119",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7015.5,
@@ -46920,7 +46875,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_211_3123",
+   "id": "gp_fl_216_211_3120",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7089.5,
@@ -46935,7 +46890,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_211_3124",
+   "id": "gp_fl_216_211_3121",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7016.5,
@@ -46950,7 +46905,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_211_3125",
+   "id": "gp_fl_216_211_3122",
    "region": "fl_216_211",
    "land": "Die Glutsande",
    "x": 7016.5,
@@ -46965,7 +46920,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_225_3126",
+   "id": "gp_fl_186_225_3123",
    "region": "fl_186_225",
    "land": "Süden",
    "x": 6392.5,
@@ -46980,7 +46935,7 @@
    "quelle": "vorhanden (bandit_spaeher)"
   },
   {
-   "id": "gp_fl_186_225_3127",
+   "id": "gp_fl_186_225_3124",
    "region": "fl_186_225",
    "land": "Süden",
    "x": 6395.5,
@@ -46995,7 +46950,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_225_3128",
+   "id": "gp_fl_186_225_3125",
    "region": "fl_186_225",
    "land": "Süden",
    "x": 6396.5,
@@ -47010,7 +46965,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_186_225_3129",
+   "id": "gp_fl_186_225_3126",
    "region": "fl_186_225",
    "land": "Süden",
    "x": 6396.5,
@@ -47025,7 +46980,7 @@
    "quelle": "vorhanden"
   },
   {
-   "id": "gp_fl_231_225_3130",
+   "id": "gp_fl_231_225_3127",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7805.5,
@@ -47040,7 +46995,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_225_3131",
+   "id": "gp_fl_231_225_3128",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7816.5,
@@ -47055,7 +47010,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_225_3132",
+   "id": "gp_fl_231_225_3129",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7799.5,
@@ -47070,7 +47025,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3133",
+   "id": "gp_fl_231_225_3130",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7798.5,
@@ -47085,7 +47040,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3134",
+   "id": "gp_fl_231_225_3131",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7797.5,
@@ -47100,7 +47055,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_186_225_3135",
+   "id": "gp_fl_186_225_3132",
    "region": "fl_186_225",
    "land": "Küste",
    "x": 6307.5,
@@ -47115,7 +47070,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_186_225_3136",
+   "id": "gp_fl_186_225_3133",
    "region": "fl_186_225",
    "land": "Küste",
    "x": 6342.5,
@@ -47130,7 +47085,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_225_3137",
+   "id": "gp_fl_201_225_3134",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6736.5,
@@ -47145,7 +47100,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_225_3138",
+   "id": "gp_fl_231_225_3135",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7808.5,
@@ -47160,7 +47115,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_225_3139",
+   "id": "gp_fl_201_225_3136",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6734.5,
@@ -47175,7 +47130,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_225_3140",
+   "id": "gp_fl_246_225_3137",
    "region": "fl_246_225",
    "land": "Die Ockerlande",
    "x": 7872.5,
@@ -47190,7 +47145,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3141",
+   "id": "gp_fl_231_225_3138",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7672.5,
@@ -47205,7 +47160,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_225_3142",
+   "id": "gp_fl_216_225_3139",
    "region": "fl_216_225",
    "land": "Die Ockerlande",
    "x": 6977.5,
@@ -47220,7 +47175,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_225_3143",
+   "id": "gp_fl_231_225_3140",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7769.5,
@@ -47235,7 +47190,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_225_3144",
+   "id": "gp_fl_246_225_3141",
    "region": "fl_246_225",
    "land": "Die Ockerlande",
    "x": 7974.5,
@@ -47250,7 +47205,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3145",
+   "id": "gp_fl_231_225_3142",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7772.5,
@@ -47265,7 +47220,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_225_3146",
+   "id": "gp_fl_201_225_3143",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6790.5,
@@ -47280,7 +47235,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_225_3147",
+   "id": "gp_fl_201_225_3144",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6872.5,
@@ -47295,7 +47250,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_225_3148",
+   "id": "gp_fl_201_225_3145",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6831.5,
@@ -47310,7 +47265,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_225_3149",
+   "id": "gp_fl_231_225_3146",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7792.5,
@@ -47325,7 +47280,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_246_225_3150",
+   "id": "gp_fl_246_225_3147",
    "region": "fl_246_225",
    "land": "Die Ockerlande",
    "x": 7912.5,
@@ -47340,7 +47295,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_225_3151",
+   "id": "gp_fl_231_225_3148",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7852.5,
@@ -47355,7 +47310,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_225_3152",
+   "id": "gp_fl_216_225_3149",
    "region": "fl_216_225",
    "land": "Die Ockerlande",
    "x": 7190.5,
@@ -47370,7 +47325,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_246_225_3153",
+   "id": "gp_fl_246_225_3150",
    "region": "fl_246_225",
    "land": "Die Ockerlande",
    "x": 7955.5,
@@ -47385,7 +47340,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_225_3154",
+   "id": "gp_fl_216_225_3151",
    "region": "fl_216_225",
    "land": "Die Ockerlande",
    "x": 6932.5,
@@ -47400,7 +47355,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_225_3155",
+   "id": "gp_fl_201_225_3152",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6734.5,
@@ -47415,7 +47370,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_225_3156",
+   "id": "gp_fl_201_225_3153",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6734.5,
@@ -47430,7 +47385,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_201_225_3157",
+   "id": "gp_fl_201_225_3154",
    "region": "fl_201_225",
    "land": "Die Glutsande",
    "x": 6734.5,
@@ -47445,7 +47400,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3158",
+   "id": "gp_fl_231_225_3155",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7814.5,
@@ -47460,7 +47415,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_225_3159",
+   "id": "gp_fl_231_225_3156",
    "region": "fl_231_225",
    "land": "Die Ockerlande",
    "x": 7835.5,
@@ -47475,7 +47430,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_239_3160",
+   "id": "gp_fl_201_239_3157",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
    "x": 6696.5,
@@ -47490,7 +47445,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_239_3161",
+   "id": "gp_fl_231_239_3158",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7627.5,
@@ -47505,7 +47460,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_239_3162",
+   "id": "gp_fl_216_239_3159",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7188.5,
@@ -47520,7 +47475,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_239_3163",
+   "id": "gp_fl_231_239_3160",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7786.5,
@@ -47535,7 +47490,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_239_3164",
+   "id": "gp_fl_231_239_3161",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7551.5,
@@ -47550,7 +47505,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_231_239_3165",
+   "id": "gp_fl_231_239_3162",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7635.5,
@@ -47565,7 +47520,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_239_3166",
+   "id": "gp_fl_201_239_3163",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
    "x": 6884.5,
@@ -47580,7 +47535,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_239_3167",
+   "id": "gp_fl_201_239_3164",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
    "x": 6882.5,
@@ -47595,7 +47550,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_201_239_3168",
+   "id": "gp_fl_201_239_3165",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
    "x": 6879.5,
@@ -47610,7 +47565,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_201_239_3169",
+   "id": "gp_fl_201_239_3166",
    "region": "fl_201_239",
    "land": "Die Ockerlande",
    "x": 6872.5,
@@ -47625,7 +47580,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3170",
+   "id": "gp_fl_216_239_3167",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 6991.5,
@@ -47640,7 +47595,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3171",
+   "id": "gp_fl_216_239_3168",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 6989.5,
@@ -47655,7 +47610,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_239_3172",
+   "id": "gp_fl_216_239_3169",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7007.5,
@@ -47670,7 +47625,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3173",
+   "id": "gp_fl_216_239_3170",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7170.5,
@@ -47685,7 +47640,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_231_239_3174",
+   "id": "gp_fl_231_239_3171",
    "region": "fl_231_239",
    "land": "Die Ockerlande",
    "x": 7454.5,
@@ -47700,7 +47655,7 @@
    "quelle": "vorhanden (bandit_schlaeger)"
   },
   {
-   "id": "gp_fl_216_239_3175",
+   "id": "gp_fl_216_239_3172",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7154.5,
@@ -47715,7 +47670,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3176",
+   "id": "gp_fl_216_239_3173",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7333.5,
@@ -47730,7 +47685,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_239_3177",
+   "id": "gp_fl_216_239_3174",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7328.5,
@@ -47745,7 +47700,7 @@
    "quelle": "vorhanden (Systeme)"
   },
   {
-   "id": "gp_fl_216_239_3178",
+   "id": "gp_fl_216_239_3175",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7188.5,
@@ -47760,7 +47715,7 @@
    "quelle": "vorhanden (Figuren)"
   },
   {
-   "id": "gp_fl_216_239_3179",
+   "id": "gp_fl_216_239_3176",
    "region": "fl_216_239",
    "land": "Die Ockerlande",
    "x": 7315.5,
@@ -47785,13 +47740,13 @@
    "plaetze": 171,
    "gegner": 254
   },
-  "fl_216_169": {
-   "plaetze": 166,
-   "gegner": 250
-  },
   "fl_201_211": {
    "plaetze": 167,
    "gegner": 250
+  },
+  "fl_216_169": {
+   "plaetze": 164,
+   "gegner": 246
   },
   "fl_216_225": {
    "plaetze": 158,
@@ -47805,13 +47760,13 @@
    "plaetze": 138,
    "gegner": 214
   },
-  "fl_201_169": {
-   "plaetze": 138,
-   "gegner": 206
-  },
   "fl_231_169": {
    "plaetze": 136,
    "gegner": 205
+  },
+  "fl_201_169": {
+   "plaetze": 137,
+   "gegner": 203
   },
   "fl_186_211": {
    "plaetze": 130,
@@ -47843,7 +47798,7 @@
   },
   "fl_246_183": {
    "plaetze": 100,
-   "gegner": 147
+   "gegner": 146
   },
   "fl_216_155": {
    "plaetze": 95,
@@ -50410,6 +50365,666 @@
    "y": 5873.7,
    "r": 8.912043955712432,
    "grund": "Sammelstelle Adern am Weg (Hochlande 32)"
+  },
+  {
+   "x": 8018.5,
+   "y": 6013.5,
+   "r": 4,
+   "grund": "Bergsturz am Drachenarm"
+  },
+  {
+   "x": 8015.5,
+   "y": 6016.5,
+   "r": 4,
+   "grund": "Bergsturz am Drachenarm"
+  },
+  {
+   "x": 7998.5,
+   "y": 6029.5,
+   "r": 4,
+   "grund": "Bergsturz am Drachenarm"
+  },
+  {
+   "x": 7995.5,
+   "y": 6032.5,
+   "r": 4,
+   "grund": "Bergsturz am Drachenarm"
+  },
+  {
+   "x": 7104.5,
+   "y": 5333.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7101.5,
+   "y": 5336.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7098.5,
+   "y": 5339.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7095.5,
+   "y": 5342.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7092.5,
+   "y": 5345.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7089.5,
+   "y": 5348.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7086.5,
+   "y": 5351.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7083.5,
+   "y": 5354.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7080.5,
+   "y": 5357.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7077.5,
+   "y": 5360.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7074.5,
+   "y": 5363.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7071.5,
+   "y": 5366.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7068.5,
+   "y": 5369.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7065.5,
+   "y": 5372.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7062.5,
+   "y": 5375.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7059.5,
+   "y": 5378.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7056.5,
+   "y": 5381.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7053.5,
+   "y": 5384.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7050.5,
+   "y": 5387.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7047.5,
+   "y": 5390.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7044.5,
+   "y": 5393.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7041.5,
+   "y": 5396.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7038.5,
+   "y": 5399.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7035.5,
+   "y": 5402.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7032.5,
+   "y": 5405.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7029.5,
+   "y": 5408.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7026.5,
+   "y": 5411.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7023.5,
+   "y": 5414.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7020.5,
+   "y": 5417.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7017.5,
+   "y": 5420.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7014.5,
+   "y": 5423.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7011.5,
+   "y": 5426.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7008.5,
+   "y": 5429.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7005.5,
+   "y": 5432.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 7002.5,
+   "y": 5435.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6999.5,
+   "y": 5438.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6996.5,
+   "y": 5441.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6993.5,
+   "y": 5444.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6990.5,
+   "y": 5447.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6987.5,
+   "y": 5450.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6984.5,
+   "y": 5453.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6981.5,
+   "y": 5456.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6978.5,
+   "y": 5459.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6975.5,
+   "y": 5462.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6972.5,
+   "y": 5465.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6969.5,
+   "y": 5468.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6966.5,
+   "y": 5471.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6963.5,
+   "y": 5474.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6960.5,
+   "y": 5477.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6957.5,
+   "y": 5480.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6954.5,
+   "y": 5483.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6951.5,
+   "y": 5486.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6948.5,
+   "y": 5489.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6945.5,
+   "y": 5492.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6942.5,
+   "y": 5495.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6939.5,
+   "y": 5498.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6936.5,
+   "y": 5501.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6933.5,
+   "y": 5504.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6930.5,
+   "y": 5507.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6927.5,
+   "y": 5510.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6924.5,
+   "y": 5513.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6921.5,
+   "y": 5516.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6918.5,
+   "y": 5519.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6915.5,
+   "y": 5522.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6912.5,
+   "y": 5525.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6909.5,
+   "y": 5528.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6906.5,
+   "y": 5531.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6903.5,
+   "y": 5534.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6900.5,
+   "y": 5537.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6897.5,
+   "y": 5540.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6894.5,
+   "y": 5543.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6891.5,
+   "y": 5546.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6888.5,
+   "y": 5549.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6885.5,
+   "y": 5552.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6882.5,
+   "y": 5555.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6879.5,
+   "y": 5558.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6876.5,
+   "y": 5561.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6873.5,
+   "y": 5564.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6870.5,
+   "y": 5567.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6867.5,
+   "y": 5570.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6864.5,
+   "y": 5573.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6861.5,
+   "y": 5576.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6858.5,
+   "y": 5579.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6855.5,
+   "y": 5582.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6852.5,
+   "y": 5585.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6849.5,
+   "y": 5588.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6846.5,
+   "y": 5591.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6843.5,
+   "y": 5594.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6840.5,
+   "y": 5597.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6837.5,
+   "y": 5600.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6834.5,
+   "y": 5603.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6831.5,
+   "y": 5606.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6828.5,
+   "y": 5609.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6825.5,
+   "y": 5612.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6822.5,
+   "y": 5615.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6819.5,
+   "y": 5618.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6816.5,
+   "y": 5621.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6813.5,
+   "y": 5624.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6810.5,
+   "y": 5627.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6807.5,
+   "y": 5630.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6804.5,
+   "y": 5633.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6801.5,
+   "y": 5636.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6798.5,
+   "y": 5639.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6795.5,
+   "y": 5642.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6792.5,
+   "y": 5645.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
+  },
+  {
+   "x": 6789.5,
+   "y": 5648.5,
+   "r": 4,
+   "grund": "Schneesturm an der Frostkrone"
   },
   {
    "x": 6932,
@@ -53515,7 +54130,7 @@
   },
   {
    "grund": "Questorte/Lesestellen (r 6), Bedienstellen (r 8), Trödler (r 6)",
-   "anzahl": 397
+   "anzahl": 404
   },
   {
    "grund": "Wasser, Fels und Gebirge (nicht begehbar), Inselchen unter 400 Feldern, Untergrund (Dungeons mit eigenen Gegnern)"
