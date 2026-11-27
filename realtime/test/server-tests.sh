@@ -81,6 +81,7 @@ TESTS=(
   bosse-116
   boss-quest-machbar
   hueter
+  zunft
   bank-platzhalter
   festland-kampf
   inhalt-sueden
