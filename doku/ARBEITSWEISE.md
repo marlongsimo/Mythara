@@ -31,6 +31,10 @@ Typische Übergaben:
 - Eine Quest braucht einen neuen Ort, eine Höhle oder ein Gebäude → Issue `rolle:welt`.
 - Der Nutzer muss etwas tun (Migration einspielen, im Spiel testen, entscheiden) → Issue `für-dich`.
 
+## 2a. Vorhandenes zuerst
+
+Jede Rolle schaut **zuerst, was es schon gibt** (Modelle, Orte, Gegenstände, Bausteine, Tests) und baut darauf auf – wiederverwenden, umfärben, ergänzen –, bevor etwas Neues entsteht (Wunsch des Nutzers, 27.11.).
+
 ## 3. Der Weg eines Auftrags
 
 1. **Konzept** (Rolle Konzept & Review): PDF in `doku/quests/`, daraus ein oder mehrere **Issues** mit Rollen-Label und Phase-Label (`phase-3` …).

@@ -11,9 +11,9 @@ Heute ist dort nach den Grenzland-Regionen vor allem leeres Festland mit der Str
 | Ort | Was | Beruf / Arbeitsplatz | Stufe |
 |---|---|---|---|
 | **Heckenhof** | Gehöft direkt südlich von Weidenhain an der Südstraße, Felder, Kühe, Schafe | Kochen (Herd), Kuhfleisch, Hanf-/Flachsfelder (Handwerk) | 1–10 |
-| **Summweide** | Imkerei auf einer Blumenwiese, drei Katen, Bienenstöcke | Kräuterkunde: Wegerich, Ringelblume (zweites Kräutergebiet für Anfänger); Honig als neue Zutat (Kochen) | 5–15 |
+| **Summweide** | Imkerei auf einer Blumenwiese, drei Katen, Bienenstöcke | Kräuterkunde: Wegerich, Ringelblume (zweites Kräutergebiet für Anfänger) | 5–15 |
 | **Schilfsee** mit **Reusenkate** | kleiner See abseits der Straße, Fischerhütte, Steg | Fischen: Bachling, Mühlbarsch (Stufe 1–10), Reuse | 5–20 |
-| **Erlengrund** | Holzfällerdorf am Waldrand mit **Sägemühle** und Köhlermeiler | Holz: Eiche, Tanne, Eibe (1–20); Sägemühle verarbeitet Stämme zu Brettern (Handwerk) | 10–25 |
+| **Erlengrund** | Holzfällerdorf am Waldrand mit **Sägemühle** und Köhlermeiler | Holz: Eiche, Tanne, Eibe (1–20); Werkbank in der Sägemühle (Handwerk) | 10–25 |
 | **Lehmfurt** | Weiler an einer Furt des Flusses Kiel, kleine Schmiede, Steinbruch | Bergbau: Kupfer, Eisen, Schwarzeisen (1–20); Esse und Amboss | 15–30 |
 | **Wegkapelle am Kreuzstein** | kleiner Schrein an einer Kreuzung der Südstraße | Heilstelle nach Quest (wie die Kapelle A2), Seelenlichter 10 | – |
 | **Rastplatz „Halber Weg“** | Lagerfeuer, Karren, Tränke | Kochstelle; ein **Trödler** wandert hier vorbei (siehe unten) | – |
@@ -25,12 +25,12 @@ Heute ist dort nach den Grenzland-Regionen vor allem leeres Festland mit der Str
 | Heckenhof-Felder | **Feldhase**, **Krähenschwarm** | 2–5 | Anfänger-Ziele, Krähen stehlen Saat (kleines Quest-Ziel) |
 | Summweide-Rand | **Wildbienen-Schwarm** | 8 | greift nur an, wenn man zu nah an die Stöcke geht |
 | Schilfsee-Ufer | **Schilfkröte** | 12 | langsam, zäh – Trainingsgegner wie der Mooshocker, für Stufe 10–15 |
-| Erlengrund-Wald | **Fuchs**, **Wildschwein** | 14 / 18 | Wildschwein lässt Fleisch fallen (Kochen) |
+| Erlengrund-Wald | **Fuchs**, **Wildschwein** | 14 / 18 | Beute nur aus vorhandenen Gegenständen (z. B. Kuhfleisch-Ersatz: vorhandenes Fleisch) |
 | Südstraße (zwei Lager) | **Wegelagerer** (Knüppel/Schleuder) | 20 / 22 | fliehen (Baustein aus Phase 4), Splitter und kleine Beute |
 | Steinbruch Lehmfurt | **Steinschlucker** (kleiner Golem) | 26 | eigene Gegnerfamilie „Stein“ |
 | Waldsenke bei Erlengrund | **Der Graupelz** (Alpha-Wolf, Mini-Gegner) | 30 | erscheint selten (alle 15 min), mit zwei Wölfen; eigene Beute |
 
-Beute nach den Grundsätzen in `beute.md` (Splitter, Rohstoffe der Stufe, Selten nur sehr selten). Neue kleine Rohstoffe: **Honig**, **Wildschweinfleisch**, **Bretter** (aus der Sägemühle), **Federn** (Krähen) – Verwendung in Kochen, Handwerk, Kräuterkunde.
+Beute nach den Grundsätzen in `beute.md` (Splitter, Rohstoffe der Stufe, Selten nur sehr selten). **Keine neuen Rohstoffe** (Entscheidung des Nutzers, 27.11.): Beute und Lohn nur aus vorhandenen Gegenständen.
 
 ## Kurze Quests (Block S, „Süden“)
 
@@ -39,13 +39,13 @@ Alle kurz (5–15 min), je 1 Questpunkt, Lohn klein (passend zu Stufe 5–30), *
 | Quest | Ort | Kurz | Quer |
 |---|---|---|---|
 | **S1 „Saat und Krähen“** | Heckenhof | Krähen von den Feldern vertreiben, Vogelscheuche aus Stroh und Stoff bauen (Handwerk 5) | Stoff von Gerold (Waldmark-Markt) |
-| **S2 „Der verschwundene Stock“** | Summweide | Dem Summen folgen (Questobjekte), den ausgerissenen Bienenstock zurücktragen, Ringelblumen sammeln → **Honig** wird verkauft | Mira (Waldmark) will einen Topf Honig für einen Trank |
+| **S2 „Der verschwundene Stock“** | Summweide | Dem Summen folgen (Questobjekte), den ausgerissenen Bienenstock zurücktragen, Ringelblumen sammeln → die Imkerin verkauft Kräuter und Heiltränke | Mira (Waldmark) will Ringelblumen aus Summweide für einen Trank |
 | **S3 „Der alte Hecht“** | Schilfsee | Die Fischerin erzählt vom „alten Hecht“ – ein **seltener Fang** am Steg (1 % je Versuch, nur mit Quest) → Trophäe an der Wand der Reusenkate | Lambert Schilf (Weidenhain) glaubt es erst, wenn er ihn sieht |
-| **S4 „Klemmende Säge“** | Erlengrund | Wasserrad der Sägemühle reparieren: Eichenstämme, Eisenbänder (Schmieden) → Sägemühle macht **Bretter** | Eisenbänder wie in B2 (Tebbe hilft mit einem Tipp) |
+| **S4 „Klemmende Säge“** | Erlengrund | Wasserrad der Sägemühle reparieren: Eichenstämme, Eisenbänder (Schmieden) → Werkbank in der Sägemühle frei | Eisenbänder wie in B2 (Tebbe hilft mit einem Tipp) |
 | **S5 „Die Furt“** | Lehmfurt | Trittsteine in der Furt setzen (Bergbau: 5 Steinblöcke) → Abkürzung über den Kiel | – |
 | **S6 „Schafe zählen“** | Heckenhof | Fünf entlaufene Schafe zurück in den Pferch führen – **die Schafe folgen dir** (Baustein „Folgen“, #54/#49) | – |
 | **S7 „Licht am Kreuzstein“** | Wegkapelle | Seelenlichter einfangen (Splitterbinden 10) und die Kapelle wieder weihen → Heilstelle | Agnes (Weidenhain) gibt den Segen |
-| **S8 „Der Graupelz“** | Erlengrund | Spuren lesen, den Alpha-Wolf stellen (Mini-Gegner, kein Boss) → Graupelz-Fell (Kosmetik: Umhang-Teil oder Trophäe) | Förster Hartwig (Nordwald) kennt die Spur |
+| **S8 „Der Graupelz“** | Erlengrund | Spuren lesen, den Alpha-Wolf stellen (Mini-Gegner, kein Boss) → Trophäe an der Wand in Erlengrund, Lohn aus vorhandenen Gegenständen | Förster Hartwig (Nordwald) kennt die Spur |
 | **S9 „Briefe nach Süden“** (Quer-Quest, klein) | Weidenhain → alle Orte → Kielmund | Othmar gibt dir Briefe für jeden Ort entlang der Südstraße; jeder Ort gibt etwas Kleines mit | führt durch den ganzen Süden bis Kielmund (G1) |
 
 ## Damit es lebendig wirkt (kleine Bausteine)
@@ -59,12 +59,10 @@ Alle kurz (5–15 min), je 1 Questpunkt, Lohn klein (passend zu Stufe 5–30), *
 | Rolle | Aufgabe |
 |---|---|
 | Welt | sieben Orte, zwei Wegelagerer-Lager, Steinbruch, Waldsenke, Fischplätze, Kräuter- und Erzstellen, Bäume, Kapelle, Rastplatz; Wege und Wegweiser |
-| Figuren | NPCs (Bauer/Bäuerin, Imkerin, Fischerin, Sägemüller, Schmied, Schäfer, Wanderer, Händler mit Karren), Gegner (Feldhase, Krähe, Bienenschwarm, Schilfkröte, Fuchs, Wildschwein, Wegelagerer ×2, Steinschlucker, Graupelz + Wölfe), Tiere (Schaf, Ente), Objekte (Vogelscheuche, Bienenstock, Sägemühle, Trittsteine, Trophäe „alter Hecht“), Bilder (Honig, Bretter, Wildschweinfleisch, Graupelz-Fell) |
+| Figuren | NPCs (Bauer/Bäuerin, Imkerin, Fischerin, Sägemüller, Schmied, Schäfer, Wanderer, Händler mit Karren), Gegner (Feldhase, Krähe, Bienenschwarm, Schilfkröte, Fuchs, Wildschwein, Wegelagerer ×2, Steinschlucker, Graupelz + Wölfe), Tiere (Schaf, Ente), Objekte (Vogelscheuche, Bienenstock, Sägemühle, Trittsteine, Trophäen „alter Hecht“ und „Graupelz“) |
 | Quests | S1–S9 als Entwurf |
 | Systeme | Wanderer/Karren auf festen Wegen, seltener Fang (alter Hecht), seltene Gegner-Wiederkehr (Graupelz), Schafe folgen (Baustein vorhanden) |
-| Integration | Gegnerwerte, Beute, Läden (Honig, Bretter), Einbau |
+| Integration | Gegnerwerte, Beute, Einbau |
 
-## Offen (Nutzer)
-- Namen (Heckenhof, Summweide, Schilfsee, Reusenkate, Erlengrund, Lehmfurt, Kreuzstein, „Halber Weg“, Graupelz, Steinschlucker).
-- Honig und Bretter als neue Zutaten – gewünscht?
-- Wann umsetzen: Vorarbeit jetzt (Welt, Figuren, Quests ruhen gerade) oder erst nach Phase 4–5 live?
+## Entschieden (27.11.)
+- Namen passen, solange sie sich nicht doppeln. Keine neuen Rohstoffe. Vorarbeit Welt und Figuren jetzt; beide schauen zuerst, was es schon gibt, und bauen darauf auf.
