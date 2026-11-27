@@ -90,6 +90,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Waffen der Stufe 70** (27.11.): Echoschneide (Schwert), Seelenbogen (Kurzbogen), Seelenfokus (**Stab**) – Modelle vom Nutzer; stärker als Stufe 65; **Aufladen mit Splittern bindet** die Waffe; je Angriff 1 Ladung; mit Ladung 15 % Chance auf passive Fähigkeit (Nachhall, Seelenzug, Seelenbrand); **Drop beim Mini-Boss der Hochlande**. Konzept `doku/konzepte/waffen-70.md`.
 
 ## Für später (Ideen, noch nicht geplant)
+- **Minispiel für bessere Ausrüstung** (Idee des Nutzers, 27.11., nur im Hinterkopf): Teile mit Zusatzboni je Kampfstil – **Nahkampf: Stärke-Bonus**, **Fernkampf: Fernkampf-Stärke**, **Magie: % Magieschaden** (neu, gibt es heute nicht). Vorschlag Leitstelle: als Gegenstück zur Rissgrube ein **Punkte-Minispiel** (z. B. „Die Passwacht hält“, Verteidigung in Wellen mit Toreparatur über Berufe), Teile **gegen Punkte** statt als Glücks-Drop; eigene Hülle (keine Kopie anderer Spiele).
 - **Rissgrube** (PvM-Minispiel, Idee für später, 27.11.): Weg zu den Uralt-Teilen (Stufe 75) als seltener Drop, Ziel-Kampfstufe 80, 5 Kammern mit Echos und Rissherz, Riss-Segen, Risstruhe; **kein Pech-Schutz**; **hinter einer Quest gesperrt** (Lohn: Zugang + Teleport-Objekt); **Bank im Rissvorraum**; **allein und in Gruppen (2–4)**; Namen passen; die Uralt-Teile legt der Nutzer selbst fest. Konzept `doku/konzepte/rissgrube.md`.
 
 - **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
