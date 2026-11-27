@@ -73,6 +73,7 @@ export const QUEST_S7: QuestDef = {
     },
   },
   schalter: { kreuzstein_heil: FERTIG },
+  glueckwunsch: "Es brennt wieder. Friede auf deinem Weg – und Licht.",
   belohnungText: "Belohnung: Splitterbinden 400 XP, 3 Seelenlichter, 60 Splitter · danach: Heilstelle in der Kapelle am Kreuzstein",
   belohnung: { berufe: { splitterbinden: 400 }, splitter: 60, gegenstaende: [{ g: "seelenlicht", n: 3 }] },
   punkte: 1,

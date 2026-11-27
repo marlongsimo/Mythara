@@ -83,6 +83,7 @@ export const QUEST_S2: QuestDef = {
       ],
     },
   },
+  glueckwunsch: "Zwölf. Zwölf! Die Damen summen wieder, und Mira hat ihre Blumen.",
   belohnungText: "Belohnung: Kräuterkunde 400 XP, 1 kleiner Heiltrank, 50 Splitter · danach: Imme verkauft Heiltränke",
   belohnung: { berufe: { kraeuterkunde: 400 }, splitter: 50, gegenstaende: [{ g: "kleiner_heiltrank" }] },
   punkte: 1,

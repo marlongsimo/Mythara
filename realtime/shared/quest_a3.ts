@@ -85,6 +85,7 @@ export const QUEST_A3: QuestDef = {
   } },
   schalter: { muehle_dreht: [FERTIG, { erledigt: ["einbau"] }], baeckerei_offen: FERTIG },
   drehen: [{ schalter: "muehle_dreht", x: 6568, y: 6421, r: 6 }],
+  glueckwunsch: "Sie mahlt! Riechst du das? Das ist Brot. Das erste seit Wochen.",
   belohnungText: "Belohnung: 5 Brot, 150 Defense-XP, 50 Splitter · danach: die Mühle dreht sich, und die Bäckerei der Waldmark verkauft Brot",
   belohnung: { xp: { defense: 150 }, splitter: 50, gegenstaende: [{ g: "brot", n: 5 }] },
   punkte: 1,
