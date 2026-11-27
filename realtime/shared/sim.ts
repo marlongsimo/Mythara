@@ -642,7 +642,7 @@ export class Sim {
   private rufen(w: Wesen, R: Ruf): void { if (!MONSTER[R.art]) return; const z = this.nach(w.zielId);
     for (let i = 0; i < R.n; i++) { const a = (i / Math.max(1, R.n)) * Math.PI * 2 + this.zf(), r = R.weite ?? 2, p0 = naechstFrei({ x: w.x + Math.cos(a) * r, y: w.y + Math.sin(a) * r }), p = this.felder ? mitte(p0) : p0;
       const m = this.neu(false, R.art, w.team, p, true, w.gruppe); if (this.eigeneWerte) m.lp = m.max = MONSTER[R.art].lp;
-      Object.assign(m, { helfer: w.id, instanz: w.instanz, heim: { x: w.heim.x, y: w.heim.y }, wach: true, zielId: z && !z.tot ? z.id : 0, lagerAggro: w.lagerAggro, lagerLeine: w.lagerLeine, lagerWandern: 0, lagerStufe: w.lagerStufe });
+      Object.assign(m, { helfer: w.id, instanz: w.instanz, heim: { x: w.heim.x, y: w.heim.y }, wach: true, zielId: z && !z.tot ? z.id : 0, lagerAggro: w.lagerAggro, lagerLeine: w.lagerLeine, lagerWandern: 0, lagerStufe: w.lagerStufe }); if (w.schadenMal !== undefined) m.schadenMal = w.schadenMal; /* #156: in der Quest-Fassung sind auch die gerufenen Helfer schwächer */
       this.ev.push({ a: "auftauchen", id: m.id, x: m.x, y: m.y }); }
     if (R.text) this.ev.push({ a: "text", id: w.id, t: R.text }); }
   /** Der Boss ist abgeschüttelt und wieder heil: Phasen, Heilorte und Zeit von vorn, seine Helfer gehen */

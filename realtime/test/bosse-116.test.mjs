@@ -14,7 +14,7 @@ let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t
 const X = { ...NULL_XP, geschick: xpFuer(60), staerke: xpFuer(60), defense: xpFuer(60), lp: xpFuer(70) - xpFuer(10) };
 const neueWelt = () => { const s = Sim.welt(16, undefined, true), U = KARTEN.welt.ursprung; s.ursprung = [U[0], U[1]]; s.wesen = s.wesen.filter((w) => w.held); return { s, U }; };
 const held = (s, U, wx, wy) => { const id = s.beitreten("schildwaechter", 0, { x: wx - U[0], y: wy - U[1] }, kampfwerte(X, startAusruestung("schwert"), 1)), h = s.nach(id); h.max = h.lp = 1e6; s.eingabe({ t: "auto", an: false }, id); return { id, h }; };
-const K = INSTANZEN.find((d) => d.id === "wrack_kajuete"), T = INSTANZEN.find((d) => d.id === "thronsaal");
+const K = INSTANZEN.find((d) => d.id === "wrack_kajuete"), QK = K.questStaerke || QUEST_STAERKE, T = INSTANZEN.find((d) => d.id === "thronsaal");
 check(["thronsaal", "hauptmann_gruft", "tempel_kammer", "wrack_kajuete", "federmutter_kammer"].every((id) => INSTANZEN.find((d) => d.id === id)?.danach), "die fünf Boss-Instanzen aus Phase 6–10 kennen den Schalter „danach“");
 
 console.log("\n0 · Vor der Quest: kein Boss (leerer Raum)");
@@ -27,9 +27,9 @@ console.log("\n0 · Vor der Quest: kein Boss (leerer Raum)");
 console.log("\n1 · In der Quest: allein und schwächer");
 { const { s, U } = neueWelt(), { id, h } = held(s, U, 11504.5, 9620.5);
   const t = weltJeSpieler(s, id, "anna", 11504.5, 9620.5, (x) => x === K.schalter), b = s.wesen.find((w) => w.typ === "wrackkapitaen");
-  check(b && b.instanz === "wrack_kajuete:anna" && b.max === Math.round(MONSTER.wrackkapitaen.lp * QUEST_STAERKE.leben) && b.schadenMal === QUEST_STAERKE.schaden && Boolean(t),
-    `eigene Kopie, Boss mit ${Math.round(QUEST_STAERKE.leben * 100)} % Leben (${b && b.max}/${MONSTER.wrackkapitaen.lp}) und ${Math.round(QUEST_STAERKE.schaden * 100)} % Schaden`);
-  const vor = h.lp; s["abziehen"](h, 100, b); check(vor - h.lp === Math.round(100 * QUEST_STAERKE.schaden), "der Schaden des Bosses ist gemindert (100 → 85)");
+  check(b && b.instanz === "wrack_kajuete:anna" && b.max === Math.round(MONSTER.wrackkapitaen.lp * QK.leben) && b.schadenMal === QK.schaden && Boolean(t),
+    `eigene Kopie, Boss mit ${Math.round(QK.leben * 100)} % Leben (${b && b.max}/${MONSTER.wrackkapitaen.lp}) und ${Math.round(QK.schaden * 100)} % Schaden`);
+  const vor = h.lp; s["abziehen"](h, 100, b); check(vor - h.lp === Math.round(100 * QK.schaden), `der Schaden des Bosses ist gemindert (100 → ${Math.round(100 * QK.schaden)})`);
   check(!bossWahlSetzen("anna", "wrack_kajuete", "instanz", (x) => x === K.schalter), "vor dem Ende der Quest gibt es keine Wahl"); }
 
 console.log("\n2 · Nach der Quest, öffentlich: stärker, zwei Spieler, jeder bekommt Beute");

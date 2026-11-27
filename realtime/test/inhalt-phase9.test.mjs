@@ -43,5 +43,10 @@ check(["kords_brief", "pfannenblech", "tempelabschrift"].every((g) => GEGENSTAEN
 check(["esse_glutbrunn", "amboss_glutbrunn", "herd_glutbrunn", "werkbank_glutbrunn"].every((id) => WERKSTAETTEN.some((w) => w.id === id && !w.schalter)) && Math.hypot(WERKSTAETTEN.find((w) => w.id === "herd_glutbrunn").x - 7119, WERKSTAETTEN.find((w) => w.id === "herd_glutbrunn").y - 6954.4) < 9,
   "Glutbrunn: Esse, Amboss, Herd (F4: Glutwels in Salzkruste) und Werkbank");
 
+console.log("\nSalzpfanne (#155)");
+{ setzeKarte(KARTEN.welt, FEIN); const U = KARTEN.welt.ursprung, s = Sim.welt(3, undefined, true), [sx, sy] = [7330, 6646];
+  const n = s.wesen.filter((w) => w.typ === "glutskorpion" && Math.hypot(w.x + U[0] - sx, w.y + U[1] - sy) <= 8).length;
+  check(n >= 5, `an der Salzpfanne (F2: ${sx}|${sy}) stehen ${n} Glutskorpione in der Kampfwelt`); }
+
 console.log(f ? `\nInhalte Phase 9: ${f} FEHLER` : "\nInhalte Phase 9: alles in Ordnung");
 process.exit(f ? 1 : 0);

@@ -360,7 +360,7 @@ Object.assign(MONSTER, {
     info: "Eine gerüstete Steinfigur mit dem Wappen der Wacht auf der Brust. Wer den Turm betritt, wird gestellt.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [25, 45] }] }, { wurf: [{ g: "wachtstein", chance: 30 }] }, { wurf: [{ g: "erz_ureisen", chance: 6 }] }, { wurf: [{ g: "@selten", chance: 100 / 64 }, { g: "@episch", chance: 100 / 512 }] }] },
   /** Grünlicht: Stufe 60, Irrlicht auf dem Turmdach, heilt Turmwächter in der Nähe */
-  gruenlicht: { name: "Grünlicht", stufe: 60, bild: "img/gegner/irrlicht.jpg", hoehe: 90, lp: 90, tempo: 3.0, angriffswert: { nah: 0, fern: 0, magie: 60 }, abwehr: { nah: 60, fern: 40, magie: 80 }, r: 0.4,
+  gruenlicht: { name: "Grünlicht", stufe: 60, bild: "img/gegner/irrlicht.jpg", hoehe: 90, lp: 60 /* #150: 90 → 60, auf dem Dach mit dem Turmwächter zusammen (D2, Heldenlevel 45) */, tempo: 3.0, angriffswert: { nah: 0, fern: 0, magie: 60 }, abwehr: { nah: 60, fern: 40, magie: 80 }, r: 0.4,
     angriff: { name: "Grünes Feuer", art: "magie", schaden: [1, 10], takt: 2.5, reich: 5, aushol: 0 }, heiler: { alle: 6, anteil: 0.15, radius: 8, nur: "turmwaechter" },
     v2: { magie: 95, geschick: 30, staerke: 10, defense: 60, ticks: 5, abwehr: { nah: 10, fern: -10, magie: 40 } },
     info: "Ein grünes Licht, das schwebt und flüstert. Wo es ist, stehen die Turmwächter wieder auf.",
