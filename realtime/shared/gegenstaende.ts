@@ -545,7 +545,7 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
 { const G8 = "img/objekte3d/grauwacht/symbole/";
   GEGENSTAENDE.kloeppel = { id: "kloeppel", name: "Klöppel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G8 + "kloeppel.webp",
     text: "Ein Klöppel aus Kernbaum, schwer und gerade. Er gehört in die Glocke von Grauwacht." };
-  GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
+  GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
     anforderung: { skill: "geschick", level: 25 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 22, staerke: 22 },
     text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }
 
@@ -587,3 +587,11 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
     werte: [["Heilung", "8 (nicht über das maximale Leben)"], ["Wirkung", "Ausdauer erholt sich 20 Minuten lang 15 % schneller (ersetzt anderes Essen)"], ["Stapelbar", "nein"]], text: "Goldbraun geräuchert." };
   VERBRAUCH.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "In der Glut gegart." };
   VERBRAUCH.aalsuppe = { id: "aalsuppe", name: "Aalsuppe", art: "Essen", seltenheit: "selten", heilt: { fest: 13, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "13 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Die Suppe der Hafenleute." }; }
+
+/* ───────── Beute Phase 7–10 (doku/konzepte/beute.md, 27.11.): neue Rohstoffe – vorerst nur zum Verkauf an den Trödler (Verwendung kommt mit den Berufen); Bilder folgen (Figuren) ───────── */
+{ const R = (id: string, name: string, wert: number, text: string) => { GEGENSTAENDE[id] = { id, name, art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, wert, symbol: "kristall", text }; };
+  R("federn", "Federn", 3, "Weiße und graue Federn von Reihern und Seevögeln. Leicht, aber zu irgendetwas gut.");
+  R("wolfsfell", "Wolfsfell", 10, "Das graue Fell eines Heidewolfs, dicht und rau.");
+  R("chitin", "Chitin", 14, "Panzerplatten eines Sandkriechers, hart wie Horn.");
+  R("giftdruese", "Giftdrüse", 18, "Die Drüse aus dem Stachel eines Glutskorpions. Vorsichtig anfassen."); }
+GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /* Grundwert für den Trödler (#88) */
