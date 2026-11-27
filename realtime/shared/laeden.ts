@@ -34,7 +34,7 @@ export const LAEDEN: Record<LadenId, Laden> = {
   /* Der Handwerker lehnt vor der Schmiede (Figur aus den Weltdaten, waldmark.mjs „handwerker“): Werkzeug fürs Holzfällen, den Bergbau und den Amboss */
   handwerker: { id: "handwerker", name: "Werkzeug des Handwerkers", spruch: "Gutes Werkzeug ist die halbe Arbeit.", haendler: "Der Handwerker", modell: "npc.schmied", x: 6471.6, y: 6431.3, blick: [0, 1], vor: [6471.6, 6432.9], figurInWelt: true,
     gruss: "Gutes Werkzeug ist die halbe Arbeit. Was brauchst du?", tschuess: "Dann eben ein andermal. Pass auf deine Daumen auf.",
-    waren: [ware("holzbeil_training"), ware("holzbeil_einfach"), ware("spitzhacke_training"), ware("spitzhacke_einfach"), ware("hammer"), ware("angelrute"), { g: "krug", preis: 5 }] /* die besseren über das Handwerk; Angelrute und Krug fürs Fischen und Kochen (Phase 3b) */ },
+    waren: [ware("holzbeil_training"), ware("holzbeil_einfach"), ware("spitzhacke_training"), ware("spitzhacke_einfach"), ware("hammer"), ware("angelrute"), { g: "krug", preis: 5 }, { g: "sichel", preis: 10 }] /* die besseren über das Handwerk; Angelrute und Krug fürs Fischen und Kochen (Phase 3b) */ },
   /* Die Bäckerei der Waldmark (Phase 2): Grete Korn verkauft Brot – erst, wenn die Mühle wieder mahlt (Quest A3 „Die Mühle steht still“) */
   baeckerei: { id: "baeckerei", name: "Gretes Backstube", spruch: "Frisch aus dem Ofen – solange das Mehl reicht.", haendler: "Grete Korn", modell: "npcfrau3d", x: 6454, y: 6450.1, blick: [0, 1], vor: [6454, 6451.5], figurInWelt: true,
     gruss: "Brot? Heute wieder, dank dir. Nimm, solange es warm ist.", tschuess: "Komm wieder, wenn der Magen knurrt.", waren: [{ g: "brot", preis: 8 }, { g: "mehl", preis: 3 }] /* Mehl für Brot und Eintopf (Phase 3b) */,
@@ -52,7 +52,7 @@ export const LAEDEN: Record<LadenId, Laden> = {
     gruss: "Ein Apfel am Tag, sagt man. Ich sag: zwei. Zum ehrlichen Preis.", tschuess: "Grüß die Kisten vom Großvater, wenn du sie siehst.", waren: [{ g: "apfel", preis: 2 }],
     wenn: { quest: "obstwiesen_fallobst", phase: "fertig" }, zu: "Gisbert hat nichts zu verkaufen. Seine Kisten sind leer." },
   traenke: { id: "traenke", name: "Schluck auf!", spruch: "Tränke für jedes Wehwehchen.", haendler: "Mira Kräuterlieb", modell: "npc.kraeuterfrau", x: 6456, y: 6441, blick: [0, -1], vor: [6456.5, 6438.5],
-    gruss: "Ach, du siehst blass aus, Kindchen. Ein Schlückchen gefällig?", tschuess: "Komm wieder, bevor's wehtut. Hinterher ist's teurer.", waren: [{ g: "kleiner_heiltrank", preis: 35 }, { g: "heiltrank", preis: 150 }] },
+    gruss: "Ach, du siehst blass aus, Kindchen. Ein Schlückchen gefällig?", tschuess: "Komm wieder, bevor's wehtut. Hinterher ist's teurer.", waren: [{ g: "kleiner_heiltrank", preis: 35 }, { g: "heiltrank", preis: 150 }, { g: "leeres_flaeschchen", preis: 2 }] /* Fläschchen zum Brauen (#133) */ },
 };
 export const LADEN_LISTE = Object.values(LAEDEN);
 /** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */

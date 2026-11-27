@@ -408,7 +408,8 @@ export class Sim {
   }
   /** aggro: nur Helden, die der Gegner noch von selbst angreift (offene Welt: höchstens AGGRO_DAUER, dann erst wieder nach 20 Feldern oder neuem Betreten der Region) */
   private naechsterGegner(w: Wesen, weit: number, aggro = false): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; if (aggro && this.weltZeit && o.held && (o.aggroZeit ?? 0) >= K.AGGRO_DAUER) continue; if (aggro && o.held && !w.held) { const bis = MONSTER[w.typ] && MONSTER[w.typ].aggroBisLevel; if (bis && (o.kw ? o.kw.heldenlevel : 1) >= bis) continue; const F = MONSTER[w.typ] && MONSTER[w.typ].friedlichMit; if (F && o.angelegt && o.angelegt.some((g) => F.includes(g))) continue; /* Verkleidung (#49) */
-      const GL = MONSTER[w.typ] && MONSTER[w.typ].friedlichBei; if (GL && (o.schalterAn || []).includes(GL)) continue; /* Glocke (#102) */ } /* starke Helden lässt er in Ruhe (bis sie angreifen) */ const d = this.felder ? feldAbstand(w, o) : abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
+      const GL = MONSTER[w.typ] && MONSTER[w.typ].friedlichBei; if (GL && (o.schalterAn || []).includes(GL)) continue; /* Glocke (#102) */ } /* starke Helden lässt er in Ruhe (bis sie angreifen) */ const d = this.felder ? feldAbstand(w, o) : abstand(w, o);
+      if (aggro && o.held && o.kw && o.kw.bemerken !== undefined && d > weit * o.kw.bemerken) continue; /* Nebelschleier (#133): man wird erst später bemerkt */ if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
 
   /* ---------- Begleiter (vom Rechner gespielte Helden) ---------- */
   private begleiterZug(w: Wesen): void {

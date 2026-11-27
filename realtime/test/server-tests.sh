@@ -71,6 +71,7 @@ TESTS=(
   inhalt-phase6
   inhalt-phase7
   inhalt-sueden
+  kraeuterkunde
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

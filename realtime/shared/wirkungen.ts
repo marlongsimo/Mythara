@@ -8,7 +8,7 @@ import type { Skill } from "./kampfwerte";
 
 export type WirkArt = "essen" | "trank";
 /** Was eine Wirkung verändert: Skill-Level (+n, wie ein Trank in anderen Spielen) oder die Erholung der Ausdauer (Anteil, 0.25 = 25 % schneller) */
-export type WirkWert = Skill | "ausdauer";
+export type WirkWert = Skill | "ausdauer" | "bemerken"; /* bemerken (#133, Nebelschleier): Anteil der Weite, auf die Gegner einen bemerken (0,75 = ein Viertel später) */
 export interface Wirkung { id: string; art: WirkArt; werte: Partial<Record<WirkWert, number>>; bis: number }
 export interface WirkDef { id: string; art: WirkArt; werte: Partial<Record<WirkWert, number>>; ms: number; name: string; /** kurz, für Symbol und Rucksack */ text: string; symbol: string }
 
@@ -17,6 +17,13 @@ export const WIRKUNGEN: Record<string, WirkDef> = {
   fischsuppe: { id: "fischsuppe", art: "essen", werte: { defense: 2 }, ms: 5 * 60_000, name: "Fischsuppe", text: "Defense +2", symbol: B + "kochen_klein.webp" },
   /* Phase 10 (#92): Räucherhering – lange haltbar, kleine Wirkung „Ausdauer“ */
   raeucherhering: { id: "raeucherhering", art: "essen", werte: { ausdauer: 0.15 }, ms: 20 * 60_000, name: "Räucherhering", text: "Ausdauer erholt sich 15 % schneller", symbol: B + "kochen_klein.webp" },
+  /* Kräuterkunde (#133): Tränke belegen den Trank-Platz (je Art eine Wirkung: ein Trank und ein Essen zugleich) */
+  steinhaut_schwach: { id: "steinhaut_schwach", art: "trank", werte: { defense: 2 }, ms: 3 * 60_000, name: "Steinhaut", text: "Defense +2", symbol: "img/objekte3d/kraeuterkunde/symbole/steinhaut_schwach.webp" },
+  steinhaut_stark: { id: "steinhaut_stark", art: "trank", werte: { defense: 4 }, ms: 5 * 60_000, name: "Steinhaut (stark)", text: "Defense +4", symbol: "img/objekte3d/kraeuterkunde/symbole/steinhaut_stark.webp" },
+  moorfeuer_schwach: { id: "moorfeuer_schwach", art: "trank", werte: { staerke: 2 }, ms: 3 * 60_000, name: "Moorfeuer", text: "Stärke +2", symbol: "img/objekte3d/kraeuterkunde/symbole/moorfeuer_schwach.webp" },
+  moorfeuer_stark: { id: "moorfeuer_stark", art: "trank", werte: { staerke: 5 }, ms: 3 * 60_000, name: "Moorfeuer (stark)", text: "Stärke +5", symbol: "img/objekte3d/kraeuterkunde/symbole/moorfeuer_stark.webp" },
+  nebelschleier_schwach: { id: "nebelschleier_schwach", art: "trank", werte: { bemerken: 0.75 }, ms: 5 * 60_000, name: "Nebelschleier", text: "Gegner bemerken dich später", symbol: "img/objekte3d/kraeuterkunde/symbole/nebelschleier_schwach.webp" },
+  nebelschleier_stark: { id: "nebelschleier_stark", art: "trank", werte: { bemerken: 0.5, fernkampf: -3 }, ms: 5 * 60_000, name: "Nebelschleier (stark)", text: "Gegner bemerken dich erst halb so weit · Fernkampf −3", symbol: "img/objekte3d/kraeuterkunde/symbole/nebelschleier_stark.webp" },
   /* Süden (#126): Braten und Gulasch */
   wildschweinbraten: { id: "wildschweinbraten", art: "essen", werte: { staerke: 1 }, ms: 5 * 60_000, name: "Wildschweinbraten", text: "Stärke +1", symbol: B + "kochen_klein.webp" },
   wolfsgulasch: { id: "wolfsgulasch", art: "essen", werte: { defense: 2 }, ms: 5 * 60_000, name: "Wolfsgulasch", text: "Defense +2", symbol: B + "kochen_klein.webp" },
@@ -24,6 +31,8 @@ export const WIRKUNGEN: Record<string, WirkDef> = {
 };
 const SKILL_WERTE: Skill[] = ["geschick", "staerke", "fernkampf", "magie", "lp", "defense"];
 
+/** Gegner bemerken den Helden erst auf diesem Anteil ihrer Weite (Nebelschleier, #133; 1 = wie immer) */
+export function bemerkenFaktor(w: Wirkung[] | undefined, jetzt = Date.now()): number { let f = 1; for (const x of wirkungenAktiv(w, jetzt)) if (x.werte.bemerken) f *= x.werte.bemerken; return f; }
 /** Nur die noch laufenden */
 export const wirkungenAktiv = (w: Wirkung[] | undefined, jetzt = Date.now()): Wirkung[] => (w || []).filter((x) => x.bis > jetzt);
 /** Neue Wirkung dazu: ersetzt eine laufende derselben Art */

@@ -7,6 +7,8 @@
  *   · XP fürs Verarbeiten = 50 % der Sammel-XP, die in den Zutaten steckt; Schmelzen 30 % der Erz-XP. Nur Garn stapelt.
  * Die XP stehen im Inventar des Helden (Feld „berufe“, Schlüssel „handwerk“) – keine neue Tabelle.
  */
+import { berufAn } from "./berufe";
+import { BERUF_KRAEUTER, KESSEL, SUD_FEHLSCHLAG } from "./kraeuter";
 import { SammelArt } from "./sammeln";
 import { zwischenteil } from "./gegenstaende";
 import { WAFFE_LADEN, AN_WAFFE } from "./splitterbinden";
@@ -77,6 +79,8 @@ const r5 = (x: number) => (x >= 20 ? 5 * Math.round(x / 5) : Math.round(x));
 export interface Zutat { /** eine der Sorten (z. B. jedes Holz ab Eibe) */ g: string[]; n: number }
 export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string; /** … oder mit einer dieser Quests (Süden #126: Eisenbänder auch für S4) */ auchQuest?: string[];
   /** Kochen: kann anbrennen – dann dieser Gegenstand, ohne XP (brennChance) */ verbrannt?: string;
+  /** Kräuterkunde (#133): XP und Level dieses Berufs statt des Berufs der Werkstatt (Brauen am Kessel) */ beruf?: string;
+  /** Fehlschlag statt Anbrennen: Grundchance auf Rezeptstufe und ab wie vielen Leveln darüber nie (Trüber Sud: 25 %, 20) */ brenn?: { grund: number; bis: number };
   /** so viele Stück je Herstellen (Standard 1; Eisenbänder: 2 je Barren) */ menge?: number;
   /** Waffe laden (ergebnis „ladung:@waffe“ / „entladen:@waffe“): nur für eine angelegte Waffe dieser Seltenheit (Phase 5b) */ fuer?: string;
   /** Station mit Wartezeit (Räucherhütte, #102): die Zutaten gehen sofort hinein, nach so vielen Sekunden holt man alles ab (XP beim Abholen, brennt nicht an); ein Auftrag je Spieler */ warten?: number }
@@ -180,7 +184,9 @@ dazu({ id: "wegstein_ungeweiht", station: "werkbank", ergebnis: "wegstein_ungewe
 /* Phase 3b Kochen (doku/konzepte/phase-3.md, Tabelle „Kochen“): Fisch am Feuer, Brot im Backofen, Suppe im Kessel, Eintopf am Herd. Wasser schöpft man am Brunnen in einen Krug.
  * Anbrennen: Chance sinkt mit dem Kochen-Level über dem Rezept, ab +30 brennt nichts mehr. Garpunkt (der Moment wie die Glut): das Stück brennt sicher nicht an und gibt 50 % mehr XP. */
 export const BRENN_GRUND = 0.35, BRENN_BIS = 30;
-export const brennChance = (level: number, r: Rezept): number => (r.verbrannt ? Math.max(0, BRENN_GRUND * (1 - (level - r.level) / BRENN_BIS)) : 0);
+export const brennChance = (level: number, r: Rezept): number => (r.verbrannt ? Math.max(0, (r.brenn ? r.brenn.grund : BRENN_GRUND) * (1 - (level - r.level) / (r.brenn ? r.brenn.bis : BRENN_BIS))) : 0);
+/** Beruf eines Rezepts: eigener (Brauen → Kräuterkunde) oder der der Werkstatt */
+export const rezeptBeruf = (r: Rezept): string => r.beruf || berufAn(r.station);
 const fisch = (f: string, level: number, xp: number, name: string) => dazu({ id: `fisch_${f}_gebraten`, station: "feuer", ergebnis: `fisch_${f}_gebraten`, level, zutaten: [{ g: [`fisch_${f}_roh`], n: 1 }], xp, ticks: 4, stufe: 0, gruppe: name, verbrannt: `fisch_${f}_verbrannt` });
 fisch("bachling", 1, 30, "Fisch");
 fisch("muehlbarsch", 10, 50, "Fisch");
@@ -188,6 +194,18 @@ fisch("moorhecht", 20, 80, "Fisch");
 fisch("wels", 45, 140, "Fisch"); /* Phase 7 (#40) */
 fisch("glutwels", 65, 220, "Fisch"); /* Phase 9 (#86): Kochen 65 */
 /* Phase 10 (#92): Küstenfische und -gerichte. Räucherhering in der Räucherhütte der Möwenbucht (Wartezeit statt Anbrennen, nach G4) */
+/* Kräuterkunde (#133, phase-5.md 5c): Brauen am Kessel – feste Rezepte je Level, Zutaten + leeres Fläschchen; Fehlschlag „Trüber Sud“ (25 % auf Rezeptstufe, 0 % ab +20),
+   Moment „Siedepunkt“ (der Garpunkt des Kessels): kein Fehlschlag, 50 % mehr XP. XP und Level der Kräuterkunde */
+{ const B = (id: string, level: number, xp: number, z: [string, number][]) => dazu({ id: "brauen_" + id, station: "kessel", ergebnis: id, level, xp, ticks: 4, stufe: 0, gruppe: "Brauen", beruf: BERUF_KRAEUTER,
+    zutaten: [...z.map(([g, n]) => ({ g: [g], n })), { g: ["leeres_flaeschchen"], n: 1 }], verbrannt: "trueber_sud", brenn: SUD_FEHLSCHLAG });
+  B("kleiner_heiltrank", 1, 15, [["wegerich", 1]]); B("heiltrank", 10, 30, [["ringelblume", 1], ["wegerich", 1]]);
+  B("atemtrank_schwach", 20, 45, [["moorgloeckchen", 1]]); B("steinhaut_schwach", 30, 60, [["eisenhut", 1], ["golemstein", 1]]);
+  B("atemtrank_stark", 35, 70, [["moorgloeckchen", 2]]); B("steinhaut_stark", 40, 80, [["eisenhut", 2], ["golemstein", 1]]);
+  B("moorfeuer_schwach", 45, 95, [["nebelkraut", 1], ["eisenhut", 1]]); B("nebelschleier_schwach", 50, 105, [["nebelkraut", 1], ["moorgloeckchen", 1]]);
+  B("moorfeuer_stark", 55, 120, [["nebelkraut", 2], ["eisenhut", 1]]); B("nebelschleier_stark", 60, 135, [["nebelkraut", 2], ["moorgloeckchen", 1]]);
+  B("lindentau_schwach", 65, 150, [["lindenbluete", 1], ["seelenlicht", 1]]); B("lindentau_stark", 70, 170, [["lindenbluete", 2], ["seelenlicht", 1]]);
+  for (const K of KESSEL) WERKSTAETTEN.push({ id: K.id, station: "kessel", x: K.x, y: K.y, ort: K.region }); /* Kräuterhaus Waldmark, Heddas Hütte (Welt #35, #45) */
+  dazu({ id: "sichel", station: "werkbank", ergebnis: "sichel", level: 1, zutaten: [{ g: ["stamm_eiche"], n: 1 }, { g: ["barren_kupfer"], n: 1 }], xp: 20, ticks: 4, stufe: 0, gruppe: "Werkzeug" }); }
 /* Süden (#126): Fleisch und Gerichte (Heil-Staffel wie die Fische: 3 · 5 · 7 · 9) */
 dazu({ id: "hasenbraten", station: "feuer", ergebnis: "hasenbraten", level: 5, zutaten: [{ g: ["hasenfleisch"], n: 1 }], xp: 30, ticks: 4, stufe: 0, gruppe: "Braten", verbrannt: "fleisch_verbrannt" });
 dazu({ id: "rinderbraten", station: "herd", ergebnis: "rinderbraten", level: 12, zutaten: [{ g: ["kuhfleisch"], n: 1 }], xp: 50, ticks: 5, stufe: 0, gruppe: "Braten", verbrannt: "fleisch_verbrannt" });

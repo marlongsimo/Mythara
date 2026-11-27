@@ -18,7 +18,7 @@ import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, MONSTER, K, setzeStaerke, STAERKE,
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN, WELTZONEN, WELTZONE, weltRegionBei } from "../../shared/karten";
-import { weltVerbindung, wegsteinZielNehmen, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline, stufeSetzen, belegtAbweisen, systemAn, VOLLES_LEBEN } from "./welt";
+import { weltVerbindung, wegsteinZielNehmen, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, trankExtraMit, weltOnline, stufeSetzen, belegtAbweisen, systemAn, VOLLES_LEBEN } from "./welt";
 import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
@@ -79,6 +79,9 @@ xpLiveSetzen((nutzer, xp) => { for (const Z of zonen.values()) for (const p of Z
   for (const k of SKILLS) p.v1.xp[k] += Number(xp[k as keyof typeof xp]) || 0; Z.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); namenMelden(Z); console.log("Welt: Quest-XP live für", p.name || "?"); } });
 /* Quest-Bedingungen (Skill-Level, Heldenlevel): die Kampf-XP des geladenen Helden */
 heldXpSetzen((nutzer) => { for (const Z of zonen.values()) for (const p of Z.spieler) if (p.v1 && p.kampf && p.kampf.nutzer === nutzer && !p.zoneWeg) return p.v1.xp; return undefined; });
+/* Kräuterkunde (#133): Atemtrank gibt sofort Ausdauer, Moorfeuer (stark) kostet LP beim Trinken – am Helden der Kampfwelt */
+trankExtraMit((nutzer, ausdauer, kostet) => { for (const Z of zonen.values()) for (const p of Z.spieler) { if (!p.kampf || p.kampf.nutzer !== nutzer || !p.heldId) continue; const h = Z.sim.nach(p.heldId); if (!h || h.tot) continue;
+  if (ausdauer && h.ausdauer) h.ausdauer.wert = h.ausdauer.wert + ausdauer; if (kostet) h.lp = Math.max(1, h.lp - kostet); return; } });
 heilenMit(async (nutzer, v) => {
   for (const Z of zonen.values()) for (const p of Z.spieler) { if (!p.kampf || p.kampf.nutzer !== nutzer || !p.heldId || p.zoneWeg) continue; const h = Z.sim.nach(p.heldId); if (!h || h.tot) continue;
     const n = trankHeilungBei(v, h.lp, h.max); if (n <= 0) return { fehler: VOLLES_LEBEN };
