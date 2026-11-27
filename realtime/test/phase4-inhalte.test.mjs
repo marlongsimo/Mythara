@@ -41,7 +41,7 @@ console.log("Rotmantel, Instanzen, Tür, B4 (#16, #60)");
   const frei = (x, y) => M.WELTKAMPF.some((g) => x >= g.x0 && y >= g.y0 && x < g.x0 + g.b && y < g.y0 + g.h && g.zeilen[Math.floor(y) - g.y0][Math.floor(x) - g.x0] === ".");
   check(R && R.planStufe === 32 && R.lp === 120 && R.wiederkehr === 180 && tabelleOk("rotmantel"), "Rotmantel: Stufe 32, 120 LP, 3 min Wiederkehr, gültige Beute");
   check(B && B.phasen.length === 2 && B.phasen[1].ab === 0.5 && B.phasen[1].ruf.n === 2 && B.phasen[0].ansagen[0].alle === 5 && B.phasen[1].ansagen[0].alle === 3, "Phasen: Rundumschlag alle 5, ab 50 % Ruf (2 Schläger) und alle 3");
-  check(B.phasen[1].heilorte.length === 1 && !B.phasen[1].heilorte[0].hingehen && frei(B.phasen[1].heilorte[0].x, B.phasen[1].heilorte[0].y), "Heiltrank am Thron, ohne hingehen (weglocken geht)");
+  check(B.art === "schlaeger" && !B.phasen.some((p) => p.heilorte && p.heilorte.length) && R.v2.abwehr.magie < R.v2.abwehr.nah && R.v2.abwehr.magie < R.v2.abwehr.fern, "#178: Schläger, schwach gegen Magie, kein Heiltrank am Thron mehr");
   const K = M.INSTANZEN.find((i) => i.id === "rotmantel_kammer"), H = M.INSTANZEN.find((i) => i.id === "unterschlupf_halle");
   check(K && K.gegner[0].art === "rotmantel" && Q.schalter[K.schalter] && H && H.wellen.length === 2 && H.wellen.every((w) => w.length === 3) && H.welle === "unterschlupf_welle" && Q.schalter[H.schalter],
     "Kammer als Instanz mit Rotmantel, Halle mit zwei Wellen à 3 – beide an Schaltern von B4");

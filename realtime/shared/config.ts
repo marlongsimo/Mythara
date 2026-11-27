@@ -242,7 +242,7 @@ export const MONSTER: Record<string, MonsterDef> = {
      Als Questgegner in der eigenen Kopie der Kammer (Instanz), danach öffentlich mit 3 Minuten Wiederkehr. Beute laut beute.md (ohne Episch und Rotmantels Klinge, die es noch nicht gibt). */
   rotmantel: { name: "Hauptmann Rotmantel", stufe: 32, bild: "img/echtzeit/bandit.webp", hoehe: 100, lp: 120, tempo: 2.6, angriffswert: { nah: 34, fern: 0, magie: 0 }, abwehr: { nah: 30, fern: 24, magie: 8 }, r: 0.38, wiederkehr: 180,
     angriff: { name: "Zweihandhieb", art: "nah", schaden: [2, 14], takt: 3.0, reich: 1.8, aushol: 0.3 },
-    v2: { geschick: 34, staerke: 50, defense: 30, magie: 10, staerkeBonus: 88, ticks: 6, abwehr: { nah: 25, fern: 20, magie: 5 } },
+    v2: { geschick: 34, staerke: 50, defense: 30, magie: 10, staerkeBonus: 88, ticks: 6, abwehr: { nah: 30, fern: 30, magie: -5 } /* #178: schwach gegen Magie */ },
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [80, 160] }] },
       { wurf: [{ g: "barren_eisen", chance: 20, anzahl: [3, 5] }, { g: "erz_schwarzeisen", chance: 15, anzahl: [4, 8] }, { g: "leder_weich", chance: 15, anzahl: [2, 4] }, { g: "heiltrank", chance: 15, anzahl: [2, 3] },
         { g: "garn", chance: 10, anzahl: [20, 40] }, { g: "seelenlicht", chance: 10, anzahl: [3, 5] }, { g: "splitter", chance: 10, anzahl: [150, 250] }] },

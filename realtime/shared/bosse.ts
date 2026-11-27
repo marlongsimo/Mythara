@@ -14,15 +14,13 @@
  */
 import type { BossDef, InstanzDef, Tuer } from "./boss";
 
-/* Phase 4 (#16, #60): Hauptmann Rotmantel laut doku/konzepte/phase-4.md – Rundumschlag alle 5 Angriffe, bei 50 % ruft er zwei Schläger,
-   danach Rundumschlag alle 3 Angriffe und einmal je Leben ein Heiltrank am Thron (ohne hingehen: man kann ihn vom Thron weglocken). */
-const THRON: [number, number] = [10448, 9607.5];
+/* Phase 4 (#16, #60): Hauptmann Rotmantel laut doku/konzepte/phase-4.md – Rundumschlag alle 5 Angriffe, bei 50 % ruft er zwei Schläger, danach Rundumschlag alle 3 Angriffe.
+   #178 (midgame-bosse.md): Schläger, schwach gegen Magie; eine Kernmechanik (Diener) – der Heiltrank am Thron fällt weg. */
 export const BOSSE: Record<string, BossDef> = {
-  rotmantel: { typ: "rotmantel", phasen: [
+  rotmantel: { typ: "rotmantel", art: "schlaeger", phasen: [
     { ab: 1, ansagen: [{ name: "Rundumschlag", alle: 5, felder: "rundum", schaden: [8, 14] }] },
     { ab: 0.5, text: "Rotmantel ruft nach seinen Leuten!", ruf: { art: "bandit_schlaeger", n: 2, text: "Zwei Schläger stürmen aus dem Gang!" },
-      ansagen: [{ name: "Rundumschlag", alle: 3, felder: "rundum", schaden: [8, 14] }],
-      heilorte: [{ x: THRON[0], y: THRON[1], r: 2, menge: 0.3, unter: 0.5, text: "Rotmantel greift hinter den Thron und trinkt einen Heiltrank." }] } ] },
+      ansagen: [{ name: "Rundumschlag", alle: 3, felder: "rundum", schaden: [8, 14] }] } ] },
 };
 /* Die Versammlungshalle des Unterschlupfs (Raum halle in werkzeug/welt/unterschlupf.mjs) und die Kammer des Anführers (eigenes Gebiet rotmantel_kammer) */
 const H: [number, number] = [10302.5, 9632.5];
