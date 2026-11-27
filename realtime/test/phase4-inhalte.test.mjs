@@ -27,7 +27,7 @@ console.log("Banditen-Varianten (#15, #24)");
   check([18, 22, 24].every((st, i) => M.MONSTER[V[i]].stufe === st), "Stufen 18, 22, 24 wie im Konzept");
   const w = M.WELTKAMPF.find((g) => g.region === "westmark"), a = M.WELTKAMPF.find((g) => g.region === "aschenwerth"), u = M.WELTKAMPF.find((g) => g.region === "unterschlupf");
   check(w && w.lager.filter((l) => l.art === "bandit_spaeher").length === 6 && w.mehrkampf.length === 1, "Westmark: sechs Späher, das Lager ist Mehrkampf (der Kumpan hilft)");
-  check(a && a.lager.length === 5 && u && u.lager.every((l) => V.includes(l.art)), "Riedwiesen-Lager am Moorrand und der Unterschlupf mit den neuen Banditen");
+  check(a && a.lager.filter((l) => l.art.startsWith("bandit_")).length === 5 && u && u.lager.every((l) => V.includes(l.art)), "Riedwiesen-Lager am Moorrand und der Unterschlupf mit den neuen Banditen");
   check(M.MONSTER.bandit_spaeher.drops.some((r) => r.nur === "b3_karrenbrief") && quest("obstwiesen_fallobst").beute.b3_karrenbrief.zaehler.min === 4, "Karrenbrief: garantiert beim fünften Späher"); }
 
 console.log("B3 „Fallobst“ (#15)");

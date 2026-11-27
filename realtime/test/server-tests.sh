@@ -34,8 +34,6 @@ TESTS=(
   splitterbinden-welt
   fischen-kochen-welt
   b2-welt
-  phase6
-  phase6-quest
   phase4
   phase4-inhalte
   b3-welt
@@ -61,8 +59,9 @@ TESTS=(
   welt-weidenhain
   weltkampf
   phase6
+  inhalt-phase7
+  inhalt-phase6
   phase6-quest
-  phase8-10
   inhalt-phase8
   inhalt-phase9
   inhalt-phase10

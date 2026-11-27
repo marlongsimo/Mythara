@@ -69,8 +69,10 @@ BESONDERS = {
     "turm_ebene3": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10960, 9612)]},
     "turm_dach": {"leine": 10, "wandern": 1, "lager": [("gruenlicht", 10990, 9612), ("turmwaechter", 10988, 9614)]},
     # Phase 6 (#17, #26): Aschenwerth – drei Novizen am Steinkreis (friedlich mit Rabenkapuze), Akoluthen und die Federmutter im Heiligtum, Moorraben am Moor
-    "aschenwerth": {"leine": 12, "wandern": 2,
-                    "lager": [("rabenpriester_novize", 6240, 6728), ("rabenpriester_novize", 6244, 6728), ("rabenpriester_novize", 6242, 6730),
+    # dazu Phase 4 (#15): Banditenlager am Moorrand im Norden (Späher, Schläger, Armbrustschütze) – Mehrkampf, damit ein fliehender Späher Hilfe bekommt
+    "aschenwerth": {"leine": 12, "wandern": 2, "mehrkampf": [[6200, 6600, 6224, 6620]],
+                    "lager": [("bandit_spaeher", 6206, 6608), ("bandit_spaeher", 6218, 6608), ("bandit_schlaeger", 6212, 6609), ("bandit_armbrust", 6210, 6614), ("bandit_spaeher", 6216, 6614),
+                              ("rabenpriester_novize", 6240, 6728), ("rabenpriester_novize", 6244, 6728), ("rabenpriester_novize", 6242, 6730),
                               ("rabenpriester_akoluth", 6212, 6714), ("rabenpriester_akoluth_speer", 6214, 6716), ("federmutter", 6214, 6704),
                               ("moorrabe", 6198, 6688), ("moorrabe", 6200, 6688), ("moorrabe", 6202, 6688)]},
     # Phase 6 (#17, #26): Rabengrund – Federgänge mit Moorrabenschwärmen und Akoluthen bis zum Kerker; der Oberste wartet im Thronsaal (Instanz, shared/bosse.ts)
@@ -86,9 +88,6 @@ BESONDERS = {
     # Phase 4 (#15): Späher-Lager in der Westmark (Zelte der Welt-Pipeline, #21) – Mehrkampf, damit ein fliehender Späher beim Kumpan wirklich Hilfe bekommt
     "westmark": {"aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": [[6272, 6544, 6298, 6564]],
                  "lager": [("bandit_spaeher", 6280, 6552), ("bandit_spaeher", 6285, 6550), ("bandit_spaeher", 6290, 6554), ("bandit_spaeher", 6282, 6558), ("bandit_spaeher", 6288, 6558), ("bandit_spaeher", 6278, 6555)]},
-    # Phase 4 (#15): zweites Lager am Moorrand der Riedwiesen (Region Aschenwerth, Nordrand): Späher mit Schläger und Armbrustschütze
-    "aschenwerth": {"aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": [[6200, 6600, 6224, 6620]],
-                    "lager": [("bandit_spaeher", 6206, 6608), ("bandit_spaeher", 6218, 6608), ("bandit_schlaeger", 6212, 6609), ("bandit_armbrust", 6210, 6614), ("bandit_spaeher", 6216, 6614)]},
     # Phase 4 (#16): Hauptmann Rotmantel als öffentlicher Mini-Boss (3 min Wiederkehr, config.ts) – wer B4 noch hat, ist in seiner eigenen Kopie der Kammer (shared/bosse.ts)
     "rotmantel_kammer": {"aggro": 3, "leine": 8, "wandern": 0, "mehrkampf": [[10432, 9600, 10463, 9631]], "lager": [("rotmantel", 10448, 9614)]},
     # Die Banditen-Lichtung im Kreuzwald: vier Dolch-Banditen, Einzelkampf (seit 22.11.2026, vorher Mehrkampf). Karte/Stufe wie bisher (Buchungen laufen als „kreuzwald“).
