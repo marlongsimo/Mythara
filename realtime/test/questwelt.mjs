@@ -88,7 +88,9 @@ export async function starte({ sb: SB, srv: SRV, helden, env = {} }) {
     return siege; }
   /** Gegner an dieser Stelle bekämpfen, bis die Bedingung stimmt; schließt die Verbindung danach */
   async function kampfBis(s, wx, wy, arten, bis, ms = 240000) { await stelle(s, wx, wy); const z = await kampf(s.name, wx, wy); if (!z) return { z: null, siege: 0 };
-    const siege = await kaempfen(z, arten, bis, ms); await schlaf(800); z.ws.close(); await schlaf(2500); return { z, siege }; }
+    const siege = await kaempfen(z, arten, bis, ms); await schlaf(800);
+    if (!bis(siege)) console.log(`  (kampfBis ${z.G.karte}: ${siege} Siege, sichtbar ${[...new Set(z.w.map((w) => w[2]))].join(",")}, ich ${JSON.stringify(z.w.find((w) => w[1] === 1))}, Ereignisse ${z.ev.slice(-5).map((e) => e.a).join(",")})`);
+    z.ws.close(); await schlaf(2500); return { z, siege }; }
   /** einen Gegenstand vom Boden aufheben (in der Nähe) */
   const aufheben = async (s, g, wx, wy) => { sende(s, { t: "pos", x: 0, y: 0, wx, wy }); await schlaf(1500); const d = s.boden.find((b) => b.g === g); if (!d) return false;
     await stelle(s, d.x, d.y); sende(s, { t: "aufheben", id: d.i }); await warte(s, (m) => m.t === "inventar", 2500); await schlaf(300); return anzahl(s, g) > 0; };
