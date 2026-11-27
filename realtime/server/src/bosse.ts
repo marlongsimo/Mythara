@@ -9,6 +9,7 @@
  */
 import type { Sim } from "../../shared/sim";
 import { INSTANZEN, TUEREN, BOSSE } from "../../shared/bosse";
+import "../../shared/zunft"; /* #167: Zunft-Türen (TUEREN) eintragen */
 import { instanzBei, instanzFassung, tuerenZu, imFeld, BOSS_WAHL_STANDARD, type InstanzDef, type BossFassung, type BossWahl } from "../../shared/boss";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { MONSTER } from "../../shared/config";

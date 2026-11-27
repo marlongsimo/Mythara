@@ -17,7 +17,10 @@ const frei = (x, y) => !versperrt(Math.floor(x), Math.floor(y)), modell = (m) =>
 const ORTE = JSON.parse(readFileSync(join(WURZEL, "welt", "hochlande_orte.json"), "utf8")), NPC = ORTE.npc;
 
 console.log("\nBewohner und Läden");
-const L = Object.values(LAEDEN).filter((l) => /^(steinhag_|hochland_)|^troedler_steinhag$/.test(l.id));
+/* die Hauptstadt (#167: Läden der Hauptgasse und des Zunftviertels, Wachen) prüft test/steinhag-stadt.test.mjs */
+const HAUPTSTADT = new Set(["steinhag_waffen", "steinhag_ruestung", "steinhag_backstube", "steinhag_seefisch", "steinhag_stoffe", "steinhag_zunftbedarf", "steinhag_grubenproviant",
+  "steinhag_torwache_west", "steinhag_torwache_ost", "steinhag_torwache_nordwest", "steinhag_burgvogt", "steinhag_burgwache_1", "steinhag_burgwache_2", "steinhag_zunftmeisterin", "steinhag_stollenwache"]);
+const L = Object.values(LAEDEN).filter((l) => /^(steinhag_|hochland_)|^troedler_steinhag$/.test(l.id) && !HAUPTSTADT.has(l.id));
 check(L.length === 15, `15 Bewohner in den Hochlanden (${L.length})`);
 check(L.every((l) => NPC.some((n) => Math.hypot(n.x - l.x, n.y - l.y) <= 3)), "jeder steht an einem Platz der Welt (höchstens 3 Felder daneben)");
 { const schlecht = L.filter((l) => !frei(l.x, l.y) || !frei(l.vor[0], l.vor[1])).map((l) => l.id); check(!schlecht.length, `auf freiem Boden, der Platz davor erreichbar (${schlecht.join(", ") || "alle"})`); }
@@ -43,7 +46,7 @@ console.log("\nWegstein-Ziel Steinhag");
 
 console.log("\nLäden in Steinhag erst nach H1 (Entscheidung des Nutzers, 27.11.), die Bank immer");
 { const vor = (id) => "laeuft", nach = (id) => (id === H_QUESTS.h1 ? "fertig" : "");
-  check(STEINHAG_LAEDEN.length === 5 && STEINHAG_LAEDEN.every((id) => LAEDEN[id] && LAEDEN[id].wenn && LAEDEN[id].wenn.quest === H_QUESTS.h1 && !ladenOffen(LAEDEN[id], vor) && ladenOffen(LAEDEN[id], nach) && LAEDEN[id].zu),
+  check(["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter", "troedler_steinhag"].every((id) => STEINHAG_LAEDEN.includes(id)) && STEINHAG_LAEDEN.every((id) => LAEDEN[id] && LAEDEN[id].wenn && LAEDEN[id].wenn.quest === H_QUESTS.h1 && !ladenOffen(LAEDEN[id], vor) && ladenOffen(LAEDEN[id], nach) && LAEDEN[id].zu),
     `Taverne, Schmiede, Bergmarkt, Kräuter und Trödler: zu bis ${H_QUESTS.h1} fertig ist, dann offen`);
   check(Object.values(LAEDEN).filter((l) => /^hochland_/.test(l.id)).every((l) => !l.wenn), "die übrigen Hochländer (Steiger, Passwacht, Alm …) reden immer");
   const B = BANKIERS.find((b) => b.id === "steinhag_bank"); check(B && !B.wenn && !B.quest, "die Bank von Steinhag ist immer offen"); }

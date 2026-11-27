@@ -83,6 +83,7 @@ TESTS=(
   hueter
   zunft
   bank-orte
+  steinhag-stadt
   pets
   pets-welt
   bank-platzhalter

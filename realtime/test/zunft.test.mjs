@@ -1,6 +1,6 @@
 /*
  * Riftmere – Baustein Zunfthäuser (#167, #168): Zugang erst ab Berufsstufe 60 (Tür mit beruf, die Wache sagt den Text) und Bankkiste (nur ablegen und abheben).
- * Die Orte liefert Welt; hier wird eine Probe-Zunft eingerichtet. Aufruf (im Ordner realtime): node test/zunft.test.mjs
+ * Die Orte liefert Welt; hier wird eine Probe-Zunft (Fischerzunft, noch ohne Ort) eingerichtet – Steinhag prüft test/steinhag-stadt.test.mjs. Aufruf (im Ordner realtime): node test/zunft.test.mjs
  */
 import { build } from "esbuild";
 import { tmpdir } from "node:os";
@@ -17,16 +17,16 @@ check(ZUENFTE.length === 6 && ZUENFTE.every((z) => beruf(z.beruf)) && ["bergbau"
   `sechs Zunfthäuser mit Beruf: ${ZUENFTE.map((z) => z.name).join(", ")}`);
 
 console.log("\nZugang nach Berufsstufe (Probe)");
-const T = zunftEinrichten("bergmannszunft", { feld: [100, 100, 101, 100], eingang: "probe_abstieg" }, { id: "probe_bankkiste", x: 200.5, y: 200.5 });
-const an = () => false, L = (n) => ({ hat: () => false, x: 0, y: 0, beruf: (id) => (id === "bergbau" ? n : 99) });
-check(TUEREN.includes(T) && T.beruf.id === "bergbau" && T.beruf.level === 60 && T.eingang === "probe_abstieg" && !T.schalter, "die Tür der Zunft prüft Bergbau 60 (kein Schalter nötig)");
-check(!tuerOffen(T, an, L(59)) && tuerOffen(T, an, L(60)) && tuerOffen(T, an, L(80)), "Bergbau 59: zu · 60 und mehr: offen");
+const T = zunftEinrichten("fischerzunft", { feld: [100, 100, 101, 100], eingang: "probe_abstieg" }, { id: "probe_bankkiste", x: 200.5, y: 200.5 });
+const an = () => false, L = (n) => ({ hat: () => false, x: 0, y: 0, beruf: (id) => (id === "fischen" ? n : 99) });
+check(TUEREN.includes(T) && T.beruf.id === "fischen" && T.beruf.level === 60 && T.eingang === "probe_abstieg" && !T.schalter, "die Tür der Zunft prüft Fischen 60 (kein Schalter nötig)");
+check(!tuerOffen(T, an, L(59)) && tuerOffen(T, an, L(60)) && tuerOffen(T, an, L(80)), "Fischen 59: zu · 60 und mehr: offen");
 check(!tuerOffen(T, an), "ohne Angabe der Stufe bleibt sie zu");
-check(/Bergbau 60/.test(T.zu) && /Wache/.test(T.zu), `die Wache sagt, was fehlt: ${T.zu}`);
+check(/Fischen 60/.test(T.zu) && /Wache/.test(T.zu), `die Wache sagt, was fehlt: ${T.zu}`);
 check(tuerenZu([T], an, L(10)).length === 1 && tuerenZu([T], an, L(60)).length === 0, "tuerenZu (Server und Browser): zu bzw. offen nach der Stufe");
 
 console.log("\nBankkiste");
-check(istBankkiste("probe_bankkiste") && BANKKISTEN.find((k) => k.id === "probe_bankkiste").name.includes("Bergmannszunft"), "die Kiste der Zunft ist eingetragen");
+check(istBankkiste("probe_bankkiste") && BANKKISTEN.find((k) => k.id === "probe_bankkiste").name.includes("Fischerzunft"), "die Kiste der Zunft ist eingetragen");
 check(nahAnBankkiste("waldmark", 201, 201) && !nahAnBankkiste("waldmark", 210, 210) && !nahAnBank("waldmark", 201, 201), "nah an der Kiste – aber keine richtige Bank");
 check(KISTE_TATEN.has("ein") && KISTE_TATEN.has("ab") && KISTE_TATEN.has("alles") && !KISTE_TATEN.has("tab") && !KISTE_TATEN.has("tauschen") && !KISTE_TATEN.has("platzhalter"),
   "an der Kiste nur ablegen (auch alles) und abheben – keine Reiter, kein Tauschen, keine Platzhalter");

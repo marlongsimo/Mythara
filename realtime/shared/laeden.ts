@@ -137,8 +137,42 @@ ort("troedler_steinhag", { name: "Trödelstand", spruch: "Ich nehm alles – fas
 ort("steinhag_vogt", { name: "Bergvögtin", spruch: "", haendler: "Hilde Erzgrund", modell: "npc.kauffrau", x: 6991, y: 5880, nurReden: true,
   gruss: "Willkommen in Steinhag. Wir haben Erz, Holz und Fisch – und seit Wochen zu viele Trolle.", tschuess: "Glück auf.",
   zeilen: ["Die Passwacht hält kaum noch. Wenn du nach Norden willst, sprich mit den Wächtern am Hochpass.", "Das Bergwerk am Erzberg ist das älteste der Splitterlande. Was unten liegt, weiß keiner so genau."] });
+/* #167 Hauptstadt Steinhag (Welt 72658709, welt/hochlande_orte.json → hauptstadt.laeden): fünf Ladenhäuser an der Hauptgasse und zwei Marktstände im Zunftviertel –
+   nur vorhandene Waren (Konzept hauptstaedte.md: Waffen, Rüstung, Lebensmittel, Stoffe, Fisch, Zunftbedarf) */
+ort("steinhag_waffen", { name: "Grauhorn-Klingen", spruch: "Stahl aus dem Berg.", haendler: "Wulf Klingenberg", modell: "npc.schmied", x: 6945, y: 5900.2,
+  gruss: "Was die Trolle aufhält, hängt hier an der Wand. Such dir was aus.", tschuess: "Schlag zuerst.", waren: waffen.map(ware) });
+ort("steinhag_ruestung", { name: "Bergwacht-Harnische", spruch: "Hält Steinschlag und Trollfaust.", haendler: "Irmgard Schiefer", modell: "npc.schmiedin", x: 6953, y: 5900.2,
+  gruss: "Oben am Pass zählt jede Platte. Probier an, was dir passt.", tschuess: "Bleib heil.", waren: ruestung.map(ware) });
+ort("steinhag_backstube", { name: "Steinhager Backstube", spruch: "Brot für die Schicht.", haendler: "Marthe Laib", modell: "npc.bauer", x: 6962, y: 5900.2,
+  gruss: "Frisch aus dem Ofen – die Kumpel holen's vor der Schicht.", tschuess: "Glück auf.", waren: [W("brot", 8), W("mehl", 3), W("apfel", 3)] });
+ort("steinhag_seefisch", { name: "Fisch vom Steinhagsee", spruch: "Gebraten, solange er warm ist.", haendler: "Henning Stegner", modell: "npc.fischer", x: 7017, y: 5900.2,
+  gruss: "Barsch und Bachling, heute früh gefangen. Den Rest holst du dir selbst am Steg.", tschuess: "Petri Heil.",
+  waren: [W("fisch_bachling_gebraten", 6), W("fisch_muehlbarsch_gebraten", 9), W("fischsuppe", 15)] });
+ort("steinhag_stoffe", { name: "Tuch und Leder", spruch: "Warm durch den Bergwinter.", haendler: "Agathe Webel", modell: "npc.kauffrau", x: 7026, y: 5900.2,
+  gruss: "Grobes Tuch, raues Leder, Garn – für alles Feinere musst du selbst ran.", tschuess: "Bleib warm.", waren: [W("garn", 4), W("stoff_grob", 6), W("leder_rau", 8)] });
+ort("steinhag_zunftbedarf", { name: "Zunftbedarf", spruch: "Was Bergleute und Schmiede brauchen.", haendler: "Sepp Gezähe", modell: "npc.bergmann", x: 7049, y: 5906.6, blick: [0, -1], vor: [7049, 5903.4],
+  gruss: "Hacke, Hammer, Beil – das Grobe hab ich. Das Feine schmiedest du drüben in der Zunft.", tschuess: "Glück auf!",
+  waren: [W("spitzhacke_training", 10), W("spitzhacke_einfach", 350), W("hammer", 10), W("holzbeil_einfach", 350)] });
+ort("steinhag_grubenproviant", { name: "Grubenproviant", spruch: "Vor der Schicht was Warmes.", haendler: "Rosl Henkel", modell: "npc.bergfrau", x: 7057, y: 5906.6, blick: [0, -1], vor: [7057, 5903.4],
+  gruss: "Eintopf im Henkelmann, Brot und ein Krug – mehr braucht keiner da unten.", tschuess: "Komm heil wieder rauf.", waren: [W("bauerneintopf", 20), W("brot", 8), W("krug", 5)] });
+/* Wachen und Burg (Plätze der Welt, hochlande_orte.json → npc): Torwachen, Burgvogt, Burgwachen, Zunftmeisterin und die Wache am Zunftstollen */
+for (const [id, wo, x, y, b] of [["steinhag_torwache_west", "Westtor", 6933, 5898, [-1, 0]], ["steinhag_torwache_ost", "Osttor", 7077, 5898, [1, 0]], ["steinhag_torwache_nordwest", "Nordwesttor", 6940.5, 5823, [0, -1]]] as [LadenId, string, number, number, [number, number]][])
+  ort(id, { name: "Torwache", spruch: "", haendler: `Torwache am ${wo}`, modell: "stadtwache3d", x, y, blick: b, nurReden: true,
+    gruss: "Steinhag. Wer in Frieden kommt, geht durch. Wer nicht – der kommt nicht weit.", tschuess: "Glück auf.", zeilen: ["Drei Tore, drei Wachen. Und auf der Mauer sehen wir weiter als du denkst."] });
+ort("steinhag_burgvogt", { name: "Burgvogt", spruch: "", haendler: "Burgvogt Eberhard", modell: "stadtwache3d", x: 7047, y: 5844, nurReden: true,
+  gruss: "Die Vogtsburg steht seit dem ersten Splitter. Solange sie steht, steht Steinhag.", tschuess: "Geh mit den Steinen.", zeilen: ["Die Bergvögtin regiert die Stadt. Ich halte die Burg. So ist es abgemacht."] });
+ort("steinhag_burgwache_1", { name: "Burgwache", spruch: "", haendler: "Burgwache Hagen", modell: "stadtwache3d", x: 7050.5, y: 5857.5, nurReden: true, /* vor dem Burgtor (Welts Platz 5856 liegt im Mauerfuß) */
+  gruss: "Weiter. Hier gibt's nichts zu sehen.", tschuess: "Weiter.", zeilen: ["Der Bergfried hat noch nie gebrannt. Wir wollen, dass das so bleibt."] });
+ort("steinhag_burgwache_2", { name: "Burgwache", spruch: "", haendler: "Burgwache Ute", modell: "stadtwache3d", x: 7055.5, y: 5857.5, nurReden: true,
+  gruss: "Der Burgplatz ist offen. Der Bergfried nicht.", tschuess: "Weiter.", zeilen: ["Von oben sieht man den ganzen See. Und die Trolle am Pass."] });
+ort("steinhag_zunftmeisterin", { name: "Zunftmeisterin", spruch: "", haendler: "Zunftmeisterin Walburga", modell: "npc.bergfrau", x: 7060, y: 5936, nurReden: true,
+  gruss: "Die Zunft nimmt nur Meister. Bergbau oder Schmieden auf Stufe 60 – dann stehen dir Stollen und Essen offen.", tschuess: "Glück auf.",
+  zeilen: ["Unten im Stollen liegt alles von Eisen bis Ureisen, dicht beieinander. Dazu Schmelzofen und Bankkiste – kurze Wege.", "Vier Essen, zwei Ambosse. Wer hier schmiedet, verliert keine Zeit."] });
+ort("steinhag_stollenwache", { name: "Zunftwache", spruch: "", haendler: "Zunftwächter Bodo", modell: "stadtwache3d", x: 7063, y: 5945.5, blick: [1, 0], nurReden: true, questFigur: "zunftwache",
+  gruss: "Der Stollen der Bergmannszunft. Nur für Meister – Bergbau ab Stufe 60.", tschuess: "Glück auf.", zeilen: ["Ich frag nicht nach dem Namen. Ich frag nach der Hacke – und wie lange du sie schon schwingst."] });
 /* #160: die Läden in Steinhag öffnen erst nach H1 „Über den Pass“ (Entscheidung des Nutzers, 27.11.) – die Bank (shared/bank.ts) und die Bergvögtin bleiben immer da */
-export const STEINHAG_LAEDEN: LadenId[] = ["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter", "troedler_steinhag"];
+export const STEINHAG_LAEDEN: LadenId[] = ["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter", "troedler_steinhag",
+  "steinhag_waffen", "steinhag_ruestung", "steinhag_backstube", "steinhag_seefisch", "steinhag_stoffe", "steinhag_zunftbedarf", "steinhag_grubenproviant"];
 for (const id of STEINHAG_LAEDEN) Object.assign(LAEDEN[id], { wenn: { quest: H_QUESTS.h1, phase: "fertig" as const },
   zu: "Die Läden sind zu. Seit die Trolle auf den Wegen sind, kommt keine Ware über den Pass – die Bergvögtin sucht jemanden, der hilft." });
 /* Bergwerk am Erzberg, Passwacht am Hochpass, Hohe Alm, Einsiedelei am Spiegelsee, Brücke zur Furt */
@@ -168,7 +202,7 @@ export const LADEN_LISTE = Object.values(LAEDEN);
 export const ladenOffen = (L: Laden, stand: (id: string) => string): boolean => !L.wenn || stand(L.wenn.quest) === L.wenn.phase;
 /** Symbol je Laden (Minikarte und Karte) */
 export const LADEN_ZEICHEN: Record<string, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
-  haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺", graufurt_alma: "🥧", steinhag_taverne: "🍲", steinhag_schmiede: "🔨", steinhag_allerlei: "🧺", steinhag_kraeuter: "🧪" };
+  haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺", graufurt_alma: "🥧", steinhag_taverne: "🍲", steinhag_waffen: "⚔️", steinhag_ruestung: "🛡️", steinhag_backstube: "🍞", steinhag_seefisch: "🐟", steinhag_stoffe: "🧵", steinhag_zunftbedarf: "🔨", steinhag_grubenproviant: "🍲", steinhag_schmiede: "🔨", steinhag_allerlei: "🧺", steinhag_kraeuter: "🧪" };
 for (const L of LADEN_LISTE) if (L.troedler) LADEN_ZEICHEN[L.id] = "🪙"; /* Trödler (#88) */
 /* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */
 /** Ein Händler zahlt für seine eigenen Waren so viel von seinem Preis; der Trödler so viel vom Grundwert */

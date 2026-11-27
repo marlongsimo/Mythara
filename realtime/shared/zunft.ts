@@ -7,6 +7,7 @@ import { TUEREN } from "./bosse";
 import type { Tuer } from "./boss";
 import { BANKKISTEN } from "./bank";
 import { beruf } from "./berufe";
+import { WERKSTAETTEN } from "./handwerk";
 
 /** Ab dieser Berufsstufe öffnet eine Zunft (Entscheidung des Nutzers, 27.11.) */
 export const ZUNFT_STUFE = 60;
@@ -34,5 +35,20 @@ export function zunftEinrichten(id: string, tuer: { feld: [number, number, numbe
   if (kiste && !BANKKISTEN.some((k) => k.id === kiste.id)) BANKKISTEN.push({ id: kiste.id, name: `Bankkiste – ${Z.name}`, x: kiste.x, y: kiste.y, ort: "waldmark" });
   return T; }
 
-/* Hier kommen die Zünfte hin, sobald Welt die Orte nennt (#167, #168), z. B.:
-   zunftEinrichten("bergmannszunft", { feld: [x0, y0, x1, y1], eingang: "zunftstollen_abstieg" }, { id: "bankkiste_bergmannszunft", x, y }); */
+/** Stationen einer Zunft: erst ab der Zunftstufe ihres Berufs nutzbar (die Zunftschmiede ist ein offener Hof – die Sperre sitzt an Esse und Amboss) */
+export function zunftStationen(id: string, stellen: { id: string; station: "esse" | "amboss"; x: number; y: number; ort: string; name?: string }[]): void {
+  const Z = zunft(id); if (!Z) throw new Error(`Zunft ${id} gibt es nicht`);
+  for (const S of stellen) if (!WERKSTAETTEN.some((W) => W.id === S.id)) WERKSTAETTEN.push({ ...S, beruf: { id: Z.beruf, level: ZUNFT_STUFE }, gesperrt: zunftZu(Z) }); }
+
+/* ───── Steinhag (#167, Welt 72658709, welt/hochlande_orte.json → hauptstadt) ───── */
+/* Stollen der Bergmannszunft: der Abstieg im Zunftviertel (Interaktion steinhag_zunftstollen_eingang) öffnet erst ab Bergbau 60; unten die Bankkiste der Zunfthalle */
+zunftEinrichten("bergmannszunft", { feld: [7066, 5944, 7066, 5944], eingang: "steinhag_zunftstollen_eingang" }, { id: "zunftstollen_bankkiste", x: 11878, y: 9646.4 });
+/* Zunftschmiede: vier Essen und zwei Ambosse im Hof der Zunft, ab Schmieden 60 */
+zunftStationen("zunftschmiede", [
+  ...[7055, 7058.3, 7061.7, 7065].map((x, i) => ({ id: `esse_zunft_${i + 1}`, station: "esse" as const, x, y: 5934.4, ort: "fl_216_183" })),
+  ...[7056.6, 7063.4].map((x, i) => ({ id: `amboss_zunft_${i + 1}`, station: "amboss" as const, x, y: 5935.6, ort: "fl_216_183" })),
+]);
+/* Neue Stationen (Konzept: keine neuen Rohstoffe): Schmelzofen in der Zunfthalle (hinter dem Abstieg ab Bergbau 60) und Brennofen im Zunftviertel (für alle) –
+   beide schmelzen wie die Esse (dieselben Rezepte, auch die Glut) */
+WERKSTAETTEN.push({ id: "schmelzofen_zunft", station: "esse", name: "Schmelzofen", x: 11866, y: 9646.6, ort: "steinhag_zunftstollen" },
+  { id: "brennofen_zunft", station: "esse", name: "Brennofen", x: 7049, y: 5934, ort: "fl_216_183" });
