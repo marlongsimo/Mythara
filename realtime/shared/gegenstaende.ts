@@ -669,7 +669,3 @@ VERBRAUCH.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: 
 /* ───────── C2 „Der Gesang der Spiralsteine“ (#118): Moorglöckchen-Wachs von Hedda – Questgegenstand, nicht handelbar; Bild vorerst das Moorglöckchen ───────── */
 GEGENSTAENDE.moorwachs = { id: "moorwachs", name: "Moorglöckchen-Wachs", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/kraeuter/symbole/moorgloeckchen.webp",
   text: "Ein Klumpen weiches Wachs, das nach Moorglöckchen riecht. Hedda sagt, man solle es sich in die Ohren drücken, bevor die Steine singen." };
-
-/* ───────── „Miras Rezeptbuch“ (Phase 5c, #118): Miras altes Rezeptheft, das Hedda geliehen hat – Questgegenstand, untauschbar; Bild: das Pergament-Symbol ───────── */
-GEGENSTAENDE.rezeptheft = { id: "rezeptheft", name: "Miras Rezeptheft", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
-  text: "Ein abgegriffenes Heft mit Flecken von Kräutersud. Auf dem Umschlag steht in krakeliger Schrift: „Mira – nicht verleihen!“" };
