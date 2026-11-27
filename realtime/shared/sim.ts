@@ -37,6 +37,8 @@ interface BossLauf { phase: number; angriffe: number; t: number; heil: Record<st
 interface Spec { grund: number; min?: number; /* Höchst- und Mindestschaden; ohne min: FAEHIG_MIN × grund */ art: Schadensart; flaeche?: boolean; wucht?: boolean; sicher?: boolean; mal?: number; untot?: number; nach?: string } // sicher: kein Trefferwurf (räumlich getroffen)
 /** #122/#130: Gegner weiter als so viele Felder von jedem Helden ruhen (werden nicht gerechnet); jeder Spieler sieht Wesen bis SICHT_WEIT Felder */
 /** #143 Streifgebiet: so weit (Felder) liegt das nächste Ziel höchstens, Pause dazwischen (s) */
+/** Folge.angriff: so lange (s) ohne Ziel, dann geht der Gegner */
+export const EINMAL_WEG = 20;
 export const STREIF_SCHRITT = 18, STREIF_PAUSE: [number, number] = [3, 12];
 export const AKTIV_WEIT = 48, SICHT_WEIT = 56, /** ab so vielen Wesen gilt das auch ohne Server (der Browser rechnet die Welt selbst) */ GROSS = 400;
 export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: number; /* Spezialangriff: Pause, Rest der Ladezeit, Zielfläche */ id: number; held: boolean; typ: string; team: number; bot: boolean; x: number; y: number; r: number; blick: number; lp: number; max: number;
@@ -50,7 +52,7 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** Bruchteile noch nicht gebuchter XP je Skill */ xpRest?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number;
   /** Fliehen (MonsterDef.fliehen): läuft gerade zu diesem Kumpan; geflohen = in diesem Leben schon einmal; heim0 = das eigene Lager (heim zieht zum Kumpan mit) */ flucht?: number; geflohen?: boolean; heim0?: Punkt;
   /** Instanz (shared/boss.ts): die Kopie, zu der dieses Wesen gehört – es sieht und trifft nur Wesen derselben Kopie; welle: Nummer seiner Welle */ instanz?: string; welle?: number; /** #116: Schaden mal (Boss in der Quest-Kopie) */ schadenMal?: number; /** aus den Gegnerplätzen der Welt (#130) */ gp?: boolean;
-  /** vom Boss gerufen (Kennung des Bosses): kehrt nicht wieder; weg = verschwindet am Ende des Schritts */ helfer?: number; weg?: boolean;
+  /** vom Boss gerufen (Kennung des Bosses): kehrt nicht wieder; weg = verschwindet am Ende des Schritts */ helfer?: number; weg?: boolean; /** Folge.angriff (E3): erscheint einmal für einen Kampf, kehrt nicht wieder; einmalT: Zeit ohne Ziel */ einmal?: boolean; einmalT?: number;
   /** Boss-Baukasten: Stand des Kampfes; laufende Ansage (Rest in s, Felder, Angriff); Trinken am Heilort (Rest in s, Anteil des Lebens) */ boss?: BossLauf; ansage?: { t: number; felder: [number, number][]; a: Ansage }; trinkT?: number; trinkN?: number;
   /** #102: unangreifbar bis (Simulationszeit: Flackern, Eingraben des Bosses); Flackern-Takt; eingegraben (Sand-Auftauchen, nicht im Zustand) und die laufende Ansage dazu */ weg0?: number; flackerT?: number; /** Heiler: Zeit seit dem letzten Heilen */ heilT?: number; vergraben?: boolean; auftauchen?: { t: number; x: number; y: number };
   /** Stilwechsel (MonsterDef.stile): der laufende Stil und seine Zeit; Verkleidung: was der Held angelegt hat (setzt der Server, MonsterDef.friedlichMit) */ stil?: number; stilT?: number; angelegt?: string[];
@@ -121,6 +123,11 @@ export class Sim {
    *  Nahkampf nur von N/O/S/W, Fernkampf nach Feldabstand. Die alten Kampagnenszenen bleiben stufenlos. */
   get felder(): boolean { return this.weltZeit > 0 && this.eigeneWerte; }
   private wegZu(a: Punkt, b: Punkt): Punkt[] { return weg(a, b, 0.3, this.felder); }
+  /** Folge.angriff (E3, Tjark): ein Gegner erscheint an dieser Stelle und greift diesen Helden an; er kehrt nach dem Kampf nicht wieder und geht,
+   *  wenn er EINMAL_WEG Sekunden kein Ziel hat */
+  angreifer(art: string, p0: Punkt, zielId: number): Wesen | null { if (!MONSTER[art]) return null; const q = naechstFrei(p0), p = this.felder ? mitte(q) : q;
+    const m = this.neu(false, art, 1, p, true, 0); if (this.eigeneWerte) m.lp = m.max = MONSTER[art].lp; Object.assign(m, { einmal: true, wach: true, zielId, heim: { x: p.x, y: p.y } }); this.monsterZahl++;
+    this.ev.push({ a: "auftauchen", id: m.id, x: m.x, y: m.y }); return m; }
   /** #143 Streifgebiet: von Ziel zu Ziel (je STREIF_SCHRITT Felder weit, im Rechteck), dazwischen eine Pause. heim wandert mit dem Tier: die Leine gilt ab der Stelle,
    *  an der ein Kampf beginnt, danach geht es dorthin zurück; die Wiederkehr steht an der letzten Stelle im Gebiet */
   private streifen(w: Wesen): void { const [x0, y0, x1, y1] = w.streif!;
@@ -291,7 +298,7 @@ export class Sim {
         const g: [string, number, string?][] = []; for (const R of D) { let z = this.zf() * 100; for (const d of R.wurf) { if (z < d.chance) { const [lo, hi] = d.anzahl || [1, 1], n = lo + Math.floor(this.zf() * (hi - lo + 1)); g.push(R.nur ? [d.g, n, R.nur] : [d.g, n]); break; } z -= d.chance; } } /* je Roll höchstens ein Treffer */
         if (g.length) this.ev.push({ a: "beute", x: z.x, y: z.y, besitzer: b, g }); } }
     if (STAERKE.ep > 0) { const e = Math.max(1, Math.round(MONSTER[z.typ].lp * STAERKE.ep / 10)); if (this.weltZeit) this.epVerteilen(z, e); else { this.ev.push({ a: "ep", x: z.x, y: z.y, n: e }); this.erfahrung(e); } }
-    if (this.weltZeit) { this.anteile.delete(z.id); if (z.helfer) z.weg = true; else if (!z.instanz) this.wiederkehr.push({ w: z, t: MONSTER[z.typ].wiederkehr ?? this.weltZeit, blinz: this.blinzStart.has(z.id) }); } /* Gerufene und Gegner einer Kopie kehren nicht wieder */ /* Schadensanteile gelten nur für dieses Leben */ /* kommt nach einer Weile zurück */
+    if (this.weltZeit) { this.anteile.delete(z.id); if (z.helfer || z.einmal) z.weg = true; else if (!z.instanz) this.wiederkehr.push({ w: z, t: MONSTER[z.typ].wiederkehr ?? this.weltZeit, blinz: this.blinzStart.has(z.id) }); } /* Gerufene und Gegner einer Kopie kehren nicht wieder */ /* Schadensanteile gelten nur für dieses Leben */ /* kommt nach einer Weile zurück */
     if (B) this.beute.push({ id: this.lauf++, x: z.x, y: z.y, n }); /* bleibt liegen, bis ein Held darüberläuft */ else { this.splitter += n; this.ev.push({ a: "splitter", x: z.x, y: z.y, n }); }
     if (!this.weltZeit && this.besiegt >= this.monsterZahl && !(this.sl && this.sl.offen)) this.sieg(); /* die Welt hat kein Ende */ /* bei offener Schleuse kommen noch welche */
   }
@@ -509,6 +516,7 @@ export class Sim {
         if (!ziel && D.aggressiv !== false) { const o = this.naechsterGegner(w, D.aggroReich ?? w.lagerAggro ?? this.karte.AGGRO ?? K.AGGRO, true); if (o && (this.felder ? feldAbstand(o, w.heim) : abstand(o, w.heim)) <= LEINE) { ziel = o; w.zielId = o.id; w.wach = true; this.wecken(w); } }
         if (ziel && D.spezial && w.cdS <= 0 && abstand(w, ziel) <= D.spezial.reich) { w.ladeT = D.spezial.laden; w.ladeX = ziel.x; w.ladeY = ziel.y; w.pfad = []; w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); this.ev.push({ a: "laden", id: w.id, x: ziel.x, y: ziel.y, r: D.spezial.radius, t: D.spezial.laden }); }
         else if (ziel) this.jagen(w, ziel, this.angVon(w).reich);
+        else if (w.einmal && (w.einmalT = (w.einmalT || 0) + DT) > EINMAL_WEG) { w.tot = true; w.weg = true; this.ev.push({ a: "tot", id: w.id }); } /* Folge.angriff: ohne Gegner geht er */
         else if (w.streif) this.streifen(w); /* #143: Streifgebiet – jedes Tier für sich */
         else if (WANDERN > 0 && abstand(w, w.heim) <= WANDERN + 1.5) { /* streifen: ab und zu zu einer neuen Stelle um das Lager, dazwischen stehen bleiben */
           if (w.lp < w.max) w.lp = Math.min(w.max, w.lp + w.max * K.HEIM_HEILUNG * DT);

@@ -73,7 +73,11 @@ async function buchen(sb: Sb, nutzer: string, q: QB.QuestDef): Promise<boolean |
 
 /* ───────── Gespräche ───────── */
 const offen = new Map<string, { q: string; npc: string }>();
-export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: boolean; fehler?: string; /** Kampf-XP (der Browser trägt sie nach) */ belohnung?: NonNullable<QB.Belohnung["xp"]>; splitter?: number; /** ein Teil des Lohns liegt am Boden */ amBoden?: boolean; /** Questpunkte für diesen Abschluss */ punkte?: number; /** #77: abgeschlossen, der Lohn dieser Quest wartet aufs Abholen */ abholen?: string }
+/* ───────── Folge.angriff (E3): die Figur wird Gegner – die Kampfwelt (index.ts) holt die Wünsche ab und setzt den Gegner (Sim.angreifer) ───────── */
+const angriffe = new Map<string, { art: string; x: number; y: number }[]>();
+/** Wartende Angriffe dieses Spielers (Weltfelder) – danach leer */
+export function angriffeHolen(nutzer: string): { art: string; x: number; y: number }[] { const L = angriffe.get(nutzer); if (!L) return []; angriffe.delete(nutzer); return L; }
+export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: boolean; fehler?: string; /** Kampf-XP (der Browser trägt sie nach) */ belohnung?: NonNullable<QB.Belohnung["xp"]>; splitter?: number; /** ein Teil des Lohns liegt am Boden */ amBoden?: boolean; /** Questpunkte für diesen Abschluss */ punkte?: number; /** #77: abgeschlossen, der Lohn dieser Quest wartet aufs Abholen */ abholen?: string; /** Folge.angriff: diese Figur ist jetzt ein Gegner (der Browser lässt sie beiseite treten) */ angriff?: string }
 /** Gehört die Figur zu einer Quest des Baukastens? */
 export const figurDa = (id: string): boolean => QUESTS.some((q) => q.figuren.some((f) => f.id === id));
 export function motorReden(sb: Sb, nutzer: string, id: string, wx: number | undefined, wy: number | undefined): MotorAntwort {
@@ -113,6 +117,7 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
     nehmen(); neu = geben(sb, nutzer, (f.geben || []).filter((G) => !G.verloren), k, lohnGeber(sb, nutzer, bx, by, (n) => { boden += n; })).neu; /* was die Figur im Gespräch gibt (Waffe nach Wahl), gleich */
     await setzen(sb, nutzer, q, QB.ABHOLBEREIT); if (boden) aus.amBoden = true; aus.abholen = q.id; }
   else { const r = geben(sb, nutzer, f.geben || [], k); if (r.fehler) return { fehler: r.fehler }; neu = r.neu;
+    if (f.angriff) { const F1 = q.figuren.find((x) => x.id === o.npc)!; angriffe.set(nutzer, [...(angriffe.get(nutzer) || []), { art: f.angriff, x: F1.x, y: F1.y }]); aus.angriff = F1.id; }
     const n = QB.nachFolge(q, s, f); if (n !== s) await setzen(sb, nutzer, q, n); }
   let zeilen = QB.folgeZeilen(q, o.npc, qStand(nutzer, q.id), f.geben && f.geben.length && !neu.length && f.nichtsZuGeben ? f.nichtsZuGeben : f.zeilen);
   const F = q.figuren.find((x) => x.id === o.npc)!; if (neu.length) zeilen = [...zeilen, { wer: F.name, text: `(Du bekommst: ${neu.join(", ")}.)` }];
