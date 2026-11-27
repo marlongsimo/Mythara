@@ -7,6 +7,16 @@
   }
  },
  "aktionen": {
+  "freude": {
+   "bilder": 8,
+   "rate": 10,
+   "schleife": false
+  },
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
   "laufen": {
    "bilder": 8,
    "rate": 11,

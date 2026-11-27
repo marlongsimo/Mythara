@@ -9,6 +9,8 @@ linse_trueb      – dieselbe Linse verschmutzt und trüb (vor dem Polieren, G2)
 raeucherhuette   – Räucherhütte der Möwenbucht: Bretterhütte mit Satteldach, Rauchloch, Tür, außen Gestell mit hängenden Heringen
 netze            – zwei Pfähle mit aufgehängtem Fischernetz und Korkschwimmern, dazu ein Netzhaufen am Boden
 wrackkiste       – Kiste aus dem Wrack: nasses dunkles Holz, Eisenbänder, Seepocken, schwarzes Wachssiegel mit Rabe (G3); auch Rucksackbild
+#174 Hafen: kran (Holzkran mit Ausleger und Tretrad) · poller · taurolle · fischkisten · ruderboot (≈ 4 m) · leuchtturm (≈ 12 m, weiß-rot) ·
+                   kaimauer_gerade / kaimauer_ecke (Baukasten 4 m, 2,2 m hoch; Wasser bei -y, Ecke auch bei +x)
 dreispitz        – Dreispitz des Wrackkapitäns (Kopfteil, art "kopf"): schwarzer Filz, goldene Tresse am Rand, Spitze vorn (-y)
 laterne          – Handlaterne (Werkzeug für die Leuchtturmwärterin): Knauf oben (+z), Ring zum Halten, Glas mit Flamme
 """
@@ -154,6 +156,73 @@ elif ART == "laterne":
     for k in range(4): a = k * math.pi / 2 + math.pi / 4; rohr((0.065 * math.cos(a), 0.065 * math.sin(a), 0.02), (0.065 * math.cos(a), 0.065 * math.sin(a), 0.225), 0.006, EIS, 4)
     dreh([(0, 0.025), (0.06, 0.025), (0.06, 0.22), (0, 0.22)], mat("laternenglas", (255, 220, 150), 0.2, 0, 1.2), 12)
     kristall((0, 0, 0.1), 0.02, 0.07, FLAMME)
+elif ART == "kran":                                                                           # #174 Hafenkran: Holzbock mit Ausleger, Seil, Haken und Tretrad-Winde (≈ 6 m)
+    STEIN_ = mat("stein", (138, 134, 126), 0.9); TAU = mat("tau", (176, 150, 104), 0.85)
+    wuerfel((0, 0, 0.3), (2.2, 2.2, 0.6), STEIN_, fase=0.05)
+    for sx in (-0.7, 0.7):
+        for sy in (-0.7, 0.7): rohr((sx, sy, 0.6), (sx * 0.3, sy * 0.3, 4.2), 0.12, HOLZ2, 8)
+    wuerfel((0, 0, 4.25), (0.7, 0.7, 0.3), HOLZ2, fase=0.05)
+    rohr((0, 0.3, 4.3), (0, -3.6, 5.8), 0.14, HOLZ, 8); rohr((0, 0.6, 4.0), (0, 1.6, 3.2), 0.1, HOLZ, 8)   # Ausleger nach vorn (-y), Gegengewicht hinten
+    wuerfel((0, 1.7, 3.0), (0.6, 0.6, 0.5), STEIN_, fase=0.1)
+    rohr((0, -3.6, 5.75), (0, -3.6, 2.2), 0.025, TAU, 6); ring((0, -3.6, 2.1), 0.12, 0.03, EIS, (math.radians(90), 0, 0))
+    wuerfel((0, -3.6, 1.6), (0.6, 0.6, 0.6), HOLZ, fase=0.08)                                           # Last am Haken: Kiste
+    bpy.ops.mesh.primitive_torus_add(major_radius=1.0, minor_radius=0.08, location=(1.3, 0, 1.6), rotation=(0, math.radians(90), 0), major_segments=24, minor_segments=6)
+    bpy.context.object.data.materials.append(HOLZ2)
+    for k in range(8): a = k * math.pi / 4; rohr((1.3, 0, 1.6), (1.3, math.cos(a), 1.6 + math.sin(a)), 0.05, HOLZ, 6)   # Tretrad
+    rohr((1.0, 0, 1.6), (1.6, 0, 1.6), 0.1, HOLZ2, 8)
+elif ART == "poller":                                                                          # #174 Poller am Kai: Eisen, oben verdickt, mit Tau
+    dreh([(0, 0), (0.16, 0), (0.16, 0.05), (0.12, 0.1), (0.11, 0.42), (0.16, 0.5), (0.16, 0.56), (0, 0.6)], EIS, 20)
+    ring((0, 0, 0.3), 0.13, 0.025, mat("tau", (176, 150, 104), 0.85), seg=(20, 6))
+elif ART == "taurolle":                                                                        # #174 aufgeschossene Taurolle mit losem Ende
+    TAU = mat("tau", (176, 150, 104), 0.85)
+    for k in range(6): ring((0, 0, 0.035 + 0.05 * k), 0.25 - 0.012 * k, 0.03, TAU, seg=(28, 6))
+    rohr((0.24, 0, 0.03), (0.6, -0.2, 0.03), 0.03, TAU, 6)
+elif ART == "fischkisten":                                                                     # #174 Stapel Fischkisten mit Fisch und Eis/Salz
+    FISCH = mat("fisch", (150, 168, 180), 0.35, 0.3); SALZ = mat("salz", (240, 240, 236), 0.6)
+    for k, (x, y, z) in enumerate(((0, 0, 0), (0.7, 0.05, 0), (0.35, 0.02, 0.36))):
+        wuerfel((x, y, z + 0.17), (0.65, 0.42, 0.34), HOLZ if k % 2 else NASS, fase=0.03)
+        wuerfel((x, y, z + 0.33), (0.58, 0.35, 0.02), SALZ, fase=0)
+        for j in range(4): kugel((x - 0.2 + 0.13 * j, y + random.uniform(-.08, .08), z + 0.36), 0.04, FISCH, (2.4, 0.7, 0.5), 10).rotation_euler.z = random.uniform(-.4, .4)
+elif ART == "ruderboot":                                                                       # #174 angelegtes Ruderboot (≈ 4 m) mit zwei Rudern und Tau
+    me = bpy.data.meshes.new("rumpf"); vs, fs = [], []; NU, NV = 16, 9
+    for i in range(NU + 1):
+        t = i / NU; x = (t - 0.5) * 4.0; b = 0.75 * math.sin(math.pi * t) ** 0.6; h = 0.55
+        for j in range(NV + 1):
+            u = j / NV; a = math.pi * u; vs.append((x, -b * math.cos(a), h - h * math.sin(a) * (0.6 + 0.4 * math.sin(math.pi * t))))
+    for i in range(NU):
+        for j in range(NV): a0 = i * (NV + 1) + j; fs.append((a0, a0 + NV + 1, a0 + NV + 2, a0 + 1))
+    me.from_pydata(vs, [], fs); me.update(); o = bpy.data.objects.new("rumpf", me); bpy.context.collection.objects.link(o); o.data.materials.append(HOLZ)
+    s = o.modifiers.new("d", "SOLIDIFY"); s.thickness = 0.05; glatt(o)
+    for x in (-0.6, 0.6): wuerfel((x, 0, 0.35), (0.3, 1.3, 0.05), HOLZ2, fase=0.1)                     # Ruderbänke
+    for sy in (-1, 1): rohr((-0.2, sy * 0.4, 0.45), (0.9, sy * 0.95, 0.3), 0.03, HOLZ2, 6); wuerfel((0.95, sy * 1.0, 0.3), (0.35, 0.08, 0.02), HOLZ2, (0, 0, sy * 0.4), 0)
+    rohr((2.0, 0, 0.5), (2.6, 0.2, 0.1), 0.025, mat("tau", (176, 150, 104), 0.85), 6)
+elif ART == "leuchtturm":                                                                      # #174 Leuchtturm für die Mole: weiß-rot gestreift, Galerie, Laterne mit Feuer (≈ 12 m)
+    WEISS = mat("putz_weiss", (232, 228, 218), 0.8); STEIN_ = mat("stein", (138, 134, 126), 0.9)
+    dreh([(0, 0), (2.4, 0), (2.4, 0.8), (0, 0.8)], STEIN_, 24)
+    for k in range(5):
+        z0, z1 = 0.8 + k * 1.8, 0.8 + (k + 1) * 1.8; r0, r1 = 1.8 - 0.12 * k, 1.8 - 0.12 * (k + 1)
+        dreh([(0, z0), (r0, z0), (r1, z1), (0, z1)], WEISS if k % 2 == 0 else ROT, 24)
+    dreh([(0, 9.8), (1.6, 9.8), (1.6, 10.0), (0, 10.0)], EIS, 24)                                      # Galerie
+    for k in range(16): a = k * math.pi / 8; rohr((1.5 * math.cos(a), 1.5 * math.sin(a), 10.0), (1.5 * math.cos(a), 1.5 * math.sin(a), 10.6), 0.025, EIS, 4)
+    ring((0, 0, 10.6), 1.5, 0.03, EIS, seg=(32, 4))
+    dreh([(0, 10.0), (0.9, 10.0), (0.9, 11.4), (0, 11.4)], mat("laternenglas", (255, 220, 150), 0.2, 0, 1.5), 16)
+    kristall((0, 0, 10.6), 0.35, 0.9, FLAMME)
+    dreh([(0, 11.4), (1.1, 11.4), (0.0, 12.4)], ROT, 16); kugel((0, 0, 12.45), 0.12, EIS)
+    wuerfel((0, -1.75, 1.7), (0.9, 0.2, 1.7), HOLZ2, fase=0.05)                                         # Tür
+elif ART in ("kaimauer_gerade", "kaimauer_ecke"):                                               # #174 Kaimauer-Baukasten: Quader am Wasser, 4 m lang, 2,2 m hoch, 1,2 m tief
+    Q = mat("quader", (156, 150, 138), 0.85); Q2 = mat("quader_nass", (98, 104, 96), 0.7); ALGE = mat("alge", (60, 90, 60), 0.8)
+    def mauer(u0, u1, quer):
+        """Mauerstück entlang u von u0 bis u1; quer=False: entlang x (Wasser bei -y), quer=True: entlang y (Wasser bei +x)"""
+        P = (lambda u, v, z: (v, u, z)) if quer else (lambda u, v, z: (u, v, z)); G = (lambda l, t, h: (t, l, h)) if quer else (lambda l, t, h: (l, t, h))
+        for k in range(5):
+            z = 0.22 + k * 0.44; u = u0 - 0.4 * (k % 2)
+            while u < u1 - 0.05:
+                l = min(0.8 + random.uniform(-0.1, 0.15), u1 - max(u, u0)); mitte = max(u, u0) + l / 2
+                wuerfel(P(mitte, 0, z), G(l - 0.03, 1.2, 0.42), Q2 if k < 2 else Q, fase=0.06); u = max(u, u0) + l
+        wuerfel(P((u0 + u1) / 2, 0, 2.27), G(u1 - u0, 1.3, 0.14), Q, fase=0.05)
+        for k in range(6): wa = 0.62 * (1 if quer else -1); kugel(P(u0 + 0.3 + (u1 - u0 - 0.6) * k / 5, wa, 0.3 + random.uniform(0, 0.4)), 0.12, ALGE, G(1.6, 0.3, 0.8), 8)
+    if ART == "kaimauer_gerade": mauer(-2.0, 2.0, False)
+    else: mauer(-2.0, 0.6, False); mauer(-0.6, 2.0, True)                                       # Ecke: Kai biegt um 90° landeinwärts ab (Wasser vorn -y und rechts +x)
 for o in list(bpy.context.scene.objects):
     bpy.context.view_layer.objects.active = o
     for m in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=m.name)
