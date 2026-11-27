@@ -37,7 +37,7 @@ try {
     check(await mitHeld(ida, F1, "kord", "annehmen") && stand(ida, F1).phase === "laeuft" && anzahl(ida, "kords_brief") === 1, "Ida nimmt F1 an und bekommt Kords Brief");
     await objekt(ida, F1, "f1_grasende"); check(erl(ida, F1, "gras"), "Die Wegmarke „Ende des Grases“ gelesen");
     { const [x, y] = F1.schritte.find((x) => x.id === "raeuber_saebel").wo; await stelle(ida, x, y); const z = await kampf("ida", x, y); let n = 0;
-      if (z) { n += await kaempfen(z, ["karawanenraeuber_saebel"], () => erl(ida, F1, "raeuber_saebel"), 300000); n += await kaempfen(z, ["karawanenraeuber_bogen"], () => erl(ida, F1, "raeuber_bogen"), 300000);
+      if (z) { n += await kaempfen(z, ["karawanenraeuber_saebel", "karawanenraeuber_bogen"], () => erl(ida, F1, "raeuber_saebel") && erl(ida, F1, "raeuber_bogen"), 400000); /* #154: beide zusammen – wer vom Bogenschützen beschossen wird, ist an ihn gebunden (Einzelkampf) und kann erst nach ihm einen Säbelräuber angreifen */
         { const ich = (z.w.find((w) => w[1] === 1) || [])[0]; check(!z.ev.some((e) => e.a === "tot" && e.id === ich), "Ida überlebt den Kanal"); } z.ws.close(); await schlaf(2500); } const r = { z, siege: n };
       check(erl(ida, F1, "raeuber_saebel") && erl(ida, F1, "raeuber_bogen"), `Karawanenräuber am Kanal besiegt (${r.siege} Siege${r.z ? "" : ", kein Kampfgebiet"})`); }
     check(await sprich(ida, F1, "selma", "brief_geben") && fertig(ida, F1) && anzahl(ida, "kords_brief") === 0, "F1 fertig: Selma liest den Brief, Lohn abgeholt");
