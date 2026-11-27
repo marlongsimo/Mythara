@@ -1,15 +1,86 @@
 {
  "start": [
   [
-   240.0,
-   208.0
+   240,
+   208
   ]
  ],
  "figuren": [],
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 77,
+    "y0": 163,
+    "x1": 78,
+    "y1": 164
+   },
+   {
+    "art": "rechteck",
+    "x0": 72,
+    "y0": 161,
+    "x1": 73,
+    "y1": 162
+   },
+   {
+    "art": "rechteck",
+    "x0": 76,
+    "y0": 157,
+    "x1": 77,
+    "y1": 158
+   },
+   {
+    "art": "rechteck",
+    "x0": 13,
+    "y0": 372,
+    "x1": 14,
+    "y1": 373
+   },
+   {
+    "art": "rechteck",
+    "x0": 10,
+    "y0": 373,
+    "x1": 11,
+    "y1": 374
+   },
+   {
+    "art": "rechteck",
+    "x0": 9,
+    "y0": 370,
+    "x1": 10,
+    "y1": 371
+   },
+   {
+    "art": "rechteck",
+    "x0": 12,
+    "y0": 368,
+    "x1": 13,
+    "y1": 369
+   },
+   {
+    "art": "rechteck",
+    "x0": 62,
+    "y0": 149,
+    "x1": 63,
+    "y1": 150
+   },
+   {
+    "art": "rechteck",
+    "x0": 57,
+    "y0": 149,
+    "x1": 58,
+    "y1": 150
+   },
+   {
+    "art": "rechteck",
+    "x0": 59,
+    "y0": 145,
+    "x1": 60,
+    "y1": 146
+   }
+  ],
   "freigeben": []
  },
  "interaktionen": [
@@ -23,6 +94,20 @@
    "daten": {
     "text": "Der Nordstrand. Nach den Dünen ein Streifen grünes Gras und Meer, so weit man sieht. Die Karawanen rasten hier, bevor sie umkehren."
    }
+  }
+ ],
+ "senken": [
+  {
+   "x": 11.5,
+   "y": 371.4,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 59.9,
+   "y": 148.1,
+   "r": 5,
+   "tiefe": 1.1
   }
  ]
 }

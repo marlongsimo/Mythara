@@ -1,7 +1,6 @@
 [
- {"id":"bl_ruine_halbmauer_1646","objekt":"k_ruine_halbmauer","x":47,"y":3},
- {"id":"bl_erle_tot_1703","objekt":"stil_erle_tot_01","x":111.5,"y":3.5,"s":1.04,"spiegeln":true},
- {"id":"bl_busch_1837","objekt":"stil_busch_02","x":100.5,"y":0.5},
- {"id":"bl_busch_1945","objekt":"stil_busch_02","x":106.5,"y":6},
- {"id":"bl_busch_1985","objekt":"stil_busch_02","x":82.5,"y":1.5}
+ {"id":"bl_erle_tot_1699","objekt":"stil_erle_tot_01","x":111.5,"y":3.5,"s":1.04,"spiegeln":true},
+ {"id":"bl_busch_1829","objekt":"stil_busch_02","x":100.5,"y":0.5},
+ {"id":"bl_busch_1935","objekt":"stil_busch_02","x":106.5,"y":6},
+ {"id":"bl_busch_1975","objekt":"stil_busch_02","x":82.5,"y":1.5}
 ]
