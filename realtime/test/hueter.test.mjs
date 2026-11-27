@@ -43,7 +43,7 @@ const W = (t) => MONSTER[t].widerstand || {};
 check(W("grumhold").nah === 0.5 && W("grumhold").magie > 1 && W("sturmschwinge").magie === 0.5 && W("sturmschwinge").fern > 1 && W("frostwitwe").fern === 0.5 && W("frostwitwe").nah > 1,
   "Dreieck: Grumhold stark gegen Nahkampf, schwach gegen Magie · Sturmschwinge stark gegen Magie, schwach gegen Fernkampf · Frostwitwe stark gegen Fernkampf, schwach gegen Nahkampf");
 check(HUETER.every((H) => { const D = INSTANZEN.find((d) => d.id === H.instanz); return D && D.schalter === H.schalter && D.danach === H.danach && D.gegner[0].art === H.typ; }),
-  "drei Instanzen in Welts Räumen (trollhalle, horst_sturmschwinge, eishoehle_frostwitwe) mit den Schaltern für H4 und danach");
+  "drei Instanzen in Welts Räumen (trollhalle, horst_grauhorn, eishoehle_hochpass) mit den Schaltern für H4 und danach");
 console.log(ECHT.length === 3 ? "  (alle drei Räume sind in der Kampfwelt)" : `  (Räume fehlen noch in der Kampfwelt – Probe in der Bergwerkshalle für: ${HUETER.map((H) => H.typ).filter((t) => !ECHT.includes(t)).join(", ")})`);
 check(["grumhold", "sturmschwinge", "frostwitwe"].every((t) => MONSTER[t].aggressiv === false && MONSTER[t].aggressivNach && MONSTER[t].aggressivNach.schalter === t + "_danach"),
   "öffentlich friedlich gegen alle, die H4 noch nicht abgeschlossen haben (aggressivNach *_danach)");
