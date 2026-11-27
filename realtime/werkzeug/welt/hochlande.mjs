@@ -140,8 +140,8 @@ const BW_U = [362, 300], [BX, BY] = ORTE.bergwerk;
   male(BX - 8, BY - 1, BX + 7, BY + 9, (x, y) => (Math.hypot((x - BX) / 7.5, (y - BY - 4) / 5.5) < 1 ? "h" : null)); male(BX - 6, BY + 4, BX + 2, BY + 16, (x, y) => (strecke(x, y, [[BX, BY + 4], [BX - 3, BY + 14]]) < 2.4 ? "g" : null));
   ding("hochland_stolleneingang", BX, BY - 1, { id: "bergwerk_eingang" }); ding("hochland_grubenholz", BX + 5, BY + 3, { id: "bergwerk_grubenholz_1" }); ding("hochland_grubenholz", BX + 6.5, BY + 5, { id: "bergwerk_grubenholz_2", spiegeln: true });
   ding("hochland_lore", BX - 1.5, BY + 6, { id: "bergwerk_lore" }); ding("hochland_schienen", BX - 1.5, BY + 3.5, { id: "bergwerk_schienen_1" }); ding("hochland_schienen", BX - 1.5, BY + 6, { id: "bergwerk_schienen_2" }); ding("dorf_holzstapel_01", BX + 4, BY + 6); ding("moor_feuerkorb_01", BX - 2, BY + 2);
-  ding("moor_kate_02", BX - 14, BY + 12, { id: "bergwerk_kaue" }); ding("steinhag_bankkiste", BX - 17, BY + 13, { id: "bergwerk_bankkiste" });   /* links der Kaue, abseits vom Erzweg */
-  lies("bergwerk_bankkiste", BX - 17, BY + 14.4, "Die Bankkiste an der Kaue. Wer sein Erz nicht bis Steinhag schleppen will, legt es hier ein – es liegt auf demselben Konto.");
+  ding("moor_kate_02", BX - 14, BY + 12, { id: "bergwerk_kaue" }); ding("steinhag_bankkiste", BX - 10.6, BY + 12.4, { id: "bergwerk_bankkiste" });   /* an der Kaue, einen Schritt weg vom Erzweg */
+  lies("bergwerk_bankkiste", BX - 9.5, BY + 13.8,   /* Lesestelle genau wie shared/bank.ts (7118,5 | 5821,8) */ "Die Bankkiste an der Kaue. Wer sein Erz nicht bis Steinhag schleppen will, legt es hier ein – es liegt auf demselben Konto.");
   lies("bergwerk_eingang", BX, BY + 1.2, "Der Stollen ins Erzberg-Bergwerk. Kalte Luft, das Klopfen von Hämmern – und tief drinnen etwas Schweres, das sich bewegt.", { tat: "bergwerk", knopf: "Hineingehen", ziel: [BW_U[0] * 32 + 48, BW_U[1] * 32 + 58] });
   npc.push({ id: "steiger", rolle: "Steiger (Bergwerk)", x: BX - 4, y: BY + 3 }, { id: "bergmann_1", rolle: "Bergmann", x: BX + 3, y: BY + 4 }, { id: "bergmann_2", rolle: "Bergfrau", x: BX - 12, y: BY + 13.5 }); }
 
@@ -342,10 +342,18 @@ for (let i = 0; i < 9000 && (zaehl.Büsche || 0) < 180; i++) { const x = 6840 + 
 reisende.push({ id: "bergleute_steinhag_erzberg", rolle: "Bergleute auf dem Weg zur Schicht (shared/reisende.ts ERZWEG): vom Markt durchs Osttor zum Stolleneingang", punkte: ERZWEG });
 
 /* ═══════ 10. Kräuter an Schattenhängen (Nordseiten von Grauhorn und Erzberg) ═══════ */
-{ let k = 0; for (let i = 0; i < 6000 && kraeuter.length < 10; i++) { const x = 6860 + wurf() * 340, y = 5460 + wurf() * 380; const art = kraeuter.length % 2 ? "nebelkraut" : "eisenhut";
-    const amHang = strecke(x, y, GRAT) < 26 && strecke(x, y, GRAT) > 8 || Math.hypot((x - ORTE.erzberg[0]) / 46, (y - ORTE.erzberg[1]) / 34) < 1.05 && y < ORTE.erzberg[1];
+{ let k = 0; const hangOk = (x, y) => strecke(x, y, GRAT) < 26 && strecke(x, y, GRAT) > 8 || Math.hypot((x - ORTE.erzberg[0]) / 46, (y - ORTE.erzberg[1]) / 34) < 1.05 && y < ORTE.erzberg[1];
+  /* stabil: Stellen aus dem letzten Lauf bleiben, solange sie noch passen (Kennung hochlande_<art>_<n>) */
+  { const KS0 = JSON.parse(readFileSync(join(WELT, "kraeuter_standorte.json"), "utf8")).stellen.filter((q) => /^hochlande_(eisenhut|nebelkraut)_\d+$/.test(q.id)).sort((a, b) => +a.id.split("_").at(-1) - +b.id.split("_").at(-1));
+    for (const q of KS0) { if (!hangOk(q.x, q.y) || !"g,.".includes(jetzt(q.x, q.y)) || imOrt(q.x, q.y) || wegNah(q.x, q.y, 2)) continue;
+      kraeuter.push({ ...q, region: regionVon(q.x, q.y) }); for (let i = objekte.length - 1; i >= 0; i--) if (/^hl_/.test(objekte[i].id) && Math.hypot(objekte[i].x - q.x, objekte[i].y - q.y) < 2.5) objekte.splice(i, 1); }   /* Streugut weicht der Stelle */
+  }
+  const frei = () => { for (let n = 1; n <= 10; n++) if (!kraeuter.some((q) => +q.id.split("_").at(-1) === n)) return n; return ++k + 10; };   /* neue Stellen füllen die Lücken 1–10 */
+  for (let i = 0; i < 6000 && kraeuter.length < 10; i++) { const x = 6860 + wurf() * 340, y = 5460 + wurf() * 380; const art = kraeuter.filter((q) => q.art === "eisenhut").length > kraeuter.filter((q) => q.art === "nebelkraut").length ? "nebelkraut" : "eisenhut";
+    const amHang = hangOk(x, y);
     if (!amHang || !"g,.".includes(jetzt(x, y)) || imOrt(x, y) || wegNah(x, y, 2) || besetzt(x, y, 3) || kraeuter.some((q) => Math.hypot(q.x - x, q.y - y) < 10)) continue;
-    kraeuter.push({ id: `hochlande_${art}_${++k}`, art, x: Math.floor(x) + 0.5, y: Math.floor(y) + 0.5, region: regionVon(x, y) }); }
+    kraeuter.push({ id: `hochlande_${art}_${frei()}`, art, x: Math.floor(x) + 0.5, y: Math.floor(y) + 0.5, region: regionVon(x, y) }); }
+  k = 10;   /* die Stellen auf der Alm und am Einsiedler-Garten zählen immer ab 11 */
   /* niedrige Kräuter auf der Alm, ein kleines Beet am Garten des Einsiedlers */
   const [ax, ay] = ORTE.alm, [ex, ey] = ORTE.einsiedelei;
   for (const [art, x, y] of [["wegerich", ax - 20, ay - 12], ["wegerich", ax - 16, ay - 14], ["ringelblume", ax + 18, ay - 12], ["ringelblume", ax + 22, ay - 9], ["wegerich", ax + 24, ay + 4],

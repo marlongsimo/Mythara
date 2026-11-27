@@ -8,7 +8,7 @@
  {"id":"hl_holzstapel_25","objekt":"dorf_holzstapel_01","x":220,"y":406},
  {"id":"hl_feuerkorb_26","objekt":"moor_feuerkorb_01","x":214.5,"y":402.5},
  {"id":"bergwerk_kaue","objekt":"moor_kate_02","x":202,"y":412},
- {"id":"bergwerk_bankkiste","objekt":"steinhag_bankkiste","x":199,"y":413},
+ {"id":"bergwerk_bankkiste","objekt":"steinhag_bankkiste","x":205.5,"y":412.51},
  {"id":"passwacht_turm","objekt":"dorf_wachturm_01","x":57.5,"y":197},
  {"id":"passwacht_stube","objekt":"moor_kate_01","x":42,"y":198},
  {"id":"passwacht_palisade_1","objekt":"dorf_palisade_01","x":45,"y":192.85},
