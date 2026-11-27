@@ -9,11 +9,20 @@
  * Die Figuren bleiben die bisherigen Bilder (welt3d/figurleinwand.ts), als Aufsteller in der 3D-Welt.
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
-import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch } from "../welt";
+import { arbeitMelden, arbeitVon } from "../arbeit";
+import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch, questGeladen, questStandB } from "../welt";
+import { markeDa, stufenSchluessel } from "../../../shared/stadtstufen";
+import { schalterAn } from "../../../shared/quests";
+import { SPRUENGE } from "../../../shared/bosse";
+/** Stadtstufen: Schalter dieses Spielers (vor dem Laden der Quests: die erste Stufe) */
+const stufenAn = (s: string): boolean => questGeladen() && schalterAn((id) => questStandB(id), s);
 /** eigenes Heldenlevel (für die Levelfarbe der Gegner im Menü) */
 const eigenesLv = (): number => { const i = weltIch(); return i && i.stufe ? i.stufe : 1; };
 import { MONSTER } from "../../../shared/config";
 import { aktionsMenue, menueZu, FARBE, Gruppe } from "../aktionsmenue";
+import { Folger, folgeEndeText, folgePunkt } from "../../../shared/folgen";
+import { handelAnfragen, handelAnfrageAnnehmen, hatGefragt } from "../handel";
+import { kampfZuletzt } from "../kampfzeit";
 import { freundHinzufuegen } from "../freunde";
 import { gegenstandUntersuchen } from "../rahmen";
 import { SPRINT_MIN } from "../../../shared/sprint";
@@ -26,12 +35,15 @@ import { QuestWelt } from "./quest3d";
 import { dialogOffen, gespraechMit, schliessen as dialogSchliessen } from "../dialog";
 /** So weit darf man sich während eines Gesprächs entfernen (Felder) */
 const GESPRAECH_WEIT = 5;
+/** #139: Gegner, deren Lager so nah am Startplatz liegen (Felder), lädt der Browser vor dem Ladeschirm-Ende; höchstens so lange (ms) wartet der Ladeschirm zusätzlich; die festen Modelle danach im Hintergrund */
+const VORLADEN_WEIT = 80, LADEN_MAX_MS = 12000, VORWAERMEN = ["bandit3d", "mooshocker3d", "waldgolem3d", "banditenboss3d", "stadtwache3d"];
 import { HaendlerWelt } from "./haendler3d";
 import { BankWelt } from "./bank3d";
 import { HolzWelt } from "./holz3d";
 import { musikStarten } from "../musik";
 import { BergWelt } from "./berg3d";
 import { PflanzenWelt } from "./pflanzen3d";
+import { KraeuterWelt } from "./kraeuter3d";
 import { LichterWelt } from "./lichter3d";
 import { FischWelt, WurmWelt } from "./fischen3d";
 import { SPIEL_SYMBOLE } from "../../../shared/kartensymbole";
@@ -40,7 +52,8 @@ import { bankZeigen } from "../bank";
 import { istBankschalter } from "../../../shared/bank";
 import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
-import { vorlage } from "./held3d";
+import { vorlage, gegnerModell } from "./held3d";
+import { WELTKAMPF } from "../../../shared/weltzonen";
 import { Welt3D } from "./motor";
 import { heldenFigur3D, FigurArt } from "./held3d";
 import { WELT, weltDatei } from "../welt/welt";
@@ -55,7 +68,7 @@ import { aktiverHeld } from "../held";
 import { angelegteEbenen, inventarVomServerDa, inventar } from "../inventar";
 /* angelegtes Beil / angelegte Spitzhacke: in der Hand zeigen */
 import { serverZusatz } from "../gruppe";
-import { karteDrehen } from "../rahmen";
+import { karteDrehen, rucksackVorladen } from "../rahmen";
 /** die Minikarte zeichnet einen größeren Ausschnitt als sichtbar (Rand zum Verschieben und Drehen bis zum nächsten Zeichnen) */
 const KARTE_RAND = 1.5, HANDY_KARTE = matchMedia("(pointer: coarse)").matches;
 import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
@@ -91,9 +104,9 @@ export function tatText(t: string): string { let m = /^Mit (.+) sprechen$/.exec(
   m = /^(.+) (fällen|abbauen|benutzen|pflücken|untersuchen|öffnen|betreten|lesen|aufheben)$/.exec(t); if (m) return m[2].charAt(0).toUpperCase() + m[2].slice(1) + ": " + m[1]; return t; }
 /** Oben mittig kurz zeigen, was gerade gemacht wird (wie der Aktionstext in OSRS) */
 let tatUhr = 0;
-export function tatZeigen(text: string): void { if (!text || typeof document === "undefined") return; let el = document.getElementById("ez-tat");
+export function tatZeigen(text: string, lv?: { text: string; farbe: string }): void { if (!text || typeof document === "undefined") return; let el = document.getElementById("ez-tat");
   if (!el) { el = document.createElement("div"); el.id = "ez-tat"; el.setAttribute("role", "status"); document.body.appendChild(el); }
-  el.textContent = text; el.classList.add("an"); clearTimeout(tatUhr); tatUhr = window.setTimeout(() => el!.classList.remove("an"), 2200); }
+  el.textContent = text; if (lv) { const b = document.createElement("b"); b.className = "lvfarbe"; b.textContent = " " + lv.text; b.style.color = lv.farbe; el.appendChild(b); } /* #98: Gegner-Level in der Farbe des Abstands */ el.classList.add("an"); clearTimeout(tatUhr); tatUhr = window.setTimeout(() => el!.classList.remove("an"), 2200); }
 export class Spielwelt3D implements WeltKern {
   motor = new Welt3D(); index!: WeltIndex; raster = new WeltRaster(); daten = new Map<string, ChunkDaten | "holt">(); gueltig = new Set<string>();
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
@@ -120,22 +133,28 @@ export class Spielwelt3D implements WeltKern {
     /* erst die ersten Bilder zeichnen (dabei übersetzt der Browser die Shader – das hält die Seite kurz an), dann mit dem Server verbinden:
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
     this.motor.r.compile(this.motor.szene, this.motor.kamera); await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null))));
-    if (new URLSearchParams(location.search).get("vorwaermen") !== "0") setTimeout(() => void this.vorwaermen(), 2500); /* Gegner- und Wachenmodelle im Hintergrund laden und ihre Shader übersetzen: kein Haken beim ersten Gegner */
+    const warm = new URLSearchParams(location.search).get("vorwaermen") !== "0"; /* #139: die Gegner um den Startplatz vorladen, bevor der Ladeschirm geht; die übrigen festen Modelle danach */
+    const vorab = warm ? this.vorwaermen(this.gegnerUm(this.ort.x, this.ort.y)) : Promise.resolve(); if (warm) setTimeout(() => void this.vorwaermen(VORWAERMEN), 2500);
+    this.motor.ausbauDa = (m) => markeDa(m, stufenAn); addEventListener("ez-quest", () => this.stufenPruefen());
     this.quest = new QuestWelt(this); this.sperrenNeu(); /* Quest 01 (shared/quest01.ts) */
     this.haendler = new HaendlerWelt(this); /* Händler am Marktplatz (shared/laeden.ts) */
     this.bank = new BankWelt(this); /* Bankmitarbeiter hinter den Bankschaltern (shared/bank.ts) */
     this.holz = new HolzWelt(this); /* Holzfällerei: Bäume auf den Lichtungen (shared/holz.ts) */
     this.berg = new BergWelt(this); /* Bergbau: Erzadern in den Senken (shared/bergbau.ts) */
-    this.pflanzen = new PflanzenWelt(this); this.lichter = new LichterWelt(this); /* Splitterbinden: Seelenlichter (Phase 3a) */ this.fische = new FischWelt(this); this.wuermer = new WurmWelt(this); /* Fischen (Phase 3b) */ this.handwerk = new HandwerkWelt(this); /* Handwerk: Flachs und Hanf im Osthof, Werkstätten in der Waldmark (shared/handwerk.ts) */
+    this.pflanzen = new PflanzenWelt(this); this.kraeuter = new KraeuterWelt(this); /* Kräuterkunde (#133) */ this.lichter = new LichterWelt(this); /* Splitterbinden: Seelenlichter (Phase 3a) */ this.fische = new FischWelt(this); this.wuermer = new WurmWelt(this); /* Fischen (Phase 3b) */ this.handwerk = new HandwerkWelt(this); /* Handwerk: Flachs und Hanf im Osthof, Werkstätten in der Waldmark (shared/handwerk.ts) */
     addEventListener("ez-getrunken", () => { const f = this.figur as { trinken?: () => number }; if (f.trinken) f.trinken(); }); /* Trank: Hand zum Mund */
     addEventListener("keydown", (e) => { if (e.key === "Shift" && !e.repeat && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) this.sprint(); }); /* Umschalt: Sprint an/aus */
     addEventListener("ez-zurueck", (e) => { const m = (e as CustomEvent).detail as { x: number; y: number }; if (typeof m.x === "number" && typeof m.y === "number") this.springen(m.x, m.y); }); /* ohne Freigabe hinter der Sperre: zurück */
     this.profil(); anschluss3D.betreten(this); musikStarten(); /* Hintergrundmusik (musik.ts) */
-    (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y) });
+    (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y),
+      /* #67, für Prüfungen */ arbeit: { melden: arbeitMelden, von: arbeitVon, zeigt: (n: string) => { const z = anschluss3D.kampfArbeitZeigt(n); if (z) return z; const m = (this as unknown as { mit?: { figuren?: Map<number, { d: { n: string }; ar?: { zeigt: string } }> } }).mit; for (const f of (m && m.figuren ? m.figuren.values() : [])) if (f.d.n === n) return f.ar ? f.ar.zeigt : ""; return ""; } } });
     /* den Ladebildschirm erst wegnehmen, wenn der eigene Held samt Ausrüstung dasteht – sonst sieht man ihn ein paar Sekunden nicht und die Ausrüstung springt später dazu (höchstens 8 s warten) */
     await new Promise<void>((ok) => { const t0 = performance.now(), pruefen = () => { const f = this.figur as { vollstaendig?: boolean; geladen: boolean };
       const konto = mitKonto(), ausruestungBekannt = konto === false || (konto === true && inventarVomServerDa()); /* mit Konto: erst wenn der Server das Inventar geschickt hat, steht fest, was angelegt ist */
       if (((f.vollstaendig ?? f.geladen) && ausruestungBekannt) || performance.now() - t0 > 8000) ok(); else setTimeout(pruefen, 50); }; pruefen(); });
+    /* #139: dazu die Bilder von Rucksack und Ausrüstung, die Gegnermodelle um den Startplatz und die erste Lage der Kampfwelt – zusammen höchstens LADEN_MAX_MS */
+    { const t0 = performance.now(), bereit = new Promise<void>((ok) => { const p = () => { const b = anschluss3D.kampfBereit(); if (b !== false || performance.now() - t0 > LADEN_MAX_MS) ok(); else setTimeout(p, 50); }; p(); });
+      await Promise.race([Promise.all([rucksackVorladen().catch(() => undefined), vorab.catch(() => undefined), bereit]), new Promise((ok) => setTimeout(ok, LADEN_MAX_MS))]); }
     fertig();
   }
 
@@ -168,15 +187,25 @@ export class Spielwelt3D implements WeltKern {
     if (!this.imKampf) this.ausdauer.schritt(dt, laeuft, this.geschickLv); /* im Kampfgebiet rechnet der Server */ if (this.knopfAn !== this.ausdauer.an) { this.knopfAn = this.ausdauer.an; this.sprintKnopf(); } /* auch wenn der Server umschaltet oder der Knopf neu gebaut wurde */
     const w = Math.round(this.ausdauer.wert); if (w !== this.gelbZuletzt) { this.gelbZuletzt = w; gelbAnzeigen(w / 100); } }
   /** Shader vorwärmen: die Modelle einmal unsichtbar-klein unter den Boden stellen, übersetzen lassen (parallel, wenn der Browser es kann), wieder entfernen */
-  private async vorwaermen(): Promise<void> {
+  /** #139: die Modelle der Gegnerarten, deren Lager höchstens VORLADEN_WEIT Felder von dieser Stelle (Weltfelder) liegen */
+  private gegnerUm(x: number, y: number): string[] { const arten = new Set<string>(), R = VORLADEN_WEIT;
+    for (const z of WELTKAMPF) { if (x < z.x0 - R || y < z.y0 - R || x > z.x0 + z.b + R || y > z.y0 + z.h + R) continue;
+      for (const l of z.lager) { const wx = z.x0 + l.x * 2, wy = z.y0 + l.y * 2; if (Math.abs(wx - x) <= R && Math.abs(wy - y) <= R) arten.add(l.art); } }
+    return [...new Set([...arten].map(gegnerModell).filter((d): d is string => Boolean(d)))]; }
+  private async vorwaermen(dateien: string[]): Promise<void> {
     const M = this.motor, g = new THREE.Group(); g.position.set(this.ort.x, M.hoehe(this.ort.x, this.ort.y) - 30, this.ort.y); g.scale.setScalar(0.01);
-    for (const d of ["bandit3d", "mooshocker3d", "waldgolem3d", "banditenboss3d", "stadtwache3d"]) { try { const v = await vorlage(d); const k = SkeletonUtils.clone(v.szene); k.traverse((o) => { o.frustumCulled = false; if ((o as THREE.Mesh).isMesh) o.castShadow = true; }); g.add(k); } catch { /* fehlt: dann eben beim ersten Auftritt */ } }
+    for (const d of await Promise.all(dateien.map(async (d) => { try { await vorlage(d); return d; } catch { return ""; } }))) { if (!d) continue; try { const v = await vorlage(d); const k = SkeletonUtils.clone(v.szene); k.traverse((o) => { o.frustumCulled = false; if ((o as THREE.Mesh).isMesh) o.castShadow = true; }); g.add(k); } catch { /* fehlt: dann eben beim ersten Auftritt */ } }
     if (!g.children.length) return; M.szene.add(g);
     try { const r = M.r as THREE.WebGLRenderer & { compileAsync?: (s: THREE.Object3D, k: THREE.Camera, z?: THREE.Scene) => Promise<unknown> }; if (r.compileAsync) await r.compileAsync(g, M.kamera, M.szene); else r.compile(g, M.kamera, M.szene); } catch { /* egal */ }
     await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null)))); /* einmal mitzeichnen (auch in die Schattenkarte) */ M.szene.remove(g); }
   /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
-  quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null; bank: BankWelt | null = null; holz: HolzWelt | null = null; berg: BergWelt | null = null; pflanzen: PflanzenWelt | null = null; lichter: LichterWelt | null = null; fische: FischWelt | null = null; wuermer: WurmWelt | null = null; handwerk: HandwerkWelt | null = null;
-  alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : [])]; }
+  quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null; bank: BankWelt | null = null; holz: HolzWelt | null = null; berg: BergWelt | null = null; pflanzen: PflanzenWelt | null = null; kraeuter: KraeuterWelt | null = null; lichter: LichterWelt | null = null; fische: FischWelt | null = null; wuermer: WurmWelt | null = null; handwerk: HandwerkWelt | null = null;
+  alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : []), ...this.ausbauSperren()]; }
+  /** Stadtstufen (#102): Felder der Stufen-Objekte, die für diesen Spieler gerade dastehen */
+  private ausbauSperren(): number[][] { const aus: number[][] = []; for (const d of this.daten.values()) if (d !== "holt" && d.ausbau) for (const A of d.ausbau) if (markeDa(A.m, stufenAn)) for (const [i, j] of A.f) aus.push([i, j, i + 1, j + 1]); return aus; }
+  private stufenSchl = "";
+  /** Queststand geändert: hat sich eine Stadtstufe geändert, Dinge und Gehraster neu */
+  private stufenPruefen() { const k = stufenSchluessel(stufenAn); if (k === this.stufenSchl) return; const erst = !this.stufenSchl; this.stufenSchl = k; if (erst && k === stufenSchluessel(() => false)) return; this.motor.ausbauNeu(); this.sperrenNeu(); }
   /** Sperren haben sich geändert (die Wachen lassen den Spieler durch): Gehraster der geladenen Chunks neu aufbauen */
   sperrenNeu() { for (const d of this.daten.values()) if (d !== "holt") this.raster.dazu(d); for (const [x0, y0, x1, y1] of this.alleSperren()) this.raster.sperren(x0, y0, x1, y1); }
   /* ───────────── Gehraster: die Daten der Chunks um den Helden ───────────── */
@@ -211,8 +240,8 @@ export class Spielwelt3D implements WeltKern {
     const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return; this.stick = null; if (st.menue) return;
       if (st.weit < 12 && e.timeStamp - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
         /* kurz tippen / Linksklick = die erste Aktion (wie OSRS): an einer Stelle mit Handlung (Figur, Treppe, Tür, Ausgang, Gegenstand) hingehen und handeln */
-        const stelle = this.stelleAmSchirm(e.clientX, e.clientY, true) || (b ? this.anStelle(b.x, b.z) : null); if (stelle && stelle.npc) { this.wahlWeg(); this.gehe(stelle.x, stelle.y); return; } /* Quest-NPC: kurz = nur hingehen (reden: lange drücken) */ if (stelle) /* kurz: Figuren als ganze Gestalt, Türen/Treppen nur am Boden – sonst erst dorthin gehen */ { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
-        { const g = anschluss3D.kampfAmSchirm(e.clientX, e.clientY); if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) { if (g && !g.held && g.team !== 0) tatZeigen(`Angreifen: ${g.name}`); return; } } /* Gegner: ganze Figur, sonst der Boden darunter */
+        const stelle = this.stelleAmSchirm(e.clientX, e.clientY, true) || (b ? this.anStelle(b.x, b.z) : null); if (stelle && stelle.npc) { this.wahlWeg(); const v = this.vorFigur(stelle, () => {}); if (v.da()) { v.tat(); return; } this.gehe(v.x, v.y); this.vorhaben = this.pfad.length ? v : null; return; } /* Quest-NPC: kurz = nur hingehen, ein Feld davor, und zu ihm drehen (reden: lange drücken) */ if (stelle) /* kurz: Figuren als ganze Gestalt, Türen/Treppen nur am Boden – sonst erst dorthin gehen */ { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
+        { const g = anschluss3D.kampfAmSchirm(e.clientX, e.clientY); if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) { if (g && !g.held && g.team !== 0) tatZeigen(`Angriff: ${g.name}`, g.stufe ? { text: `Lvl ${g.stufe}`, farbe: levelFarbe(g.stufe - eigenesLv()) } : undefined); return; } } /* Gegner: ganze Figur, sonst der Boden darunter */
         if (anschluss3D.spielerBei(e.clientX, e.clientY)) { this.menueBei(e.clientX, e.clientY); return; } /* Mitspieler: gleich das Menü (Flüstern, Freund hinzufügen …) */
         this.motor.klick(e.clientX, e.clientY); } };
     /* PC: Rechtsklick = Aktionsmenü – aber nicht, wenn mit der rechten Maustaste die Kamera gedreht wurde */
@@ -237,8 +266,35 @@ export class Spielwelt3D implements WeltKern {
   /** Ein fernes Ziel (Minikarte): ganz hin, wenn der Weg in der geladenen Umgebung liegt – sonst so weit wie möglich in seine Richtung */
   geheWeit(x: number, y: number) { const o = this.ort, d = Math.hypot(x - o.x, y - o.y); if (d < 0.5) return;
     for (const weit of [d, 48, 32, 20, 12]) { if (weit > d) continue; const zx = o.x + (x - o.x) * weit / d, zy = o.y + (y - o.y) * weit / d; const w = this.raster.weg(o, { x: zx, y: zy }, RADIUS, 24, true); if (w.length) { this.gehe(zx, zy); return; } } }
-  gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS, 24, true); this.pfad = w; this.naechst = Infinity; this.stillstand = 0;
-    if (w.length) { const z = w[w.length - 1]; this.marke.position.set(z.x, this.motor.hoehe(z.x, z.y) + 0.06, z.y); this.marke.visible = true; } else this.marke.visible = false; }
+  /** Selbst irgendwohin gehen (Antippen, Minikarte, Hingehen und Handeln): beendet das Folgen */
+  gehe(x: number, y: number) { this.folgenEnde("selbst"); this.handelZiel = null; this.laufen(x, y); }
+  /** Den Weg zu (x, y) suchen und loslaufen; true: es gibt einen Weg */
+  private laufen(x: number, y: number): boolean { if (this.gesperrt) return false; const w = this.raster.weg(this.ort, { x, y }, RADIUS, 24, true); this.pfad = w; this.naechst = Infinity; this.stillstand = 0;
+    if (w.length) { const z = w[w.length - 1]; this.marke.position.set(z.x, this.motor.hoehe(z.x, z.y) + 0.06, z.y); this.marke.visible = true; } else this.marke.visible = false; return w.length > 0 || Math.hypot(x - this.ort.x, y - this.ort.y) < 1; }
+  /* ───── Folgen (#54, shared/folgen.ts): einem anderen Spieler hinterherlaufen; endet bei eigener Eingabe, Kampf, Gebietswechsel oder Teleport des anderen ───── */
+  private folge: { name: string; f: Folger; seit: number; weg: boolean } | null = null; private folgeEl: HTMLElement | null = null;
+  /** Einem Spieler folgen (Name wie im Aktionsmenü) */
+  folgen(name: string) { this.folgenEnde(); if (!anschluss3D.spielerOrt(name)) { chatSystem(folgeEndeText(name, "weg")); return; } this.folge = { name, f: new Folger(name), seit: Date.now(), weg: true };
+    const el = this.folgeEl || (this.folgeEl = document.createElement("div")); el.id = "ez-folgen"; el.className = "ez-folgen"; el.innerHTML = `<span></span><button type="button" aria-label="Folgen beenden">✕</button>`;
+    (el.querySelector("span") as HTMLElement).textContent = `Du folgst ${name}`; (el.querySelector("button") as HTMLElement).onclick = (e) => { e.stopPropagation(); this.folgenEnde("selbst"); };
+    el.style.cssText = "position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:60;display:flex;gap:8px;align-items:center;padding:4px 10px;border-radius:8px;background:rgba(30,20,8,.82);color:#f3e3b5;font:600 13px Georgia,serif";
+    if (!el.parentElement) document.body.appendChild(el); el.hidden = false; }
+  /* ───── Handeln (#65): bis auf ein Feld an den anderen heranlaufen, dann anfragen (oder seine Anfrage annehmen) ───── */
+  private handelZiel: { name: string; bis: number } | null = null;
+  handeln(name: string) { const p = anschluss3D.spielerOrt(name); if (!p) { chatSystem(`${name} ist nicht hier.`); return; } this.folgenEnde(); this.handelZiel = { name, bis: performance.now() + 15000 }; this.handelSchritt(true); }
+  private handelSchritt(start = false) { const H = this.handelZiel; if (!H) return; const p = anschluss3D.spielerOrt(H.name); if (!p || performance.now() > H.bis) { this.handelZiel = null; if (!p) chatSystem(`${H.name} ist nicht mehr hier.`); return; }
+    const d = Math.hypot(p.x - this.ort.x, p.y - this.ort.y); if (d <= 1.6) { this.handelZiel = null; this.pfad = []; this.marke.visible = false; if (hatGefragt(H.name)) handelAnfrageAnnehmen(H.name); else handelAnfragen(H.name); return; }
+    if (start || (!this.pfad.length && d > 1.6)) { const t = folgePunkt(this.ort, p, 1) || p; if (!this.laufen(t.x, t.y)) { this.handelZiel = null; chatSystem(`Kein Weg zu ${H.name}.`); } } }
+  /** Wo steht dieser Spieler gerade (Weltfelder; Mitspieler oder Held im Kampfgebiet)? */
+  spielerOrt(name: string): { x: number; y: number } | null { return anschluss3D.spielerOrt(name); }
+  /** Wem folgt der Held gerade (für Prüfungen)? */
+  folgtWem(): string | null { return this.folge ? this.folge.name : null; }
+  /** Folgen beenden; grund: Text im Chat (ohne grund: still) */
+  folgenEnde(grund?: "weg" | "weit" | "sprung" | "kein_weg" | "selbst") { const F = this.folge; if (!F) return; this.folge = null; if (this.folgeEl) this.folgeEl.hidden = true; if (grund) chatSystem(folgeEndeText(F.name, grund)); }
+  private folgenSchritt(dt: number) { const F = this.folge; if (!F) return; if (this.gesperrt) return;
+    if (kampfZuletzt() > F.seit) { this.folgenEnde("selbst"); return; } /* angegriffen oder selbst angegriffen */
+    const t = F.f.schritt(dt, this.ort, anschluss3D.spielerOrt(F.name), F.weg); if (t.tun === "ende") { this.folgenEnde(t.grund); return; }
+    if (t.tun === "gehen") F.weg = this.laufen(t.x, t.y); }
   halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; if (this.marke) this.marke.visible = false; this.stickWeg(); }
   teleportAbreise(): number { const f = this.figur as { teleport?: () => number }; return f.teleport ? f.teleport() : 0; }
   abblenden(ms: number, dann: () => void) { this.blende.style.transitionDuration = ms + "ms"; this.blende.classList.add("an"); setTimeout(dann, ms + 20); }
@@ -254,7 +310,7 @@ export class Spielwelt3D implements WeltKern {
   blick() { return this.figur ? this.figur.blickWinkel : 0; }
   szeneStarten(key: string, daten: object) { if (key === "spiel") { const d = daten as { held?: string }; try { if (d.held) localStorage.setItem("ez_held", d.held); } catch { /* privat */ } location.href = "./?los=1" + serverZusatz(); } }
   springen(x: number, y: number) { if (this.gesperrt) return; anschluss3D.springen(); this.halt(); this.gesperrt = true;
-    this.abblenden(260, () => { this.ort = { x, y }; this.motor.springen(x, y); void this.strom(true).then(() => { const f = this.raster.naechstFrei(this.ort); if (f) this.ort = { x: f.x, y: f.y }; this.aufblenden(320); this.gesperrt = false; }); }); }
+    this.abblenden(260, () => { this.ort = { x, y }; this.motor.springen(x, y); { const f = this.figur as { ankunft?: () => void }; if (f.ankunft) f.ankunft(); } /* nach Lichtsäule (Freunde, Wegstein): die eigene Figur wieder zeigen (#53) */ void this.strom(true).then(() => { const f = this.raster.naechstFrei(this.ort); if (f) this.ort = { x: f.x, y: f.y }; this.aufblenden(320); this.gesperrt = false; }); }); }
   umsehen() {
     const o = this.ort, r = this.regionBei(o.x, o.y); let nah: { text: string; tat: () => void } | null = null;
     if (r) for (const a of r.ausgaenge) if (inZone(a.zone, o.x, o.y)) nah = { text: a.text, tat: () => this.reisen(a) };
@@ -270,7 +326,10 @@ export class Spielwelt3D implements WeltKern {
     const text = a.daten && typeof a.daten.text === "string" ? a.daten.text : "", tat = a.daten && typeof a.daten.tat === "string" ? a.daten.tat : "", knopf = a.daten && typeof a.daten.knopf === "string" ? a.daten.knopf : "";
     const ziel = a.daten && Array.isArray(a.daten.ziel) && a.daten.ziel.length === 2 ? (a.daten.ziel as number[]) : null;
     if (istBankschalter(a.id)) return { text: "Bank", tat: () => bankZeigen(a.id === "bankschalter" ? "Bankschalter Weidenhain" : "Bank der Waldmark") }; /* Bankschalter (shared/bank.ts): gleich die Bank, wie in OSRS */
-    if (ziel) return { text: /hinauf|hoch/i.test(knopf) ? "Hoch" : /hinab|hinunter|runter/i.test(knopf) ? "Runter" : knopf || "Hinabsteigen", tat: () => this.springen(ziel[0], ziel[1]) };
+    { const zu = this.quest ? this.quest.eingangZu(a.id) : null; if (zu) return { text: knopf || "Betreten", tat: () => { const el = $("#ez-dorf-hilfe"); el.textContent = zu; el.style.display = ""; } }; } /* Wappentür (#40): verschlossen */
+    if (ziel) { const S = SPRUENGE[a.id]; /* Phase 4: manche Sprünge erst mit Quest-Schalter (shared/bosse.ts) */
+      return { text: /hinauf|hoch/i.test(knopf) ? "Hoch" : /hinab|hinunter|runter/i.test(knopf) ? "Runter" : knopf || "Hinabsteigen",
+        tat: () => { if (S && !(questGeladen() && schalterAn((id) => questStandB(id), S.schalter))) { chatSystem(S.zu); return; } this.springen(ziel[0], ziel[1]); } }; }
     if (tat) return { text: anschluss3D.knopf(tat, knopf || "Betreten"), tat: () => anschluss3D.tat(tat, this) };
     if (text) return { text: "Ansehen", tat: () => { const el = $("#ez-dorf-hilfe"); el.textContent = text; el.style.display = ""; } };
     return null;
@@ -285,6 +344,7 @@ export class Spielwelt3D implements WeltKern {
     { const h = this.holz && this.holz.stelle(x, y); if (h) return h; }
     { const b = this.berg && this.berg.stelle(x, y); if (b) return b; }
     { const p = this.pflanzen && this.pflanzen.stelle(x, y); if (p) return p; }
+    { const p = this.kraeuter && this.kraeuter.stelle(x, y); if (p) return p; }
     { const p = this.lichter && this.lichter.stelle(x, y); if (p) return p; }
     { const p = this.fische && this.fische.stelle(x, y); if (p) return p; }
     { const p = this.wuermer && this.wuermer.stelle(x, y); if (p) return p; }
@@ -311,6 +371,7 @@ export class Spielwelt3D implements WeltKern {
     if (this.holz) for (const p of this.holz.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.8 });
     if (this.berg) for (const p of this.berg.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.7 });
     if (this.pflanzen) for (const p of this.pflanzen.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.6 });
+    if (this.kraeuter) for (const p of this.kraeuter.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.5 });
     if (this.lichter) for (const p of this.lichter.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.6 });
     if (this.fische) for (const p of this.fische.punkte()) kand.push({ x: p.x, y: p.y, h: 0.3, r: 0.8 });
     if (this.wuermer) for (const p of this.wuermer.punkte()) kand.push({ x: p.x, y: p.y, h: 0.3, r: 0.6 });
@@ -328,17 +389,23 @@ export class Spielwelt3D implements WeltKern {
     const p = wer.startsWith("lokal:") ? ((this.haendler && this.haendler.ortVon(wer.slice(6))) || (this.bank && this.bank.ortVon(wer.slice(6))) || null) : this.quest ? this.quest.ortVon(wer) : null;
     if (p && Math.hypot(p.x - this.ort.x, p.y - this.ort.y) > GESPRAECH_WEIT) { dialogSchliessen(true); chatSystem("Du hast dich entfernt – das Gespräch ist beendet."); } }
   /** Hingehen und dort handeln (ist man schon dort, sofort) */
-  ausfuehren(s: Stelle, tat: () => void, was?: string) { this.wahlWeg(); menueZu(); if (this.gesperrt) return; tatZeigen(was || tatText(s.text)); if (s.da()) { tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? { ...s, tat } : null; }
+  ausfuehren(s: Stelle, tat: () => void, was?: string) { this.wahlWeg(); menueZu(); if (this.gesperrt) return; tatZeigen(was || tatText(s.text)); if (s.npc) { const v = this.vorFigur(s, tat); s = v; tat = v.tat; } if (s.da()) { tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? { ...s, tat } : null; }
+  /** Zu einer Figur (Quest-NPC, Wache): Laufziel ist das freie Nachbarfeld ihres Felds, das dem Helden am nächsten liegt – nicht die Figur selbst; angekommen dreht er sich zu ihr (#63) */
+  private vorFigur(s: Stelle, tat: () => void): Stelle { const fx = s.x, fy = s.y, i0 = Math.floor(fx), j0 = Math.floor(fy), o = this.ort; let ziel: { x: number; y: number } | null = null, bd = Infinity;
+    for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) { if (!di && !dj) continue; const p = { x: i0 + di + 0.5, y: j0 + dj + 0.5 }; if (!this.raster.begehbar(p.x, p.y)) continue; const d = Math.hypot(p.x - o.x, p.y - o.y); if (d < bd) { bd = d; ziel = p; } }
+    const z = ziel || { x: fx, y: fy }, nebenan = () => Math.abs(Math.floor(this.ort.x) - i0) <= 1 && Math.abs(Math.floor(this.ort.y) - j0) <= 1 && (Math.floor(this.ort.x) !== i0 || Math.floor(this.ort.y) !== j0);
+    return { ...s, x: z.x, y: z.y, da: () => s.da() && (nebenan() || !ziel) && !this.schrittZiel, tat: () => { this.figur.blick(fx - this.ort.x, fy - this.ort.y); tat(); } }; }
   /** Aktionsmenü (Pergament) für alles an diesem Bildschirmpunkt: Mitspieler, Gegner, Figuren, Gegenstände am Boden, Treppen/Türen/Ausgänge – und „Hierhin gehen“ */
   menueBei(px: number, py: number) { const b = this.motor.boden(px, py), gr: Gruppe[] = [], konto = Boolean(ichName());
     const d = anschluss3D.spielerBei(px, py);
     if (d) gr.push({ kopf: d.n, ...(d.s ? { lv: { text: `(Level ${d.s})`, farbe: "#f3ead2" } } : {}), farbe: FARBE.spieler, aktionen: [
       ...(konto && d.s ? [{ text: "Flüstern", sym: "✉️", tat: () => fluestern(d.i, d.n) }, { text: "Freund hinzufügen", sym: "➕", tat: () => { void freundHinzufuegen(d.n).then((t) => { if (t) chatSystem(t); }); } }] : []),
-      { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) }] });
+      { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) },
+      ...(d.n && d.n !== ichName() ? [{ text: "Folgen", sym: "👣", tat: () => this.folgen(d.n) }, ...(konto ? [{ text: "Handeln", sym: "🤝", tat: () => this.handeln(d.n) }] : [])] : [])] });
     { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) { const M = t.typ && !t.held ? (MONSTER[t.typ] as { info?: string } | undefined) : undefined; /* Untersuchen (Bestiarium): Text zum Wesen; der Mooshocker zählt für Quest 02 */
-        gr.push({ kopf: t.name, lv: { text: `(Level ${t.stufe})`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angreifen: ${t.name}`); anschluss3D.kampfAntippenSchirm(px, py); } },
+        gr.push({ kopf: t.name, lv: { text: `Lvl ${t.stufe}`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angriff: ${t.name}`, { text: `Lvl ${t.stufe}`, farbe: levelFarbe(t.stufe - eigenesLv()) }); anschluss3D.kampfZiel(t.id); } }, /* den Gegner selbst, nicht die Bildschirmstelle – er kann inzwischen weitergelaufen sein (#109) */
           ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${t.name}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${t.name}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
-      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
+      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, lv: { text: `Lvl ${g.stufe}`, farbe: levelFarbe(g.stufe - eigenesLv()) } /* wie beim Antippen der Figur (#97) */, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
     if (b) {
       const stBoden = this.stelleAmSchirm(px, py, true) || this.anStelle(b.x, b.z), st = stBoden || this.stelleAmSchirm(px, py), gehenZuerst = !stBoden && Boolean(st); /* ganze Figur; Treppe/Tür auch über ihrer Höhe – dann aber „Hierhin gehen“ zuerst */
       if (st) { const boden = this.bodenHier(b.x, b.z);
@@ -391,8 +458,8 @@ export class Spielwelt3D implements WeltKern {
     const R = rund.clientWidth, f = k.offsetWidth / (r.region.chunks[0] * C); if (!R || !f) return; const c = this.karteLeinwand, g = this.motor.gieren;
     /* Neu zeichnen nur, wenn nötig: nach Bewegung (> 1 Feld) oder Drehung, höchstens alle 500 ms (Handy 700 ms) – dazwischen gleitet das Bild mit; sonst spätestens alle 2 s (Mitspieler, Marken) */
     const alt = this.karteStand, seit = performance.now() - this.karteZeit, bewegt = !alt || Math.hypot(this.ort.x - alt.x, this.ort.y - alt.y) > 1 || Math.abs(g - alt.g) > 0.03 || alt.massstab !== f;
-    if (!alt || (bewegt && seit > (HANDY_KARTE ? 700 : 500)) || seit > 2000) { this.karteZeit = performance.now();
-      const n = Math.min(320, Math.round(R * KARTE_RAND * Math.min(1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
+    if (!alt || (bewegt && seit > (HANDY_KARTE ? 1200 : 500)) || seit > (HANDY_KARTE ? 4000 : 2000)) { this.karteZeit = performance.now(); /* #103: auf dem Handy seltener (ein zweites Bild der ganzen Szene kostet) */
+      const n = Math.min(HANDY_KARTE ? 200 : 320, Math.round(R * KARTE_RAND * Math.min(HANDY_KARTE ? 1 : 1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
       const stand = { x: this.ort.x, y: this.ort.y, g, massstab: f }, felder = (R * KARTE_RAND) / f;
       this.motor.karteZeichnen(c, felder, () => { this.symboleMalen(c, felder, stand, g); if (this.quest) this.quest.karteMarke(c, felder, stand, g); this.karteStand = stand; }); }
     if (!this.karteStand) return;
@@ -430,8 +497,13 @@ export class Spielwelt3D implements WeltKern {
       if (d <= rest + 1e-9) { o.x = z.x; o.y = z.y; rest -= d; this.schrittZiel = null; if (!this.pfad.length && !richtung) this.marke.visible = false; }
       else { o.x += (z.x - o.x) / d * rest; o.y += (z.y - o.y) / d * rest; rest = 0; } }
     return bewegt; }
-  private bild(dt: number) { this.simZeit += dt; if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
+  /** Geladene Waffe „(s)“ (#47): alle 0,5 s nachsehen, ob die angelegte Waffe Ladungen hat – dann leuchtet sie (unter 2 Ladungen flackert es) */
+  private ladungT = 0;
+  private ladungPruefen(dt: number): void { this.ladungT -= dt; if (this.ladungT > 0) return; this.ladungT = 0.5; const f = this.figur as { aufladen?: (an: boolean, rest?: number) => void };
+    if (!f || !f.aufladen) return; const d = inventar().angelegtD, n = (d && d.waffe && d.waffe.ladungen) || 0; f.aufladen(n > 0, Math.min(1, n / 10)); }
+  private bild(dt: number) { this.simZeit += dt; this.ladungPruefen(dt); if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.kraeuter) this.kraeuter.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
     const o = this.ort; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry); const direkt = Math.hypot(rx, ry) > 0.05, richtung: [number, number] | null = direkt ? [rx, ry] : null;
+    if (direkt) { this.folgenEnde("selbst"); this.handelZiel = null; } else { this.folgenSchritt(dt); this.handelSchritt(); } /* selbst steuern: Folgen endet; sonst das nächste Laufziel hinter dem anderen */
     if (direkt) { this.pfad = []; this.marke.visible = false; }
     else if (this.imKampf && this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy);
       if (l < this.naechst - 0.03) { this.naechst = l; this.stillstand = 0; } else this.stillstand += dt;

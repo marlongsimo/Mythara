@@ -8,6 +8,7 @@
  *                eingestürzte Türme, ein überwachsener Friedhof mit Gruft, ein Menhirkreis, tote Bäume, Irrlichter und Nebel.
  * Aufruf (im Ordner realtime): node werkzeug/welt/aschenwerth.mjs     danach: node werkzeug/welt/bauen.mjs westried aschenwerth
  */
+import { EINGANG as FEDERMUTTER_EINGANG } from "./federmutter.mjs";
 import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { WELT } from "./laden.mjs";
@@ -40,7 +41,7 @@ const aufBahn = (x, y, r = 0) => x > LANDUNG[0] - 2 && x < X1 + 1 && y > BRUECKE
 /* Heiligtum: Mauergeviert mit Säulenhalle; Tor im Süden, der Pfad kommt von der Brücke */
 const H = { x0: 6198, x1: 6230, y0: 6692, y1: 6722, tor: 6214 };
 const PFAD = [[LANDUNG[0] + 3, LANDUNG[1]], [6240, 6712], [6234, 6725], [H.tor, H.y1 + 4], [H.tor, H.y1 - 4]];
-const FRIEDHOF = { x: 6188, y: 6726, r: 7 }, KREIS = { x: 6242, y: 6732, r: 5.5 };
+const FRIEDHOF = { x: 6188, y: 6726, r: 7 }, KREIS = { x: 6242, y: 6732, r: 5.5 }, KREIS2 = { x: 6188, y: 6704, r: 4.5 };   /* Phase 6 (C2): zwei Steinkreise, je ein Teil des Lieds */
 /* Nordrand des Moors: südlich davon Wasser, nördlich davon wird es über Moorwiese und Tümpel zur Wiese (im Osten passend zur Westmark) */
 const UFER_Y = (x) => 6632 + 10 * n2(x, 0, 40, 4) + Math.max(0, x - 6236) * 0.45;
 
@@ -79,7 +80,10 @@ ding("stil_erle_tot_01", H.x0 + 5, H.y1 - 4); ding("stil_erle_tot_02", H.x1 - 6,
 /* Friedhof mit Gruft, Menhirkreis, tote Bäume und Birken am Rand */
 ding("k_gruft", FRIEDHOF.x, FRIEDHOF.y - 2.5);
 for (let i = 0; i < 9; i++) { const w = (i / 9) * Math.PI * 2 + 0.3, r = 4 + (i % 3) * 1.6; ding(["k_grabstein_kreuz", "k_grabstein_rund", "k_grabstein_zerbrochen", "k_grabstein_breit"][i % 4], FRIEDHOF.x + Math.cos(w) * r, FRIEDHOF.y + 1.5 + Math.sin(w) * r * 0.6, i % 2 ? { spiegeln: true } : {}); }
-for (let i = 0; i < 7; i++) { const w = (i / 7) * Math.PI * 2; ding(i % 3 === 1 ? "moor_menhir_02" : "moor_menhir_01", KREIS.x + Math.cos(w) * KREIS.r, KREIS.y + Math.sin(w) * KREIS.r * 0.75, i % 2 ? { spiegeln: true } : {}); }
+/* Spiralsteine: jeder Stein ist ein eigenes Questobjekt (Lesestelle spiralstein_<kreis>_<n>, etwas zur Mitte hin) */
+const SPIRALSTEINE = [];
+for (const [k, K, n] of [[1, KREIS, 7], [2, KREIS2, 5]]) for (let i = 0; i < n; i++) { const w = (i / n) * Math.PI * 2 + (k === 2 ? 0.4 : 0), x = K.x + Math.cos(w) * K.r, y = K.y + Math.sin(w) * K.r * 0.75;
+  ding(i % 3 === 1 ? "moor_menhir_02" : "moor_menhir_01", x, y, i % 2 ? { spiegeln: true } : {}); SPIRALSTEINE.push({ id: `spiralstein_${k}_${i + 1}`, x: x + (K.x - x) * 0.3, y: y + (K.y - y) * 0.3 + 0.9 }); }
 ding("moor_schrein_01", KREIS.x, KREIS.y + 0.6);
 for (const [x, y, id] of [[6182, 6704, "stil_erle_tot_01"], [6246, 6720, "stil_erle_tot_02"], [6200, 6740, "stil_birke_01"], [6230, 6740, "stil_erle_tot_01"], [6180, 6716, "stil_birke_01"], [6250, 6708, "stil_erle_tot_02"]])
   ding(id, x, y, { s: +(0.85 + hash(x, y) * 0.3).toFixed(2), ...(hash(y, x) < 0.5 ? { spiegeln: true } : {}) });
@@ -107,6 +111,9 @@ lesen.push({ id: "heiligtum_tor", x: H.tor, y: H.y1 + 2, text: "Das eingestürzt
 lesen.push({ id: "altar", x: H.tor, y: H.y0 + 7.4, text: "Ein Altar aus schwarzem Stein, rissig von Frost und Feuer. In der Mulde liegt Asche, die nie kalt zu werden scheint." });
 lesen.push({ id: "gruft", x: FRIEDHOF.x, y: FRIEDHOF.y + 0.6, text: "Eine Gruft, halb im Torf versunken. Die Tür ist mit Ketten verschlossen – von innen.", tat: "abstieg", knopf: "In die Gruft hinabsteigen", ziel: RABENGRUND_UNTEN });   /* Eingang zum Rabengrund, das Spiel öffnet ihn erst nach C2 */
 lesen.push({ id: "steinkreis", x: KREIS.x, y: KREIS.y + 2.4, text: "Sieben Steine im Kreis, mit Spiralen bedeckt wie die beim Schrein im Rabenmoor. Hier ist es still, selbst die Frösche schweigen." });
+lesen.push({ id: "federmutter_abstieg", x: KREIS.x, y: KREIS.y - 3.6, text: "Zwischen den Spiralsteinen klafft ein Spalt im Torf. Darunter: Federn, Kälte, ein Rascheln.", tat: "federmutter_kammer", knopf: "Hinabsteigen", ziel: FEDERMUTTER_EINGANG });   /* #132: Kammer der Federmutter (federmutter.mjs) */
+lesen.push({ id: "steinkreis_2", x: KREIS2.x, y: KREIS2.y + 1.2, text: "Ein zweiter, kleinerer Kreis: fünf Steine, die Spiralen tiefer eingeschlagen. Der Torf zwischen ihnen ist festgetreten, als tanze hier jemand." });
+for (const s of SPIRALSTEINE) lesen.push({ id: s.id, x: s.x, y: s.y, text: "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar." });
 
 /* ───── schreiben ───── */
 const REG = [

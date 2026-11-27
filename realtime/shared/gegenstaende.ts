@@ -23,7 +23,7 @@ export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf
 export interface WaffenWerte { art: Art; /** Mehr Schaden gegen eine Gegnerfamilie (MONSTER.familie), z. B. { wald: 0.15 } = +15 % Max Hit */ gegen?: Record<string, number>; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
 export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number }; text: string;
-  /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
+  /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; /** Grundwert in Splittern für den Trödler (#88), wenn kein Laden ihn führt */ wert?: number; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
 
 const KAMPFART: Record<Art, string> = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie" };
 const zahl = (v: number) => String(v).replace(".", ",");
@@ -316,6 +316,22 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
     text: "Ein Span vom Totholz der alten Linde in Weidenhain. Er riecht nach Honig." };
   GEGENSTAENDE.geweihter_splitter = { id: "geweihter_splitter", name: "Geweihter Splitter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
     text: "Einer der 250 Splitter, die Agnes in die Wurzeln der Linde gelegt hat – er schimmert jetzt grünlich." };
+  /* Phase 4 „Westmark & erster Boss“: Beute und Questgegenstände aus B3 „Fallobst“ und B4 „Das rote Banner“ (Bilder von Figuren & 3D, #24) */
+  const P4 = "img/objekte3d/beute/symbole/";
+  GEGENSTAENDE.karrenbrief = { id: "karrenbrief", name: "Karrenbrief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P4 + "karrenbrief.webp",
+    text: "Ein zerknitterter Zettel: Äpfel, Silberleuchter, Stoffballen aus Graufurt. Unten: „An R., Westmark, bei den Fässern.“" };
+  GEGENSTAENDE.apfelkisten = { id: "apfelkisten", name: "Gisberts Apfelkisten", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: P4 + "apfelkorb.webp",
+    text: "Drei Kisten, auf jeder ein eingebranntes „A“. Halb leer, aber es sind die vom Großvater." };
+  GEGENSTAENDE.apfel = { id: "apfel", name: "Apfel", art: "Essen", seltenheit: "anfaenger", stapel: 1000, bild: P4 + "apfel.webp", trank: "apfel", wert: 1,
+    text: "Ein Apfel aus Gisberts Obstwiesen. Heilt 2 Lebenspunkte." };
+  GEGENSTAENDE.schluesselbund = { id: "schluesselbund", name: "Schlüsselbund", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P4 + "schluesselbund.webp",
+    text: "Ein Ring mit fünf schweren Schlüsseln. Einer davon passt zur Tür des Beutelagers im Unterschlupf." };
+  GEGENSTAENDE.silberleuchter = { id: "silberleuchter", name: "Silberleuchter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "silberleuchter.webp",
+    text: "Zwei silberne Kerzenleuchter, in Sackleinen gewickelt. Die aus Gisberts Karrenbrief – Othmar wird sie zurückhaben wollen." };
+  GEGENSTAENDE.rabenbrief = { id: "rabenbrief", name: "Brief mit Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "rabenbrief.webp",
+    text: "Schwarzes Wachs, ein Rabe darin, das Siegel gebrochen. „Für jeden Splitter, den ihr bringt, eine Feder. Die Insel wartet. – Der Oberste.“" };
+  GEGENSTAENDE.rotes_banner = { id: "rotes_banner", name: "Rotes Banner", art: "Zierde", seltenheit: "episch", bild: P4 + "rotes_banner.webp",
+    text: "Rotmantels Banner, schwerer roter Stoff, an den Rändern verbrannt. Ein Sammelstück – irgendwann hängt es in deinem Haus." };
   /* Phase 3b Fischen und Kochen (shared/fischen.ts, Kochen in shared/handwerk.ts). Bilder von Figuren & 3D (#39) */
   const A = "img/objekte3d/skilling/angeln/symbole/", K = "img/objekte3d/skilling/kochen/symbole/", U = "img/objekte3d/skilling/utensilien/";
   GEGENSTAENDE.angelrute = { id: "angelrute", name: "Angelrute", art: "Werkzeug", seltenheit: "anfaenger", bild: A + "angelrute.webp", modell3d: U + "angelrute.glb",
@@ -438,17 +454,37 @@ export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> 
   return w === "schwert" ? { waffe: "ritterschwert", nebenhand: "rundschild" } : w === "bogen" ? { waffe: "jagdbogen", brust: "lederpanzer" } : { waffe: "hirtenstab", brust: "magiepanzer" };
 }
 export const RUCKSACK_PLAETZE = 24;
-/** Ein Rucksackfach: eine Gegenstands-id oder ein Stapel { g, n } (stapelbare Gegenstände) */
-export type Fach = string | { g: string; n: number };
+/** Daten je Exemplar (Phase 5a): ladungen = Ladungen einer Waffe (Splitterbinden, Phase 5b); gebunden = Questlohn, gehört dem Spieler (nicht handelbar, #65) */
+export interface Daten { ladungen?: number; gebunden?: boolean }
+/** Ein Rucksackfach: eine Gegenstands-id oder ein Stapel { g, n }, mit Daten { g, n, d } (stapeln nur mit gleichen Daten; Geladenes nie) */
+export type Fach = string | { g: string; n: number; d?: Daten };
 export const fachG = (f: Fach): string => (typeof f === "string" ? f : f.g);
 export const fachN = (f: Fach): number => (typeof f === "string" ? 1 : f.n);
+export const fachD = (f: Fach): Daten | undefined => (typeof f === "string" ? undefined : f.d);
+/** Daten aus unbekannter Quelle prüfen (Speicherstand, Bank, Boden): nur bekannte Felder, Ladungen 1 … 1000; leer = undefined */
+export function datenPruefen(roh: unknown): Daten | undefined { if (!roh || typeof roh !== "object") return undefined; const o = roh as Record<string, unknown>, d: Daten = {};
+  const l = Math.floor(Number(o.ladungen)); if (l > 0) d.ladungen = Math.min(1000, l); if (o.gebunden === true) d.gebunden = true; return Object.keys(d).length ? d : undefined; }
+/** Gleiche Daten (beide ohne = gleich) */
+export const datenGleich = (a?: Daten, b?: Daten): boolean => (a?.ladungen || 0) === (b?.ladungen || 0) && Boolean(a?.gebunden) === Boolean(b?.gebunden);
+/** Geladen (Splitterbinden): Ladungen > 0 */
+export const geladen = (d?: Daten): boolean => Boolean(d && d.ladungen && d.ladungen > 0);
+/** Darf das gehandelt werden? Nicht: Questgegenstände (untauschbar), gebundener Questlohn, geladene Waffen */
+export const handelbar = (g: string, d?: Daten): boolean => Boolean(GEGENSTAENDE[g]) && !GEGENSTAENDE[g].untauschbar && !(d && (d.gebunden || geladen(d)));
+/** Darf das auf den Boden? Geladene Waffen nicht (Kanon) */
+export const ablegbar = (_g: string, d?: Daten): boolean => !geladen(d);
+/** Name zum Anzeigen: geladene Waffen heißen „… (s)“ */
+export const anzeigeName = (g: string, d?: Daten): string => (GEGENSTAENDE[g] ? GEGENSTAENDE[g].name : g) + (geladen(d) ? " (s)" : "");
 
 /* ---------- Verbrauchsgegenstände (Tränke) ----------
  * Noch nicht im Rucksack und noch ohne Wirkung im Kampf: das Leben im Kampf rechnet der Spielserver (shared/sim.ts) – das Trinken braucht dort einen eigenen Befehl.
  * Hier stehen schon Werte, Text und Modell (img/objekte3d, fabrik/drehobjekt.py: schwebt und dreht sich, Animation „drehen“). */
 /** Verbrauchsgegenstand. stapelbar: mehrere liegen in einem Rucksackfeld (false = jeder belegt ein eigenes Feld). Heilung nie über das maximale Leben hinaus */
-export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; /** Wirkung beim Essen (shared/wirkungen.ts) */ wirkung?: string; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
+export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; /** Wirkung beim Essen (shared/wirkungen.ts) */ wirkung?: string;
+  /** Kräuterkunde (#133): Ausdauer sofort + so viele Prozent · kostet so viele LP beim Trinken (Nebenwirkung) · hebt Trank-Nebenwirkungen auf · gibt das leere Fläschchen zurück */
+  ausdauer?: number; kostet?: number; nebenAuf?: boolean; flaeschchen?: boolean; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
 export const VERBRAUCH: Record<string, Verbrauch> = {
+  apfel: { id: "apfel", name: "Apfel", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 2, anteil: 0 }, stapelbar: true, modell: "",
+    werte: [["Heilung", "2 (nicht über das maximale Leben)"], ["Stapelbar", "ja"]], text: "Ein Apfel aus Gisberts Obstwiesen." },
   kleiner_heiltrank: { id: "kleiner_heiltrank", name: "Kleiner Heiltrank", art: "Trank", seltenheit: "gewoehnlich", heilt: { fest: 5, anteil: 0 }, stapelbar: false, modell: "img/objekte3d/heiltrank-klein.glb",
     werte: [["Heilung", "5 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
     text: "Ein Fläschchen grüner Kräutersud. Lindert Kratzer – für mehr reicht es nicht." },
@@ -479,3 +515,214 @@ export const ROHSTOFFE: Record<string, Rohstoff> = {
 export const trankHeilung = (v: Verbrauch, maxLp: number) => Math.round(v.heilt.fest + v.heilt.anteil * maxLp);
 /** Wie viel ein Trank bei diesem Leben tatsächlich heilt: nie über das maximale Leben hinaus (kein Überheilen) */
 export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math.max(0, Math.min(trankHeilung(v, maxLp), maxLp - lp));
+
+/* ───────── Phase 6 (#17, #18, #26): Beute des Rabenordens – Bilder img/objekte3d/beute/symbole/ (Figuren #20) ───────── */
+{ const B = "img/objekte3d/beute/symbole/";
+  GEGENSTAENDE.rabenfedern = { id: "rabenfedern", name: "Rabenfedern", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: B + "rabenfedern.webp",
+    text: "Schwarze Federn, länger als eine Hand, mit violettem Schimmer. Am Bindestein werden 25 davon mit 50 Splittern zu einem Federsiegel." };
+  GEGENSTAENDE.federsiegel = { id: "federsiegel", name: "Federsiegel", art: "Splitterbinden", seltenheit: "selten", stapel: 100, bild: B + "federsiegel.webp",
+    text: "Ein Siegel aus gepressten Rabenfedern um einen Splitter. Der Altar vor dem Thronsaal verlangt eines – für jeden Versuch." };
+  GEGENSTAENDE.splitterkern = { id: "splitterkern", name: "Splitterkern", art: "Splitterbinden", seltenheit: "episch", bild: B + "splitterkern.webp",
+    text: "Das pochende Herz eines großen Splitters. Am Bindestein in den Wegstein gesetzt, fasst er 200 statt 100 Ladungen – einmal je Held." };
+  GEGENSTAENDE.rabenschwinge = { id: "rabenschwinge", name: "Rabenschwinge", platz: "waffe", art: "Einhandschwert", seltenheit: "episch", ebenen: ["waffe.eidschwert"], bild: B + "rabenschwinge.webp",
+    anforderung: { skill: "geschick", level: 35 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 30, staerke: 29 }, abwehr: { nah: 0, fern: 0, magie: 12 },
+    text: "Eine Klinge, schwarz wie eine Feder, aus dem Hort des Obersten Rabenpriesters. Sie fängt Zauber, als wären sie Wind." };
+  GEGENSTAENDE.rabenkueken = { id: "rabenkueken", name: "Rabenküken", art: "Sammelstück", seltenheit: "legendaer", bild: B + "rabenkueken.webp",
+    text: "Ein winziger Rabe mit viel zu großen Augen. Er hat sich dich ausgesucht. (Als Begleiter folgt er dir, sobald es Begleiter gibt.)" };
+  /* C1 „Schwarze Federn“ (quest_c1.ts), Meilerpech auch für D1 „Die Fährkette“: Questgegenstände, Bilder aus dem Bestand */
+  GEGENSTAENDE.meilerpech = { id: "meilerpech", name: "Meilerpech", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/kohle.webp",
+    text: "Ein Topf schwarzes Pech aus Köhler Ulfs Meiler, noch warm. Es dichtet Fugen, Planken und Ketten – und klebt an allem." };
+  GEGENSTAENDE.novizenkapuze = { id: "novizenkapuze", name: "Novizenkapuze", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: B + "rabenfedern.webp",
+    text: "Eine Kapuze aus schwarzen Federn, sorgfältig vernäht. Innen ist ein Zeichen eingestickt: ein Rabe über einem Kreis aus Steinen." };
+  GEGENSTAENDE.brueckenplanke = { id: "brueckenplanke", name: "Brückenplanke", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 8, bild: "img/objekte3d/skilling/erzeugnisse/stamm_moorweide.webp",
+    text: "Eine dicke Planke aus Moorweide, an Harms Werkbank geschnitten. Für die alte Brücke nach Aschenwerth." };
+  /* C3 „Der Oberste Rabenpriester“: Schlüssel des Kerkermeisters, Heddas Moorwasser – erst an der Linde geweiht trübt es das Splitterbecken */
+  GEGENSTAENDE.kerkerschluessel = { id: "kerkerschluessel", name: "Kerkerschlüssel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: B + "schluesselbund.webp",
+    text: "Ein schwerer Ring mit vier rostigen Schlüsseln, einer für jeden Käfig im Kerker des Rabengrunds." };
+  GEGENSTAENDE.moorwasser = { id: "moorwasser", name: "Moorwasser", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/kraeuterkunde/symbole/trueber_sud.webp",
+    text: "Eine Phiole braunes Wasser aus Heddas Moor. Es riecht nach Torf. Hedda sagt, es muss erst an der Linde geweiht werden." };
+  GEGENSTAENDE.moorwasser_geweiht = { id: "moorwasser_geweiht", name: "Geweihtes Moorwasser", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/kraeuterkunde/symbole/lindentau_stark.webp",
+    text: "Das Moorwasser ist klar geworden und leuchtet schwach grün, wie das Licht unter der Linde. Es trübt das Splitterbecken." }; }
+
+/* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
+/** Ist das eine Platzhalter-Beute („@<seltenheit>[:<Art>]“)? */
+export const beutePlatzhalter = (g: string): boolean => g.startsWith("@");
+/** Platzhalter auflösen: eine zufällige Waffe oder Rüstung dieser Seltenheit (ohne Werkzeuge, Questlohn und Set-Teile); Art-Filter über GegenstandDef.art (Teilwort) */
+export function beuteAufloesen(g: string, zufall: () => number = Math.random): string | null { if (!beutePlatzhalter(g)) return g;
+  const [sel, art] = g.slice(1).split(":"), werkzeug = /^(holzbeil|spitzhacke|angel)/;
+  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
+  return L.length ? L[Math.floor(zufall() * L.length)].id : null; }
+
+/* ───────── Phase 7 (#40): Graufurt, Ostufer, Turm – Bilder img/objekte3d/graufurt/symbole/ und Wels img/objekte3d/skilling/angeln/symbole/ (Figuren #37) ───────── */
+{ const G7 = "img/objekte3d/graufurt/symbole/", A7 = "img/objekte3d/skilling/angeln/symbole/";
+  GEGENSTAENDE.kettenglied = { id: "kettenglied", name: "Kettenglied", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 8, bild: G7 + "kettenglied.webp",
+    text: "Ein schweres Glied aus Splittereisen, frisch vom Amboss. Acht davon braucht die Winde am Westanleger." };
+  GEGENSTAENDE.kettenschloss = { id: "kettenschloss", name: "Kettenschloss", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G7 + "kettenschloss.webp",
+    text: "Ein Schloss, das zwei Kettenenden für immer verbindet. Von der Schmiedin aus Graufurt." };
+  GEGENSTAENDE.splitterkern_gruen = { id: "splitterkern_gruen", name: "Grüner Splitterkern", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: G7 + "splitterkern_gruen.webp",
+    text: "Der Kern des Signalfeuers. Er ist warm und pulsiert grün – als wartete er noch auf eine Antwort." };
+  GEGENSTAENDE.krebsschere = { id: "krebsschere", name: "Krebsschere", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: G7 + "krebsschere.webp", wert: 6,
+    text: "Die Schere eines Schlickkrebses, hart wie Stein. Köche sagen, das Fleisch darin sei das beste am ganzen Fluss." };
+  GEGENSTAENDE.wachtstein = { id: "wachtstein", name: "Wachtstein", art: "Rohstoff", seltenheit: "selten", stapel: 1000, bild: G7 + "wachtstein.webp", wert: 25,
+    text: "Ein Stück der Steinfiguren aus dem Turm, das Wappen der Wacht noch zu erkennen. Die Wacht in Grauwacht würde dafür bezahlen." };
+  GEGENSTAENDE.fisch_wels_roh = { id: "fisch_wels_roh", name: "Graufurter Wels (roh)", art: "Rohstoff", seltenheit: "gewoehnlich", bild: A7 + "fisch_wels_roh.webp",
+    text: "Ein großer Wels aus dem Fährhafen, schwer und glitschig. Am Feuer gebraten heilt er 11 Lebenspunkte – oder er wird zu Almas Welspastete." };
+  GEGENSTAENDE.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", bild: A7 + "fisch_wels_gebraten.webp", trank: "fisch_wels_gebraten",
+    text: "Dick, fett und knusprig. Heilt 11 Lebenspunkte." };
+  GEGENSTAENDE.fisch_wels_verbrannt = { id: "fisch_wels_verbrannt", name: "Verbrannter Wels", art: "Abfall", seltenheit: "anfaenger", bild: A7 + "fisch_wels_verbrannt.webp", text: "Schwarz bis auf die Gräten. Den will niemand essen." };
+  GEGENSTAENDE.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", bild: G7 + "welspastete.webp", trank: "welspastete",
+    text: "Almas Pastete aus Wels und Mehl, das Rezept der Taverne „Zur Furt“. Heilt 14 Lebenspunkte." };
+  VERBRAUCH.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 11, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "11 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Dick, fett und knusprig." };
+  VERBRAUCH.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", heilt: { fest: 14, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "14 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Almas Pastete aus Wels und Mehl." }; }
+
+/* ───────── Phase 8 (#58): Grauwacht – Klöppel (E2) und die Klinge des Grauen Hauptmanns (E4-Lohn); die Wachtrüstung vorerst nicht (Entscheidung 26.11.) ───────── */
+{ const G8 = "img/objekte3d/grauwacht/symbole/";
+  GEGENSTAENDE.kloeppel = { id: "kloeppel", name: "Klöppel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G8 + "kloeppel.webp",
+    text: "Ein Klöppel aus Kernbaum, schwer und gerade. Er gehört in die Glocke von Grauwacht." };
+  GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
+    anforderung: { skill: "geschick", level: 25 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 22, staerke: 22 },
+    text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }
+
+/* ───────── Phase 9 (#86): Glutsande und Glutbrunn – Bilder img/objekte3d/glutsande/symbole/, Glutwels img/objekte3d/skilling/angeln/symbole/ (Figuren #75) ───────── */
+{ const G9 = "img/objekte3d/glutsande/symbole/", A9 = "img/objekte3d/skilling/angeln/symbole/", R = ["I", "II", "III", "IV", "V"];
+  for (let i = 1; i <= 5; i++) GEGENSTAENDE["kartenstueck_" + i] = { id: "kartenstueck_" + i, name: `Kartenstück ${R[i - 1]}`, art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: G9 + `kartenstueck_${i}.webp`,
+    text: `Ein Stück einer alten Karte mit dem Siegel der Wacht, Nummer ${R[i - 1]}. Alle fünf zusammen ergeben die Reisekarte.` };
+  GEGENSTAENDE.reisekarte = { id: "reisekarte", name: "Reisekarte", art: "Splitterbinden", seltenheit: "episch", untauschbar: true, bild: G9 + "reisekarte.webp",
+    text: "Die ganze Karte mit dem Siegel der Wacht. Einmal am Tag bringt sie dich ohne Ladung zu einem Wegstein-Ziel – im Rucksack „Reisen“." };
+  GEGENSTAENDE.salz = { id: "salz", name: "Salz", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: G9 + "salz.webp", wert: 4,
+    text: "Grobes Salz aus der Salzpfanne der Glutsande. In Glutbrunn kocht man damit den Glutwels in der Kruste." };
+  GEGENSTAENDE.fisch_glutwels_roh = { id: "fisch_glutwels_roh", name: "Glutwels (roh)", art: "Rohstoff", seltenheit: "selten", bild: A9 + "fisch_glutwels_roh.webp",
+    text: "Ein Wels aus dem braunen Strom, die Haut rot wie Glut. Gebraten heilt er 15 Lebenspunkte, in der Salzkruste 18." };
+  GEGENSTAENDE.fisch_glutwels_gebraten = { id: "fisch_glutwels_gebraten", name: "Gebratener Glutwels", art: "Essen", seltenheit: "selten", bild: A9 + "fisch_glutwels_gebraten.webp", trank: "fisch_glutwels_gebraten",
+    text: "Feurig und fett. Heilt 15 Lebenspunkte." };
+  GEGENSTAENDE.fisch_glutwels_verbrannt = { id: "fisch_glutwels_verbrannt", name: "Verbrannter Glutwels", art: "Abfall", seltenheit: "anfaenger", bild: A9 + "fisch_glutwels_verbrannt.webp", text: "Kohle mit Gräten." };
+  GEGENSTAENDE.glutwels_salzkruste = { id: "glutwels_salzkruste", name: "Glutwels in Salzkruste", art: "Essen", seltenheit: "episch", bild: G9 + "glutwels_salzkruste.webp", trank: "glutwels_salzkruste",
+    text: "Das Gericht von Glutbrunn: Glutwels, im Salz gegart. Heilt 18 Lebenspunkte." };
+  VERBRAUCH.fisch_glutwels_gebraten = { id: "fisch_glutwels_gebraten", name: "Gebratener Glutwels", art: "Essen", seltenheit: "selten", heilt: { fest: 15, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "15 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Feurig und fett." };
+  VERBRAUCH.glutwels_salzkruste = { id: "glutwels_salzkruste", name: "Glutwels in Salzkruste", art: "Essen", seltenheit: "episch", heilt: { fest: 18, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "18 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Das Gericht von Glutbrunn." }; }
+
+/* ───────── Phase 10 (#92): Smaragdküste und Kielmund – Fische img/objekte3d/skilling/angeln/symbole/, Gerichte und Wrackkiste img/objekte3d/kueste/symbole/ (Figuren #83) ───────── */
+{ const A10 = "img/objekte3d/skilling/angeln/symbole/", K10 = "img/objekte3d/kueste/symbole/";
+  const F10: [string, string, string, number, string][] = [["hering", "Hering", "Gebratener Hering", 6, "Silbrig und fett, frisch vom Kai."], ["klippenbarsch", "Klippenbarsch", "Gebratener Klippenbarsch", 9, "Fest und weiß, aus dem Kehrwasser unter der Klippe."], ["seeaal", "Seeaal", "Gebratener Seeaal", 11, "Lang und zäh, aus dem Wrack gezogen."]];
+  for (const [f, n, nb, heil, t] of F10) {
+    GEGENSTAENDE[`fisch_${f}_roh`] = { id: `fisch_${f}_roh`, name: `${n} (roh)`, art: "Rohstoff", seltenheit: "gewoehnlich", bild: A10 + `fisch_${f}_roh.webp`, text: `${t} Gebraten heilt er ${heil} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", bild: A10 + `fisch_${f}_gebraten.webp`, trank: `fisch_${f}_gebraten`, text: `Knusprig gebraten. Heilt ${heil} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${n}`, art: "Abfall", seltenheit: "anfaenger", bild: A10 + `fisch_${f}_verbrannt.webp`, text: "Kohle mit Gräten." };
+    VERBRAUCH[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: heil, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ["Stapelbar", "nein"]], text: "Knusprig gebraten." }; }
+  GEGENSTAENDE.raeucherhering = { id: "raeucherhering", name: "Räucherhering", art: "Essen", seltenheit: "gewoehnlich", bild: K10 + "raeucherhering.webp", modell3d: "img/objekte3d/kueste/raeucherhering.glb", trank: "raeucherhering",
+    text: "Goldbraun aus der Räucherhütte der Möwenbucht, hält wochenlang. Heilt 8 Lebenspunkte; 20 Minuten lang erholt sich die Ausdauer 15 % schneller." };
+  GEGENSTAENDE.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", bild: K10 + "barsch_salzkruste.webp", modell3d: "img/objekte3d/kueste/barsch_salzkruste.glb", trank: "barsch_salzkruste",
+    text: "Klippenbarsch, in Salz aus den Glutsanden in der Glut gegart. Heilt 12 Lebenspunkte." };
+  GEGENSTAENDE.aalsuppe = { id: "aalsuppe", name: "Aalsuppe", art: "Essen", seltenheit: "selten", bild: K10 + "aalsuppe.webp", modell3d: "img/objekte3d/kueste/aalsuppe.glb", trank: "aalsuppe",
+    text: "Die Suppe der Hafenleute von Kielmund. Heilt 13 Lebenspunkte." };
+  GEGENSTAENDE.wrackkiste = { id: "wrackkiste", name: "Kiste mit dem Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: K10 + "wrackkiste.webp",
+    text: "Eine Kiste aus dem Wrack, versiegelt mit dem Zeichen des Rabenordens. Darin Rechnungen über Splitter – gekauft über Kielmund." };
+  VERBRAUCH.raeucherhering = { id: "raeucherhering", name: "Räucherhering", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 8, anteil: 0 }, wirkung: "raeucherhering", stapelbar: false, modell: "",
+    werte: [["Heilung", "8 (nicht über das maximale Leben)"], ["Wirkung", "Ausdauer erholt sich 20 Minuten lang 15 % schneller (ersetzt anderes Essen)"], ["Stapelbar", "nein"]], text: "Goldbraun geräuchert." };
+  VERBRAUCH.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "In der Glut gegart." };
+  VERBRAUCH.aalsuppe = { id: "aalsuppe", name: "Aalsuppe", art: "Essen", seltenheit: "selten", heilt: { fest: 13, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "13 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Die Suppe der Hafenleute." }; }
+
+/* ───────── Beute Phase 7–10 (doku/konzepte/beute.md, 27.11.): neue Rohstoffe – vorerst nur zum Verkauf an den Trödler (Verwendung kommt mit den Berufen); Bilder folgen (Figuren) ───────── */
+{ const R = (id: string, name: string, wert: number, text: string) => { GEGENSTAENDE[id] = { id, name, art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, wert, symbol: "kristall", text }; };
+  R("federn", "Federn", 3, "Weiße und graue Federn von Reihern und Seevögeln. Leicht, aber zu irgendetwas gut.");
+  R("wolfsfell", "Wolfsfell", 10, "Das graue Fell eines Heidewolfs, dicht und rau.");
+  R("chitin", "Chitin", 14, "Panzerplatten eines Sandkriechers, hart wie Horn.");
+  R("giftdruese", "Giftdrüse", 18, "Die Drüse aus dem Stachel eines Glutskorpions. Vorsichtig anfassen."); }
+GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /* Grundwert für den Trödler (#88) */
+
+/* ───────── Süden (#126, doku/konzepte/sueden.md „Fleisch und Gerichte“): Fleisch (einzige neue Rohstoffe), Braten und Gulasch; der alte Hecht (S3). Bilder folgen (Figuren) ───────── */
+{ const R = (id: string, name: string, wert: number, text: string) => { GEGENSTAENDE[id] = { id, name, art: "Rohstoff", seltenheit: "anfaenger", wert, symbol: "kristall", text }; };
+  R("hasenfleisch", "Hasenfleisch", 2, "Mageres Fleisch von einem Feldhasen. Am Feuer gebraten heilt es 3 Lebenspunkte.");
+  R("wildschweinfleisch", "Wildschweinfleisch", 6, "Dunkles, kräftiges Fleisch eines Keilers aus dem Erlengrund.");
+  R("wolfsfleisch", "Wolfsfleisch", 9, "Zähes Fleisch eines Wolfs. Lange im Kessel geschmort wird es ein gutes Gulasch.");
+  GEGENSTAENDE.fleisch_verbrannt = { id: "fleisch_verbrannt", name: "Verbranntes Fleisch", art: "Abfall", seltenheit: "anfaenger", symbol: "kristall", text: "Außen Kohle, innen nichts mehr." };
+  const E = (id: string, name: string, heil: number, wirkung: string | undefined, wtext: string | undefined, text: string, selten = false) => {
+    GEGENSTAENDE[id] = { id, name, art: "Essen", seltenheit: selten ? "gewoehnlich" : "anfaenger", symbol: "kristall", trank: id, text: `${text} Heilt ${heil} Lebenspunkte${wtext ? "; " + wtext : ""}.` };
+    VERBRAUCH[id] = { id, name, art: "Essen", seltenheit: selten ? "gewoehnlich" : "anfaenger", heilt: { fest: heil, anteil: 0 }, ...(wirkung ? { wirkung } : {}), stapelbar: false, modell: "",
+      werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ...(wtext ? [["Wirkung", `${wtext} (ersetzt anderes Essen)`] as [string, string]] : []), ["Stapelbar", "nein"]], text }; };
+  E("hasenbraten", "Hasenbraten", 3, undefined, undefined, "Ein kleiner Braten vom Feuer, knusprig und heiß.");
+  E("rinderbraten", "Rinderbraten", 5, undefined, undefined, "Kuhfleisch, lange auf dem Herd.");
+  E("wildschweinbraten", "Wildschweinbraten", 7, "wildschweinbraten", "Stärke +1 für 5 Minuten", "Kräftiger Braten vom Keiler.", true);
+  E("wolfsgulasch", "Wolfsgulasch", 9, "wolfsgulasch", "Defense +2 für 5 Minuten", "Wolfsfleisch, im Kessel geschmort.", true);
+  GEGENSTAENDE.alter_hecht = { id: "alter_hecht", name: "Der alte Hecht", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
+    text: "Ein Hecht, so lang wie ein Arm, mit Narben am Maul. Die Fischerin vom Schilfsee wird staunen – und Lambert erst." }; }
+
+/* ───────── Kräuterkunde (Phase 5c, #133): Kräuter, Sichel, leeres Fläschchen, Trüber Sud und die Tränke (schwach/stark) – Bilder von Figuren (#28) ───────── */
+{ const KS = "img/objekte3d/skilling/kraeuter/symbole/", TS = "img/objekte3d/kraeuterkunde/symbole/", TM = "img/objekte3d/kraeuterkunde/";
+  const KR: [string, string, number, string][] = [["wegerich", "Wegerich", 2, "Breite Blätter vom Wegrand. Die Grundlage jedes Heiltranks."], ["ringelblume", "Ringelblume", 4, "Orange Blüten aus den Obstwiesen. Heilt Wunden, sagt Mira."],
+    ["moorgloeckchen", "Moorglöckchen", 8, "Kleine blaue Glocken aus dem Rabenmoor. Wer daran riecht, atmet freier."], ["eisenhut", "Eisenhut", 12, "Dunkle Blüten vom Friedhof im Nordwald. Giftig – nur gebraut zu gebrauchen."],
+    ["nebelkraut", "Nebelkraut", 18, "Ein graues Kraut aus den Nebelfeldern des Rabenmoors. Es riecht nach Regen."], ["lindenbluete", "Lindenblüte", 30, "Eine Blüte der alten Linde in Weidenhain. Sie wächst nur langsam nach."]];
+  for (const [id, name, wert, text] of KR) GEGENSTAENDE[id] = { id, name, art: "Kraut", seltenheit: "anfaenger", bild: KS + id + ".webp", wert, text };
+  /* Questgegenstände um die Kräuter: Miras Rezeptbuch (quest_mira.ts) und der Kräuterhof (quest_kraeuterhof.ts) */
+  GEGENSTAENDE.rezeptheft = { id: "rezeptheft", name: "Miras Rezeptheft", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+    text: "Ein dünnes Heft voller Flecken, die Ecken vom Kesseldampf gewellt. Auf dem Umschlag steht „Mira“, darunter: „Nicht für Hedda.“" };
+  GEGENSTAENDE.ringelblumensamen = { id: "ringelblumensamen", name: "Ringelblumensamen", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: KS + "ringelblume.webp",
+    text: "Ein Tütchen Samen, sorgfältig gefaltet. Nicht zu nass halten, steht darauf." };
+  GEGENSTAENDE.moorgloeckchen_ableger = { id: "moorgloeckchen_ableger", name: "Moorglöckchen-Ableger", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: KS + "moorgloeckchen.webp",
+    text: "Drei kleine Pflanzen mit Moorerde an den Wurzeln, in ein feuchtes Tuch geschlagen." };
+  GEGENSTAENDE.sichel = { id: "sichel", name: "Sichel", art: "Werkzeug", seltenheit: "anfaenger", bild: TS + "sichel.webp", modell3d: "img/figuren-echt3d/basemann3d.teile/waffe.sichel.glb", wert: 10,
+    text: "Eine kleine Sichel für Kräuter. Ohne sie reißt man die Pflanzen nur aus." };
+  GEGENSTAENDE.leeres_flaeschchen = { id: "leeres_flaeschchen", name: "Leeres Fläschchen", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: TS + "leeres_flaeschchen.webp", modell3d: TM + "leeres_flaeschchen.glb", wert: 2,
+    text: "Ein Fläschchen aus grünem Glas. Am Kessel wird ein Trank daraus; getrunken bekommt man es zurück." };
+  GEGENSTAENDE.trueber_sud = { id: "trueber_sud", name: "Trüber Sud", art: "Abfall", seltenheit: "anfaenger", bild: TS + "trueber_sud.webp", modell3d: TM + "trueber_sud.glb", text: "Ein Fläschchen grauer Brühe. Nicht trinkbar." };
+  const T: [string, string, string, number, string | undefined, Partial<Verbrauch>, string][] = [
+    ["atemtrank_schwach", "Atemtrank (schwach)", "gewoehnlich", 0, undefined, { ausdauer: 20 }, "Ausdauer sofort +20 %"],
+    ["atemtrank_stark", "Atemtrank (stark)", "gewoehnlich", 0, undefined, { ausdauer: 40 }, "Ausdauer sofort +40 %"],
+    ["steinhaut_schwach", "Steinhaut (schwach)", "gewoehnlich", 0, "steinhaut_schwach", {}, "Defense +2 für 3 Minuten"],
+    ["steinhaut_stark", "Steinhaut (stark)", "selten", 0, "steinhaut_stark", {}, "Defense +4 für 5 Minuten"],
+    ["moorfeuer_schwach", "Moorfeuer (schwach)", "gewoehnlich", 0, "moorfeuer_schwach", {}, "Stärke +2 für 3 Minuten"],
+    ["moorfeuer_stark", "Moorfeuer (stark)", "selten", 0, "moorfeuer_stark", { kostet: 5 }, "Stärke +5 für 3 Minuten · Nebenwirkung: kostet 5 Lebenspunkte"],
+    ["nebelschleier_schwach", "Nebelschleier (schwach)", "gewoehnlich", 0, "nebelschleier_schwach", {}, "Gegner bemerken dich ein Viertel später (5 Minuten)"],
+    ["nebelschleier_stark", "Nebelschleier (stark)", "selten", 0, "nebelschleier_stark", {}, "Gegner bemerken dich erst halb so weit (5 Minuten) · Nebenwirkung: Fernkampf −3"],
+    ["lindentau_schwach", "Lindentau (schwach)", "selten", 15, undefined, {}, "heilt 15"],
+    ["lindentau_stark", "Lindentau (stark)", "episch", 20, undefined, { nebenAuf: true }, "heilt 20 und hebt Nebenwirkungen auf"]];
+  for (const [id, name, selt, heil, wirkung, mehr, w] of T) {
+    GEGENSTAENDE[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, bild: TS + id + ".webp", modell3d: TM + id + ".glb", trank: id, text: `${w}.` };
+    VERBRAUCH[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, heilt: { fest: heil, anteil: 0 }, ...(wirkung ? { wirkung } : {}), ...mehr, flaeschchen: true, stapelbar: false, modell: TM + id + ".glb",
+      werte: [...(heil ? [["Heilung", `${heil} (nicht über das maximale Leben)`] as [string, string]] : []), ["Wirkung", w], ["Danach", "leeres Fläschchen"]], text: w }; }
+  VERBRAUCH.kleiner_heiltrank.flaeschchen = true; VERBRAUCH.heiltrank.flaeschchen = true; /* getrunkene Tränke geben das Fläschchen zurück */ }
+
+/* ───────── Vorbereitet (#130): Wildbret – Fleisch von Hyäne, Widder, Bär und Elch (einziger neuer Rohstoff der zehn neuen Gegner); Bild folgt (Figuren) ───────── */
+GEGENSTAENDE.wildbret = { id: "wildbret", name: "Wildbret", art: "Rohstoff", seltenheit: "gewoehnlich", wert: 12, symbol: "kristall", text: "Dunkles Fleisch vom Wild der Hochlande. Am Herd geschmort wird ein kräftiger Braten daraus." };
+GEGENSTAENDE.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", symbol: "kristall", trank: "wildbretbraten", text: "Ein kräftiger Braten aus den Hochlanden. Heilt 12 Lebenspunkte." };
+VERBRAUCH.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Ein kräftiger Braten aus den Hochlanden." };
+
+/* ───────── Phase 8, E-Quests (#118): Briefe, Glocke, Tjarks Eid, Mettes Schafe, Grablichter – Bilder aus dem Bestand, wo eines passt ───────── */
+{ const E = "img/objekte3d/skilling/erzeugnisse/", K = "img/objekte3d/skilling/kochen/symbole/";
+  GEGENSTAENDE.othmars_brief = { id: "othmars_brief", name: "Othmars Brief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/othmars_brief.webp",
+    text: "Ein gefaltetes Blatt, oft gestrichen, eng beschrieben. Außen steht nur: „Für Gunhild.“" };
+  GEGENSTAENDE.barren_glockenbronze = { id: "barren_glockenbronze", name: "Glockenbronze", art: "Rohstoff", seltenheit: "selten", untauschbar: true, stapel: 8, bild: "img/objekte3d/skilling/erzeugnisse/barren_glockenbronze.webp",
+    text: "Vier Teile Kupfer, ein Teil Splittereisen. Wenn man daran klopft, singt der Barren." };
+  GEGENSTAENDE.glocke_neu = { id: "glocke_neu", name: "Neue Glocke", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/grauwacht/symbole/glocke_neu.webp",
+    text: "Die neue Glocke von Grauwacht, noch warm aus der Form. Schwer genug, dass man sie mit beiden Armen tragen muss." };
+  GEGENSTAENDE.tjarks_eid = { id: "tjarks_eid", name: "Tjarks Eid", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/tjarks_eid.webp",
+    text: "Ein Eid, aufgeschrieben und mit „Tjark Sölde“ unterzeichnet: Die Freien vom Grenzposten kehren zur Wacht zurück." };
+  GEGENSTAENDE.hammelfleisch = { id: "hammelfleisch", name: "Hammelfleisch", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "kuhfleisch.webp", wert: 4,
+    text: "Fleisch von einem der Schafe aus Heidrast. Mit Wasser im Herd wird ein Eintopf daraus." };
+  GEGENSTAENDE.hammeleintopf = { id: "hammeleintopf", name: "Hammeleintopf", art: "Essen", seltenheit: "gewoehnlich", bild: K + "bauerneintopf.webp",
+    text: "Ein dicker Eintopf aus Hammelfleisch. Heilt 9 Lebenspunkte." };
+  VERBRAUCH.hammeleintopf = { id: "hammeleintopf", name: "Hammeleintopf", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 9, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "9 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Ein dicker Eintopf aus Hammelfleisch." };
+  GEGENSTAENDE.grablicht = { id: "grablicht", name: "Grablicht", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 3, bild: E + "seelenlicht.webp",
+    text: "Ein kaltes, blasses Licht aus den Hügelgräbern. Es will zurück auf seinen Stein." }; }
+
+/* ───────── Phase 9, F-Quests (#118): Kords Brief, Pfannenblech, Tempelabschrift ───────── */
+GEGENSTAENDE.kords_brief = { id: "kords_brief", name: "Kords Brief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/kords_brief.webp",
+  text: "Ein Brief von Kord Weller, dem Fährmann aus Graufurt, an seine Schwester in Glutbrunn. Der Umschlag ist voller Sand." };
+GEGENSTAENDE.pfannenblech = { id: "pfannenblech", name: "Pfannenblech", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/barren_splittereisen.webp",
+  text: "Ein breites, dickes Blech aus Splittereisen für Ruwens Siedepfanne. Es hält die Glut aus." };
+GEGENSTAENDE.tempelabschrift = { id: "tempelabschrift", name: "Tempelabschrift", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "pergament",
+  text: "Die Inschrift aus dem versandeten Tempel, Zeichen für Zeichen abgeschrieben. Lesen kann sie hier niemand." };
+
+/* ───────── Phase 10, G-Quests (#118): Frachtbrief, Lampenöl, Splitterglut, Fischernetz ───────── */
+GEGENSTAENDE.frachtbrief = { id: "frachtbrief", name: "Frachtbrief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/karrenbrief.webp",
+  text: "Ein Frachtbrief aus dem umgestürzten Wagen: „Salz und Tuch, von Weidenhain nach Kielmund.“ Darunter ein Siegel der Küstenhäuser." };
+GEGENSTAENDE.lampenoel = { id: "lampenoel", name: "Lampenöl", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/lampenoel.webp",
+  text: "Ein Krug trübes, gelbes Öl, aus Heringen ausgekocht. Es riecht streng und brennt lange." };
+GEGENSTAENDE.splitterglut = { id: "splitterglut", name: "Splitterglut", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/seelenlicht.webp",
+  text: "Ein Seelenlicht, mit fünf Splittern zu einer Glut gebunden. Sie wärmt die Hand und erlischt nicht." };
+GEGENSTAENDE.fischernetz = { id: "fischernetz", name: "Fischernetz", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/garn.webp",
+  text: "Ein frisch geknüpftes Netz aus Garn, eng und fest. Für Bente in der Möwenbucht." };
+
+/* ───────── C2 „Der Gesang der Spiralsteine“ (#118): Moorglöckchen-Wachs von Hedda – Questgegenstand, nicht handelbar; Bild vorerst das Moorglöckchen ───────── */
+GEGENSTAENDE.moorwachs = { id: "moorwachs", name: "Moorglöckchen-Wachs", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/kraeuter/symbole/moorgloeckchen.webp",
+  text: "Ein Klumpen weiches Wachs, das nach Moorglöckchen riecht. Hedda sagt, man solle es sich in die Ohren drücken, bevor die Steine singen." };

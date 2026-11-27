@@ -26,7 +26,7 @@ Die Haken liegen schon in der Welt: Bergfried, Steinhäuser, Fährhaus, Fähre u
 |---|---|
 | **Graufurt als Großstadt** | Bank, Läden, Werkstatt (Esse, Amboss, Werkbank, Kessel, Herd), Wegstein-Ziel, Heilstelle in der Wachtkapelle. Stadt = sicherer Ort ohne Gegner. |
 | **Fähre** | Überfahrt zwischen Westanleger (Graufurt) und Ostanleger. Erst mit Schalter `faehre_frei` (nach D1). Technisch wie der Wegstein-Teleport über den Server, mit kurzer Überfahrt (Bild/Blende, ca. 3 s). Ohne Schalter: Fährmann sagt, warum nicht. |
-| **Ostufer** | Neue Region östlich von Graufurt, Gefahrenstufe 3 (Gegner Stufe 45–60). Nur über die Fähre erreichbar. |
+| **Ostufer** | Neue Region östlich von Graufurt, Gefahrenstufe 3 (Gegner Stufe 45–60). Schnell über die Fähre; zu Fuß nur über den langen Weg durch die Glutsande und einen Pass im Südosten (offene Welt, Stand 26.11.). |
 | **Turm mit dem grünen Licht** | Begehbares Gebäude mit drei Ebenen und Dach, Gegner im Turm, Tür mit dem Wappen (öffnet nur nach Quest A2). |
 | **Rohstoffe 45/65** | Splittereisen in der **Furtklamm** (Graufurt, Westseite), Ureisen und Weltenbaum am Ostufer. Kräuter 45 (Nebelkraut) bleibt im Rabenmoor, Kräuter 65 (Lindenblüte) in Weidenhain. |
 | **Fischen 45 / Kochen 45** | Graufurter Wels am Fährhafen, Welspastete (Herd). Fischen 65 und Kochen 65 folgen mit der Glutsande-Region (W2). |

@@ -1,0 +1,564 @@
+{
+ "hinweis": "Wegenetz (#89): Orte, Wegweiser und Rastplätze (Weltfelder). Test: test/welt-wegenetz.test.mjs",
+ "orte": {
+  "Waldmark": [
+   6448,
+   6434
+  ],
+  "Weidenhain": [
+   6444,
+   6716
+  ],
+  "Osthof": [
+   6522,
+   6436
+  ],
+  "Rabenmoor": [
+   6328,
+   6722
+  ],
+  "Graufurt": [
+   6689,
+   6513
+  ],
+  "Ostufer": [
+   6840,
+   6520
+  ],
+  "Glutbrunn": [
+   7160,
+   6950
+  ],
+  "Heidrast": [
+   6596,
+   5872
+  ],
+  "Grauwacht": [
+   6706,
+   5748
+  ],
+  "Kielmund": [
+   6426,
+   7314
+  ],
+  "Möwenbucht": [
+   6214,
+   7160
+  ],
+  "Leuchtturm": [
+   6176,
+   7036
+  ],
+  "Hügelgräber": [
+   6462,
+   5770
+  ],
+  "Aschenwerth": [
+   6216,
+   6716
+  ],
+  "Heckenhof": [
+   6490,
+   6812
+  ],
+  "Summweide": [
+   6418,
+   6904
+  ],
+  "Schilfsee": [
+   6450,
+   7188
+  ],
+  "Erlengrund": [
+   6392,
+   7004
+  ],
+  "Lehmfurt": [
+   6466,
+   7244
+  ],
+  "Kräuterhof": [
+   6418,
+   7064
+  ]
+ },
+ "wegweiser": [
+  {
+   "id": "kreuzweg",
+   "x": 6506,
+   "y": 6508,
+   "ziele": [
+    "Waldmark",
+    "Graufurt",
+    "Weidenhain"
+   ]
+  },
+  {
+   "id": "weidenhain_sued",
+   "x": 6448,
+   "y": 6762,
+   "ziele": [
+    "Kielmund",
+    "Weidenhain"
+   ]
+  },
+  {
+   "id": "graufurt_westtor",
+   "x": 6656,
+   "y": 6516,
+   "ziele": [
+    "Waldmark",
+    "Graufurt",
+    "Glutbrunn"
+   ]
+  },
+  {
+   "id": "nordsaum_knick",
+   "x": 6711,
+   "y": 6384,
+   "ziele": [
+    "Grauwacht",
+    "Graufurt",
+    "Waldmark"
+   ]
+  },
+  {
+   "id": "glutstrasse_bruecke",
+   "x": 6762,
+   "y": 6794,
+   "ziele": [
+    "Glutbrunn",
+    "Graufurt"
+   ]
+  },
+  {
+   "id": "ende_des_grases",
+   "x": 6918,
+   "y": 6748,
+   "ziele": [
+    "Ostufer",
+    "Glutbrunn"
+   ]
+  },
+  {
+   "id": "heidrast",
+   "x": 6603,
+   "y": 5880,
+   "ziele": [
+    "Grauwacht",
+    "Hügelgräber",
+    "Graufurt"
+   ]
+  },
+  {
+   "id": "kielmund_nord",
+   "x": 6440,
+   "y": 7286,
+   "ziele": [
+    "Weidenhain",
+    "Möwenbucht",
+    "Kielmund"
+   ]
+  },
+  {
+   "id": "moewenbucht",
+   "x": 6234,
+   "y": 7172,
+   "ziele": [
+    "Kielmund",
+    "Leuchtturm"
+   ]
+  },
+  {
+   "id": "glutbrunn_west",
+   "x": 7108,
+   "y": 6934,
+   "ziele": [
+    "Glutbrunn",
+    "Ostufer",
+    "Graufurt"
+   ]
+  },
+  {
+   "id": "halber_weg",
+   "x": 6470,
+   "y": 7003,
+   "ziele": [
+    "Weidenhain",
+    "Erlengrund",
+    "Kielmund"
+   ]
+  },
+  {
+   "id": "kreuzstein",
+   "x": 6472,
+   "y": 7092,
+   "ziele": [
+    "Weidenhain",
+    "Kräuterhof",
+    "Kielmund"
+   ]
+  },
+  {
+   "id": "suedstrasse_nord",
+   "x": 6462,
+   "y": 6904,
+   "ziele": [
+    "Weidenhain",
+    "Summweide",
+    "Kielmund"
+   ]
+  }
+ ],
+ "rastplaetze": [
+  {
+   "id": "rast_nordsaumweg",
+   "x": 6690,
+   "y": 6232,
+   "kochstelle": [
+    6690,
+    6232
+   ]
+  },
+  {
+   "id": "rast_glutstrasse",
+   "x": 6880,
+   "y": 6866,
+   "kochstelle": [
+    6880,
+    6866
+   ]
+  },
+  {
+   "id": "rast_suedstrasse",
+   "x": 6474,
+   "y": 7010,
+   "kochstelle": [
+    6474,
+    7010
+   ]
+  },
+  {
+   "id": "rast_heidrast_grauwacht",
+   "x": 6660,
+   "y": 5832,
+   "kochstelle": [
+    6660,
+    5832
+   ]
+  },
+  {
+   "id": "rast_kuestenweg",
+   "x": 6300,
+   "y": 7226,
+   "kochstelle": [
+    6300,
+    7226
+   ]
+  }
+ ],
+ "wege": [
+  {
+   "name": "Glutstraße (Graufurt → Glutbrunn)",
+   "klasse": "Straße",
+   "punkte": [
+    [
+     6662,
+     6512
+    ],
+    [
+     6660,
+     6560
+    ],
+    [
+     6659,
+     6640
+    ],
+    [
+     6660,
+     6720
+    ],
+    [
+     6662,
+     6740
+    ],
+    [
+     6662,
+     6762
+    ],
+    [
+     6684,
+     6776
+    ],
+    [
+     6716,
+     6788
+    ]
+   ]
+  },
+  {
+   "name": "Glutstraße, Ostteil",
+   "klasse": "Straße",
+   "punkte": [
+    [
+     6758,
+     6790
+    ],
+    [
+     6800,
+     6842
+    ],
+    [
+     6880,
+     6876
+    ],
+    [
+     6960,
+     6900
+    ],
+    [
+     7040,
+     6920
+    ],
+    [
+     7104,
+     6938
+    ],
+    [
+     7128,
+     6942
+    ]
+   ]
+  },
+  {
+   "name": "Südstraße in Kielmund",
+   "klasse": "Straße",
+   "punkte": [
+    [
+     6462,
+     7230
+    ],
+    [
+     6450,
+     7270
+    ],
+    [
+     6436,
+     7292
+    ],
+    [
+     6426,
+     7300
+    ]
+   ]
+  },
+  {
+   "name": "Weg vom Pass nach Glutbrunn",
+   "klasse": "Feldweg",
+   "punkte": [
+    [
+     6918,
+     6739
+    ],
+    [
+     6914,
+     6742
+    ],
+    [
+     6950,
+     6800
+    ],
+    [
+     6996,
+     6860
+    ],
+    [
+     7050,
+     6905
+    ],
+    [
+     7110,
+     6935
+    ],
+    [
+     7130,
+     6941
+    ],
+    [
+     7150,
+     6946
+    ]
+   ]
+  },
+  {
+   "name": "Heidrast: Nordsaum-Weg zum Dorfplatz",
+   "klasse": "Straße",
+   "punkte": [
+    [
+     6604,
+     5904
+    ],
+    [
+     6600,
+     5890
+    ],
+    [
+     6597,
+     5876
+    ]
+   ]
+  },
+  {
+   "name": "Heidrast: Straße nach Grauwacht",
+   "klasse": "Straße",
+   "punkte": [
+    [
+     6597,
+     5874
+    ],
+    [
+     6606,
+     5864
+    ],
+    [
+     6624,
+     5846
+    ]
+   ]
+  },
+  {
+   "name": "Heidrast: Weg zu den Hügelgräbern",
+   "klasse": "Feldweg",
+   "punkte": [
+    [
+     6596,
+     5874
+    ],
+    [
+     6584,
+     5872
+    ],
+    [
+     6560,
+     5860
+    ]
+   ]
+  },
+  {
+   "name": "Nordsaum-Weg durch den Grenzposten",
+   "klasse": "Straße",
+   "punkte": [
+    [
+     6662,
+     6182
+    ],
+    [
+     6648,
+     6124
+    ],
+    [
+     6644,
+     6100
+    ],
+    [
+     6640,
+     6064
+    ]
+   ]
+  },
+  {
+   "name": "Küstenweg (Kielmund → Möwenbucht)",
+   "klasse": "Feldweg",
+   "punkte": [
+    [
+     6384,
+     7300
+    ],
+    [
+     6340,
+     7272
+    ],
+    [
+     6300,
+     7236
+    ],
+    [
+     6262,
+     7196
+    ],
+    [
+     6230,
+     7168
+    ]
+   ]
+  },
+  {
+   "name": "Pfad zum Leuchtturm",
+   "klasse": "Pfad",
+   "punkte": [
+    [
+     6230,
+     7168
+    ],
+    [
+     6226,
+     7158
+    ],
+    [
+     6214,
+     7120
+    ],
+    [
+     6196,
+     7072
+    ],
+    [
+     6184,
+     7046
+    ]
+   ]
+  },
+  {
+   "name": "Pfad zum Wrack",
+   "klasse": "Pfad",
+   "punkte": [
+    [
+     6292,
+     7228
+    ],
+    [
+     6286,
+     7250
+    ]
+   ]
+  },
+  {
+   "name": "Brückenkopf West",
+   "klasse": "Straße",
+   "punkte": [
+    [
+     6716,
+     6788
+    ],
+    [
+     6727,
+     6789
+    ]
+   ]
+  },
+  {
+   "name": "Brückenkopf Ost",
+   "klasse": "Straße",
+   "punkte": [
+    [
+     6748,
+     6789
+    ],
+    [
+     6758,
+     6790
+    ]
+   ]
+  }
+ ]
+}

@@ -7,9 +7,10 @@
 import { FISCHE, FISCH_GERAETE, BERUF_FISCHEN, FANGSTELLEN, fangstelle, fanggrund, FANG_TAKT_MS, ANGEL_WEIT, STROEMUNG_CHANCE, STROEMUNG_MS, WANDER_MS,
   WURMACKER_ART, WURMACKER, WURMSTELLEN, wurmstelle, GRAB_TAKT_MS, GRAB_WEIT } from "../../shared/fischen";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
-import { sammelBeruf } from "./sammeln";
+import { sammelBeruf, wuerfel } from "./sammeln";
 import { HANDWERK_QUEST } from "./handwerk";
-import { fangSchalter } from "../../shared/fischen";
+import { fangSchalter, SELTENE_FAENGE } from "../../shared/fischen";
+import { bedingungErfuellt } from "./inventar";
 
 const name = (g: string) => (GEGENSTAENDE[g] ? GEGENSTAENDE[g].name : g);
 const F = sammelBeruf({
@@ -18,10 +19,14 @@ const F = sammelBeruf({
   wandern: { ziele: () => FANGSTELLEN, gruppe: (id) => (fangstelle(id) || { grund: "" }).grund, aktiv: (g) => (fanggrund(g) || { aktiv: 1 }).aktiv, ms: WANDER_MS },
   erlaubt: (nutzer, z) => { const sch = fangSchalter(z.id); return sch && !HANDWERK_QUEST.schalter(nutzer, sch) ? "Hier ist nur trübes, stilles Wasser. Solange das Wehr nicht hält, steht hier kein Fisch." : null; },
   ohneKoeder: (a) => `Ohne ${name(a.koeder || "wurm")} beißt hier nichts. Würmer gräbt man auf den Äckern des Osthofs.`,
+  selten: (nutzer, id) => seltenerFang(nutzer, id), /* #126 */
   texte: { gast: "Fischen geht mit Konto (Menü → Anmelden).", unbekannt: "Hier sind keine Fische.", nah: "Geh näher ans Wasser.",
     ohneWerkzeug: "Du brauchst eine Angelrute im Rucksack (für den Moorhecht eine Reuse).", werkzeugLevel: (l) => `Mit diesem Gerät fischst du erst ab Fischen ${l}.`,
     weg: () => "Die Fische sind weitergezogen.", level: (a) => `Für den ${a.name} brauchst du Fischen ${a.level}.` },
 });
+/** Seltener Fang (#126, der alte Hecht): an dieser Fangstelle, mit erfüllter Beute-Bedingung, mit der Chance je Fisch */
+export function seltenerFang(nutzer: string, stelle: string): (typeof SELTENE_FAENGE)[number] | null { const grund = (fangstelle(stelle) || { grund: "" }).grund;
+  for (const R of SELTENE_FAENGE) if (R.grund === grund && bedingungErfuellt(nutzer, R.nur) && wuerfel() < R.chance) return R; return null; }
 export const fischEinrichten = F.einrichten, fischStart = F.start, fischStop = F.stop, fischTakt = F.takt, fischWeg = F.weg, fischMoment = F.moment, leereFangstellen = F.erschoepfte, fischRuhend = F.ruhende, fischZuruecksetzen = F.zuruecksetzen;
 
 const W = sammelBeruf({

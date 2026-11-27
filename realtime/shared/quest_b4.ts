@@ -4,10 +4,12 @@
  * Einstieg und Wachstube (Schläger, Armbrustschützen), Schlüsselbund (bedingte Beute), Kartentisch (Angriffsplan auf Weidenhain), Truhe im Beutelager
  * (Silberleuchter aus B3), Versammlungshalle (zwei Wellen), Kammer des Anführers als Instanz: Hauptmann Rotmantel, Brief mit Rabensiegel, das rote Banner.
  * Lohn: je 1.000 XP Stärke, Geschick, Defense, 500 LP-XP, 500 Splitter, eine seltene Waffe nach Wahl (Schwert, Zweihänder, Kurzbogen, Stab), 1 Questpunkt.
- * Die Wahl: vier Abschluss-Antworten, jede gibt eine andere Waffe (geben beim Abschluss). Das rote Banner nimmt man in der Kammer selbst mit.
+ * Die Wahl: heute vier Abschluss-Antworten, jede gibt eine andere Waffe (geben beim Abschluss). Nach der Regel „Belohnung zur Auswahl“ (Kanon 27.11.) soll die Wahl ins
+ * Abschlussfenster (Bild, Werte, Rückfrage) – sobald der Baukasten ein Wahl-Feld hat (Issue). Die nicht gewählten Waffen verkauft Othmar danach für 1.000 Splitter. Das rote Banner nimmt man in der Kammer selbst mit.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Issue #16 (Boss-Baukasten, Instanz, Tür mit Schlüssel, Ereignis für die Wellen, Gegenstände)
- * und darauf, dass eine Figur in mehreren Quests sprechen kann (Othmar gehört heute Quest 1). Liste: doku/quests/b3-b4-bausteine.md.
+ * Im Spiel (shared/quests.ts). Als Entwurf wartete die Quest auf Issue #16 (Boss-Baukasten, Instanz, Tür mit Schlüssel, Ereignis für die Wellen, Gegenstände)
+ * Othmar spricht in Quest 1, B3 und B4 (Figur in mehreren Quests, questbau.figurQuest, #48). Liste: doku/quests/b3-b4-bausteine.md.
+ * Rotmantel (Kanon 27.11.): In der Quest kämpfst du immer allein, gegen eine schwächere, gut machbare Fassung (Instanz). Nach der Quest gibt es die stärkere Fassung öffentlich oder als eigene Instanz.
  * Orte: Issue #21 (Welt, 81778e67): Unterschlupf (Ursprung 10240 | 9600), Kammer rotmantel_kammer (Ursprung 10432 | 9600).
  */
 import type { QuestDef, Bed, Folge } from "./questbau";
@@ -27,16 +29,22 @@ const WAHL: { id: string; text: string; g: string; name: string; satz: string }[
   { id: "wahl_bogen", text: "Den Kurzbogen.", g: "mondkurzbogen", name: "einen seltenen Kurzbogen", satz: "Den Bogen. Gesa wird nicken, wenn sie ihn sieht." },
   { id: "wahl_stab", text: "Den Stab.", g: "sternenszepter", name: "einen seltenen Zauberstab", satz: "Einen Stab hätte ich bei Banditen nicht erwartet. Gestohlen, sicher. Jetzt gehört er dir." },
 ];
-const abschluss = (w: (typeof WAHL)[number]): Folge => ({ abschluss: true, nehmen: [{ g: "rabenbrief" }, { g: "silberleuchter" }], geben: [{ g: w.g, name: w.name }],
+/* Den Rabenbrief behält der Spieler: Bertold Krähe will ihn in C1 sehen (shared/quest_c1.ts) */
+/** Belohnung zur Auswahl (Kanon): Die nicht gewählten Waffen bleiben erreichbar – Othmar verkauft sie nach der Quest aus Rotmantels Waffenkammer (auch als Ersatz bei Verlust) */
+const KAUFPREIS = 1000;
+const KAUF = WAHL.map((w) => ({ id: "kauf_" + w.g, text: `${w.text.replace(/\.$/, "")} aus der Waffenkammer kaufen (${KAUFPREIS} Splitter).`,
+  wenn: { ...FERTIG, verloren: w.g, anzahl: { g: "splitter", min: KAUFPREIS } },
+  folge: [{ f: { weiter: true, nehmen: [{ g: "splitter", n: KAUFPREIS }], geben: [{ g: w.g, name: w.name }], zeilen: ["Othmar schließt die Waffenkammer auf. „Rotmantel braucht sie nicht mehr. Und Weidenhain braucht Splitter.“"] } }] }));
+const abschluss = (w: (typeof WAHL)[number]): Folge => ({ abschluss: true, nehmen: [{ g: "silberleuchter" }], geben: [{ g: w.g, name: w.name }],
   zeilen: [w.satz, "Weidenhain schuldet dir mehr, als ich zahlen kann. Nimm, was ich habe.",
-    "Und der Brief … „Die Insel wartet.“ Federn, Splitter, eine Insel. Das führt ins Rabenmoor. Ich fürchte, das ist erst der Anfang."] });
+    "Und der Brief … „Die Insel wartet.“ Federn, Splitter, eine Insel. Das führt ins Rabenmoor.", "Behalt ihn. Zeig ihn Bertold Krähe, dem Schulzen von Rabenmoor. Wenn einer weiß, welche Insel gemeint ist, dann er."] });
 
 export const QUEST_B4: QuestDef = {
   id: B4, titel: "Das rote Banner", ort: "Westmark · Unterschlupf · Weidenhain", start: "Sprich mit Othmar Rehn in Weidenhain.",
   logNeu: "Othmar Rehn in Weidenhain hat den Namen Rotmantel nicht vergessen. Er sucht jemanden, der in die Westmark hinabsteigt.",
   logAngeboten: "Othmar Rehn in Weidenhain wartet, ob du gegen Rotmantel ziehst.",
   logAbgabe: "Rotmantel ist besiegt. Bring den Brief mit dem Rabensiegel und die Silberleuchter zu Othmar Rehn nach Weidenhain.",
-  logFertig: "Hauptmann Rotmantel ist geschlagen, Weidenhain ist sicher. Doch der Brief mit dem Rabensiegel spricht von einer Insel und vom „Obersten“ – die Spur führt ins Rabenmoor.",
+  logFertig: "Hauptmann Rotmantel ist geschlagen, Weidenhain ist sicher. Doch der Brief mit dem Rabensiegel spricht von einer Insel und vom „Obersten“ – die Spur führt ins Rabenmoor. Bertold Krähe, der Schulze von Rabenmoor, sollte den Brief sehen.",
   geber: "othmar",
   figuren: [
     { id: "othmar", name: "Othmar Rehn", modell: "npc.alter_bauer", x: 6451.5, y: 6688.5, blick: [0, -1] },
@@ -58,7 +66,7 @@ export const QUEST_B4: QuestDef = {
     { id: "halle", text: "Die Versammlungshalle säubern", ereignis: { art: "erlegen", typ: "unterschlupf_welle" }, anzahl: 2, nach: ["schluessel"], wo: HALLE,
       log: "In der Versammlungshalle kommen die Banditen in zwei Wellen zu dritt. Halte stand ({n:halle} Wellen)." },
     { id: "rotmantel", text: "Hauptmann Rotmantel besiegen", ereignis: { art: "erlegen", typ: "rotmantel" }, nach: ["halle"], wo: KAMMER,
-      log: "Hinter dem roten Banner liegt die Kammer des Anführers. Besieg Hauptmann Rotmantel. Weich dem Rundumschlag aus, wenn die Felder rot leuchten, und lock ihn vom Thron weg." },
+      log: "Hinter dem roten Banner liegt die Kammer des Anführers. Besieg Hauptmann Rotmantel – du stehst ihm allein gegenüber. Weich dem Rundumschlag aus, wenn die Felder rot leuchten, und lock ihn vom Thron weg." },
     { id: "brief", text: "Den Brief mit dem Rabensiegel an dich nehmen", ereignis: { art: "aufheben", g: "rabenbrief" }, nach: ["halle"], wo: KAMMER,
       log: "Rotmantel trug einen Brief bei sich. Nimm ihn an dich." },
     { id: "banner", text: "Das rote Banner abnehmen", ereignis: { art: "objekt", id: "b4_banner" }, nach: ["rotmantel"], wo: BANNER,
@@ -85,7 +93,7 @@ export const QUEST_B4: QuestDef = {
           "Er war Söldner der Wacht, damals. Jetzt hat er unter der Westmark eine Bande, die mehr frisst, als die Wiesen hergeben. Rotmantel bezahlt seine Leute nicht mit Äpfeln.",
           "Irgendwer bezahlt ihn. Finde heraus, wer – und sorg dafür, dass er nicht nach Weidenhain kommt."], antworten: ["annehmen", "wacht", "spaeter"] },
         { wenn: NEU, zeilen: ["Weidenhain hat wieder Gäste, seit die Straße offen ist. Nicht alle davon sind mir lieb."], antworten: ["tschuess"] },
-        { wenn: FERTIG, zeilen: ["Weidenhain schläft wieder ruhig. Ich nicht. Ich denke an diese Insel."], antworten: ["wacht", "tschuess"] },
+        { wenn: FERTIG, zeilen: ["Weidenhain schläft wieder ruhig. Ich nicht. Ich denke an diese Insel.", "In Rotmantels Waffenkammer liegen noch Waffen. Willst du eine, sag es."], antworten: ["wacht", ...KAUF.map((k) => k.id), "tschuess"] },
         { wenn: { ...LAEUFT, alle: true, hat: "rabenbrief" }, zeilen: ["Du lebst. Und Rotmantel?", "…Zeig mir, was du gefunden hast."], antworten: ["zeigen", ...WAHL.map((w) => w.id), "tschuess"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Rotmantel ist gefallen, höre ich. Aber der Brief, den er bei sich trug – wo ist er?"], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["rotmantel"] }, zeilen: ["Rotmantel ist geschlagen? Dann bring mir, was er bei sich hatte. Alles."], antworten: ["hilfe", "tschuess"] },
@@ -105,6 +113,7 @@ export const QUEST_B4: QuestDef = {
           "Othmar bricht das Siegel nicht – es ist schon gebrochen. Ein Rabe, in schwarzes Wachs gedrückt.", "„Für jeden Splitter, den ihr bringt, eine Feder. Die Insel wartet. – Der Oberste.“",
           "Er legt den Brief auf den Tisch, ganz langsam. Dann die Leuchter daneben.", "In Rotmantels Kammer lagen Waffen, sagt Gesa. Gute Waffen. Such dir eine aus – du hast sie dir verdient."] } }] },
         ...WAHL.map((w) => ({ id: w.id, text: w.text, wenn: { ...LAEUFT, alle: true, hat: "rabenbrief" }, folge: [{ f: abschluss(w) }] })),
+        ...KAUF,
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Gute Wege. Und pass auf dich auf."] } }] },
       ],
     },
@@ -118,7 +127,7 @@ export const QUEST_B4: QuestDef = {
       ],
       optionen: [
         { id: "bereit", text: "Ich bin bereit.", folge: [{ f: { erledige: ["gesa"], zeilen: ["Gut. Unter den Fässern geht's runter.", "In der Wachstube sitzen Schläger und Armbrustschützen. Einer hat den Schlüssel zum Beutelager – such ihn.",
-          "Und wenn du Rotmantel siehst: Er schlägt rundum, wenn's um ihn rot wird. Dann raus da. Nicht heldenhaft sein. Lebendig sein."] } }] },
+          "Und wenn du Rotmantel siehst: Er schlägt rundum, wenn's um ihn rot wird. Dann raus da. Nicht heldenhaft sein. Lebendig sein.", "In seine Kammer gehst du allein. Wir halten dir hier den Rücken frei."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Augen auf."] } }] },
       ],
     },
@@ -126,7 +135,9 @@ export const QUEST_B4: QuestDef = {
   /* Schlüsselbund und Rabenbrief nur, solange sie fehlen (Rolle Spiel: Schlüsselbund vom Wachstubenführer, Rabenbrief garantiert von Rotmantel in der Quest-Instanz) */
   beute: { b4_schluessel: { erledigt: ["gesa"], offen: ["schluessel"] }, b4_rabenbrief: { erledigt: ["halle"], offen: ["brief"] } },
   /* Die Tür zum Beutelager ist je Spieler offen mit dem Schlüssel (oder danach); die Kammer ist für die Quest eine Instanz, danach Rotmantel öffentlich */
-  schalter: { beutelager_offen: [FERTIG, { erledigt: ["schluessel"] }], rotmantel_instanz: LAEUFT, rotmantel_oeffentlich: FERTIG },
+  schalter: { beutelager_offen: [FERTIG, { erledigt: ["schluessel"] }], rotmantel_instanz: LAEUFT, rotmantel_oeffentlich: FERTIG, rotmantel_kammer_offen: [FERTIG, { erledigt: ["halle"] }],
+    /* die Halle ist für die Quest eine eigene Kopie mit zwei Wellen (shared/bosse.ts), solange der Schritt offen ist */ unterschlupf_halle: { phase: ["laeuft"], erledigt: ["schluessel"], offen: ["halle"] } },
+  glueckwunsch: "Rotmantel ist geschlagen. Weidenhain schläft ruhig – und du hast dir das verdient.",
   belohnungText: "Belohnung: je 1.000 XP Stärke, Geschick und Defense, 500 LP-XP, 500 Splitter, eine seltene Waffe nach Wahl, das rote Banner · danach: Rotmantel kehrt als Mini-Boss zurück",
   belohnung: { xp: { staerke: 1000, geschick: 1000, defense: 1000, lp: 500 }, splitter: 500 },
   punkte: 1,

@@ -1,16 +1,209 @@
 {
  "start": [
   [
-   240.0,
-   208.0
+   240,
+   208
   ]
  ],
  "figuren": [],
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 470,
+    "y0": 366,
+    "x1": 471,
+    "y1": 367
+   },
+   {
+    "art": "rechteck",
+    "x0": 464,
+    "y0": 364,
+    "x1": 465,
+    "y1": 365
+   },
+   {
+    "art": "rechteck",
+    "x0": 469,
+    "y0": 361,
+    "x1": 470,
+    "y1": 362
+   },
+   {
+    "art": "rechteck",
+    "x0": 399,
+    "y0": 293,
+    "x1": 400,
+    "y1": 294
+   },
+   {
+    "art": "rechteck",
+    "x0": 393,
+    "y0": 291,
+    "x1": 394,
+    "y1": 292
+   },
+   {
+    "art": "rechteck",
+    "x0": 398,
+    "y0": 287,
+    "x1": 399,
+    "y1": 288
+   },
+   {
+    "art": "rechteck",
+    "x0": 176,
+    "y0": 338,
+    "x1": 177,
+    "y1": 339
+   },
+   {
+    "art": "rechteck",
+    "x0": 221,
+    "y0": 336,
+    "x1": 222,
+    "y1": 337
+   },
+   {
+    "art": "rechteck",
+    "x0": 223,
+    "y0": 349,
+    "x1": 224,
+    "y1": 350
+   },
+   {
+    "art": "rechteck",
+    "x0": 441,
+    "y0": 292,
+    "x1": 442,
+    "y1": 293
+   },
+   {
+    "art": "rechteck",
+    "x0": 437,
+    "y0": 292,
+    "x1": 438,
+    "y1": 293
+   },
+   {
+    "art": "rechteck",
+    "x0": 438,
+    "y0": 288,
+    "x1": 439,
+    "y1": 289
+   }
+  ],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "bl_sandquell",
+   "art": "lesen",
+   "x": 473,
+   "y": 409.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Sandquell. Eine Quelle mitten in den Dünen – hier tränken die Karawannen zwischen Glutbrunn, der Salzpfanne und dem Nordstrand ihre Tiere."
+   }
+  },
+  {
+   "id": "ende_des_grases",
+   "art": "lesen",
+   "x": 3.5,
+   "y": 407.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wegstein, halb im Sand. Jemand hat hineingeritzt: „Ende des Grases“. Dahinter nur noch Dünen und flirrende Luft."
+   }
+  },
+  {
+   "id": "lager_ost",
+   "art": "lesen",
+   "x": 297,
+   "y": 392,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Lager im Kanalbett: Zelte aus Kamelhaar, ein Feuer, Kisten mit fremden Siegeln. Karawanenräuber."
+   }
+  },
+  {
+   "id": "salzpfanne",
+   "art": "lesen",
+   "x": 418,
+   "y": 294,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Salzpfanne: eine weiße Kruste, so weit man sieht. In vier gemauerten Becken verdunstet Sole – in zweien stehen Skorpione."
+   }
+  },
+  {
+   "id": "siederei",
+   "art": "lesen",
+   "x": 418,
+   "y": 289,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Salzsiederei. Die Kessel sind kalt, die Pfannen rissig."
+   }
+  },
+  {
+   "id": "tempel_tor",
+   "art": "eingang",
+   "x": 200,
+   "y": 358.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Tor im Fels, halb im Sand versunken. Über dem Sturz: ein Auge, aus dem Strahlen fallen.",
+    "tat": "tempel",
+    "knopf": "Hinabsteigen",
+    "ziel": [
+     11312,
+     9660
+    ]
+   }
+  },
+  {
+   "id": "wegweiser_ende_des_grases_lesen",
+   "x": 6,
+   "y": 413.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Ostufer ↖ · Nach Glutbrunn ↘",
+    "ziele": [
+     "Nach Ostufer ↖",
+     "Nach Glutbrunn ↘"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  }
+ ],
+ "senken": [
+  {
+   "x": 176.5,
+   "y": 338.5,
+   "r": 4,
+   "tiefe": 1.1
+  },
+  {
+   "x": 222.5,
+   "y": 343,
+   "r": 9,
+   "tiefe": 1.1
+  },
+  {
+   "x": 439.3,
+   "y": 291,
+   "r": 5,
+   "tiefe": 1.1
+  }
+ ]
 }

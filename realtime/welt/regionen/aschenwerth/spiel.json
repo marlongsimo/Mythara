@@ -88,6 +88,166 @@
    "daten": {
     "text": "Sieben Steine im Kreis, mit Spiralen bedeckt wie die beim Schrein im Rabenmoor. Hier ist es still, selbst die Frösche schweigen."
    }
+  },
+  {
+   "id": "federmutter_abstieg",
+   "art": "eingang",
+   "x": 98,
+   "y": 136.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Zwischen den Spiralsteinen klafft ein Spalt im Torf. Darunter: Federn, Kälte, ein Rascheln.",
+    "tat": "federmutter_kammer",
+    "knopf": "Hinabsteigen",
+    "ziel": [
+     11536,
+     9625.5
+    ]
+   }
+  },
+  {
+   "id": "steinkreis_2",
+   "art": "lesen",
+   "x": 44,
+   "y": 113.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein zweiter, kleinerer Kreis: fünf Steine, die Spiralen tiefer eingeschlagen. Der Torf zwischen ihnen ist festgetreten, als tanze hier jemand."
+   }
+  },
+  {
+   "id": "spiralstein_1_1",
+   "art": "lesen",
+   "x": 101.9,
+   "y": 140.9,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_1_2",
+   "art": "lesen",
+   "x": 100.4,
+   "y": 143.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_1_3",
+   "art": "lesen",
+   "x": 97.1,
+   "y": 143.7,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_1_4",
+   "art": "lesen",
+   "x": 94.5,
+   "y": 142.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_1_5",
+   "art": "lesen",
+   "x": 94.5,
+   "y": 139.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_1_6",
+   "art": "lesen",
+   "x": 97.1,
+   "y": 138.1,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_1_7",
+   "art": "lesen",
+   "x": 100.4,
+   "y": 138.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_2_1",
+   "art": "lesen",
+   "x": 46.9,
+   "y": 113.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_2_2",
+   "art": "lesen",
+   "x": 43.7,
+   "y": 115.3,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_2_3",
+   "art": "lesen",
+   "x": 40.9,
+   "y": 113.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_2_4",
+   "art": "lesen",
+   "x": 42.4,
+   "y": 110.9,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
+  },
+  {
+   "id": "spiralstein_2_5",
+   "art": "lesen",
+   "x": 46.1,
+   "y": 111.1,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
+   }
   }
  ]
 }

@@ -1,16 +1,246 @@
 {
  "start": [
   [
-   240.0,
-   224.0
+   240,
+   224
   ]
  ],
  "figuren": [],
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 18,
+    "y0": 50,
+    "x1": 19,
+    "y1": 51
+   },
+   {
+    "art": "rechteck",
+    "x0": 13,
+    "y0": 48,
+    "x1": 14,
+    "y1": 49
+   },
+   {
+    "art": "rechteck",
+    "x0": 17,
+    "y0": 44,
+    "x1": 18,
+    "y1": 45
+   },
+   {
+    "art": "rechteck",
+    "x0": 62,
+    "y0": 30,
+    "x1": 63,
+    "y1": 31
+   },
+   {
+    "art": "rechteck",
+    "x0": 66,
+    "y0": 29,
+    "x1": 67,
+    "y1": 30
+   },
+   {
+    "art": "rechteck",
+    "x0": 71,
+    "y0": 29,
+    "x1": 72,
+    "y1": 30
+   },
+   {
+    "art": "rechteck",
+    "x0": 75,
+    "y0": 31,
+    "x1": 76,
+    "y1": 32
+   },
+   {
+    "art": "rechteck",
+    "x0": 77,
+    "y0": 34,
+    "x1": 78,
+    "y1": 35
+   },
+   {
+    "art": "rechteck",
+    "x0": 47,
+    "y0": 33,
+    "x1": 48,
+    "y1": 34
+   },
+   {
+    "art": "rechteck",
+    "x0": 43,
+    "y0": 34,
+    "x1": 44,
+    "y1": 35
+   },
+   {
+    "art": "rechteck",
+    "x0": 42,
+    "y0": 31,
+    "x1": 43,
+    "y1": 32
+   },
+   {
+    "art": "rechteck",
+    "x0": 45,
+    "y0": 29,
+    "x1": 46,
+    "y1": 30
+   },
+   {
+    "art": "rechteck",
+    "x0": 34,
+    "y0": 60,
+    "x1": 35,
+    "y1": 61
+   },
+   {
+    "art": "rechteck",
+    "x0": 31,
+    "y0": 62,
+    "x1": 32,
+    "y1": 63
+   },
+   {
+    "art": "rechteck",
+    "x0": 29,
+    "y0": 58,
+    "x1": 30,
+    "y1": 59
+   },
+   {
+    "art": "rechteck",
+    "x0": 33,
+    "y0": 57,
+    "x1": 34,
+    "y1": 58
+   }
+  ],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "taverne_ankerkraut",
+   "art": "lesen",
+   "x": 5.5,
+   "y": 96.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Taverne „Zum Ankerkraut“. Drinnen singt jemand von einem Schiff, das nie zurückkam."
+   }
+  },
+  {
+   "id": "kielmund_bank_tuer",
+   "art": "lesen",
+   "x": 20,
+   "y": 96.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Kielmund."
+   }
+  },
+  {
+   "id": "kielmund_werkstatt",
+   "art": "lesen",
+   "x": 20,
+   "y": 127.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkstatt von Kielmund: Esse, Amboss, Werkbank – und ein Haufen rostiger Anker."
+   }
+  },
+  {
+   "id": "mangroven",
+   "art": "lesen",
+   "x": 76,
+   "y": 363,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Mangroven. Wurzeln wie Finger im Brackwasser, schmale Wasserwege – irgendwann fahren hier Boote."
+   }
+  },
+  {
+   "id": "fischplatz_mangroven",
+   "art": "lesen",
+   "x": 73,
+   "y": 390,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Im Brackwasser der Mangroven ziehen Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "lehmfurt_schmiede",
+   "art": "lesen",
+   "x": 37.5,
+   "y": 42.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die kleine Schmiede von Lehmfurt: Esse und Amboss, Erz aus dem Steinbruch nebenan.",
+    "station": "esse_amboss"
+   }
+  },
+  {
+   "id": "steinbruch",
+   "art": "lesen",
+   "x": 68,
+   "y": 40,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Steinbruch von Lehmfurt. Kupfer, Eisen und an der Kante sogar Schwarzeisen."
+   }
+  },
+  {
+   "id": "wegweiser_kielmund_nord_lesen",
+   "x": 8,
+   "y": 87.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Weidenhain ↑ · Nach Möwenbucht ↖ · Nach Kielmund ↙",
+    "ziele": [
+     "Nach Weidenhain ↑",
+     "Nach Möwenbucht ↖",
+     "Nach Kielmund ↙"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  }
+ ],
+ "senken": [
+  {
+   "x": 70.7,
+   "y": 31.1,
+   "r": 11,
+   "tiefe": 1.1
+  },
+  {
+   "x": 44.9,
+   "y": 32.3,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 32.3,
+   "y": 59.9,
+   "r": 5,
+   "tiefe": 1.1
+  }
+ ]
 }

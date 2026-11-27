@@ -8,7 +8,7 @@ import { lokalesGespraech } from "../dialog";
 import { bankZeigen } from "../bank";
 import { Npc3D } from "./npc3d";
 import { schildAn } from "./mitspieler";
-import type { Welt3D } from "./motor";
+import { type Welt3D, figurWeit } from "./motor";
 
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number } }
 interface Figur { b: Bankier; npc: Npc3D; nm: HTMLElement }
@@ -37,7 +37,7 @@ export class BankWelt {
     return { x: vx, y: vy, text: `Mit ${vorname(b)} sprechen`, tat: () => bankierReden(b), da: () => Math.hypot(vx - this.u.ort.x, vy - this.u.ort.y) <= 1.6,
       mehr: [{ text: "Bank", sym: "🏦", tat: () => bankZeigen(bankName(b)) }] }; }
   schritt(dt: number): void { const M = this.u.motor, o = this.u.ort;
-    for (const f of this.alle) { const sichtbar = Math.hypot(f.b.x - o.x, f.b.y - o.y) < 40; f.npc.gruppe.visible = sichtbar;
+    for (const f of this.alle) { const sichtbar = Math.hypot(f.b.x - o.x, f.b.y - o.y) < figurWeit(); /* #103 */ f.npc.gruppe.visible = sichtbar;
       if (sichtbar) { f.npc.gruppe.position.set(f.b.x, M.hoehe(f.b.x, f.b.y), f.b.y); f.npc.schritt(dt); }
       f.nm.hidden = !sichtbar || !schildAn(f.nm, M, f.b.x, M.hoehe(f.b.x, f.b.y) + 2.35, f.b.y); } }
   /** Bank-Symbol auf der Minikarte (einmal je Bank, nicht je Mitarbeiter) */

@@ -9,10 +9,10 @@ import { Kampfwerte, SkillXp, kampfwerte, skillXpPruefen, levelAus, SKILLS, NULL
 import { GEGENSTAENDE, Platz, PLAETZE, startAusruestung } from "../../shared/gegenstaende";
 import { Startwaffe } from "../../shared/aussehen";
 import type { Sim } from "../../shared/sim";
-import { Wirkung, skillPlus, wirkungenAktiv } from "../../shared/wirkungen";
+import { Wirkung, skillPlus, wirkungenAktiv, bemerkenFaktor } from "../../shared/wirkungen";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface HeldV1 { /** laufende Wirkungen aus dem Server-Inventar (Essen, shared/wirkungen.ts) */ wirkungen?: Wirkung[]; /** gespeicherte Lebenspunkte (Migration 046) */ lpStand?: { lp: number; z: number } | null; waffe: Startwaffe; xp: SkillXp; angelegt: Partial<Record<Platz, string>>; /** Angriffsstil 0, 1 = Normal, 2 */ stil: number; offen: SkillXp; bucht: boolean; zuletzt: number; stufen: string; schluss?: boolean }
+export interface HeldV1 { /** die angelegte Waffe ist geladen (Phase 5b, aus dem Server-Inventar) */ geladen?: boolean; /** laufende Wirkungen aus dem Server-Inventar (Essen, shared/wirkungen.ts) */ wirkungen?: Wirkung[]; /** gespeicherte Lebenspunkte (Migration 046) */ lpStand?: { lp: number; z: number } | null; waffe: Startwaffe; xp: SkillXp; angelegt: Partial<Record<Platz, string>>; /** Angriffsstil 0, 1 = Normal, 2 */ stil: number; offen: SkillXp; bucht: boolean; zuletzt: number; stufen: string; schluss?: boolean }
 
 /** Der eigene Held mit seinen vier Skills (null: kein Held → alte Kampfwerte) */
 export async function heldV1Lesen(sb: Sb, nutzer: string): Promise<HeldV1 | null> {
@@ -29,7 +29,7 @@ export function angelegtPruefen(roh: unknown, waffe: Startwaffe): Partial<Record
   return aus;
 }
 const stufenVon = (x: SkillXp) => SKILLS.map((k) => levelAus(x[k] || 0, k)).join("/");
-export const kampfwerteVon = (h: HeldV1): Kampfwerte => kampfwerte(h.xp, h.angelegt, h.stil, skillPlus(h.wirkungen));
+export const kampfwerteVon = (h: HeldV1): Kampfwerte => kampfwerte(h.xp, h.angelegt, h.stil, skillPlus(h.wirkungen), { geladen: h.geladen, bemerken: bemerkenFaktor(h.wirkungen) });
 /** Gemeldeten Angriffsstil prüfen (0 bis 3; was die Kampfart der Waffe nicht kennt, wird in kampfwerte zum Standard 1) */
 export const stilPruefen = (v: unknown): number => (v === 0 || v === 2 || v === 3 ? v : 1);
 

@@ -26,22 +26,30 @@ for (const { q, wartet } of [...QUESTS.map((q) => ({ q })), ...ENTWUERFE]) {
   /* Gegenstände, die die Quest nennt (hat, verloren, anzahl, geben, nehmen, Lohn), müssen es geben */
   const genannt = new Set([...JSON.stringify(q).matchAll(/"(?:hat|verloren)":"([a-z0-9_]+)"|"g":"([a-z0-9_]+)"/g)].map((m) => m[1] || m[2]));
   for (const g of genannt) if (!GEG[g]) baustein(`Gegenstand ${g} gibt es nicht`);
-  /* Der Abschluss bucht höchstens 1.000 XP je Skill und Beruf und 10 Questpunkte (Migration 048) – mehr ginge stillschweigend verloren */
-  for (const [k, n] of [...Object.entries((q.belohnung || {}).xp || {}), ...Object.entries((q.belohnung || {}).berufe || {})]) if (n > 1000) baustein(`Lohn ${k} ${n} über 1.000 (Grenze in Migration 048)`);
+  /* Der Abschluss bucht höchstens QB.LOHN_JE_SKILL XP je Skill und Beruf und 10 Questpunkte (Migration 051) – mehr ginge stillschweigend verloren: Fehler */
+  for (const [k, n] of [...Object.entries((q.belohnung || {}).xp || {}), ...Object.entries((q.belohnung || {}).berufe || {})]) if (n > QB.LOHN_JE_SKILL) fehler.push(`Lohn ${k} ${n} über ${QB.LOHN_JE_SKILL} (Grenze in Migration 051)`);
   if ((q.punkte || 0) > 10) fehler.push("mehr als 10 Questpunkte");
   if (!q.figuren.some((f) => f.id === q.geber)) fehler.push("Questgeber ist keine Figur");
   for (const f of q.figuren) if (!weltRegionBei(f.x, f.y)) baustein(`${f.id}: steht außerhalb der Welt`);
-  /* Der Motor lässt eine Figur heute nur in der ersten Quest sprechen, die sie nennt (questmotor.ts motorReden): dieselbe Figur in zwei Quests braucht erst den Motor */
   for (const f of q.figuren) { const andere = [...QUESTS, ...(wartet ? ENTWUERFE.map((e) => e.q) : [])].filter((x) => x.id !== q.id && x.figuren.some((g) => g.id === f.id)).map((x) => x.id);
-    if (andere.length) baustein(`Figur ${f.id} auch in ${andere.join(", ")} (Figur in mehreren Quests)`); }
+    /* Figur in mehreren Quests (Baukasten seit #48, questbau.figurQuest): erlaubt, aber überall dieselbe Figur – gleicher Name, Ort und Modell */
+    for (const x of [...QUESTS, ...ENTWUERFE.map((e) => e.q)].filter((x) => andere.includes(x.id))) { const g = x.figuren.find((y) => y.id === f.id);
+      if (g.name !== f.name || g.modell !== f.modell || Math.hypot(g.x - f.x, g.y - f.y) > 0.01) fehler.push(`Figur ${f.id} steht in ${x.id} anders da (Name, Ort oder Modell) – eine Figur in mehreren Quests ist überall dieselbe`); } }
   const bedPruefen = (b, wo) => { if (!b) return; for (const id of [...(b.erledigt || []), ...(b.offen || []), ...(b.zaehler ? [b.zaehler.schritt] : [])]) if (!ids.includes(id)) fehler.push(`${wo}: unbekannter Schritt ${id}`);
     if (b.zaehler && !q.schritte.find((x) => x.id === b.zaehler.schritt).anzahl) fehler.push(`${wo}: ${b.zaehler.schritt} zählt nicht`);
     if (b.quest && !ALLE_IDS.includes(b.quest.id) && b.quest.id !== "die_gesperrte_strasse") fehler.push(`${wo}: unbekannte Quest ${b.quest.id}`); };
   const oIds = (q.objekte || []).map((o) => o.id); if (new Set(oIds).size !== oIds.length) fehler.push("Objekt-IDs doppelt");
-  for (const o of q.objekte || []) { if (!weltRegionBei(o.x, o.y)) baustein(`${o.id}: liegt außerhalb der Welt`); if (!q.schritte.some((x) => x.ereignis.art === "objekt" && x.ereignis.id === o.id)) fehler.push(`${o.id}: kein Schritt dazu`); o.sonst.forEach((p, i) => bedPruefen(p.wenn, `Objekt ${o.id} ${i}`)); (o.heil || []).forEach((b) => bedPruefen(b, `Objekt ${o.id} heil`)); }
+  for (const o of q.objekte || []) { if (!weltRegionBei(o.x, o.y)) baustein(`${o.id}: liegt außerhalb der Welt`); if (!q.schritte.some((x) => x.ereignis.art === "objekt" && x.ereignis.id === o.id) && !(q.reihenfolge && q.reihenfolge.teile.includes(o.id))) fehler.push(`${o.id}: kein Schritt dazu`);
+    if (o.hoerbar && !(o.hoerbar.dauer > 0 && o.hoerbar.alle > o.hoerbar.dauer)) fehler.push(`${o.id}: hoerbar braucht 0 < dauer < alle`); o.sonst.forEach((p, i) => bedPruefen(p.wenn, `Objekt ${o.id} ${i}`)); (o.heil || []).forEach((b) => bedPruefen(b, `Objekt ${o.id} heil`)); }
   for (const x of q.schritte) { if (x.ereignis.art === "objekt" && !oIds.includes(x.ereignis.id)) fehler.push(`${x.id}: Objekt ${x.ereignis.id} fehlt`);
     for (const b of [].concat(x.bei || [])) if (!q.figuren.some((f) => f.id === b)) fehler.push(`${x.id}: bei unbekannter Figur ${b}`);
     if (x.ereignis.art === "antwort" && !Object.values(q.dialoge).some((D) => D.optionen.some((o) => o.folge.some((v) => (v.f.erledige || []).includes(x.id))))) fehler.push(`${x.id}: keine Antwort erledigt ihn`); }
+  if (q.reihenfolge) { const R = q.reihenfolge, S = q.schritte.find((x) => x.id === R.schritt); /* Rätsel-Reihenfolge je Spieler (#49) */
+    if (!S || S.anzahl !== R.teile.length) fehler.push(`reihenfolge: Schritt ${R.schritt} fehlt oder zählt nicht genau ${R.teile.length}`);
+    if (R.teile.length < 2 || R.teile.length > 7) fehler.push("reihenfolge: 2 bis 7 Teile (die Nummer der Anordnung muss in den Stand passen)");
+    for (const id of R.teile) if (!oIds.includes(id)) fehler.push(`reihenfolge: Objekt ${id} fehlt`); if (R.namen && R.namen.length !== R.teile.length) fehler.push("reihenfolge: so viele Namen wie Teile");
+    const lang = QB.stand({ phase: "laeuft", bits: (1 << q.schritte.length) - 1, z: q.schritte.filter((x) => x.anzahl).map((x) => x.anzahl), angeboten: true, r: [1, 1, 2, 6, 24, 120, 720, 5040][R.teile.length] - 1 }); if (lang.length > 24) fehler.push(`reihenfolge: der längste Stand ${lang} passt nicht in die Datenbank`); }
+  for (const F of q.figuren) { if (F.sichtbar) bedPruefen(F.sichtbar, `Figur ${F.id} sichtbar`); if (F.folgt) bedPruefen(F.folgt.wenn, `Figur ${F.id} folgt`); }
   for (const [n, b] of Object.entries(q.beute || {})) bedPruefen(b, `Beute ${n}`); (q.voraussetzungen || []).forEach((v, i) => bedPruefen(v.wenn, `Voraussetzung ${i}`));
   for (const [npc, D] of Object.entries(q.dialoge)) {
     if (!q.figuren.some((f) => f.id === npc)) fehler.push(`Dialog für unbekannte Figur ${npc}`);
@@ -69,7 +77,7 @@ for (const { q, wartet } of [...QUESTS.map((q) => ({ q })), ...ENTWUERFE]) {
   check(staende.every((s) => s.length <= 24 && /^[a-z0-9_]*$/.test(s)), "Alle Stände passen in die Datenbank (höchstens 24 Zeichen)");
 
   /* Erreichbarkeit: vom Annehmen über Ereignisse und Antworten bis zum Abschluss */
-  const k0 = lagen[0], kHat = { hat: () => true, verloren: () => false, anzahl: () => 9999, ...alleVoraus }; /* genug von allem (B1: 250 Splitter) */
+  const k0 = lagen[0], kHat = { hat: () => true, verloren: () => false, anzahl: () => 9999, zeit: () => 0 /* Gesang: gerade hörbar */, ...alleVoraus }; /* genug von allem (B1: 250 Splitter) */
   let s = ""; const ann = q.dialoge[q.geber].optionen.find((o) => o.folge.some((v) => v.f.start));
   check(Boolean(ann), "Es gibt eine Antwort zum Annehmen");
   const annF = ann && QB.antwort(q, q.geber, s, ann.id, k0); check(Boolean(annF), "Mit erfüllten Voraussetzungen lässt sich die Quest annehmen"); if (annF) s = QB.nachFolge(q, s, annF);
@@ -77,6 +85,7 @@ for (const { q, wartet } of [...QUESTS.map((q) => ({ q })), ...ENTWUERFE]) {
   /* Ereignis eines Schritts nachspielen (Stelle: Mitte von „bei“); Antwort-Schritte über die Figur, die sie erledigt */
   const melden = (e) => ({ ...e, ...(e.bei ? { x: e.bei[0], y: e.bei[1] } : {}) });
   for (let runde = 0; runde < q.schritte.length + 1; runde++) for (const S of q.schritte) { if (!QB.moeglich(q, s, S.id)) continue;
+    if (q.reihenfolge && S.id === q.reihenfolge.schritt) { for (const id of QB.reihe(q, s)) s = QB.objekt(q, s, id, kHat).stand; continue; } /* Rätsel: in der Reihenfolge dieses Spielers */
     if (S.ereignis.art === "objekt") { const r = QB.objekt(q, s, S.ereignis.id, kHat); s = r.stand; continue; }
     if (S.ereignis.art !== "antwort") { for (let i = 0; i < (S.anzahl || 1); i++) s = QB.ereignis(q, s, melden(S.ereignis)); continue; }
     /* in jeder Lage des Spielers (z. B. mit dem Schriftstück im Rucksack) */

@@ -8,20 +8,25 @@ import { skillPlus } from "../../shared/wirkungen";
 import { BERUFE } from "../../shared/berufe";
 import { questStandB, questpunkte, questVerfolgt, questVerfolgen, handwerkBitten, wegsteinReiben } from "./welt";
 import { QUESTS as QUESTS_B, wegzieleFrei } from "../../shared/quests";
+import { REISEKARTE } from "../../shared/wegstein";
 import * as QB from "../../shared/questbau";
 import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
-import { aktionsMenue, langDruecken, Aktion } from "./aktionsmenue";
+import { aktionsMenue, langDruecken, Aktion, menueZu } from "./aktionsmenue";
 import { chatSystem, tafelZeigen } from "./welt";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
 import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon, SELTENHEITEN, SETS, aktiveSets } from "../../shared/gegenstaende";
 import { aktiverHeld, gegenstandBild } from "./held";
 import { teilBild, TEIL_3D } from "./welt3d/teilbild";
+import { heldGanzbild } from "./welt3d/heldbild";
 /** Bild eines Gegenstands: Rüstungen und Helme aus ihrem 3D-Teil, Waffen und Schilde aus den 2D-Ebenen */
 /** Freigestelltes Bild (Gegenstand.bild) mittig in das Feld zeichnen */
 const bilder = new Map<string, Promise<HTMLImageElement>>();
 function bildLaden(url: string): Promise<HTMLImageElement> { let p = bilder.get(url); if (!p) { p = new Promise((ok, nein) => { const i = new Image(); i.onload = () => ok(i); i.onerror = nein; i.src = "../" + url; }); bilder.set(url, p); } return p; }
 async function bildMalen(c: HTMLCanvasElement, url: string): Promise<void> { try { const i = await bildLaden(url); const x = c.getContext("2d"); if (!x) return; x.clearRect(0, 0, c.width, c.height); x.drawImage(i, 0, 0, c.width, c.height); } catch { /* Bild fehlt: leer */ } }
+/** #139: die Bilder von Rucksack und Ausrüstung einmal malen (unsichtbar), damit sie beim ersten Öffnen schon da sind */
+export async function rucksackVorladen(): Promise<void> { const I = inventar(), ids = new Set([...I.rucksack, ...Object.values(I.angelegt)].filter((g): g is string => Boolean(g)));
+  await Promise.all([...ids].map(async (g) => { const G = GEGENSTAENDE[g]; if (!G || G.symbol) return; const c = document.createElement("canvas"); c.width = c.height = 64; try { await dingBild(c, G); } catch { /* fehlt: beim Öffnen */ } })); }
 async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: string; bild?: string }): Promise<void> {
   if (G.bild) { await bildMalen(c, G.bild); return; }
   const id = (G.ebenen || [])[0], h = aktiverHeld(); if (id && TEIL_3D.test(id) && (await teilBild(c, h ? h.aussehen.g : "mann", id))) return;
@@ -29,7 +34,7 @@ async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: st
 import { inventar, ablegen, anlegen, fallenLassen, tauschenBitten, inventarAmServer, trinken, wirkungenJetzt } from "./inventar";
 import { benutzen, benutzt } from "./benutzen";
 import { REZEPTE } from "../../shared/handwerk";
-import { skillFuehrer } from "./skillfuehrer";
+import { skillFuehrer, skillBuch, kampfFreischaltungen } from "./skillfuehrer";
 import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel, Skill } from "../../shared/kampfwerte";
 import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLesen, autoSetzen, SKILL_ZEICHEN, BERUF_ZEICHEN, BERUF_NAME } from "./skills";
 
@@ -169,14 +174,16 @@ function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a:
   if (imRucksack && G.platz) a.push({ text: "Ausrüsten", sym: "🛡️", tat: () => anlegen(g) });
   if (imRucksack && G.trank) a.push(G.art === "Essen" ? { text: "Essen", sym: "🍞", tat: () => trinken(Number(wo.slice(1))) } : { text: "Trinken", sym: "🧪", tat: () => trinken(Number(wo.slice(1))) });
   /* Benutzen wie in OSRS: bei Dingen ohne eigenen Zweck (Stämme, Erze, Leder …) die erste Aktion; danach Werkstatt oder anderen Gegenstand antippen */
+  if (g === REISEKARTE) a.push({ text: "Reisen", sym: "🗺", tat: () => setTimeout(() => wegsteinMenue(true), 0) }); /* Phase 9 (#102): einmal am Tag frei – der Server weiß, ob heute noch */
   if (imRucksack && g === "wegstein") a.push({ text: "Reiben", sym: "✨", tat: () => setTimeout(wegsteinMenue, 0) /* erst nach dem Schließen dieses Menüs */ });   /* Phase 3a: Ziele wählen, der Server reist */
   if (imRucksack && !G.platz && !G.trank && g !== "splitter" && g !== "wegstein") a.push({ text: "Benutzen", sym: "✋", tat: () => { benutzen({ wo, g }); chatSystem(`${G.name} benutzen mit … (Werkstatt oder Gegenstand antippen)`); } });
   a.push({ text: "Untersuchen", sym: "🔍", tat: () => untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }) });
   if (imRucksack && inventarAmServer()) a.push({ text: "Fallen lassen", sym: "⬇️", tat: () => fallenLassen(Number(wo.slice(1))) });
   return { kopf: G.name + (n > 1 ? ` ×${n}` : ""), farbe: SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, a }; }
 /** Wegstein reiben: die freigeschalteten Ziele (shared/wegstein.ts) zur Wahl – oder warum es nicht geht */
-function wegsteinMenue(): void { const l = (inventar().ladungen || {}).wegstein || 0, ziele = wegzieleFrei((id) => questStandB(id));
+function wegsteinMenue(karte = false): void { const l = (inventar().ladungen || {}).wegstein || 0, ziele = wegzieleFrei((id) => questStandB(id));
   if (!ziele.length) { chatSystem("Der Stein bleibt kalt – er kennt noch keinen Ort. Agnes an der Linde in Weidenhain weiß mehr."); return; }
+  if (karte) { aktionsMenue(innerWidth / 2, innerHeight / 2, [{ kopf: "Reisekarte · einmal am Tag frei", farbe: SELTENHEITEN.selten.farbe, aktionen: ziele.map((z) => ({ text: z.name, sym: "🗺", tat: () => wegsteinReiben(z.id) })) }]); return; }
   if (!l) { chatSystem("Der Wegstein ist leer. Lade ihn am Bindestein an der Linde in Weidenhain – 2 Splitter je Ladung."); return; }
   aktionsMenue(innerWidth / 2, innerHeight / 2, [{ kopf: `Wegstein · ${l} Ladung${l === 1 ? "" : "en"}`, farbe: SELTENHEITEN.selten.farbe, aktionen: ziele.map((z) => ({ text: z.name, sym: "🧭", tat: () => wegsteinReiben(z.id) })) }]); }
 /** Benutzen: Gegenstand a auf b im Rucksack (z. B. Bogensehne auf ungespannten Bogen) – ein Rezept „im Rucksack“ (shared/handwerk.ts), so oft es geht; der Server prüft Level und Zutaten */
@@ -204,12 +211,14 @@ const FARBE_QUEST = "#ffd86a";
 /** Quest im Detail auf Pergament in der Bildschirmmitte; frischt sich auf, solange es offen ist (erledigte Schritte durchgestrichen, darunter der aktuelle) */
 function questDetails(id: string): void {
   const html = (): string => { const q = questListe().find((x) => x.id === id); if (!q) return "";
-    return `${q.art !== "fertig" ? `<button type="button" class="qverfolgen${q.art === "verfolgt" ? " an" : ""}" data-qv="1" aria-pressed="${q.art === "verfolgt"}">🧭 ${q.art === "verfolgt" ? "Wird verfolgt" : "Verfolgen"}</button>` : ""}
-      <h2>${q.titel}</h2><p class="qort">${q.ort} · ${QART_TEXT[q.art]}</p><div class="zier"></div>
-      ${q.start ? `<h3>So startest du</h3><p class="qstart">${q.start}</p>` : ""}
-      <h3>Voraussetzungen</h3>${q.voraussetzungen.length ? `<ul class="qvor">${q.voraussetzungen.map((v) => `<li>${v}</li>`).join("")}</ul>` : `<p class="qkeine">Keine</p>`}
-      <h3>${q.art === "fertig" ? "Verlauf" : "Aufgabe"}</h3><ol class="qschritte">${q.erledigt.map((t) => `<li class="erledigt"><s>${t}</s></li>`).join("")}<li class="${q.art === "fertig" ? "ende" : "jetzt"}">${q.jetzt}</li></ol>
-      ${q.belohnung ? `<p class="qbelohnung">${q.belohnung}${q.art === "fertig" ? " – erhalten" : ""}</p>` : ""}`; };
+    /* Kopf in einer Zeile (Titel, Ort · Stand, Verfolgen), darunter zwei Spalten: links die Aufgabe (aktueller Schritt groß, erledigte darunter), rechts Start, Voraussetzungen, Belohnung */
+    return `<div class="qkopf"><i class="qpunkt ${q.art}" aria-hidden="true"></i><div class="qtitel"><h2>${q.titel}</h2><p class="qort">${q.ort} · ${QART_TEXT[q.art]}</p></div>
+      ${q.art !== "fertig" ? `<button type="button" class="qverfolgen${q.art === "verfolgt" ? " an" : ""}" data-qv="1" aria-pressed="${q.art === "verfolgt"}">🧭 ${q.art === "verfolgt" ? "Wird verfolgt" : "Verfolgen"}</button>` : ""}</div>
+      <div class="qspalten"><div class="qlinks"><h3>${q.art === "fertig" ? "Abschluss" : "Aufgabe"}</h3><p class="qjetzt ${q.art === "fertig" ? "ende" : ""}">${q.jetzt}</p>
+        ${q.erledigt.length ? `<h3>Erledigt <small>${q.erledigt.length}</small></h3><ol class="qschritte">${q.erledigt.map((t) => `<li>${t}</li>`).join("")}</ol>` : ""}</div>
+      <div class="qrechts">${q.start ? `<h3>So startest du</h3><p>${q.start}</p>` : ""}
+        <h3>Voraussetzungen</h3>${q.voraussetzungen.length ? `<ul class="qvor">${q.voraussetzungen.map((v) => `<li>${v}</li>`).join("")}</ul>` : `<p class="qkeine">Keine</p>`}
+        ${q.belohnung ? `<h3>Belohnung${q.art === "fertig" ? " <small>erhalten</small>" : ""}</h3><p class="qbelohnung">${q.belohnung.replace(/^Belohnung:\s*/, "")}</p>` : ""}</div></div>`; };
   let inh: HTMLElement | null = null; const neu = () => { if (!inh) return; if (!inh.isConnected) { removeEventListener("ez-quest", neu); return; } const h = html(); if ((inh as HTMLElement & { _h?: string })._h !== h) { (inh as HTMLElement & { _h?: string })._h = h; inh.innerHTML = h; } };
   const f = tafelZeigen("questinfo", `<div class="qinhalt"></div>`, () => removeEventListener("ez-quest", neu)); inh = f.querySelector(".qinhalt") as HTMLElement;
   inh.addEventListener("click", (e) => { if ((e.target as HTMLElement).closest("[data-qv]")) { e.stopPropagation(); questVerfolgen(!questVerfolgt(id), id); } });
@@ -223,10 +232,8 @@ const SKILL_INFO: Record<Skill, { wofuer: string; xp: string }> = {
   lp: { wofuer: "Deine Lebenspunkte: so viele wie dein Lebenspunkte-Level (du startest auf Level 10). Sie regenerieren 1 LP je 50 Sekunden.", xp: "Mit jeder Waffe und in jedem Stil: 1,33 XP je Schadenspunkt, den du verursachst." },
   defense: { wofuer: "Deine Verteidigung gegen Nah- und Fernkampf und zu 30 % gegen Magie (dazu kommen die Boni deiner Rüstung und des Stils).", xp: "Je abgezogenem Lebenspunkt: Nahkampf Verteidigung 4 XP, Ausgewogen 1,33 XP · Fernkampf Fern 2 XP · Magie Defensiv 1 XP. Ein Block gibt keine XP mehr." },
 };
-function skillInfo(k: Skill): void {
-  const S = skillStand(skillsLesen()[k], k), I = SKILL_INFO[k], name = k === "lp" ? "Lebenspunkte" : SKILL_NAME[k];
-  tafelZeigen("skillinfo", `<div class="skopf"><span class="sz gross">${SKILL_ZEICHEN[k]}</span><div><h2>${name}</h2><small>Level ${S.L}${S.L < 100 ? ` · ${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : " · höchstes Level"}</small></div></div><div class="zier"></div>
-    <h3>Wofür</h3><p>${I.wofuer}</p><h3>So steigst du auf</h3><p>${I.xp}</p>`, () => { /* zu */ }); }
+function skillInfo(k: Skill): void { /* Kampf-Skills: dasselbe Skillbuch wie die Berufe, mit dem Reiter „Info“ */
+  skillBuch({ zeichen: SKILL_ZEICHEN[k], name: k === "lp" ? "Lebenspunkte" : SKILL_NAME[k], S: skillStand(skillsLesen()[k], k), reiter: k === "lp" ? [] : kampfFreischaltungen(k), text: [SKILL_INFO[k].wofuer, SKILL_INFO[k].xp] }); }
 /** Info-Fenster der Berufe: Wofür, So steigst du auf */
 const BERUF_TEXT: Record<string, [string, string]> = Object.fromEntries(BERUFE.map((b) => [b.id, [b.wofuer, b.aufstieg]]));
 function berufInfo(k: string): void {
@@ -326,12 +333,13 @@ export function seitenTab(art: TabArt): boolean {
   for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
   { /* mit dem Finger ziehen = scrollen (die Seite sperrt Wischgesten für die Kamera, deshalb hier selbst); wer gezogen hat, tippt danach nichts an */
     let zug: { id: number; y: number; top: number; weit: number } | null = null, gezogen = false;
-    el.addEventListener("pointerdown", (e) => { gezogen = false; zug = e.pointerType === "mouse" || (art === "rucksack" && (e.target as HTMLElement).closest(".ifeld.voll")) /* auf einem Gegenstand: ziehen = umsortieren, nicht scrollen */ ? null : { id: e.pointerId, y: e.clientY, top: (el.querySelector<HTMLElement>(".tinhalt") || el).scrollTop, weit: 0 }; });
-    el.addEventListener("pointermove", (e) => { if (!zug || e.pointerId !== zug.id) return; const dy = e.clientY - zug.y; zug.weit = Math.max(zug.weit, Math.abs(dy)); if (zug.weit > 6) { gezogen = true; const i = el.querySelector<HTMLElement>(".tinhalt") || el; i.scrollTop = zug.top - dy; } });
+    el.addEventListener("pointerdown", (e) => { gezogen = false; zug = e.pointerType === "mouse" || (art === "rucksack" && (e.target as HTMLElement).closest(".ifeld.voll")) /* auf einem Gegenstand: ziehen = umsortieren, nicht scrollen */ ? null : { id: e.pointerId, y: e.clientY, top: (el.querySelector<HTMLElement>(".qliste") || el.querySelector<HTMLElement>(".tinhalt") || el).scrollTop, weit: 0 }; });
+    el.addEventListener("pointermove", (e) => { if (!zug || e.pointerId !== zug.id) return; const dy = e.clientY - zug.y; zug.weit = Math.max(zug.weit, Math.abs(dy)); if (zug.weit > 6) { gezogen = true; const i = el.querySelector<HTMLElement>(".qliste") || el.querySelector<HTMLElement>(".tinhalt") || el; i.scrollTop = zug.top - dy; } });
     const ende = (e: PointerEvent) => { if (zug && e.pointerId === zug.id) zug = null; }; el.addEventListener("pointerup", ende); el.addEventListener("pointercancel", ende);
     el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true); }
   if (art === "rucksack") rucksackZiehen(el);
   langDruecken(el, (e) => { const qz = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-quest]"); if (qz) { questMenue(qz.dataset.quest!, e.clientX, e.clientY); return true; }
+    const sk = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-skill],[data-beruf]"); if (sk) { skillMenue(sk.dataset.skill ? "skill" : "beruf", (sk.dataset.skill || sk.dataset.beruf)!, e.clientX, e.clientY); return true; }
     const f = (e.target as HTMLElement | null)?.closest<HTMLElement>(".ifeld.voll"); if (!f) return false; dingMenue(f.dataset.wo!, f.dataset.g!, e.clientX, e.clientY); return true; }); /* lange drücken (Handy, auch iPhone-Safari) oder Rechtsklick = Aktionsmenü */
   el.addEventListener("click", tabKlick); addEventListener("ez-benutzen", () => tabZeichnen()); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
   for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest", "ez-freunde-neu"]) addEventListener(t, tabZeichnen);
@@ -348,7 +356,7 @@ function rucksackZiehen(el: HTMLElement): void {
     if (!z.geist) { if (Math.hypot(e.clientX - z.x, e.clientY - z.y) < 10) return; const f = el.querySelector<HTMLElement>(`.ifeld[data-wo="r${z.von}"]`); if (!f) { z = null; return; }
       const r = f.getBoundingClientRect(), g = f.cloneNode(true) as HTMLElement; const c0 = f.querySelector("canvas"), c1 = g.querySelector("canvas"); if (c0 && c1) (c1 as HTMLCanvasElement).getContext("2d")?.drawImage(c0, 0, 0);
       g.className = "ifeld voll ez-ziehgeist"; g.style.cssText = `position:fixed;left:0;top:0;width:${r.width}px;height:${r.height}px;pointer-events:none;z-index:90;opacity:.85;transform:translate(${e.clientX - r.width / 2}px,${e.clientY - r.height / 2}px) scale(1.1)`;
-      document.body.appendChild(g); z.geist = g; f.classList.add("zieht"); try { el.setPointerCapture(e.pointerId); } catch { /* egal */ } }
+      document.body.appendChild(g); z.geist = g; f.classList.add("zieht"); menueZu(); /* erst gehalten, dann gezogen: das Menü des langen Drückens läge sonst über dem Zielfach (#109) */ try { el.setPointerCapture(e.pointerId); } catch { /* egal */ } }
     e.preventDefault(); const g = z.geist; g.style.transform = `translate(${e.clientX - g.offsetWidth / 2}px,${e.clientY - g.offsetHeight / 2}px) scale(1.1)`;
     const u = fachBei(e.clientX, e.clientY); if (u !== z.ueber) { z.ueber?.classList.remove("ziel"); z.ueber = u; u?.classList.add("ziel"); } });
   const ende = (e: PointerEvent, ok: boolean) => { if (!z || e.pointerId !== z.id) return; const q = z; z = null; if (!q.geist) return;
@@ -358,7 +366,7 @@ function rucksackZiehen(el: HTMLElement): void {
   el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true);
   el.style.touchAction = "none"; }
 const TAB_NAME: Record<TabArt, string> = { stil: "Angriffsstil", rucksack: "Rucksack", ausruestung: "Ausrüstung", skills: "Skills", quests: "Quests", freunde: "Freunde" };
-function tabZu(): void { const el = tabEl(); if (el) el.remove(); if (tabJetzt) document.querySelector(`#ez-leiste [data-l="${tabJetzt}"]`)?.classList.remove("an"); tabJetzt = null;
+function tabZu(): void { werteZu(); const el = tabEl(); if (el) el.remove(); if (tabJetzt) document.querySelector(`#ez-leiste [data-l="${tabJetzt}"]`)?.classList.remove("an"); tabJetzt = null;
   removeEventListener("resize", tabLage); for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest", "ez-freunde-neu"]) removeEventListener(t, tabZeichnen); freundeBeobachten(false); document.querySelector('[aria-label="Freunde"]')?.classList.remove("an"); }
 /** Angriffsstil-Tab (alter Name) */
 export const stilTab = (): void => { seitenTab("stil"); };
@@ -368,32 +376,50 @@ function tabLage(): void {
   const rechts = chat && chat.offsetWidth ? chat.getBoundingClientRect().right : links + 340;
   const h = Math.max(120, unten.bottom - oben.top); Object.assign(el.style, { left: links + "px", top: oben.top + "px", height: h + "px", width: Math.max(200, rechts - links) + "px" }); el.classList.toggle("eng", h < 300); /* niedrig (Handy): ohne Erklärzeilen */ }
 let tabWahl: { wo: string; g: string } | null = null;
+/** gewählter Skill im Skills-Tab ("skill:geschick" / "beruf:fischen"): seine XP-Leiste steht unten */
+let skillWahl: string | null = null;
+const skillName = (art: "skill" | "beruf", k: string): string => art === "skill" ? (k === "lp" ? "Leben" : SKILL_NAME[k as Skill]) : BERUF_NAME[k];
+/** Feld mit dem Heldenlevel (Skills-Tab, Ausrüstung) */
+const heldKachel = (hl: number): string => `<div class="skachel held" title="Heldenlevel ${hl}" aria-label="Heldenlevel ${hl}"><small>Held</small><strong>${hl}</strong></div>`;
+/** Aktionsmenü eines Skills (lange drücken / Rechtsklick): Skillbuch öffnen – Kampf-Skills: Infoblatt, Berufe: Skill-Übersicht (skillfuehrer.ts) */
+function skillMenue(art: "skill" | "beruf", k: string, px: number, py: number): void {
+  const S = art === "skill" ? skillStand(skillsLesen()[k as Skill], k as Skill) : skillStand((inventar().berufe || {})[k] || 0);
+  aktionsMenue(px, py, [{ kopf: skillName(art, k), farbe: "#ffd86a", lv: { text: "Level " + S.L, farbe: "#ffe7b0" }, aktionen: [{ text: "Skillbuch öffnen", sym: "📖", tat: () => { if (art === "skill") skillInfo(k as Skill); else skillFuehrer(k, BERUF_TEXT[k]); } }] }]); }
 function tabZeichnen(): void {
   const el = tabEl(); if (!el || !tabJetzt) return; let neu = "";
   /* nur neu zeichnen, wenn sich der Inhalt ändert – im Kampf kommen ständig XP, sonst würde ein Knopf mitten im Antippen ersetzt */
   const setzen = (): boolean => { if ((el as HTMLElement & { _html?: string })._html === neu) return false; (el as HTMLElement & { _html?: string })._html = neu; el.innerHTML = `<button type="button" class="tzu" data-tzu="1" aria-label="Schließen">✕</button><div class="tinhalt">${neu}</div>`; return true; }; /* Inhalt eigens (scrollt), der Rahmen mit Rauten bleibt außen */
-  if (tabJetzt === "stil") { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, auto = autoLesen();
-    const zeile = (i: number) => { const k = kampfwerte(x, an, i, skillPlus(wirkungenJetzt())), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}" title="${STILE[art][i].text}"><i class="punkt"></i><b>${STILE[art][i].name}</b><small>${STILE[art][i].text}</small></button>`; };
-    neu = `<div class="kopf gross stilkopf"><b class="hl">Heldenlevel <em>${heldenlevel(x)}</em></b><small class="waffe">${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
-      <div class="stile pergament">${STILE[art].map((_, i) => zeile(i)).join("")}</div>
-      <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; setzen(); return; }
+  if (tabJetzt === "stil") { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, wid = an.waffe, w = wid ? GEGENSTAENDE[wid] : null, auto = autoLesen(), n = STILE[art].length;
+    /* Kopf: Waffe als Bild, Kampfart und Heldenlevel; darunter die Stile als Felder mit den Symbolen der Skills, die sie trainieren; unten der Autoangriff */
+    const feld = (i: number) => { const St = STILE[art][i], sk = Object.keys(St.xp || {}) as Skill[];
+      return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}" title="${St.name}: ${St.text}"><b>${St.name}</b><span class="szeichen">${sk.map((k) => SKILL_ZEICHEN[k]).join("")}</span><small>${St.text}</small></button>`; };
+    neu = `<div class="kopf"><span class="swaffe">${wid ? `<canvas width="96" height="96" data-bild="${wid}"></canvas>` : `<span class="leer">${PLATZBILD.waffe}</span>`}</span><span class="stitel"><b>${w ? w.name : "Fäuste"}</b><small>${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"} · Heldenlevel ${heldenlevel(x)}</small></span></div>
+      <div class="stile n${n}">${STILE[art].map((_, i) => feld(i)).join("")}</div>
+      <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`;
+    if (setzen()) el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); return; }
   if (tabJetzt === "freunde") { neu = freundeHtml(); setzen(); return; }
   if (tabJetzt === "quests") { const alle = questListe(), fertig = alle.filter((q) => q.art === "fertig"), offen = alle.filter((q) => q.art !== "fertig"), zeigen = questReiter === "fertig" ? fertig : offen;
-    neu = `<div class="kopf"><b>Quests</b><small>${offen.filter((q) => q.art !== "neu").length} aktiv · ${questpunkte()} Questpunkte</small></div>
-      <div class="qreiter" role="tablist"><button type="button" role="tab" data-qr="offen" aria-selected="${questReiter === "offen"}" class="${questReiter === "offen" ? "an" : ""}">Quests</button><button type="button" role="tab" data-qr="fertig" aria-selected="${questReiter === "fertig"}" class="${questReiter === "fertig" ? "an" : ""}">Abgeschlossen${fertig.length ? ` (${fertig.length})` : ""}</button></div>
-      ${zeigen.length ? `<ul class="qliste">${zeigen.map((q) => `<li><button type="button" class="qzeile ${q.art}" data-quest="${q.id}" title="${q.titel} – ${QART_TEXT[q.art]}">${q.titel}</button></li>`).join("")}</ul>` : `<div class="tleer"><span>${RZEICHEN.quest}</span><p>${questReiter === "fertig" ? "Noch keine Quest abgeschlossen." : "Keine offenen Quests."}</p></div>`}`; setzen(); return; }
-  if (tabJetzt === "skills") { const x = skillsLesen();
-    neu = `<div class="kopf"><b>Skills</b><small>Heldenlevel ${heldenlevel(x)}</small></div><ul class="tskills">${SKILLS.map((k) => { const S = skillStand(x[k], k);
-      return `<li data-skill="${k}" title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>
-      <div class="kopf"><b>Berufe</b><small>zählen nicht ins Heldenlevel</small></div><ul class="tskills">${BERUFE.map((b) => b.id).map((k) => { const S = skillStand((inventar().berufe || {})[k] || 0);
-      return `<li data-beruf="${k}" title="${BERUF_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${BERUF_ZEICHEN[k]}</span><b>${BERUF_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; setzen(); return; }
+    /* eine Spalte schmaler Zeilen mit vollem Namen; die Liste scrollt (Wunsch des Nutzers), Kopf und Reiter bleiben stehen */
+    neu = `<div class="kopf"><b>Quests</b><small>${questpunkte()} Questpunkt${questpunkte() === 1 ? "" : "e"}</small></div>
+      <div class="qreiter" role="tablist"><button type="button" role="tab" data-qr="offen" aria-selected="${questReiter === "offen"}" class="${questReiter === "offen" ? "an" : ""}">Offen <em>${offen.length}</em></button><button type="button" role="tab" data-qr="fertig" aria-selected="${questReiter === "fertig"}" class="${questReiter === "fertig" ? "an" : ""}">Abgeschlossen <em>${fertig.length}</em></button></div>
+      ${zeigen.length ? `<ul class="qliste">${zeigen.map((q) => `<li><button type="button" class="qzeile ${q.art}" data-quest="${q.id}" title="${q.titel} – ${QART_TEXT[q.art]}"><i class="qpunkt" aria-hidden="true"></i><span>${q.titel}</span></button></li>`).join("")}</ul>`
+      : `<div class="tleer"><span>${RZEICHEN.quest}</span><p>${questReiter === "fertig" ? "Noch keine Quest abgeschlossen." : "Keine offenen Quests."}</p></div>`}`;
+    setzen(); return; }
+  if (tabJetzt === "skills") { const x = skillsLesen(), be = inventar().berufe || {};
+    /* ein Raster ohne Scrollen: Reihe 1 die Kampf-Skills und das Heldenlevel, darunter die Berufe; antippen = XP-Leiste unten, lange drücken = Skillbuch */
+    const kachel = (art: "skill" | "beruf", k: string): string => { const S = art === "skill" ? skillStand(x[k as Skill], k as Skill) : skillStand(be[k] || 0), name = skillName(art, k);
+      return `<button type="button" class="skachel${skillWahl === art + ":" + k ? " an" : ""}" data-${art}="${k}" aria-label="${name} ${S.L}" title="${name}: Level ${S.L}">${art === "skill" ? SKILL_ZEICHEN[k as Skill] : BERUF_ZEICHEN[k]}<em>${S.L}</em><u><i style="width:${S.anteil}%"></i></u></button>`; };
+    let fuss = ""; if (skillWahl) { const [art, k] = skillWahl.split(":") as ["skill" | "beruf", string], S = art === "skill" ? skillStand(x[k as Skill], k as Skill) : skillStand(be[k] || 0);
+      fuss = `<div class="sfuss"><b>${skillName(art, k)} ${S.L}</b><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><small>${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}</small></div>`; }
+    neu = `<div class="kopf"><b>Skills</b></div><div class="sraster" style="--zeilen:${1 + Math.ceil(BERUFE.length / 7)}">${SKILLS.map((k) => kachel("skill", k)).join("")}${heldKachel(heldenlevel(x))}${BERUFE.map((b) => kachel("beruf", b.id)).join("")}</div>${fuss}`;
+    el.classList.toggle("mitfuss", Boolean(fuss)); setzen(); return; }
   const inv = inventar(), menge = (i: number) => (inv.anzahl || [])[i] || 1;
   const feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}${tabWahl && tabWahl.wo === wo ? " gewaehlt" : ""}${benutzt() && benutzt()!.wo === wo ? " benutzt" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${g && wo.startsWith("r") && menge(Number(wo.slice(1))) > 1 ? `<em class="menge">${menge(Number(wo.slice(1)))}</em>` : ""}</button>`;
   let wahl = ""; if (tabWahl) { const G = GEGENSTAENDE[tabWahl.g], angelegt = !tabWahl.wo.startsWith("r"), n = angelegt ? 1 : menge(Number(tabWahl.wo.slice(1)));
     wahl = `<div class="twahl"><b>${G ? G.name : ""}${n > 1 ? " ×" + n : ""}</b><span class="reihe"><button type="button" data-t="untersuchen">Untersuchen</button>${angelegt ? `<button type="button" class="haupt" data-t="ablegen">Ablegen</button>` : `${inventarAmServer() ? `<button type="button" data-t="fallen">Fallen lassen</button>` : ""}${G && G.platz ? `<button type="button" class="haupt" data-t="anlegen">Anlegen</button>` : ""}`}<button type="button" data-t="weg" aria-label="Auswahl schließen">✕</button></span></div>`; }
   if (tabJetzt === "rucksack") neu = `<div class="kopf"><b>Rucksack</b><small>${inv.rucksack.length} / ${RUCKSACK_PLAETZE}</small></div><div class="traster">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div>${wahl}`;
   else neu = `<div class="kopf"><b>Ausrüstung</b><button type="button" class="info" data-t="werte" aria-label="Werte der Ausrüstung" title="Werte der Ausrüstung">i</button></div>
-    <div class="tplaetze">${PLAETZE.map((p) => `<div class="tplatz">${feld(inv.angelegt[p.id], p.id, p.id)}<small>${p.name}</small></div>`).join("")}</div>${wahl || `<p class="klein">Antippen: untersuchen oder ablegen · i: Werte der Ausrüstung</p>`}`;
+    <div class="kreuz">${heldKachel(heldenlevel(skillsLesen()))}${PLAETZE.map((p) => feld(inv.angelegt[p.id], p.id, p.id)).join("")}</div>${wahl}`;
   if (!setzen()) return;
   el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); }
 function tabKlick(e: Event): void {
@@ -405,8 +431,7 @@ function tabKlick(e: Event): void {
   if (tabJetzt === "stil") { const b = t.closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return; if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); tabZeichnen(); return; }
   { const b = benutzt(); if (b && tabJetzt === "rucksack") { const f2 = t.closest<HTMLElement>(".ifeld"); if (f2) { benutzen(null); if (f2.dataset.wo !== b.wo && f2.dataset.g) zusammensetzen(b.g, f2.dataset.g); tabZeichnen(); return; } } }
   const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { const d = dingAktionen(f.dataset.wo!, f.dataset.g!); if (d && d.a[0]) d.a[0].tat(); return; } /* Gegenstand kurz antippen: erste Aktion (Ausrüsten / Ablegen / Untersuchen) */
-  const sk = t.closest<HTMLElement>("[data-skill]"); if (sk) { skillInfo(sk.dataset.skill as Skill); return; }
-  const be = t.closest<HTMLElement>("[data-beruf]"); if (be) { skillFuehrer(be.dataset.beruf!, BERUF_TEXT[be.dataset.beruf!]); return; } /* Skill-Übersicht wie in OSRS (skillfuehrer.ts) */
+  { const sk = t.closest<HTMLElement>("[data-skill],[data-beruf]"); if (sk) { const id = sk.dataset.skill ? "skill:" + sk.dataset.skill : "beruf:" + sk.dataset.beruf; skillWahl = skillWahl === id ? null : id; tabZeichnen(); return; } } /* kurz antippen: XP-Leiste unten auf/zu */
   const a = t.closest<HTMLElement>("[data-t]")?.dataset.t; if (!a) return;
   if (a === "werte") { ausruestungsWerte(); return; }
   const w = tabWahl; if (!w) return; const G = GEGENSTAENDE[w.g];
@@ -417,18 +442,47 @@ function tabKlick(e: Event): void {
   else if (a === "fallen") { fallenLassen(Number(w.wo.slice(1))); tabWahl = null; }
   tabZeichnen(); }
 const chatHinweis = (t: string) => { const el = tabEl(); const p = el && el.querySelector(".twahl b"); if (p) p.textContent = t; };
-/** Overlay in der Mitte: die Werte der angelegten Ausrüstung zusammengezählt (nur Gegenstände, ohne Heldenwerte) */
+/* ---------- Werte der Ausrüstung („i“ im Ausrüstungs-Tab), wie „Equip Your Character“ in OSRS ----------
+ * Großes Fenster neben dem Seitenfenster: links die Plätze (antippen = ablegen, lange drücken = Menü), in der Mitte die eigene Figur, rechts die Werte
+ * der Gegenstände zusammengezählt. Dabei wechselt das Seitenfenster auf den Rucksack – so legt man direkt an und sieht die Werte dazu. */
+let werteEl: HTMLElement | null = null;
+const werteNeu = () => werteZeichnen(), werteLageNeu = () => werteLage(), werteEsc = (e: KeyboardEvent) => { if (e.key === "Escape" && werteEl) { e.stopPropagation(); werteZu(); } };
 export function ausruestungsWerte(): void {
-  const an = inventar().angelegt, teile = PLAETZE.map((p) => an[p.id]).filter(Boolean).map((g) => GEGENSTAENDE[g!]).filter(Boolean), W = teile.find((G) => G.waffe)?.waffe, z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
-  const ab = { nah: 0, fern: 0, magie: 0 }; for (const G of teile) if (G.abwehr) { ab.nah += G.abwehr.nah; ab.fern += G.abwehr.fern; ab.magie += G.abwehr.magie; }
-  const vz = (v: number) => (v < 0 ? "−" + -v : "+" + v), mal = { fern: 0, genau: 0 }; for (const G of teile) if (G.bonus) { mal.fern += G.bonus.fernAngriff || 0; mal.genau += G.bonus.genau || 0; }
-  const angriff: [string, string][] = W ? [["Kampfart", W.art === "nah" ? "Nahkampf" : W.art === "fern" ? "Fernkampf" : "Magie"],
-    ...(W.art === "nah" ? [["Geschick", "+" + (W.geschick || 0)], ["Stärke", "+" + (W.staerke || 0)]] as [string, string][] : W.art === "fern" ? [["Fernkampf-Angriff", "+" + (W.fernAngriff || 0)], ["Fernkampf-Stärke", "+" + (W.fernStaerke || 0)]] as [string, string][] : [["Magische Genauigkeit", "+" + (W.genau || 0)], ["Magie-Stärke", "+" + (W.magieStaerke || 0)]] as [string, string][]),
-    ["Angriffstempo", `${W.ticks} Ticks (${z(W.ticks * TICK)} s)`], ["Reichweite", W.art === "nah" ? "Nahkampf" : z(W.reich) + " Felder"]] : [["Waffe", "keine (Fäuste)"]];
-  const liste = (z: [string, string][]) => `<dl class="iwerte">${z.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`;
-  tafel("taschen eigen ausruestungswerte", `<h2>Werte der Ausrüstung</h2><div class="zier"></div><p class="klein">${teile.length ? teile.map((G) => G.name).join(" · ") : "Nichts angelegt"}</p>
-    <h3>Angriff</h3>${liste(angriff)}${mal.fern || mal.genau ? `<h3>Rüstung auf den Angriff</h3>${liste([...(mal.fern ? [["Fernkampf-Angriff", vz(mal.fern)]] : []), ...(mal.genau ? [["Magische Genauigkeit", vz(mal.genau)]] : [])] as [string, string][])}` : ""}<h3>Verteidigung</h3>${liste([["Nahkampf", vz(ab.nah)], ["Fernkampf", vz(ab.fern)], ["Magie", vz(ab.magie)]])}
-    <p class="klein">Nur die Gegenstände – deine Skills (Geschick, Defense, Magie …) kommen im Kampf noch dazu.</p>`, () => { /* schließen */ }); }
+  if (!aktiverHeld()) return; if (tabJetzt !== "rucksack") seitenTab("rucksack"); werteZu();
+  const el = document.createElement("aside"); el.id = "ez-wertefenster"; el.className = "wertefenster ausruestungswerte"; el.setAttribute("aria-label", "Werte der Ausrüstung"); document.body.appendChild(el); werteEl = el;
+  for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
+  langDruecken(el, (e) => { const f = (e.target as HTMLElement | null)?.closest<HTMLElement>(".ifeld.voll"); if (!f) return false; dingMenue(f.dataset.wo!, f.dataset.g!, e.clientX, e.clientY); return true; });
+  el.addEventListener("click", (e) => { e.stopPropagation(); const t = e.target as HTMLElement; if (t.closest("[data-wzu]")) { werteZu(); return; }
+    const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { const d = dingAktionen(f.dataset.wo!, f.dataset.g!); if (d && d.a[0]) d.a[0].tat(); } }); /* kurz antippen: erste Aktion (Ablegen) */
+  addEventListener("ez-inventar", werteNeu); addEventListener("ez-skills", werteNeu); addEventListener("resize", werteLageNeu); addEventListener("keydown", werteEsc, true);
+  werteZeichnen(); werteLage(); }
+function werteZu(): void { if (!werteEl) return; werteEl.remove(); werteEl = null;
+  removeEventListener("ez-inventar", werteNeu); removeEventListener("ez-skills", werteNeu); removeEventListener("resize", werteLageNeu); removeEventListener("keydown", werteEsc, true); }
+/** Lage: rechts neben dem Seitenfenster bis vor die rechte Leiste, unten bündig mit dem Seitenfenster (auf dem Handy die ganze Höhe) */
+function werteLage(): void {
+  const el = werteEl, tab = tabEl(); if (!el || !tab) return; const r = tab.getBoundingClientRect(), lr = document.getElementById("ez-leiste-r")?.getBoundingClientRect();
+  const rechts = (lr && lr.width && lr.left > r.right ? lr.left : innerWidth - 8) - 10, links = r.right + 10, b = Math.min(rechts - links, 660), h = Math.min(innerHeight - 16, 420);
+  const oben = innerHeight < 560 ? 8 : Math.max(8, r.bottom - h);
+  Object.assign(el.style, { left: Math.round(links + (rechts - links - b) / 2) + "px", top: Math.round(oben) + "px", width: Math.round(b) + "px", height: Math.round(innerHeight < 560 ? innerHeight - 16 : h) + "px" });
+  el.classList.toggle("eng", innerHeight < 560 || b < 420); el.classList.toggle("ohneplaetze", b < 330); }
+function werteZeichnen(): void {
+  const el = werteEl; if (!el) return; const an = inventar().angelegt, teile = PLAETZE.map((p) => an[p.id]).filter(Boolean).map((g) => GEGENSTAENDE[g!]).filter(Boolean), W = teile.find((G) => G.waffe)?.waffe;
+  const z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ","), vz = (v: number) => (v < 0 ? "−" + -v : "+" + v);
+  const sum = { geschick: 0, staerke: 0, fernAngriff: 0, fernStaerke: 0, genau: 0, magieStaerke: 0 }, ab = { nah: 0, fern: 0, magie: 0 };
+  for (const G of teile) { for (const k of Object.keys(sum) as (keyof typeof sum)[]) sum[k] += ((G.waffe as Record<string, unknown> | undefined)?.[k] as number || 0) + ((G.bonus as Record<string, number> | undefined)?.[k] || 0);
+    if (G.abwehr) { ab.nah += G.abwehr.nah; ab.fern += G.abwehr.fern; ab.magie += G.abwehr.magie; } }
+  const zeile = (k: string, v: number) => `<span>${k}</span><b class="${v < 0 ? "minus" : v === 0 ? "null" : ""}">${vz(v)}</b>`;
+  const werte = `<dl class="wwerte"><dt>Angriff</dt><dd>${zeile("Geschick", sum.geschick)}${zeile("Stärke", sum.staerke)}${zeile("Fernkampf", sum.fernAngriff)}${sum.fernStaerke ? zeile("Fern-Stärke", sum.fernStaerke) : ""}${zeile("Magie", sum.genau)}${sum.magieStaerke ? zeile("Magie-Stärke", sum.magieStaerke) : ""}</dd>
+    <dt>Abwehr</dt><dd>${zeile("Nahkampf", ab.nah)}${zeile("Fernkampf", ab.fern)}${zeile("Magie", ab.magie)}</dd>
+    <dt>Waffe</dt><dd>${W ? `<span>Tempo</span><b>${W.ticks} Ticks</b><span>Reichweite</span><b>${W.art === "nah" || !(W.reich > 0) ? 1 : z(W.reich)}</b>` : `<span>Fäuste</span><b class="null">–</b>`}</dd></dl>`;
+  const feld = (g: string | undefined, p: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}" data-wo="${p}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : PLAETZE.find((x) => x.id === p)!.name + " (leer)"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : `<span class="leer">${PLATZBILD[p]}</span>`}</button>`;
+  const html = `<div class="kopf"><b>Werte der Ausrüstung</b><button type="button" class="tzu" data-wzu="1" aria-label="Schließen">✕</button></div>
+    <div class="wrumpf"><div class="kreuz">${PLAETZE.map((p) => feld(an[p.id], p.id)).join("")}</div><div class="buehne"><img alt="" hidden><small>Held · Level ${heldenlevel(skillsLesen())}</small></div>${werte}</div>`;
+  if ((el as HTMLElement & { _h?: string })._h !== html) { (el as HTMLElement & { _h?: string })._h = html; el.innerHTML = html;
+    el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); }
+  /* die Figur: angelegte Teile laden kurz nach – darum noch zweimal nachzeichnen */
+  const bild = () => { const img = el.querySelector<HTMLImageElement>(".buehne img"), url = heldGanzbild(); if (img && url) { img.src = url; img.hidden = false; } };
+  bild(); setTimeout(bild, 600); setTimeout(bild, 1800); }
 /** Skills: die vier Skills mit Level und Fortschritt, dazu Heldenlevel, Leben und Abwehr (Kampfregeln v2) */
 export function skillTafel(zu: () => void): void {
   const x = skillsLesen(), hl = heldenlevel(x), k = kampfwerte(x, inventar().angelegt, 1, skillPlus(wirkungenJetzt())), WAS: Record<string, string> = { geschick: "Nahkampf: Trefferwert", staerke: "Nahkampf: Schaden", fernkampf: "Fernkampf: Trefferwert", magie: "Magie: Trefferwert, Schaden und 70 % der Magieabwehr", lp: "Max-LP = Level (Start 10) · 1,33 XP je Schadenspunkt", defense: "Abwehr gegen alle Angriffe (gegen Magie zu 30 %)" };

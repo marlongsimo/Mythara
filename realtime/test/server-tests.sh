@@ -34,6 +34,22 @@ TESTS=(
   splitterbinden-welt
   fischen-kochen-welt
   b2-welt
+  phase4
+  phase4-inhalte
+  b3-welt
+  b4-welt
+  sueden-welt
+  welt-federmutter
+  welt-gegnerdichte
+  welt-troedler
+  welt-beleben
+  welt-sammelstellen
+  welt-streifgebiete
+  phase5
+  phase8-10
+  abholen
+  handel-welt
+  verkauf
   sprint
   stufe
   teleport-welt
@@ -49,6 +65,21 @@ TESTS=(
   welt-unterschlupf
   welt-weidenhain
   weltkampf
+  phase6
+  inhalt-phase7
+  inhalt-phase6
+  phase6-quest
+  inhalt-phase8
+  inhalt-phase9
+  inhalt-phase10
+  bosse-116
+  bank-platzhalter
+  festland-kampf
+  inhalt-sueden
+  kraeuterkunde
+  gegnerlast
+  gegner-vorbereitet
+  streifgebiete
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

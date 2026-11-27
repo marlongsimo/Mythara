@@ -104,7 +104,8 @@ export const QUEST_A2: QuestDef = {
   /* Steintafel-Bruchstücke: 30 % je Waldgolem (config.ts waldgolem, Roll 3 „nur: a2_steintafel“) – nur solange Anselm sie verlangt */
   beute: { a2_steintafel: { erledigt: ["abrieb"], offen: ["tafeln"] } },
   voraussetzungen: [{ text: "Heldenlevel 5 empfohlen (Waldgolems)", wenn: { heldenlevel: 5 } }],
-  schalter: { kapelle_offen: FERTIG },
+  schalter: { kapelle_offen: FERTIG, /* Phase 5 (#80): der Bindestein am Obelisk ist nutzbar, wenn der Friedhof Ruhe hat */ bindestein_obelisk: FERTIG },
+  glueckwunsch: "Die Seite ist geschrieben. Das Wappen hat wieder einen Namen.",
   belohnungText: "Belohnung: 300 Stärke-, 300 Defense- und 200 Lebenspunkte-XP, 60 Splitter · danach: Beten in der Kapelle heilt (alle 10 Minuten)",
   belohnung: { xp: { staerke: 300, defense: 300, lp: 200 }, splitter: 60 },
   punkte: 1,

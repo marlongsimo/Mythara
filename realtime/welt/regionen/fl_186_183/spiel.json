@@ -12,5 +12,61 @@
   "sperren": [],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "gehoeft",
+   "art": "lesen",
+   "x": 198,
+   "y": 381.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein einsames Gehöft am Rand des Grenzlands. Der Bauer grüßt mit der Mistgabel."
+   }
+  },
+  {
+   "id": "muehle_am_bach",
+   "art": "lesen",
+   "x": 275,
+   "y": 424.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine kleine Mühle am Bach. Das Rad dreht sich gemächlich, drinnen klappert der Mahlstein."
+   }
+  },
+  {
+   "id": "koehlerhuette",
+   "art": "lesen",
+   "x": 233,
+   "y": 406.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Köhlerhütte. Der Meiler qualmt, und alles hier riecht nach Rauch und Harz."
+   }
+  },
+  {
+   "id": "schrein",
+   "art": "lesen",
+   "x": 468,
+   "y": 445.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein kleiner Schrein am Weg. Jemand hat frische Blumen und einen Splitter hineingelegt."
+   }
+  },
+  {
+   "id": "ruine",
+   "art": "lesen",
+   "x": 368,
+   "y": 376.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Ruine eines Wachhauses der alten Wacht. Im Mörtel stecken Pfeilspitzen."
+   }
+  }
+ ]
 }

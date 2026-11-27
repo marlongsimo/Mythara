@@ -176,6 +176,7 @@ export const QUEST1: QuestDef = {
   ],
   freigaben: { strasse: DURCH, westmark: DURCH, osthang: DURCH, kreuzung: [{ erledigt: ["fenna"] }], weidenhain: DURCH, rabenmoor: DURCH, obstwiesen: DURCH },
   zurueck: { x: 6446.5, y: 6641.5, text: "Die Wachen lassen dich nicht durch – der Weg nach Weidenhain ist gesperrt." },
+  glueckwunsch: "Die Straße ist frei, und Weidenhain hat wieder Gäste. Das vergesse ich dir nicht.",
   belohnungText: "Belohnung: 150 Geschick-XP, 150 Stärke-XP, 150 Fernkampf-XP, 150 Magie-XP, 100 Lebenspunkte-XP, 200 Defense-XP",
   belohnung: { xp: BELOHNUNG },
   punkte: 1,

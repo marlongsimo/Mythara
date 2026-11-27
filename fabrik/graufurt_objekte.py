@@ -7,7 +7,9 @@ Weltobjekte (Maßstab 1 = 1 m, Ursprung Mitte unten):
   winde         – Kettenwinde am Westanleger: Holzbock mit Trommel, Kurbelrad, aufgewickelte Kette, Kette zum Wasser
   signalfeuer   – Signalfeuer-Schale auf dem Turmdach: Eisenschale auf drei Beinen, Splitterkern mit grüner Flamme
   waechterbuch  – das Wächterbuch auf einem Lesepult (Ebene 3 des Turms), aufgeschlagen, Wappen auf dem Deckel
+Grauwacht und Fahle Weiten (Phase 8): glocke · glocke_gesprungen (Riss, abgesprungenes Stück) · glocke_neu (frisch gegossen, ohne Joch – Questgegenstand) · glockenform · dornenwall · grabhuegel_eingang · grabstein
 Gegenstände (klein):
+  kloeppel (Glocke) ·
   kettenglied · kettenschloss (Schäkel mit Bolzen) · splitterkern_gruen (Kern mit grüner Flamme) · krebsschere · wachtstein (Steinbrocken mit Wappen) ·
   welspastete (Pastete mit Fischschwanz)
 """
@@ -103,6 +105,51 @@ elif ART == "waechterbuch":
         wuerfel((sx * 0.125, 0, 1.08), (0.24, 0.32, 0.03), PAP, (math.radians(-20), math.radians(sx * -6), 0), 0.15)
     for k in range(6): wuerfel((random.choice((-1, 1)) * random.uniform(0.04, 0.2), random.uniform(-0.1, 0.1), 1.1), (0.12, 0.004, 0.001), mat("tinte", (40, 30, 25)), (math.radians(-20), 0, 0), 0)
     rohr((0.02, 0.12, 1.1), (0.03, -0.12, 1.02), 0.004, mat("band", (140, 30, 30), 0.7), 4)                               # Lesebändchen
+elif ART in ("glocke", "glocke_gesprungen", "glocke_neu"):                                                     # Glocke von Grauwacht (≈ 1,2 m) im Holzjoch
+    BR = mat("bronze", (176, 128, 70), 0.35, 0.85) if ART != "glocke_neu" else mat("bronze_neu", (214, 160, 82), 0.2, 0.95); o = dreh([(0, 1.38), (0.12, 1.38), (0.2, 1.33), (0.28, 1.2), (0.33, 0.9), (0.4, 0.62), (0.52, 0.42), (0.55, 0.36), (0.5, 0.34), (0.45, 0.4), (0.36, 0.6), (0.29, 0.9), (0.24, 1.2), (0, 1.3)], BR, 36)
+    ring((0, 0, 0.4), 0.52, 0.02, BR); ring((0, 0, 1.1), 0.3, 0.015, BR)
+    rohr((0, 0, 1.3), (0, 0, 0.55), 0.02, EIS, 8); kugel((0, 0, 0.5), 0.06, EIS)                                                   # Klöppel innen
+    if ART != "glocke_neu":                                                                           # glocke_neu (Questgegenstand E2): frisch gegossen, blank, ohne Joch – mit Krone zum Aufhängen
+        for x in (-0.75, 0.75): rohr((x, 0, 0), (x, 0, 1.65), 0.07, HOLZ2, 8)
+        wuerfel((0, 0, 1.55), (1.7, 0.18, 0.16), HOLZ2)
+    else: ring((0, 0, 1.43), 0.08, 0.025, BR, (math.radians(90), 0, 0))
+    if ART == "glocke_gesprungen":                                                                  # Riss von unten bis zur Schulter, ein Stück ausgebrochen
+        R = mat("riss", (20, 16, 12), 0.95)
+        prof = [(0.4, 0.54), (0.62, 0.41), (0.9, 0.335), (1.2, 0.285)]
+        rz = lambda z: next(r0 + (r1 - r0) * (z - z0) / (z1 - z0) for (z0, r0), (z1, r1) in zip(prof, prof[1:]) if z <= z1)
+        for k in range(10):                                                                            # Riss vorn auf der Glocke, im Zickzack nach oben
+            z = 0.42 + k * 0.075; x = 0.04 * ((k % 3) - 1); r = rz(min(z, 1.19)) + 0.004
+            wuerfel((x, -math.sqrt(max(0.0, r * r - x * x)), z), (0.02, 0.012, 0.085), R, (math.radians(-20), math.radians(25 * ((k % 3) - 1)), 0), 0)
+        wuerfel((0.0, -0.53, 0.37), (0.16, 0.05, 0.08), R, fase=0)                                    # ausgebrochene Kerbe am Rand
+        kugel((0.65, -0.4, 0.04), 0.07, BR, (1.3, 0.8, 0.4), 8)                                                                    # abgesprungenes Stück am Boden
+elif ART == "glockenform":                                                                         # Lehmform für den Glockenguss (Mantel mit Eingusstrichter), auf Ziegelsockel
+    LE = mat("lehm", (150, 108, 72), 0.95); ZI = mat("ziegel", (140, 70, 45), 0.9)
+    dreh([(0, 1.25), (0.2, 1.25), (0.32, 1.15), (0.4, 0.85), (0.5, 0.5), (0.62, 0.3), (0.62, 0.25), (0, 0.25)], LE, 32); dreh([(0, 1.25), (0.1, 1.25), (0.13, 1.42), (0.06, 1.42), (0, 1.35)], LE, 16)
+    for k in range(3): ring((0, 0, 0.45 + k * 0.28), 0.6 - k * 0.12, 0.018, EIS)
+    for i in range(8): a = i * math.pi / 4; wuerfel((0.55 * math.cos(a), 0.55 * math.sin(a), 0.12), (0.26, 0.14, 0.24), ZI, (0, 0, a))
+elif ART == "kloeppel":                                                                            # Klöppel der Glocke (Questgegenstand)
+    rohr((0, 0, 0.02), (0.28, 0, 0.02), 0.012, EIS, 8); kugel((0.31, 0, 0.03), 0.045, EIS); ring((-0.02, 0, 0.02), 0.025, 0.008, EIS, rot=(math.radians(90), 0, 0))
+elif ART == "dornenwall":                                                                          # Dornenwall (≈ 4 m lang, 1,3 m hoch) – sperrt den Weg nach Grauwacht
+    DO = mat("dorn", (96, 76, 54), 0.9); BL = mat("dornblatt", (70, 80, 46), 0.9)
+    for i in range(46):
+        x = random.uniform(-2, 2); y = random.uniform(-0.4, 0.4); h = random.uniform(0.6, 1.3); a = random.uniform(-0.5, 0.5)
+        rohr((x, y, 0), (x + h * math.sin(a), y + random.uniform(-0.2, 0.2), h), 0.04, DO, 5, 0.008)
+        for k in range(3): z = random.uniform(0.2, h); kristall((x + z * math.sin(a), y, z), 0.012, 0.09, DO, (random.uniform(0, 3), random.uniform(0, 3), 0))
+    for i in range(60): kugel((random.uniform(-2, 2), random.uniform(-0.4, 0.4), random.uniform(0.2, 1.1)), 0.07, BL, (1.4, 0.6, 0.3), 6)
+elif ART == "grabhuegel_eingang":                                                                  # Eingang ins Hügelgrab: Erdhügel mit Steinportal, Türsturz, Stufen nach unten (dunkel)
+    ER = mat("erde_gras", (96, 102, 66), 0.95); ST = mat("grabstein", (128, 124, 116), 0.9); DU = mat("dunkel", (12, 10, 9), 1.0)
+    o = kugel((0, 1.15, 0), 1.9, ER, (1.0, 1.15, 0.95), 18)
+    for v in o.data.vertices: v.co.z = max(v.co.z, -0.05)
+    for x in (-0.55, 0.55): wuerfel((x, -1.05, 0.75), (0.32, 0.4, 1.5), ST, (0, 0, 0), 0.06)
+    wuerfel((0, -1.05, 1.62), (1.6, 0.46, 0.3), ST, fase=0.06); wuerfel((0, -0.9, 0.7), (0.8, 0.2, 1.38), DU, fase=0)
+    for k in range(3): wuerfel((0, -1.35 - k * 0.22, 0.06 - k * 0.0), (0.9, 0.24, 0.12), ST, fase=0.08)
+    for k in range(5): kristall((random.uniform(-0.4, 0.4), -1.28, 1.8), 0.02, 0.06, ST)
+elif ART == "grabstein":                                                                           # Grabstein (Deckung im Kampf gegen den Grauen Hauptmann): verwittert, Turmzeichen
+    ST = mat("grabstein", (128, 124, 116), 0.9); MO = mat("moos", (78, 94, 52), 0.95)
+    wuerfel((0, 0, 0.55), (0.7, 0.18, 1.1), ST, fase=0.05); kugel((0, 0, 1.08), 0.35, ST, (1, 0.26, 0.55), 12)
+    wuerfel((0, -0.095, 0.7), (0.12, 0.02, 0.28), mat("ritz", (70, 68, 64), 0.9), fase=0)
+    for k in range(4): kugel((random.uniform(-.3, .3), -0.09, random.uniform(0.05, 0.4)), 0.06, MO, (1.3, 0.3, 0.6), 8)
+    wuerfel((0, 0, 0.03), (0.9, 0.4, 0.06), ST, fase=0.1)
 elif ART == "kettenglied":
     ring((0, 0, 0.03), 0.06, 0.016, EIS, rot=(math.radians(90), 0, 0), sk=(1, 1, 1.6)); bpy.context.object.rotation_euler = (math.radians(90), 0, math.radians(30))
 elif ART == "kettenschloss":

@@ -66,13 +66,14 @@ try {
     check(banner === "Du hast Handwerk Stufe 21 erreicht!", `Aufstieg: Banner oben „${banner}“`);
     if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "stufe-banner.png" }); }
   await anna.click('#ez-leiste [data-l="skills"]'); await anna.waitForTimeout(400);
-  { const b = await anna.$$eval("[data-beruf]", (l) => l.map((x) => x.dataset.beruf).join(",")); check(b === "holzfaellerei,bergbau,schmieden,handwerk", `Skill-Tab: Berufe aus shared/berufe.ts (${b})`); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "skills-tab.png" }); }
-  await anna.click('[data-beruf="handwerk"]');
+  { const b = await anna.$$eval("[data-beruf]", (l) => l.map((x) => x.dataset.beruf).join(",")); check(b === "holzfaellerei,bergbau,schmieden,handwerk,splitterbinden,fischen,kochen", `Skill-Tab: Berufe aus shared/berufe.ts (${b})`); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "skills-tab.png" }); }
+  await anna.click('[data-beruf="handwerk"]'); check(await anna.evaluate(() => /Handwerk/.test(document.querySelector("#ez-skillstab .sfuss")?.textContent || "") && !!document.querySelector('#ez-skillstab .skachel.an[data-beruf="handwerk"]')), "Beruf kurz antippen: XP-Leiste unten (Name, Level, XP)");
+  await anna.click('[data-beruf="handwerk"]', { button: "right" }); await anna.click('.ez-aktionen button:has-text("Skillbuch öffnen")'); /* lange drücken / Rechtsklick: Skillbuch */
   const fu = await anna.waitForSelector("#ez-konto .tafel.fuehrer", { timeout: 5000 }).then(() => true).catch(() => false);
   check(fu && (await anna.$$eval("#ez-konto .fuehrer [data-fr]", (b) => b.map((x) => x.textContent).join(","))) === "Rohstoffe,Werkbank,Info", "Skill-Übersicht Handwerk: Reiter Rohstoffe, Werkbank, Info");
   if (fu) { const z = await anna.$$eval("#ez-konto .fuehrer li", (l) => l.length); check(z === 14, `Rohstoffe (ohne Gesammeltes): ${z} Zeilen mit Level und Bild`); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "fuehrer.png" }); await anna.click('#ez-konto [data-t="zu"]'); }
   await anna.click('#ez-leiste [data-l="skills"]').catch(() => {}); await anna.waitForTimeout(300); if (!(await anna.$('[data-beruf="schmieden"]'))) { await anna.click('#ez-leiste [data-l="skills"]'); await anna.waitForTimeout(300); }
-  await anna.click('[data-beruf="schmieden"]'); const fs = await anna.waitForSelector("#ez-konto .tafel.fuehrer", { timeout: 5000 }).then(() => true).catch(() => false);
+  await anna.click('[data-beruf="schmieden"]', { button: "right" }); await anna.click('.ez-aktionen button:has-text("Skillbuch öffnen")'); const fs = await anna.waitForSelector("#ez-konto .tafel.fuehrer", { timeout: 5000 }).then(() => true).catch(() => false);
   check(fs && (await anna.$$eval("#ez-konto .fuehrer [data-fr]", (b) => b.map((x) => x.textContent).join(","))) === "Barren,Schmieden,Info", "Skill-Übersicht Schmieden: Reiter Barren, Schmieden, Info");
   if (fs) { await anna.click('#ez-konto .fuehrer [data-fr="1"]'); check((await anna.$$eval("#ez-konto .fuehrer li", (l) => l.length)) > 30, "Reiter Schmieden zeigt die Amboss-Rezepte"); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "fuehrer-schmieden.png" }); await anna.click('#ez-konto [data-t="zu"]'); }
   await anna.click('#ez-leiste [data-l="quests"]').catch(() => {}); await anna.waitForTimeout(500); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "quest-tab.png" });
@@ -95,6 +96,11 @@ try {
   check(Boolean(laden), `Handwerker vor der Schmiede (${hw}): sein Laden zeigt Holzbeil, Spitzhacke und Hammer`);
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "handwerker-laden.png" });
   await anna.click('#ez-konto [data-t="zu"]').catch(() => {}); await anna.keyboard.press("Escape").catch(() => {});
+  /* #57: außen an der Schmiedewand neben der Esse – nicht „da“, der Held geht hinein (Ziel innen, von dort erreichbar) */
+  const aussen = await anna.evaluate(() => { const W = window.EZW.welt3d, alt = { ...W.ort }, l = [];
+    for (const [x, y] of [[6465.5, 6427.5], [6467.5, 6425.5]]) { W.ort.x = x; W.ort.y = y; const s = W.anStelle(6467.4, 6427.8); l.push(s ? { text: s.text, da: s.da(), x: s.x, y: s.y } : null); }
+    W.ort.x = alt.x; W.ort.y = alt.y; return l; });
+  check(aussen.every((s) => s && /Esse/.test(s.text) && !s.da && s.x > 6467 && s.x < 6471 && s.y > 6427 && s.y < 6429), "Außen an der Schmiedewand: die Esse ist nicht „da“, der Held läuft hinein (" + JSON.stringify(aussen) + ")");
   /* Werk-Bewegungen (fabrik/werk_bewegungen.py): geladen und abspielbar */
   const werk = await anna.waitForFunction(() => { const f = window.EZW.welt3d.figur; return f.clips && ["werk_ofen", "werk_hammer", "werk_weben", "werk_schnitzen", "werk_fuegen"].every((c) => f.clips.has(c)); }, null, { timeout: 30000 }).then(() => true).catch(() => false);
   check(werk, "Die fünf Werk-Bewegungen sind geladen (Ofen, Hammer, Weben, Schnitzen, Zusammenfügen)");

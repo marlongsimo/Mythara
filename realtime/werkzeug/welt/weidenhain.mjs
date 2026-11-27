@@ -124,7 +124,7 @@ for (const p of objekte) if (!BIB.has(p.objekt)) throw new Error("unbekanntes Ob
 const lies = (id, x, y, text) => ({ id, art: "lesen", x, y, radius: 1.6, abgleich: "keiner", daten: { text } });
 const spiel = {
   start: [[47.5, 3], [46.5, 2.2], [48.5, 2.2]],
-  figuren: [{ id: "hanne", rolle: "npc", figur: "hanne", x: 33.4, y: 23.4 }, { id: "lene", rolle: "npc", figur: "lene", x: 40.6, y: 25.2 }, { id: "tebbe", rolle: "npc", figur: "tebbe", x: 58.6, y: 36.6, links: true },
+  figuren: [/* Hanne und Tebbe stehen jetzt als Questfiguren an denselben Stellen (shared/quest_b2.ts, #64) */ { id: "lene", rolle: "npc", figur: "lene", x: 40.6, y: 25.2 },
     /* Agnes steht jetzt als Questfigur an der Linde (shared/quest_b1.ts) */ { id: "mette", rolle: "npc", figur: "mette", x: 32.4, y: 43.2 },
     { id: "junge_sued", rolle: "npc", figur: "junge", x: 46.6, y: 70.4 }, { id: "wanderer_ost", rolle: "npc", figur: "wanderer", x: 98.6, y: 37.6, links: true }, { id: "kraeuterfrau_ost", rolle: "npc", figur: "kraeuterfrau", x: 80.6, y: 31.6 }],
   spawnzonen: [],

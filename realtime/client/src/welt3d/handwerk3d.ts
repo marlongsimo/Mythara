@@ -4,13 +4,14 @@
  *   · Werkstatt antippen: hingehen, Rezeptfenster (nach Gruppe, Level, Zutaten im Rucksack; 1 / 5 / 10 / Alle).
  *   · Beim Herstellen schlägt der Held mit dem Hammer (Amboss, Werkbank). Glut: kurz „Glut!“ antippen – eine Zutat gespart, 50 % mehr XP.
  */
+import { arbeitMelden } from "../arbeit";
 import { berufAn, beruf } from "../../../shared/berufe";
 import * as THREE from "three";
 import { gltfLader } from "./gltf";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 import { questDef, schalterAn } from "../../../shared/quests";
 import { laeuft as laeuftB } from "../../../shared/questbau";
-import { STATIONEN, WERKSTAETTEN, Werkstatt, StationId, WeltStation, WERKZEUG_AN, rezepteAn, rezept, Rezept, HANDWERK_WEIT, werkTat, WerkTat } from "../../../shared/handwerk";
+import { STATIONEN, WERKSTAETTEN, Werkstatt, StationId, WeltStation, WERKZEUG_AN, rezepteAn, rezept, Rezept, HANDWERK_WEIT, werkTat, WerkTat, werkstattErreichbar, versperrt } from "../../../shared/handwerk";
 import { chatSystem, handwerkBitten, tafelZeigen, questStandB } from "../welt";
 import { berufDrop, skillStand, BERUF_NAME } from "../skills";
 import { inventar } from "../inventar";
@@ -18,8 +19,11 @@ import { benutzt, benutzen } from "../benutzen";
 import type { Welt3D } from "./motor";
 /** Ergebnis eines Rezepts zum Anzeigen: „ladung:wegstein“ (Splitterbinden) ist kein Gegenstand, sondern eine Ladung für ihn */
 const ladungVon = (r: { ergebnis: string }): string => (r.ergebnis.startsWith("ladung:") ? r.ergebnis.slice(7) : "");
-const ergName = (r: { ergebnis: string }): string => { const l = ladungVon(r), G = GEGENSTAENDE[l || r.ergebnis]; return G ? (l ? `Ladung für den ${G.name}` : G.name) : r.ergebnis; };
-const ergBild = (r: { ergebnis: string }): string => ladungVon(r) || r.ergebnis;
+/* Phase 5b: „ladung:@waffe“ / „entladen:@waffe“ meinen die angelegte Waffe (Rezept.fuer: ihre Seltenheit) */
+const SELTEN_TEXT: Record<string, string> = { selten: "seltene", episch: "epische", legendaer: "legendäre", mythisch: "mythische" };
+const ergName = (r: { ergebnis: string; fuer?: string }): string => { if (r.ergebnis === "entladen:@waffe") return "Waffe entladen (die Splitter verfallen)"; if (r.ergebnis === "merker:splitterkern_wegstein") return "Splitterkern in den Wegstein setzen (200 Ladungen)"; if (r.ergebnis === "ladung:@waffe") return `Ladung für die ${SELTEN_TEXT[r.fuer || ""] || ""} Waffe`.replace("  ", " ");
+  const l = ladungVon(r), G = GEGENSTAENDE[l || r.ergebnis]; return G ? (l ? `Ladung für den ${G.name}` : G.name) : r.ergebnis; };
+const ergBild = (r: { ergebnis: string }): string => (r.ergebnis.endsWith(":@waffe") ? inventar().angelegt.waffe || "splitter" : r.ergebnis.startsWith("merker:splitterkern") ? "splitterkern" : ladungVon(r) || r.ergebnis);
 
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number }; figur: unknown }
 interface Werkzeugfigur { beilHieb(url: string, clip?: string): number; beilWeg(): void; blick(x: number, z: number): void; werken?(wahl: string[], url?: string): number }
@@ -59,7 +63,7 @@ export class HandwerkWelt {
     if (m.tat === "start") { this.aktiv = m.rezept || null; this.station = m.station || null; const r = m.rezept ? rezept(m.rezept) : null; if (r) this.werkLos(r);
       if (r) chatSystem(ladungVon(r) ? `Du legst Splitter auf den Bindestein${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Ladungen)` : ""} …` : `Du stellst ${m.rezept && GEGENSTAENDE[r.ergebnis] ? GEGENSTAENDE[r.ergebnis].name : "etwas"} her${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Stück)` : ""} …`); }
     else if (m.tat === "fertig") { const lad = (m as { ladungen?: number; stueck?: number }); if (typeof lad.ladungen === "number") chatSystem(`Der Stein summt: ${lad.stueck && lad.stueck > 1 ? `Resonanz! ${lad.stueck} Ladungen` : "eine Ladung"} – jetzt ${lad.ladungen}.`);
-      else if ((m as { verbrannt?: boolean }).verbrannt) chatSystem(`Zu lange auf dem Feuer – ${m.name || "es"}. Das nächste wird besser.`);
+      else if ((m as { verbrannt?: boolean }).verbrannt) chatSystem(m.beruf === "kraeuterkunde" ? `Der Sud ist trüb geworden – ${m.name || "nichts"}. Das nächste wird besser.` : `Zu lange auf dem Feuer – ${m.name || "es"}. Das nächste wird besser.`);
       else chatSystem(`Du ${this.station && KOCHEN_ST.has(this.station) ? (this.station === "brunnen" ? "schöpfst" : "kochst") : "stellst"} ${m.name || "etwas"}${this.station && KOCHEN_ST.has(this.station) ? "" : " her"}${m.glut ? ` – ${momentName(this.station)}! ${m.gespart ? "Eine Zutat gespart, " : ""}50 % mehr XP.` : "."}`); const b = m.beruf || "handwerk"; berufDrop(b, m.xp || 0);
       if (m.aufstieg) chatSystem(`Glückwunsch! ${BERUF_NAME[b] || "Handwerk"} ist jetzt Level ${m.aufstieg}.`); /* Banner oben: skills.ts stufenPruefen */ }
     else if (m.tat === "glut") { this.glutBis = performance.now() + (m.ms || 1500); this.hinweis(this.station === "bindestein" ? "Resonanz! Schnell den Stein antippen" : this.station && KOCHEN_ST.has(this.station) ? "Garpunkt! Schnell antippen – es gelingt sicher" : "Glut! Schnell die Werkstatt antippen", m.ms || 1500); }
@@ -69,10 +73,10 @@ export class HandwerkWelt {
   /** Solange gearbeitet wird: die Werk-Bewegung immer wieder (Ofen, Hämmern, Weben, Schnitzen, Zusammenfügen; fabrik/werk_bewegungen.py) */
   private werkZeit: ReturnType<typeof setTimeout> | null = null;
   private werkLos(r: Rezept) { this.werkHalt(); const w = WERK[werkTat(r)], o = this.u.ort, S = r.station !== "hand" ? WERKSTAETTEN.filter((W) => W.station === r.station).sort((a, b) => Math.hypot(a.x - o.x, a.y - o.y) - Math.hypot(b.x - o.x, b.y - o.y))[0] || null : null; /* die nächste Werkstatt dieser Art */
-    const eins = () => { const f = this.figur; let ms = 1200; if (f && this.aktiv) { if (S) f.blick(S.x - this.u.ort.x, S.y - this.u.ort.y); ms = (typeof f.werken === "function" ? f.werken(w.clips, w.werkzeug) : w.werkzeug ? f.beilHieb(w.werkzeug, "") : 0) || 1200; }
+    const eins = () => { const f = this.figur; let ms = 1200; if (f && this.aktiv) { if (S) f.blick(S.x - this.u.ort.x, S.y - this.u.ort.y); arbeitMelden({ a: "werken", ...(w.werkzeug ? { u: w.werkzeug } : {}), ...(w.clips[0] ? { c: w.clips[0] } : {}), ...(S ? { x: S.x, y: S.y } : {}) }); /* #67 */ ms = (typeof f.werken === "function" ? f.werken(w.clips, w.werkzeug) : w.werkzeug ? f.beilHieb(w.werkzeug, "") : 0) || 1200; }
       if (this.aktiv) this.werkZeit = setTimeout(eins, ms); };
     eins(); }
-  private werkHalt() { if (this.werkZeit) clearTimeout(this.werkZeit); this.werkZeit = null; }
+  private werkHalt() { if (this.werkZeit) clearTimeout(this.werkZeit); this.werkZeit = null; arbeitMelden(null); }
   private hinweis(text: string, ms: number) { const el = document.getElementById("ez-dorf-hilfe"); if (!el) return; el.textContent = text; el.style.display = ""; setTimeout(() => { if (el.textContent === text) { el.textContent = ""; el.style.display = "none"; } }, ms); }
 
   /** Das Herstellfenster einer Werkstatt (wie in OSRS: Bilder nach Gruppe; antippen → Zutaten und Menge). nur: nur Rezepte mit diesem Gegenstand („Benutzen“) */
@@ -98,10 +102,10 @@ export class HandwerkWelt {
 #ez-konto .handwerk .zut span { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; padding: 2px 8px 2px 2px; border-radius: 6px; background: rgba(0,0,0,.3); font-size: 12px; white-space: nowrap; }
 #ez-konto .handwerk .zut img { width: 26px; height: 26px; object-fit: contain; } #ez-konto .handwerk .zut .da { color: #9fd08a; } #ez-konto .handwerk .zut .nicht { color: #e07a6a; }
 #ez-konto .handwerk .menge { display: flex; flex: 0 0 auto; gap: 5px; flex-wrap: nowrap; } #ez-konto .handwerk .menge button { min-width: 38px; padding: 6px 8px; font-size: 13px; }`; document.head.appendChild(s); }
-    const mit = (id: string) => { const q = questDef(id); return Boolean(q && laeuftB(q, questStandB(id))); } /* Questrezepte nur, solange die Quest läuft */, rs = rezepteAn(st).filter((r) => (!r.quest || mit(r.quest)) && (!nur || r.zutaten.some((z) => z.g.includes(nur))));
+    const mit = (id: string) => { const q = questDef(id); return Boolean(q && laeuftB(q, questStandB(id))); } /* Questrezepte nur, solange die Quest läuft */, rs = rezepteAn(st).filter((r) => (!r.quest || [r.quest, ...(r.auchQuest || [])].some(mit)) && (!nur || r.zutaten.some((z) => z.g.includes(nur))));
     const gruppen = new Map<string, Rezept[]>(); for (const r of rs) { if (!gruppen.has(r.gruppe)) gruppen.set(r.gruppe, []); gruppen.get(r.gruppe)!.push(r); }
     const bild = (g: string) => (GEGENSTAENDE[g] && GEGENSTAENDE[g].bild ? `<img src="../${GEGENSTAENDE[g].bild}" alt="" draggable="false">` : "");
-    const ding = (r: Rezept) => { const offen = L >= r.level, n = wieOft(r), G = { name: ergName(r) };
+    const ding = (r: Rezept) => { const offen = (r.beruf ? skillStand((inventar().berufe || {})[r.beruf] || 0).L : L) >= r.level, /* #133: Brauen nach dem Kräuterkunde-Level */ n = wieOft(r), G = { name: ergName(r) };
       return `<button type="button" class="ding ${!offen ? "zu" : n > 0 && !ohne ? "kann" : "fehlt"}" data-r="${r.id}" title="${esc(G.name)} – Level ${r.level}" aria-label="${esc(G.name)}">${bild(ergBild(r))}<span class="lv">${r.level}</span></button>`; };
     const nurName = nur && GEGENSTAENDE[nur] ? GEGENSTAENDE[nur].name : "";
     const f = tafelZeigen("handwerk", `<div class="skopf"><img class="skillbild" src="../${B.symbolKlein}" alt="" width="40" height="40"><div><h2>${S.name}</h2><small>${nurName ? `${esc(nurName)} benutzen · ` : ""}${S.tun} · ${B.name} Level ${L}${ohne ? ` · <b style="color:#e07a6a">ohne ${esc(GEGENSTAENDE[ohne].name)}</b>` : ""}</small></div></div><div class="zier"></div>
@@ -123,7 +127,11 @@ export class HandwerkWelt {
     let best: Werkstatt | null = null, bd = 1.4; for (const W of WERKSTAETTEN) { const d = Math.hypot(W.x - x, W.y - y); if (d < bd) { bd = d; best = W; } } if (!best) return null;
     const W = best, S = { ...STATIONEN[W.station], x: W.x, y: W.y }, o = this.u.ort, dx = o.x - S.x, dy = o.y - S.y, l = Math.hypot(dx, dy) || 1, glut = this.aktiv && performance.now() < this.glutBis;
     const b = benutzt(), bn = b && GEGENSTAENDE[b.g] ? GEGENSTAENDE[b.g].name : "";
-    return { x: S.x + (dx / l) * 1.2, y: S.y + (dy / l) * 1.2, text: glut ? `${momentName(W.station)}!` : bn ? `${bn} → ${S.name}` : `${S.name} benutzen`, da: () => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) <= HANDWERK_WEIT,
+    /* Wohin gehen: vor die Station auf der Seite des Helden – liegt dort eine Wand dazwischen (Esse in der Schmiede), auf das nächste freie Feld daneben, von dem aus sie erreichbar ist (#57) */
+    let hin = { x: S.x + (dx / l) * 1.2, y: S.y + (dy / l) * 1.2 };
+    if (versperrt(Math.floor(hin.x), Math.floor(hin.y)) || !werkstattErreichbar(hin.x, hin.y, W)) { let bd = Infinity; for (let i = Math.floor(S.x) - 2; i <= Math.floor(S.x) + 2; i++) for (let j = Math.floor(S.y) - 2; j <= Math.floor(S.y) + 2; j++) { const p = { x: i + 0.5, y: j + 0.5 };
+      if ((i === Math.floor(S.x) && j === Math.floor(S.y)) || versperrt(i, j) || Math.hypot(p.x - S.x, p.y - S.y) > HANDWERK_WEIT - 0.3 || !werkstattErreichbar(p.x, p.y, W)) continue; const d = Math.hypot(p.x - S.x, p.y - S.y); if (d < bd) { bd = d; hin = p; } } }
+    return { x: hin.x, y: hin.y, text: glut ? `${momentName(W.station)}!` : bn ? `${bn} → ${S.name}` : `${S.name} benutzen`, da: () => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) <= HANDWERK_WEIT && werkstattErreichbar(this.u.ort.x, this.u.ort.y, W),
       tat: () => { if (glut) { this.glutBis = 0; handwerkBitten("glut"); return; } if (W.schalter && !schalterAn((id) => questStandB(id), W.schalter)) { chatSystem(W.gesperrt || "Das geht hier noch nicht."); return; } if (this.aktiv) handwerkBitten("stop");
         const b = benutzt(); if (b) { benutzen(null); if (!rezepteAn(S.id).some((r) => r.zutaten.some((z) => z.g.includes(b.g)))) { chatSystem("Nichts Interessantes passiert."); return; } this.fenster(S.id, b.g); return; }
         this.fenster(S.id); },

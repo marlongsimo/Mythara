@@ -13,7 +13,7 @@
  *     auch nicht in den Kampfgebieten (weltzonen.py liest das Gehraster).
  * Mehrfach ausführbar: schon freie Stellen bleiben frei, die Sperren der Bäume werden ersetzt, nicht verdoppelt.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -22,8 +22,10 @@ const C = 32, WEG = new Set(["e", "k", "p"]), WASSER = new Set(["~", "w", "o"]),
 const HOLZ = JSON.parse(readFileSync(join(RT, "shared", "holz_standorte.json"), "utf8")).lichtungen, BERG = JSON.parse(readFileSync(join(RT, "shared", "bergbau_standorte.json"), "utf8")).senken;
 /* vorgeschlagene Orte (welt/orte.json, Phase 3): schon freischneiden, bis die Rolle Spiel sie in die Standort-Dateien übernimmt (dann gelten jene) */
 const ORTE = JSON.parse(readFileSync(join(RT, "welt", "orte.json"), "utf8")), schonDa = new Set([...HOLZ, ...BERG].map((l) => l.name));
-const standorte = [...HOLZ, ...(ORTE.lichtungen || []).filter((l) => !schonDa.has(l.name)),
-  ...[...BERG, ...(ORTE.senken || []).filter((l) => !schonDa.has(l.name))].map((s) => ({ ...s, baeume: s.adern, senke: true }))];
+/* Sammelstellen (#142, werkzeug/welt/sammelstellen.mjs): Baumgruppen und Senken an den Orten im Süden, Westen und in den Glutsande – ebenso Vorschläge */
+const SAMMEL = existsSync(join(RT, "welt", "sammelstellen.json")) ? JSON.parse(readFileSync(join(RT, "welt", "sammelstellen.json"), "utf8")) : { lichtungen: [], senken: [] };
+const standorte = [...HOLZ, ...[...(ORTE.lichtungen || []), ...SAMMEL.lichtungen].filter((l) => !schonDa.has(l.name)),
+  ...[...BERG, ...[...(ORTE.senken || []), ...SAMMEL.senken].filter((l) => !schonDa.has(l.name))].map((s) => ({ ...s, baeume: s.adern, senke: true }))];
 const bib = JSON.parse(readFileSync(join(RT, "welt", "bibliothek", "objekte.json"), "utf8")).objekte;
 const kategorie = new Map(bib.map((o) => [o.id, o.kategorie]));
 const istBewuchs = (p) => kategorie.get(p.objekt) === "bewuchs";
@@ -52,6 +54,7 @@ for (const [rid, lichtungen] of nachRegion) {
     if (!moor) for (let y = Math.floor(my - R - 1); y <= my + R + 1; y++) for (let x = Math.floor(mx - R - 1); x <= mx + R + 1; x++) {
       const d = Math.hypot(x + 0.5 - mx, y + 0.5 - my); if (feld(x, y) !== "f") continue;
       if (d < R - 1.2 || (d < R + 0.8 && zufall(x, y) < 0.55)) { gel[y][x] = l.senke ? (d < R - 2.2 || (d < R - 1.2 && zufall(x * 5, y) < 0.5) ? "h" : "e") : zufall(x * 3, y * 7) < 0.25 ? "," : "."; wiese++; } }
+    if (l.ohneWeg) { console.log(`  ${l.name}: Radius ${R.toFixed(1)}, ohne Feldweg (versteckt, #142)`); continue; }
     /* 3. Feldweg: kürzester begehbarer Weg (8 Nachbarn) vom Rand der Lichtung zum nächsten Weg */
     const sx = Math.floor(mx), sy = Math.floor(my), vorher = new Map([[`${sx},${sy}`, null]]), schlange = [[sx, sy]]; let ziel = null;
     while (schlange.length && !ziel) { const [x, y] = schlange.shift();

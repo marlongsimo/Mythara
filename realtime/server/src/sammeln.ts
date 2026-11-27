@@ -26,6 +26,7 @@ export interface SammelBeruf {
   /** Wandernde Stellen (Fischen, Würmer): je Gruppe sind nur „aktiv“ Ziele da; ist eine Stelle leer gefischt oder nach „ms“, zieht sie zu einer anderen der Gruppe */
   wandern?: { ziele: () => SammelZiel[]; gruppe: (id: string) => string; aktiv: (gruppe: string) => number; ms: number };
   /** Text, wenn der Köder fehlt (SammelArt.koeder) */ ohneKoeder?: (a: SammelArt) => string;
+  /** Seltener Fund je Stück (Süden #126, der alte Hecht): Gegenstand, Questziel („sammeln“) und Text – oder null */ selten?: (nutzer: string, zielId: string) => { g: string; ziel: string; text: string } | null;
   /** Darf dieser Spieler hier sammeln? (Fischen: Wehrkolk erst mit Quest-Schalter) Zurück: Fehlertext oder null */ erlaubt?: (nutzer: string, ziel: SammelZiel) => string | null;
 }
 interface Sitzung { s: SammelSpieler; ziel: SammelZiel; naechst: number; momentBis: number; stufe: number }
@@ -41,6 +42,8 @@ export function sammelBeruf(B: SammelBeruf) {
   const leer = new Map<string, number>(), sitzungen = new Map<SammelSpieler, Sitzung>();
   /* Wandernde Stellen: ruhend = gerade nicht da (für alle); naechsterWechsel je Gruppe */
   const ruhend = new Set<string>(), wechselJe = new Map<string, number>(); let verteilt = false;
+  /* Takt für Tests einstellbar (<ENV>_TAKT_MS, #27) – im Spiel gilt der Wert des Berufs */
+  const TAKT_MS = process.env[B.env + "_TAKT_MS"] !== undefined ? Number(process.env[B.env + "_TAKT_MS"]) : B.taktMs;
   const WANDER_MS = process.env[B.env + "_WANDER_MS"] !== undefined ? Number(process.env[B.env + "_WANDER_MS"]) : B.wandern ? B.wandern.ms : 0;
   function verteilen(jetzt: number): void { if (verteilt || !B.wandern) return; verteilt = true; const W = B.wandern;
     const gruppen = new Map<string, string[]>(); for (const z of W.ziele()) { const g = W.gruppe(z.id); gruppen.set(g, [...(gruppen.get(g) || []), z.id]); }
@@ -76,7 +79,7 @@ export function sammelBeruf(B: SammelBeruf) {
     if (st < 0) { const passend = B.werkzeuge.filter((w) => !A.werkzeug || w.g === A.werkzeug), hat = passend.filter((w) => besitzt(s.nutzer).includes(w.g)); return hat.length ? B.texte.werkzeugLevel(Math.min(...hat.map((w) => w.level))) : B.texte.ohneWerkzeug; }
     if (A.koeder && anzahlVon(s.nutzer, A.koeder) <= 0) return B.ohneKoeder ? B.ohneKoeder(A) : "Dir fehlt der Köder.";
     if (freieFaecher(s.nutzer) <= 0) return "Dein Rucksack ist voll.";
-    sitzungen.set(s, { s, ziel: z, naechst: Date.now() + B.taktMs, momentBis: 0, stufe: st });
+    sitzungen.set(s, { s, ziel: z, naechst: Date.now() + TAKT_MS, momentBis: 0, stufe: st });
     senden(s, { t: B.t, tat: "start", id, werkzeug: B.ohneWerkzeug ? undefined : B.werkzeuge.find((w) => w.stufe === st && (!A.werkzeug || w.g === A.werkzeug))!.g }); return null;
   }
   /** Ein Stück (beim Moment zwei): Rucksack, XP, Splitter-Wurf, Erschöpfung. Zurück: ob es weitergeht */
@@ -88,6 +91,7 @@ export function sammelBeruf(B: SammelBeruf) {
     const vorher = level(s.nutzer), xp = A.xp * stuecke * (moment ? 1.5 : 1); berufXpDazu(sb, s.nutzer, B.beruf, xp); const nachher = level(s.nutzer);
     senden(s, { t: B.t, tat: B.tatErtrag, id: ziel.id, g: A.ertrag, name: G ? G.name : A.ertrag, n: stuecke, xp, splitter, [B.tatMoment]: moment, level: nachher, aufstieg: nachher > vorher ? nachher : 0 });
     if (!A.quest) for (let i = 0; i < stuecke; i++) SAMMEL_QUEST.ertrag(s.nutzer, ziel.art, ""); /* Quests mit „anzahl“ (2 Flachs, 4 Kupfer …): jedes Stück zählt */
+    if (B.selten) for (let i = 0; i < stuecke; i++) { const R = B.selten(s.nutzer, ziel.id); if (R && aufnehmen(sb, s.nutzer, R.g, 1)) { if (R.ziel) SAMMEL_QUEST.ertrag(s.nutzer, R.ziel, ""); senden(s, { t: "chat", kanal: "system", text: R.text, zeit: Date.now() }); break; } } /* #126: seltener Fang */
     if (A.quest) { SAMMEL_QUEST.ertrag(s.nutzer, ziel.art, A.quest); stop(s, "fertig"); return false; } /* Questziel: ein Stück, fertig – das Ziel bleibt für andere stehen */
     if (B.wandern && wuerfel() < A.fall * FAKTOR) { weiterziehen(ziel.id, jetzt); allenMelden(); return false; }
     if (wuerfel() < A.fall * FAKTOR) { leer.set(ziel.id, jetzt + A.nachwachsen * 1000); for (const [o, w] of [...sitzungen]) if (w.ziel.id === ziel.id) stop(o, B.grundLeer); allenMelden(); return false; }
@@ -98,7 +102,7 @@ export function sammelBeruf(B: SammelBeruf) {
   /** Der aktive Moment (Kernschlag / Riss) wurde angetippt */
   function moment(s: SammelSpieler): void { const z = sitzungen.get(s); if (!z) return; const jetzt = Date.now();
     if (!z.momentBis || jetzt > z.momentBis + 300 /* Laufzeit */) { z.momentBis = 0; return; }
-    z.momentBis = 0; if (ernten(z, true, jetzt)) z.naechst = jetzt + B.taktMs; }
+    z.momentBis = 0; if (ernten(z, true, jetzt)) z.naechst = jetzt + TAKT_MS; }
   /** Takt: alle 100 ms (vom Weltserver gerufen) */
   function takt(jetzt = Date.now()): void {
     let nach = false; for (const [id, bis] of [...leer]) if (bis <= jetzt) { leer.delete(id); nach = true; }
@@ -108,7 +112,7 @@ export function sammelBeruf(B: SammelBeruf) {
     for (const [s, z] of [...sitzungen]) {
       if (!nah(s, z.ziel)) { stop(s, "weg"); continue; }
       if (z.momentBis && jetzt > z.momentBis + 300) z.momentBis = 0;
-      if (jetzt < z.naechst) continue; z.naechst = jetzt + B.taktMs;
+      if (jetzt < z.naechst) continue; z.naechst = jetzt + TAKT_MS;
       const A = B.arten[z.ziel.art]; senden(s, { t: B.t, tat: "hieb", id: z.ziel.id });
       if (wuerfel() < hiebChance(level(s.nutzer), A, z.stufe)) { if (!ernten(z, false, jetzt)) continue; }
       if (!z.momentBis && wuerfel() < MOMENT) { z.momentBis = jetzt + B.momentMs; senden(s, { t: B.t, tat: B.tatMoment, id: z.ziel.id, ms: B.momentMs }); }

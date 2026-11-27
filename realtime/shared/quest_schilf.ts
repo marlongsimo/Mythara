@@ -26,7 +26,7 @@ export const QUEST_SCHILF: QuestDef = {
   logAbgabe: "Du hast einen Bachling gebraten. Bring ihn Lambert Schilf am Mühlgraben in Weidenhain.",
   logFertig: "Lambert Schilf hat dir das Angeln gezeigt. Bachlinge beißen im Mühlgraben, am Bach der Obstwiesen und im Ried am Moorrand. Braten kannst du sie an jedem Feuer.",
   geber: "lambert",
-  figuren: [{ id: "lambert", name: "Lambert Schilf", modell: "npcmann3d", x: LAMBERT[0], y: LAMBERT[1], blick: [1, 0] }],
+  figuren: [{ id: "lambert", name: "Lambert Schilf", modell: "npc.lambert", x: LAMBERT[0], y: LAMBERT[1], blick: [1, 0] }],
   voraussetzungen: [{ text: "„Die gesperrte Straße“ abgeschlossen", wenn: { quest: { id: "die_gesperrte_strasse", phase: ["fertig"] } } }],
   schritte: [
     { id: "wuermer", text: "Würmer graben", ereignis: { art: "sammeln", ziel: "wurmacker" }, anzahl: 3, wo: ACKER,
@@ -75,6 +75,7 @@ export const QUEST_SCHILF: QuestDef = {
       ],
     },
   },
+  glueckwunsch: "Mhm. Du angelst jetzt. Allein. Und der Dicke unter der Wurzel gehört trotzdem mir.",
   belohnungText: "Belohnung: Fischen- und Kochen-XP, 20 Würmer · Lambert gibt dir seine alte Angelrute, wenn du keine hast",
   belohnung: { berufe: { fischen: 250, kochen: 120 }, gegenstaende: [{ g: "wurm", n: 20 }] },
   punkte: 1,

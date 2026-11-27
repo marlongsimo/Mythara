@@ -31,9 +31,12 @@ export const BERUFE: Beruf[] = [
   { id: "fischen", name: "Fischen", symbol: S + "fischen.webp", symbolKlein: S + "fischen_klein.webp", stationen: [],
     wofuer: "Fische zum Kochen: gebraten heilen sie, in der Suppe stärken sie. Jeder Fang bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.",
     aufstieg: "Eine Stelle im Wasser antippen, wo sich Wellen kräuseln – mit Angelrute und Würmern im Rucksack. Die Fische ziehen weiter, dann such die nächste Stelle. Bachling ab Level 1 (20 XP) im Mühlgraben von Weidenhain und im Bach der Obstwiesen, Mühlbarsch ab 10 (35) weiter unten im Mühlgraben, Moorhecht ab 20 (60) im Rabenmoor mit der Reuse. Würmer gräbst du auf dem Acker im Osthof. Schäumt das Wasser (Strömung lesen), tipp schnell: zwei Fische." },
-  { id: "kochen", name: "Kochen", symbol: S + "kochen.webp", symbolKlein: S + "kochen_klein.webp", stationen: ["feuer", "backofen", "herd", "kessel", "brunnen"],
+  { id: "kochen", name: "Kochen", symbol: S + "kochen.webp", symbolKlein: S + "kochen_klein.webp", stationen: ["feuer", "backofen", "herd", "kessel", "brunnen", "raeucherhuette"],
     wofuer: "Essen, das heilt – und manches stärkt dich eine Weile (Fischsuppe: Defense +2 für 5 Minuten). Feuer stehen in Weidenhain, am Rastplatz Osthang und im Rabenmoor; Wasser schöpfst du am Brunnen in einen Krug.",
     aufstieg: "Am Feuer ein Rezept wählen (oder einen rohen Fisch benutzen und das Feuer antippen): Bachling ab Level 1 (30 XP), Mühlbarsch ab 10 (50), Moorhecht ab 20 (80); Fischsuppe ab 15 im Kessel, Bauerneintopf ab 25 am Herd. Anfangs brennt manches an – je höher dein Level, desto seltener. Glüht der Garpunkt, tipp schnell: das Stück gelingt sicher, mit 50 % mehr XP." },
+  { id: "kraeuterkunde", name: "Kräuterkunde", symbol: S + "kraeuterkunde.webp", symbolKlein: S + "kraeuterkunde_klein.webp", stationen: [] /* gebraut wird am Kessel (Rezept.beruf) */,
+    wofuer: "Kräuter sammeln und am Kessel Tränke brauen: Heiltränke, Atemtrank, Steinhaut, Moorfeuer, Nebelschleier und Lindentau – je eine schwache und eine starke Fassung. Jedes Kraut bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.",
+    aufstieg: "Kräuter mit einer Sichel im Rucksack antippen: Wegerich ab Level 1 (10 XP), Ringelblume 10 (18), Moorglöckchen 20 (30), Eisenhut 35 (50), Nebelkraut 45 (75), Lindenblüte 65 (110). Glitzert Tau auf den Blättern, schnell antippen: zwei Kräuter. Am Kessel (Kräuterhaus der Waldmark, bei Hedda im Rabenmoor) mit leeren Fläschchen brauen – auf der Stufe des Rezepts misslingt jeder vierte Sud, 20 Level später keiner mehr." },
 ];
 export const beruf = (id: string): Beruf | undefined => BERUFE.find((b) => b.id === id);
 /** Welcher Beruf bekommt die XP an dieser Werkstatt? */

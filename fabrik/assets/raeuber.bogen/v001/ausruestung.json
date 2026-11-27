@@ -1,0 +1,32 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "raeuber.bogen – Karawanenräuber mit Bogen (St. 52), Phase 9 Glutsande: Körper des Banditen (bandit3d); danach Rot → Sandocker mit fabrik/textur_ton.py.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "bogen",
+    "treffer",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.bogen",
+      "platz": "hand_l",
+      "art": "schwert",
+      "hand": "L",
+      "glb": "waffen/bogen/waffe.bogen/v001/quelle/bogen.glb",
+      "griff": 0.5,
+      "griff2": 0.45,
+      "klasse": "bogen",
+      "drehen": 180,
+      "angriff": "bogen"
+    }
+  ]
+}

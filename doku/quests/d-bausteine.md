@@ -1,7 +1,7 @@
 # Phase 7 – Quests D1–D3: was dem Baukasten fehlt
 
 Rolle Quests, 26.11.2026. Die Quests stehen in `realtime/shared/quest_d1.ts`, `quest_d2.ts` und `quest_d3.ts`, als **Entwurf** in `shared/quest_entwuerfe.ts`.
-Grundlage: `doku/konzepte/phase-7.md`. Alle neuen Namen sind Vorschläge (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm, „Zur Furt“).
+Grundlage: `doku/konzepte/phase-7.md`. Alle Namen sind vom Nutzer bestätigt (27.11.) (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm, „Zur Furt“).
 Die **Stellen stammen aus der Welt (#36)**, vom Zweig `claude/mythara-world-pipeline-z4ynx5`: Regionen `graufurt`, `ostufer`, `turm_ebene1`–`3`, `turm_dach`. Die Modelle sind vorläufig, bis #37 fertig ist.
 
 ## Für den Motor und die Datenbank (Rolle Spiel)

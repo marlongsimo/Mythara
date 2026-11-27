@@ -1,2 +1,6 @@
 [
+ {"id":"bl_fels_breit_1670","objekt":"k_fels_breit","x":208.5,"y":0.74,"s":1.1,"spiegeln":true},
+ {"id":"bl_fels_breit_1673","objekt":"k_fels_breit","x":207,"y":0.06,"s":1.01,"spiegeln":true},
+ {"id":"bl_busch_1830","objekt":"stil_busch_02","x":100.5,"y":0.5},
+ {"id":"bl_busch_1974","objekt":"stil_busch_02","x":82.5,"y":1.5}
 ]

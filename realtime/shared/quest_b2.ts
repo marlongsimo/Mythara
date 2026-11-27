@@ -7,7 +7,7 @@
  * Lohn: 300 Splitter, 300 Schmieden-XP, 1 Questpunkt. Schalter: wehr_heil (Mühlrad dreht, Fanggrund Wehrkolk), werkstatt_weidenhain (Esse, Amboss, Werkbank
  * in Tebbes Schuppen), hanne_mehl (Hanne verkauft Mehl).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Issue #6 (Rolle Spiel): Quest-Rezepte schuetztafel, eisenbaender, hanftau; Gegenstände schuetztafel,
+ * Im Spiel (shared/quests.ts). Als Entwurf wartete die Quest auf Issue #6 (Rolle Spiel): Quest-Rezepte schuetztafel, eisenbaender, hanftau; Gegenstände schuetztafel,
  * eisenband, hanftau; Schalter und Drehteil. Tebbe und Hanne sind heute Dorffiguren der Welt – wie Agnes werden sie Questfiguren.
  * Kennungen und Stellen: doku/quests/b2-bausteine.md.
  */
@@ -41,7 +41,7 @@ export const QUEST_B2: QuestDef = {
   logFertig: "Das Wehr von Weidenhain hält wieder, und die Mühle mahlt. Tebbes Schuppen ist jetzt deine Werkstatt: Esse, Amboss und Werkbank, gleich neben der Bank. Hanne Kalk verkauft Mehl.",
   geber: "tebbe",
   figuren: [
-    { id: "tebbe", name: "Tebbe", modell: "npcmann3d", x: 6458.6, y: 6692.6, blick: [0, 1] },
+    { id: "tebbe", name: "Tebbe", modell: "npc.tebbe", x: 6458.6, y: 6692.6, blick: [0, 1] },
     { id: "hanne", name: "Hanne Kalk", modell: "npcfrau3d", x: 6433.4, y: 6679.4, blick: [0, 1] },
   ],
   voraussetzungen: [
@@ -146,6 +146,7 @@ export const QUEST_B2: QuestDef = {
   schalter: { wehr_heil: [FERTIG, { erledigt: ["setzen_oben"] }], werkstatt_weidenhain: FERTIG, hanne_mehl: FERTIG },
   /* Mühlrad an der Wassermühle (Tür Weidenhain 60,4 | 33,2) – Stelle: Vorschlag, die Welt prüft */
   drehen: [{ schalter: "wehr_heil", x: 6463, y: 6689, r: 5 }],
+  glueckwunsch: "Das Rad dreht sich. Hörst du's? So klingt Weidenhain, wenn es lebt.",
   belohnungText: "Belohnung: 300 Splitter, 300 Schmieden-XP · danach: das Mühlrad dreht sich, Tebbes Schuppen wird deine Werkstatt (Esse, Amboss, Werkbank), Hanne Kalk verkauft Mehl",
   belohnung: { splitter: 300, berufe: { schmieden: 300 } },
   punkte: 1,

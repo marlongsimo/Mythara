@@ -22,7 +22,8 @@
  * Heldenlevel (wie das Combat Level in OSRS, ohne Prayer) = ⌊0,25 × (Defense + Lebenspunkte) + max(0,325 × (Geschick + Stärke), 0,325 × (Fernkampf + ⌊Fernkampf ÷ 2⌋), 0,325 × (Magie + ⌊Magie ÷ 2⌋))⌋. Erholung: 1 LP je 100 Game-Ticks (50 s), immer (LP_REGEN_TICKS).
  * Gegner wie OSRS-Monster (config.ts MonsterDef.v2): Level der Kampfart, Defense, Magie, optional Angriffs- und Stärkebonus, Verteidigungsboni je Angriffsart, Ticks.
  */
-import { GEGENSTAENDE, Platz, WaffenWerte } from "./gegenstaende";
+import { GEGENSTAENDE, Platz, WaffenWerte, aktiveSets } from "./gegenstaende";
+import { WAFFE_LADUNG_PLUS } from "./splitterbinden";
 
 export type Skill = "geschick" | "staerke" | "fernkampf" | "magie" | "lp" | "defense";
 export type Art = "nah" | "fern" | "magie";
@@ -58,7 +59,10 @@ export interface Kampfwerte {
   /** Trefferwert je Angriffsart (nur die der Waffe zählt) und Verteidigung je Angriffsart */ angriff: Record<Art, number>; abwehr: Record<Art, number>;
   /** schaden: Wurfbereich 1 … Max Hit; plus (Magie): Endschaden = Wurf + plus, gerundet; bonus: seit v3 immer 0 (bleibt für alte Aufrufer); takt in Sekunden = ticks × TICK */
   waffe: { art: Art; schaden: [number, number]; plus: number; bonus: number; ticks: number; takt: number; reich: number; flug?: number; /** mehr Max Hit gegen eine Gegnerfamilie */ gegen?: Record<string, number>; /** Fernkampf: was fliegt (Armbrust: Bolzen, sonst Pfeil) – für die Darstellung bei allen Spielern */ geschoss?: "pfeil" | "bolzen" };
-  stil: number; max: number; heldenlevel: number; skills: SkillXp }
+  stil: number; max: number; heldenlevel: number; skills: SkillXp;
+  /** Set-Bonus (shared/gegenstaende.ts SETS, Phase 5d): Treffer gegen den Helden heilen mit chance um anteil des Schadens */ set?: { chance: number; anteil: number };
+  /** die Waffe ist geladen (Splitterbinden, Phase 5b): Angriffs- und Schadensboni der Waffe × 1,1, jeder Angriff kostet eine Ladung */ geladen?: boolean;
+  /** Nebelschleier (#133): Gegner bemerken den Helden erst auf diesem Anteil ihrer Weite */ bemerken?: number }
 
 /** Die Riftmere-Kurve (festgelegt 26.11.2026): kumulierte XP je Level, Index = Level (0 und 1 = 0 XP). Gilt für alle Kampfskills und alle Berufe.
  *  Die Werte sind fest – wer sie ändert, ändert die Level aller gespeicherten Helden. */
@@ -100,12 +104,14 @@ export const maxHitMagie = (level: number, stilbonus: number, magieStaerke: numb
 
 /** Die Kampfwerte eines Helden aus seinen Skill-XP, der angelegten Ausrüstung und dem Angriffsstil (Index in STILE der Kampfart, 1 = Standard) */
 /** wirk: Skill-Level aus Wirkungen (shared/wirkungen.ts, z. B. Fischsuppe Defense +2) – zählt im Kampf, nicht für Heldenlevel oder Anforderungen */
-export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>, stil = 1, wirk: Partial<Record<Skill, number>> = {}): Kampfwerte {
+/** extra.geladen: die angelegte Waffe hat Ladungen (Phase 5b) */
+export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>, stil = 1, wirk: Partial<Record<Skill, number>> = {}, extra: { geladen?: boolean; bemerken?: number } = {}): Kampfwerte {
   const hl = heldenlevel(x), lv = Object.fromEntries(SKILLS.map((k) => [k, levelAus(x[k] || 0, k) + (wirk[k] || 0)])) as Record<Skill, number>;
   const W = angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].waffe ? GEGENSTAENDE[angelegt.waffe].waffe! : FAEUSTE;
   const s = stilIndex(stil, W.art), S = STILE[W.art][s], p = (k: Skill) => S.plus[k] || 0;
   /* Ausrüstung gesamt: Waffe und die Boni aller angelegten Teile (Rüstung kann Angriffsboni senken: Metall gegen Fernkampf und Magie) */
-  const aus = { geschick: W.geschick || 0, staerke: W.staerke || 0, fernAngriff: W.fernAngriff || 0, fernStaerke: W.fernStaerke || 0, genau: W.genau || 0, magieStaerke: W.magieStaerke || 0 };
+  const lade = extra.geladen && W !== FAEUSTE ? 1 + WAFFE_LADUNG_PLUS : 1, wb = (v: number | undefined) => Math.round((v || 0) * lade); /* geladene Waffe: ihre Boni × 1,1 */
+  const aus = { geschick: wb(W.geschick), staerke: wb(W.staerke), fernAngriff: wb(W.fernAngriff), fernStaerke: wb(W.fernStaerke), genau: wb(W.genau), magieStaerke: wb(W.magieStaerke) };
   const ab: Record<Art, number> = { nah: 0, fern: 0, magie: 0 }; /* Verteidigungsboni der Ausrüstung je Angriffsart */
   for (const pl of ["waffe", "kopf", "nebenhand", "brust", "beine"] as Platz[]) { /* auch die Waffe: Zweihänder und Speer haben eine kleine eigene Abwehr */ const G = angelegt[pl] && GEGENSTAENDE[angelegt[pl]!]; if (!G) continue;
     if (G.abwehr) for (const a of ["nah", "fern", "magie"] as Art[]) ab[a] += G.abwehr[a];
@@ -118,7 +124,8 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   if (W.art === "nah") { angriff.nah = wurfWert(lv.geschick + p("geschick") + 8, aus.geschick); schaden = [1, maxHit(lv.staerke, p("staerke"), aus.staerke)]; }
   else if (W.art === "fern") { angriff.fern = wurfWert(lv.fernkampf + p("fernkampf") + 8, aus.fernAngriff); schaden = [1, maxHit(lv.fernkampf, p("fernkampf"), aus.fernStaerke)]; }
   else { angriff.magie = wurfWert(lv.magie + p("magie") + 8, aus.genau); schaden = [1, maxHitMagie(lv.magie, p("magie"), aus.magieStaerke)]; }
-  return { angriff, abwehr, waffe: { art: W.art, schaden, plus, bonus: 0, ticks, takt: ticks * TICK, reich, ...(W.flug ? { flug: W.flug } : {}), ...(W.gegen ? { gegen: { ...W.gegen } } : {}), ...(W.art === "fern" ? { geschoss: angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].art === "Armbrust" ? "bolzen" as const : "pfeil" as const } : {}) }, stil: s, max: maxLp(x.lp), heldenlevel: hl, skills: { ...NULL_XP, ...x } };
+  return { angriff, abwehr, waffe: { art: W.art, schaden, plus, bonus: 0, ticks, takt: ticks * TICK, reich, ...(W.flug ? { flug: W.flug } : {}), ...(W.gegen ? { gegen: { ...W.gegen } } : {}), ...(W.art === "fern" ? { geschoss: angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].art === "Armbrust" ? "bolzen" as const : "pfeil" as const } : {}) }, stil: s, max: maxLp(x.lp), heldenlevel: hl, skills: { ...NULL_XP, ...x },
+    ...(lade > 1 ? { geladen: true } : {}), ...(extra.bemerken !== undefined && extra.bemerken !== 1 ? { bemerken: extra.bemerken } : {}), ...(() => { const S0 = aktiveSets(Object.values(angelegt))[0]; return S0 ? { set: { ...S0.heilung } } : {}; })() };
 }
 /** Schaden eines Treffers: ganzzahliger Wurf 1 … Max Hit (z = Zufall 0…1); plus ist seit der Magie-Max-Hit-Formel immer 0 */
 export function schadenWurf(w: Kampfwerte["waffe"], z: number): number { const r = w.schaden[0] + Math.floor(z * (w.schaden[1] - w.schaden[0] + 1));

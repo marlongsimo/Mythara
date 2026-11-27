@@ -23,7 +23,7 @@ export const QUEST_B1: QuestDef = {
   logAbgabe: "Der Wegstein ist geweiht. Bring ihn Agnes an der Linde.",
   logFertig: "Du hast einen Wegstein. Reib ihn im Rucksack, und er bringt dich zur Linde – eine Ladung je Reise. Laden kannst du ihn am Bindestein zwischen den Wurzeln der Linde.",
   geber: "agnes",
-  figuren: [{ id: "agnes", name: "Agnes", modell: "npcfrau3d", x: 6450.5, y: 6681.6, blick: [1, -1] }],
+  figuren: [{ id: "agnes", name: "Agnes", modell: "npc.agnes", x: 6450.5, y: 6681.6, blick: [1, -1] }],
   voraussetzungen: [
     { text: "„Die gesperrte Straße“ abgeschlossen", wenn: { quest: { id: "die_gesperrte_strasse", phase: ["fertig"] } } },
     { text: "Holzfällerei 15", wenn: { skill: { k: "holzfaellerei", min: 15 } } },
@@ -61,6 +61,11 @@ export const QUEST_B1: QuestDef = {
         { wenn: NEU, zeilen: ["Die Linde mag Gesellschaft. Aber für das, was ich dir erzählen könnte, bist du noch nicht so weit.",
           "Komm wieder, wenn du ein Beil zu führen weißt und eine Werkbank kennst."], antworten: ["was_fehlt", "tschuess"] },
         { wenn: { phase: ["fertig"], verloren: "wegstein" }, zeilen: ["Du hast ihn verloren? Ach, Kind.", "Die Linde vergisst keinen, der ihr etwas gegeben hat. Hier – ich hab noch einen gefügt."], antworten: ["neuer", "tschuess"] },
+        /* Phase 5 (#80, Konzept 5b): ab Splitterbinden 20 erzählt Agnes vom Laden einer Waffe – ein Gespräch, keine Quest */
+        { wenn: { ...FERTIG, skill: { k: "splitterbinden", min: 20 } }, zeilen: ["Du riechst nach Splittern. Nicht nach Staub – nach Licht. Du bist weiter, als ich dachte.",
+          "Eine gute Klinge kann Splitter tragen wie der Wegstein. Leg sie an den Bindestein, zwei Splitter je Ladung – oder einen und ein Seelenlicht.",
+          "Dann schlägt sie mit mehr als Eisen zu, bis die Ladung verbraucht ist. Nur seltene Waffen halten das aus. Und am Obelisk im Nordwald gibt es einen zweiten Stein, seit der alte Friedhof Ruhe hat."],
+          antworten: ["tschuess"] },
         { wenn: FERTIG, zeilen: ["Die Linde vergisst keinen, der ihr etwas gegeben hat. Sie ruft dich, wenn du sie rufst.",
           "Und wenn der Stein müde wird: zwei Splitter zwischen die Wurzeln, und er hat wieder Kraft. Der Bindestein liegt gleich hier."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, alle: true, hat: "wegstein" }, zeilen: ["Er ist warm. Ich spür's von hier.", "Gib ihn mir – nur einen Augenblick."], antworten: ["abgeben"] },
@@ -100,6 +105,7 @@ export const QUEST_B1: QuestDef = {
     ] },
   },
   schalter: { bindestein_linde: FERTIG },
+  glueckwunsch: "Die Linde vergisst keinen, der ihr etwas gegeben hat. Sie ruft dich, wenn du sie rufst.",
   belohnungText: "Belohnung: der Wegstein mit 10 Ladungen, 400 Magie-XP, Splitterbinden-XP · danach: der Bindestein an der Linde und das Wegstein-Ziel Weidenhain",
   belohnung: { xp: { magie: 400 }, berufe: { splitterbinden: 20 }, ladungen: { wegstein: 10 } },
   punkte: 1,

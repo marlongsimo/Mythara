@@ -5,7 +5,7 @@
  * Lohn: Kochen-XP, 80 Splitter, 1 Questpunkt; danach Schalter „taverne_offen“ (Herd, Kessel, Verkauf einfacher Gerichte).
  * Damit die Suppe gekocht werden kann, steht die Küche schon während der Quest offen: Schalter „taverne_kueche“ (Herd und Kessel), ab dem Annehmen.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 3b (Issue #4). Erwartete Bausteine – Kennungen siehe doku/quests/3b-bausteine.md:
+ * Im Spiel (shared/quests.ts). Als Entwurf wartete die Quest auf Phase 3b (Issue #4). Erwartete Bausteine – Kennungen siehe doku/quests/3b-bausteine.md:
  * Gegenstände brot (vorhanden), fisch_bachling_gebraten, fischsuppe; Stationen Herd und Kessel in der Taverne mit den Schaltern oben.
  */
 import type { QuestDef, Bed } from "./questbau";
@@ -25,7 +25,7 @@ export const QUEST_TAVERNE: QuestDef = {
   logAbgabe: "Hilde Krug hat alle drei Proben. Sag ihr, dass sie aufmachen kann.",
   logFertig: "Die Taverne der Waldmark hat wieder offen. Hilde Krug verkauft einfache Gerichte, und an Herd und Kessel darfst du selbst kochen.",
   geber: "hilde",
-  figuren: [{ id: "hilde", name: "Hilde Krug", modell: "npcfrau3d", x: HILDE[0], y: HILDE[1], blick: [0, 1] }],
+  figuren: [{ id: "hilde", name: "Hilde Krug", modell: "npc.hilde", x: HILDE[0], y: HILDE[1], blick: [0, 1] }],
   voraussetzungen: [{ text: "Kochen 10", wenn: { skill: { k: "kochen", min: 10 } } }],
   schritte: [
     { id: "brot", text: "Ein Brot bringen", ereignis: { art: "antwort" }, bei: "hilde", gruppe: "proben",
@@ -78,6 +78,7 @@ export const QUEST_TAVERNE: QuestDef = {
   },
   /* Küche (Herd, Kessel) ab dem Annehmen, damit die Suppe gekocht werden kann; Verkauf erst nach dem Abschluss */
   schalter: { taverne_kueche: [LAEUFT, FERTIG], taverne_offen: FERTIG },
+  glueckwunsch: "Die Taverne ist offen! Rein mit dir, ist warm drinnen.",
   belohnungText: "Belohnung: Kochen-XP, 80 Splitter · danach: die Taverne der Waldmark ist offen (Herd, Kessel, Verkauf einfacher Gerichte)",
   belohnung: { berufe: { kochen: 400 }, splitter: 80 },
   punkte: 1,

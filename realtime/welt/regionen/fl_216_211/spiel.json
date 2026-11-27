@@ -1,16 +1,238 @@
 {
  "start": [
   [
-   240.0,
-   224.0
+   240,
+   224
   ]
  ],
  "figuren": [],
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
-  "freigeben": []
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 351,
+    "y0": 44,
+    "x1": 352,
+    "y1": 45
+   },
+   {
+    "art": "rechteck",
+    "x0": 297,
+    "y0": 186,
+    "x1": 298,
+    "y1": 187
+   },
+   {
+    "art": "rechteck",
+    "x0": 293,
+    "y0": 185,
+    "x1": 294,
+    "y1": 186
+   },
+   {
+    "art": "rechteck",
+    "x0": 293,
+    "y0": 180,
+    "x1": 294,
+    "y1": 181
+   },
+   {
+    "art": "rechteck",
+    "x0": 298,
+    "y0": 181,
+    "x1": 299,
+    "y1": 182
+   },
+   {
+    "art": "rechteck",
+    "x0": 284,
+    "y0": 168,
+    "x1": 285,
+    "y1": 169
+   },
+   {
+    "art": "rechteck",
+    "x0": 279,
+    "y0": 168,
+    "x1": 280,
+    "y1": 169
+   },
+   {
+    "art": "rechteck",
+    "x0": 281,
+    "y0": 164,
+    "x1": 282,
+    "y1": 165
+   }
+  ],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 243.1,
+    "y0": 242,
+    "x1": 257.6,
+    "y1": 244.6
+   }
+  ]
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "kanal",
+   "art": "lesen",
+   "x": 158,
+   "y": 88,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Kanal aus behauenem Stein, längst ausgetrocknet. Im Sand liegen Scherben von Krügen – und frische Fußspuren."
+   }
+  },
+  {
+   "id": "lager_west",
+   "art": "lesen",
+   "x": 133,
+   "y": 104,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Lager im Kanalbett: Zelte aus Kamelhaar, ein Feuer, Kisten mit fremden Siegeln. Karawanenräuber."
+   }
+  },
+  {
+   "id": "oase",
+   "art": "lesen",
+   "x": 341,
+   "y": 54,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Oase. Am Wasser steht ein Baum, so alt, dass seine Rinde wie Stein aussieht – ein Weltenbaum."
+   }
+  },
+  {
+   "id": "glutbrunn_bank_tuer",
+   "art": "lesen",
+   "x": 248,
+   "y": 180.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Glutbrunn. Dasselbe Konto wie in der Waldmark – nur der Wechsler schwitzt mehr."
+   }
+  },
+  {
+   "id": "glutbrunn_werkstatt",
+   "art": "lesen",
+   "x": 207,
+   "y": 202.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkstatt von Glutbrunn: Esse, Werkbank und ein Herd, auf dem Glutwels mit Salzkruste gart."
+   }
+  },
+  {
+   "id": "badehaus",
+   "art": "lesen",
+   "x": 264,
+   "y": 223,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Badehaus. Warmes Wasser aus der Tiefe, Dampf und Klatsch aus allen Ländern."
+   }
+  },
+  {
+   "id": "karawanenrast",
+   "art": "lesen",
+   "x": 232,
+   "y": 216.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Karawanenrast: Zelte, Kisten, Kamelglocken. Hier hört man, was im Süden los ist."
+   }
+  },
+  {
+   "id": "glutbrunn_wegstein",
+   "art": "lesen",
+   "x": 256.5,
+   "y": 196.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Wegstein von Glutbrunn."
+   }
+  },
+  {
+   "id": "glutbrunn_bindestein",
+   "art": "lesen",
+   "x": 263.5,
+   "y": 196.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Bindestein am Brunnen."
+   }
+  },
+  {
+   "id": "glutbrunn",
+   "art": "lesen",
+   "x": 248,
+   "y": 200,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Glutbrunn. Palmen, Lehm und Stein, und über allem der Geruch von Fisch und Gewürzen."
+   }
+  },
+  {
+   "id": "hafenmole",
+   "art": "lesen",
+   "x": 249,
+   "y": 241.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Hafenmole. Flache Boote liegen im Schlamm; stromab geht es zum Meer – irgendwann."
+   }
+  },
+  {
+   "id": "fischplatz_strom",
+   "art": "lesen",
+   "x": 200.5,
+   "y": 234.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Fischplatz am Strom. Im braunen Wasser zieht ein Glutwels seine Kreise."
+   }
+  },
+  {
+   "id": "wegweiser_glutbrunn_west_lesen",
+   "x": 196,
+   "y": 183.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Glutbrunn → · Nach Ostufer ↖ · Nach Graufurt ←",
+    "ziele": [
+     "Nach Glutbrunn →",
+     "Nach Ostufer ↖",
+     "Nach Graufurt ←"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  }
+ ],
+ "senken": [
+  {
+   "x": 282,
+   "y": 167.3,
+   "r": 5,
+   "tiefe": 1.1
+  }
+ ]
 }

@@ -39,7 +39,7 @@ function zuletzt(z: string | null): string {
 /** Inhalt des Tabs */
 export function freundeHtml(mitte = false): string {
   const on = status.filter((f) => f.online).length, zahl = geladen ? `${on} von ${status.length} online` : "wird geladen …";
-  const kopf = mitte ? `<h2>Freunde</h2><div class="zier"></div><p class="klein fzahl">${zahl}</p>` : `<div class="kopf gross"><b>Freunde</b><small>${zahl}</small></div>`;
+  const kopf = mitte ? `<div class="fkopf"><h2>Freunde</h2><small>${zahl}</small></div>` : `<div class="kopf gross"><b>Freunde</b><small>${zahl}</small></div>`;
   if (fehler && !meine) return kopf + `<div class="tleer"><p>${esc(fehler)}</p></div>`;
   const an = meine ? meine.an_mich : [], von = meine ? meine.von_mir : [];
   const anfragen = an.length ? `<div class="fanfragen">${an.map((p) => `<div class="fanfrage"><span><b>${esc(p.handle)}</b><small>möchte dein Freund sein</small></span><button type="button" class="ja" data-fja="${esc(p.handle)}">Annehmen</button><button type="button" class="nein" data-fnein="${esc(p.handle)}">Ablehnen</button></div>`).join("")}</div>` : "";

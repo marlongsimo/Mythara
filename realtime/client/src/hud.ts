@@ -176,14 +176,14 @@ export function menueTafel(zu: () => void) {
   const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc, true);
   f.innerHTML = `<div class="tafel menue"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>
     <h2>Einstellungen</h2><div class="zier"></div>
-    <div class="einst">
+    <div class="espalten"><div class="einst">
       <button type="button" data-t="drops" class="schalter${dropsAn() ? " an" : ""}" role="switch" aria-checked="${dropsAn()}"><span>XP-Drops anzeigen</span><i class="regler"></i></button>
       <button type="button" data-t="daecher" class="schalter${daecherAus() ? " an" : ""}" role="switch" aria-checked="${daecherAus()}"><span>Dächer immer ausblenden</span><i class="regler"></i></button>
       <button type="button" data-t="musik" class="schalter${musikAus() ? "" : " an"}" role="switch" aria-checked="${!musikAus()}"><span>Musik</span><i class="regler"></i></button>
-    </div>
+    </div><div class="erechts">
     <button type="button" class="weltknopf" data-t="welt"><span>Welt</span><b>Riftmere 1</b><i>›</i></button>
     <button type="button" class="weltknopf" data-t="blockiert"><span>Blockierte Spieler</span><b>${blockierteNamen().length}</b><i>›</i></button>
-    ${n ? `<button type="button" class="abmelden" data-t="ab">Abmelden <small>${n}</small></button>` : `<button type="button" class="abmelden" data-t="hin">Anmelden</button>`}
+    ${n ? `<button type="button" class="abmelden" data-t="ab">Abmelden <small>${n}</small></button>` : `<button type="button" class="abmelden" data-t="hin">Anmelden</button>`}</div></div>
     <p class="klein">Riftmere · <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> · <a href="impressum.html" target="_blank" rel="noopener">Impressum</a></p></div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
   f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f) { schliessen(); return; } if (!t) return; const w = t.dataset.t;
@@ -215,11 +215,13 @@ const WELTEN = [{ id: "beta", name: "Riftmere 1" }];
 const aktuelleWelt = (): string => { try { return localStorage.getItem("rift_welt") || "beta"; } catch { return "beta"; } };
 function weltenFenster(tafel: HTMLElement): void {
   const alt = tafel.innerHTML; const jetzt = aktuelleWelt(); let zahlen: Record<string, number> = {};
+  let gezeichnet = ""; /* nur neu zeichnen, wenn sich etwas ändert: sonst ersetzt der Sekundentakt die Knöpfe zwischen Drücken und Loslassen, der Tipp geht verloren (#109) */
   const zeichnen = () => { const warten = wechselWarten();
-    tafel.innerHTML = `<i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-w="zurueck" aria-label="Zurück">‹</button>
+    const html = `<i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-w="zurueck" aria-label="Zurück">‹</button>
       <h2>Welt wechseln</h2><div class="zier"></div>
       <ul class="weltliste">${WELTEN.map((W) => `<li><button type="button" class="weltzeile${W.id === jetzt ? " an" : ""}" data-welt="${W.id}" ${W.id === jetzt ? 'aria-current="true"' : ""}><span class="punkt"></span><b>${W.name}</b><small>${zahlen[W.id] !== undefined ? zahlen[W.id] + " online" : "… online"}</small>${W.id === jetzt ? '<em>aktuell</em>' : `<em class="wechsel">Wechseln</em>`}</button></li>`).join("")}</ul>
-      <p class="klein weltnote">${warten > 0 ? `Im Kampf: wechseln erst in ${warten} s.` : WELTEN.length === 1 ? "Weitere Welten folgen. Dein Konto, Held, Inventar und Quests gelten in jeder Welt." : "Dein Konto, Held, Inventar und Quests gelten in jeder Welt."}</p>`; };
+      <p class="klein weltnote">${warten > 0 ? `Im Kampf: wechseln erst in ${warten} s.` : WELTEN.length === 1 ? "Weitere Welten folgen. Dein Konto, Held, Inventar und Quests gelten in jeder Welt." : "Dein Konto, Held, Inventar und Quests gelten in jeder Welt."}</p>`;
+    if (html !== gezeichnet || !tafel.querySelector(".weltliste")) { tafel.innerHTML = html; gezeichnet = html; } };
   zeichnen();
   const uhr = window.setInterval(() => { if (!tafel.isConnected || !tafel.querySelector(".weltliste")) { clearInterval(uhr); return; } zeichnen(); }, 1000);
   fetch(serverAdresse().replace(/^ws/, "http").replace(/\/$/, "") + "/").then((r) => r.json()).then((d: { welten?: { id: string; online: number }[] }) => { for (const x of d.welten || []) zahlen[x.id] = x.online; if (tafel.querySelector(".weltliste")) zeichnen(); }).catch(() => { zahlen = {}; });

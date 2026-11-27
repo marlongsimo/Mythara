@@ -5,6 +5,7 @@
  *   · Aktiver Moment (Kernschlag / Riss): die Adern glühen hell – das Ziel schnell antippen.
  *   · Leer (gefällt / erschöpft) ist ein Ziel für alle, bis es nachwächst. Die Felder der Ziele sperrt das Gehraster (werkzeug/welt/lichtungen.mjs).
  */
+import { arbeitMelden } from "../arbeit";
 import * as THREE from "three";
 import { gltfLader } from "./gltf";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
@@ -82,14 +83,15 @@ export class SammelWelt {
     const E = this.E, a = m.id ? this.alle.get(m.id) : undefined, D = a ? E.def(a.z.art) : null, art = D ? artikel(D.weiblich) : artikel(true), f = this.figur;
     if (m.tat === "start") { this.aktiv = m.id || null; this.werkzeug = E.werkzeugStandard ? E.werkzeugUrl(m.werkzeug || E.werkzeugStandard) : ""; if (D) chatSystem(E.texte.start(D, art));
       this.angelUrl = E.angelnMit && m.werkzeug === E.angelnMit ? E.werkzeugUrl(E.angelnMit) : "";
-      if (this.angelUrl && f && a) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); if (!f.angeln || !f.angeln(this.angelUrl, "auswerfen")) this.angelUrl = ""; } }
+      if (this.angelUrl && f && a) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); if (!f.angeln || !f.angeln(this.angelUrl, "auswerfen")) this.angelUrl = ""; }
+      if (this.angelUrl && a) arbeitMelden({ a: "angeln", u: this.angelUrl, x: a.z.x, y: a.z.y }); } /* #67: die anderen sehen es */
     else if (m.tat === "hieb" && this.angelUrl) { /* angeln: die Rute bleibt draußen, kein Schlag */ }
-    else if (m.tat === "hieb" && a && f) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); if (this.werkzeug) f.beilHieb(this.werkzeug, E.clip); this.spaene(a); } /* ohne Werkzeug (Pflücken): nur hinschauen */
-    else if (m.tat === E.tatErtrag) { const mom = Boolean(m[E.tatMoment]); if (this.angelUrl && f && f.angeln) f.angeln(this.angelUrl, "einholen");
+    else if (m.tat === "hieb" && a && f) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); if (this.werkzeug) { f.beilHieb(this.werkzeug, E.clip); arbeitMelden({ a: "hieb", u: this.werkzeug, ...(E.clip ? { c: E.clip } : {}), x: a.z.x, y: a.z.y }); } this.spaene(a); } /* ohne Werkzeug (Pflücken): nur hinschauen */
+    else if (m.tat === E.tatErtrag) { const mom = Boolean(m[E.tatMoment]); if (this.angelUrl && f && f.angeln) f.angeln(this.angelUrl, "einholen"); if (this.angelUrl && a) arbeitMelden({ a: "angeln", u: this.angelUrl, x: a.z.x, y: a.z.y });
       chatSystem(`Du bekommst ${(m.n || 1) > 1 ? m.n + " × " : ""}${m.name || E.texte.einStueck}${mom ? ` – ${E.texte.momentKnopf}` : "."}${m.splitter ? ` Dazu ${m.splitter} Splitter.` : ""}`);
       berufDrop(E.beruf, m.xp || 0); if (m.aufstieg) chatSystem(`Glückwunsch! ${E.berufName} ist jetzt Level ${m.aufstieg}.`); /* Banner oben: skills.ts stufenPruefen */ }
     else if (m.tat === E.tatMoment && a) { this.moment = { id: a.z.id, bis: performance.now() + (m.ms || 1500) }; this.hinweis(E.texte.moment, m.ms || 1500); }
-    else if (m.tat === "stop") { if (this.aktiv === m.id) this.aktiv = null; this.moment = null; this.angelUrl = ""; if (f) f.beilWeg();
+    else if (m.tat === "stop") { if (this.aktiv === m.id) this.aktiv = null; this.moment = null; this.angelUrl = ""; if (f) f.beilWeg(); arbeitMelden(null);
       if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === "koeder") chatSystem("Deine Würmer sind alle. Neue gräbst du auf dem Acker im Osthof."); else if (m.grund === E.grundLeer && D) chatSystem(E.texte.leer(D, art)); }
     else if (m.tat === "nein") { chatSystem(m.text || "Das geht hier nicht."); if (this.aktiv === m.id) this.aktiv = null; } }
   private hinweis(text: string, ms: number) { const el = document.getElementById("ez-dorf-hilfe"); if (!el) return; el.textContent = text; el.style.display = ""; setTimeout(() => { if (el.textContent === text) { el.textContent = ""; el.style.display = "none"; } }, ms); }

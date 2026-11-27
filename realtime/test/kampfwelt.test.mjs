@@ -18,14 +18,14 @@ const typen = {}; for (const w of gegner()) typen[w.typ] = (typen[w.typ] || 0) +
 check(gegner().length === KARTEN.welt.lager.length && gegner().length >= 30, `Alle Lager in einer Simulation: ${gegner().length} Gegner (${Object.entries(typen).map(([t, n]) => n + " " + t).join(", ")})`);
 const welt = (w) => ({ x: WELTZONE.x0 + w.x, y: WELTZONE.y0 + w.y });
 const imGebiet = (w, r) => weltRegionBei(welt(w).x, welt(w).y) === r;
-check(gegner().filter((w) => w.typ === "bandit_dolch" && imGebiet(w, "waldweg")).length === 4, "Vier Dolch-Banditen auf der Lichtung im Kreuzwald");
+check(gegner().filter((w) => w.typ === "bandit_dolch" && imGebiet(w, "waldweg")).length >= 4, "Mindestens vier Dolch-Banditen im Kreuzwald (die Lichtung, dazu Gegnerplätze #130)");
 check(gegner().filter((w) => w.typ === "kuh").every((w) => imGebiet(w, "osthof")), "Die Kühe stehen im Osthof");
-check(gegner().filter((w) => w.typ === "waldgolem").every((w) => imGebiet(w, "nordwald") && w.lagerAggro === 4 && w.lagerLeine === 10), "Waldgolems im Nordwald mit Aggro 4 und Leine 10 (Werte ihres Gebiets)");
-check(gegner().filter((w) => w.typ === "mooshocker").every((w) => w.lagerAggro === 0 && w.lagerLeine === 8 && w.lagerWandern === 2), "Mooshocker im Osthof: passiv (Aggro 0), Leine 8, Streifen 2");
+check(gegner().filter((w) => w.typ === "waldgolem" && imGebiet(w, "nordwald")).length >= 1 && gegner().filter((w) => w.typ === "waldgolem" && imGebiet(w, "nordwald")).every((w) => w.lagerAggro === 4 && w.lagerLeine === 10), "Waldgolems im Nordwald mit Aggro 4 und Leine 10 (Werte ihres Gebiets)");
+check(gegner().filter((w) => w.typ === "mooshocker" && imGebiet(w, "osthof")).every((w) => w.lagerAggro === 0 && w.lagerLeine === 8 && w.lagerWandern === 2), "Mooshocker im Osthof: passiv (Aggro 0), Leine 8, Streifen 2");
 check(gegner().filter((w) => imGebiet(w, "unterschlupf")).every((w) => w.lagerStufe === 4), "Banditen im Unterschlupf mit Stufe 4 (Splitter wie bisher)");
 check(new Set(gegner().map((w) => w.gruppe)).size === gegner().length, "Jedes Lager hat eine eigene Gruppe (keine Verwechslung über Gebiete hinweg)");
 { const M = KARTEN.welt.mehrkampf; const u = gegner().filter((w) => imGebiet(w, "unterschlupf")).map(welt);
-  check(M.length === 1 && u.some((p) => p.x - WELTZONE.x0 >= M[0][0] && p.x - WELTZONE.x0 <= M[0][2] && p.y - WELTZONE.y0 >= M[0][1] && p.y - WELTZONE.y0 <= M[0][3]), "Die Mehrkampf-Halle des Unterschlupfs liegt in Weltfeldern an der richtigen Stelle"); }
+  check(M.length >= 1 && M.some((m) => u.some((p) => p.x - WELTZONE.x0 >= m[0] && p.x - WELTZONE.x0 <= m[2] && p.y - WELTZONE.y0 >= m[1] && p.y - WELTZONE.y0 <= m[3])), "Die Mehrkampf-Halle des Unterschlupfs liegt in Weltfeldern an der richtigen Stelle (dazu die öffentlichen Boss-Räume, #116)"); }
 check(weltRegionBei(6440, 6400) === "waldmark" && weltRegionBei(6544, 6578) === "waldweg" && weltRegionBei(6530, 6410) === "osthof", "Region nach Weltfeld: Waldmark, Kreuzwald, Osthof");
 
 /* Ein Held geht aus der Waldmark durchs Südtor in den Kreuzwald – in derselben Simulation */

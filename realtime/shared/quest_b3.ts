@@ -5,8 +5,8 @@
  * die gestohlenen Kisten an der verlassenen Hütte – ab hier ist die Leiter in den Unterschlupf offen –, Kisten zu Gisbert, Othmar liest den Brief.
  * Lohn: Fernkampf 500, Geschick 300, LP 200, 10 Äpfel, 120 Splitter, 1 Questpunkt. Danach verkauft Gisbert Äpfel.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Issue #15 (Gegner bandit_spaeher, bedingte Beute b3_karrenbrief, Gegenstände, Schalter)
- * und darauf, dass eine Figur in mehreren Quests sprechen kann (Othmar gehört heute Quest 1). Liste: doku/quests/b3-b4-bausteine.md.
+ * Im Spiel (shared/quests.ts). Als Entwurf wartete die Quest auf Issue #15 (Gegner bandit_spaeher, bedingte Beute b3_karrenbrief, Gegenstände, Schalter)
+ * Othmar spricht in Quest 1, B3 und B4 (Figur in mehreren Quests, questbau.figurQuest, #48). Liste: doku/quests/b3-b4-bausteine.md.
  * Orte: Issue #21 (Welt, 81778e67).
  */
 import type { QuestDef, Bed } from "./questbau";
@@ -110,9 +110,10 @@ export const QUEST_B3: QuestDef = {
       ],
     },
   },
-  /* Karrenbrief: fällt nur, solange er noch fehlt; beim fünften Späher garantiert (Rolle Spiel: chance 100 ab Zähler 4) */
-  beute: { b3_karrenbrief: { erledigt: SP, offen: ["brief"] } },
+  /* Karrenbrief: fällt garantiert beim fünften Späher (ab Zähler 4), nur solange er noch fehlt */
+  beute: { b3_karrenbrief: { erledigt: SP, offen: ["brief"], zaehler: { schritt: "spaeher", min: 4 } } },
   schalter: { leiter_unterschlupf: [FERTIG, { erledigt: ["kisten"] }], gisbert_aepfel: FERTIG },
+  glueckwunsch: "Die Kisten sind zurück und die Späher fort. Gisbert lacht wieder. Ich noch nicht.",
   belohnungText: "Belohnung: Fernkampf 500, Geschick 300, LP 200 XP, 10 Äpfel, 120 Splitter · danach: Gisbert Ast verkauft Äpfel",
   belohnung: { xp: { fernkampf: 500, geschick: 300, lp: 200 }, splitter: 120, gegenstaende: [{ g: "apfel", n: 10 }] },
   punkte: 1,

@@ -40,7 +40,10 @@ const sende = (s, m) => s.ws.send(JSON.stringify(m)), schlaf = (ms) => new Promi
 const anzahl = (s, g) => (s.inv.rucksack || []).reduce((n, x) => n + ((typeof x === "string" ? x : x.g) === g ? (typeof x === "string" ? 1 : x.n) : 0), 0);
 const stelle = async (s, x, y) => { sende(s, { t: "pos", x: 0, y: 0, wx: x, wy: y }); await schlaf(150); };
 const rede = async (s) => { sende(s, { t: "rede", npc: "foerster" }); return warte(s, (m) => m.t === "dialog"); };
-const sag = async (s, a) => { sende(s, { t: "antwort", npc: "foerster", a }); return warte(s, (m) => m.t === "dialog"); };
+const sag = async (s, a) => { sende(s, { t: "antwort", npc: "foerster", a }); const d = await warte(s, (m) => m.t === "dialog");
+  /* #77: abgeschlossen – der Lohn wartet aufs Abholen („Okay“ im Abschlussfenster); hier gleich abholen, Lohn wie früher an der Antwort */
+  if (d && d.abholen) { sende(s, { t: "abholen", id: d.abholen }); const g = await warte(s, (m) => m.t === "abgeholt"); if (g) Object.assign(d, { belohnung: g.belohnung, splitter: g.splitter, punkte: g.punkte, amBoden: d.amBoden || Boolean(g.amBoden) }); if (g && g.amBoden) d.zeilen = [...(d.zeilen || []), { wer: "", text: `(Dein Rucksack ist voll – ${g.amBoden} liegen am Boden.)` }]; }
+  return d; };
 const start = async (s, t, msg) => { s[t] = []; sende(s, { t, tat: "start", ...msg }); return (await warte(s, (m) => m.t === t && (m.tat === "nein" || m.tat === "start"))) || {}; };
 const ende = async (s, t, ms = 30000) => s[t].find((m) => m.tat === "stop") || warte(s, (m) => m.t === t && m.tat === "stop", ms);
 const FOERSTER = [6362.5, 6452.5], BAUM = [6350.5, 6442.5], STEIN = [6370.5, 6440.5], AMBOSS = [6470.4, 6427.6], ESSE = [6467.4, 6427.8];

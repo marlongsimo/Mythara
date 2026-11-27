@@ -8,6 +8,7 @@
  * Positionen gehen relativ zur Region an den Server (Bildpunkte, wie seine Prüfung sie erwartet); der Server bleibt unverändert.
  */
 
+import { fremdeArbeit } from "../arbeit";
 import { SPIEL_SYMBOLE, SPIEL_SYMBOL_NAMEN } from "../../../shared/kartensymbole";
 import { eigenesLevel } from "../skills";
 import { WELT, Welt, weltDatei } from "./welt";
@@ -32,8 +33,9 @@ import { freundeTafel } from "../freunde";
 import { epAlle } from "../halle";
 import type Phaser from "phaser";
 import { serverZusatz } from "../gruppe";
-import { WeltKampf, WeltSzene, tastenFuellen } from "./kampf";
+import { WeltKampf, WeltSzene, tastenFuellen, karteRahmen } from "./kampf";
 import { WELTZONEN } from "../../../shared/karten";
+import ORTSNAMEN from "../../../welt/ortsnamen.json"; /* Ortsnamen der Weltkarte (#90, Worldbuilding) */
 import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
 
@@ -55,7 +57,7 @@ export interface WeltKern { gesperrt: boolean; hier: string; held: string; ort: 
   mitspielerNeu?(o: { versatz: { x: number; y: number }; karte: { breit: number; hoch: number } }): MitArt; eigeneBlase?(text: string): void; seit?(): number; versetzen?(x: number, y: number): void; blick?(): number;
   /** eigener Kampf (3D-Darstellung) */ kampfNeu?(region: string, wx: number, wy: number, gefallen: () => void, wartend: boolean): WeltKampf }
 /** Darstellung der Mitspieler (2D: welt.ts Mitspieler, 3D: welt3d/mitspieler.ts) */
-export interface MitArt { liste(l: Fremder[]): void; weg(id: number): void; blase(id: number, text: string): void; schritt(dt: number): void; unterPunkt?(px: number, py: number): Fremder | null }
+export interface MitArt { liste(l: Fremder[]): void; weg(id: number): void; blase(id: number, text: string): void; schritt(dt: number): void; unterPunkt?(px: number, py: number): Fremder | null; /** Folgen: Stelle eines Mitspielers (Weltfelder) nach Namen */ ortVon?(name: string): { x: number; y: number } | null }
 /** Tafeln öffnen; die Welt steht still, solange eine offen ist */
 function tafel(s: WeltKern, f: (zu: () => void) => void) { if (s.gesperrt) return; s.halt(); s.gesperrt = true; f(() => { s.gesperrt = false; }); }
 export function oeffne(art: string, s: WeltKern) {
@@ -184,7 +186,7 @@ function onlineZeigen() { const z = document.querySelector("#ez-oben-knoepfe .za
 
 /** Minikarte für die Region, in der man steht: Maßstab und die Karten der Nachbarregionen rundherum */
 function karteRegion(s: WeltKern, id: string, ux: number, uy: number, b: number, h: number) {
-  region = { id, x: ux * CHUNK_PX, y: uy * CHUNK_PX, b: b * CHUNK_PX, h: h * CHUNK_PX };
+  region = { id, x: ux * CHUNK_PX, y: uy * CHUNK_PX, b: b * CHUNK_PX, h: h * CHUNK_PX }; karteRahmen({ x0: region.x / FELD_PX, y0: region.y / FELD_PX, b: region.b / FELD_PX, h: region.h / FELD_PX }); /* Gegnerpunkte des Kampfs relativ zu dieser Karte (#97) */
   zoomJetzt = Math.max(2.2, b * CHUNK_PX / FELD_PX / 40); karteZoom(zoomJetzt);
   /* Nachbarregionen auf der Minimap: ihre Karten an der richtigen Stelle um die aktuelle – der Kreis zeigt die Welt ohne Lücke */
   { const k = document.getElementById("ez-karte"), idx = (s as unknown as { index?: { regionen: Record<string, { region: { id: string; ursprung: number[]; chunks: number[] } }> } }).index;
@@ -200,16 +202,16 @@ function regionBetreten(s: WeltKern, id: string, ux: number, uy: number, b: numb
   karteRegion(s, id, ux, uy, b, h);
   mit = s.mitspielerNeu ? s.mitspielerNeu({ versatz: { x: region.x, y: region.y }, karte: { breit: region.b, hoch: region.h } }) : new Mitspieler(s as unknown as Welt, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
   (s as unknown as { mit: MitArt | null }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
-  weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(WELTZONEN[id] && freigabe("suedtor") ? [] : l); onlineZeigen(); }, /* in der Kampfwelt zeigt der Kampf die anderen Helden (vor dem Südtor gibt es keinen Kampf: dann die Welt) */ fort: (i) => { if (mit) mit.weg(i); },
+  weltBetreten(id, { spieler: (l) => { fremdeArbeit(l); /* #67: auch für die Helden im Kampfgebiet */ if (mit) mit.liste(WELTZONEN[id] && freigabe("suedtor") ? [] : l); onlineZeigen(); }, /* in der Kampfwelt zeigt der Kampf die anderen Helden (vor dem Südtor gibt es keinen Kampf: dann die Welt) */ fort: (i) => { if (mit) mit.weg(i); },
     ich: (i) => { if (i.held !== s.held) { location.reload(); return; } serverStelle(s, i.pos); },
-    blase: (i, text) => { const ich = weltIch(); if (ich && i === ich.id) { if (s.eigeneBlase) s.eigeneBlase(text); else { const w = s as unknown as Welt; sprechblase(w, () => (w.figur && w.figur.active ? { x: w.figur.x, y: w.figur.y - HELD_PX - 30 } : null), text); } } else if (mit) mit.blase(i, text); } });
+    blase: (i, text, von) => { const ich = weltIch(); if (ich && i === ich.id) { if (s.eigeneBlase) s.eigeneBlase(text); else { const w = s as unknown as Welt; sprechblase(w, () => (w.figur && w.figur.active ? { x: w.figur.x, y: w.figur.y - HELD_PX - 30 } : null), text); } } else { const k = kampf as unknown as { blaseHeld?: (n: string, t: string) => boolean } | null; if (!(von && k && k.blaseHeld && k.blaseHeld(von, text)) && mit) mit.blase(i, text); } } }); /* in der Kampfwelt zeigt der Kampf die anderen Helden: die Blase dort (#68) */
 }
 
 /** Die Übersichtskarte öffnen: Regionen aus dem Weltindex (gesperrte sind dort schon entfernt), die eigene Stelle läuft mit */
 function karteZeigen(s: WeltKern) {
   const idx = (s as unknown as { index?: { chunkFelder: number; regionen: Record<string, { region: { id: string; name: string; ursprung: number[]; chunks: number[] } }> } }).index; if (!idx) return;
   uebersicht({ daten: WELT.daten, stand: WELT.stand, chunkFelder: idx.chunkFelder || 32, symbolNamen: { ...SPIEL_SYMBOL_NAMEN, ...((idx as unknown as { kartensymbole?: Record<string, string> }).kartensymbole || {}) }, symbolBild: WELT.bild + "img/karte/symbole/", regionen: Object.values(idx.regionen).map((r) => ({ ...r.region, symbole: [...((r as unknown as { symbole?: { s: string; x: number; y: number }[] }).symbole || []), ...SPIEL_SYMBOLE.filter((q) => q.region === r.region.id)] })).filter((R) => !WELT.gesperrteRegionen.includes(R.id) && !(R as { ebene?: string }).ebene),
-    ich: () => (s.ort ? { x: s.ort.x, y: s.ort.y } : null), hier: () => s.hier });
+    ich: () => (s.ort ? { x: s.ort.x, y: s.ort.y } : null), hier: () => s.hier, namen: ORTSNAMEN });
 }
 
 /** Menüs, runde Karte mit Knöpfen, Tasten und die Knöpfe oben – für die 2D- und die 3D-Welt */
@@ -240,8 +242,17 @@ addEventListener("ez-wegstein", (e) => { const m = (e as CustomEvent).detail as 
   if (!m.ok || typeof m.x !== "number" || typeof m.y !== "number") { chatSystem(m.text || "Der Stein bleibt kalt."); return; }
   const s = zuFreundS, w = s as unknown as { springen?: (x: number, y: number) => void } | null; if (!s || !w || !w.springen) return;
   (document.querySelector("#ez-konto .tafel .schliessen") as HTMLElement | null)?.click();
-  chatSystem(`Du reibst den Wegstein … er bringt dich nach ${m.name || "Hause"}. (${m.ladungen ?? 0} Ladung${m.ladungen === 1 ? "" : "en"} übrig)`);
+  chatSystem((m as { reisekarte?: boolean }).reisekarte ? `Die Reisekarte bringt dich nach ${m.name || "Hause"} – der freie Sprung für heute ist verbraucht.` : `Du reibst den Wegstein … er bringt dich nach ${m.name || "Hause"}. (${m.ladungen ?? 0} Ladung${m.ladungen === 1 ? "" : "en"} übrig)`);
   const x = m.x, y = m.y, ms = s.teleportAbreise(); setTimeout(() => w.springen!(x, y), Math.max(0, ms - 250)); });
+/* Fähre (#49): kurze Überfahrt (Blende mit Text), dann springt der Held ans andere Ufer – die Stelle hat der Server schon gesetzt */
+addEventListener("ez-faehre", (e) => { const m = (e as CustomEvent).detail as { ok?: boolean; text?: string; von?: string; nach?: string; x?: number; y?: number; dauer?: number };
+  if (!m.ok || typeof m.x !== "number" || typeof m.y !== "number") { chatSystem(m.text || "Die Fähre legt nicht ab."); return; }
+  const s = zuFreundS, w = s as unknown as { springen?: (x: number, y: number) => void } | null; if (!s || !w || !w.springen) return;
+  const x = m.x, y = m.y, ms = Math.max(1000, (m.dauer || 3) * 1000); chatSystem(`Die Fähre legt ab – hinüber zum ${m.nach || "anderen Ufer"} …`);
+  const b = document.createElement("div"); b.className = "ez-ueberfahrt"; b.textContent = `Überfahrt zum ${m.nach || "anderen Ufer"} …`;
+  b.style.cssText = "position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(10,18,28,.0);color:#e8eef5;font:600 20px/1.4 system-ui,sans-serif;transition:background .6s;pointer-events:none";
+  document.body.appendChild(b); requestAnimationFrame(() => { b.style.background = "rgba(10,18,28,.92)"; });
+  setTimeout(() => w.springen!(x, y), ms - 400); setTimeout(() => { b.style.background = "rgba(10,18,28,0)"; b.textContent = ""; setTimeout(() => b.remove(), 700); }, ms); });
 function menue3D(s: WeltKern) { zuFreundS = s;
     const rucksack = () => { if (!seitenTab("rucksack")) tafel(s, (zu) => taschenTafel("rucksack", s.held, zu, true)); }, ausruestung = () => { if (!seitenTab("ausruestung")) tafel(s, (zu) => taschenTafel("ausruestung", s.held, zu, true)); }; /* mit eigenem Held: Tabs neben der Leiste */
     const knoepfe: RKnopf[] = [{ name: "Karte", zeichen: "karte", taste: "K", tat: () => karteZeigen(s) }, { name: "Sprint", zeichen: "sprint", taste: "Umschalt", tat: () => { const w = s as unknown as { sprint?: () => void }; if (w.sprint) w.sprint(); else chatSystem("Sprinten geht in der 3D-Welt."); } }];
@@ -286,16 +297,23 @@ export const anschluss3D = {
   /** Kampfgebiet: true = der Server bewegt den Helden (wie WELT.fremd in der 2D-Welt) */
   fremd: (s: WeltKern, rx: number, ry: number): boolean => fremd(s, rx, ry),
   /** Antippen eines Bodenpunkts (Weltfelder) im Kampf: ein Gegner wird zum Ziel. true = erledigt */
+  /** Einen bestimmten Gegner angreifen (Aktionsmenü: er kann seit dem Öffnen weitergelaufen sein) */
+  kampfZiel: (id: number): void => { if (kampf && kampf.bereit && kampf.netz) kampf.netz.sende({ t: "ziel", id }); },
   kampfAntippen: (wx: number, wy: number): boolean => Boolean(kampf && kampf.bereit && kampf.antippen(wx, wy)),
   /** Bildschirm statt Boden: die ganze Figur (auch Kopf und Oberkörper) zählt */
   kampfAntippenSchirm: (px: number, py: number): boolean => { const k = kampf as unknown as { bereit?: boolean; antippenSchirm?: (x: number, y: number) => boolean } | null; return Boolean(k && k.bereit && k.antippenSchirm && k.antippenSchirm(px, py)); },
   kampfAmSchirm: (px: number, py: number): { id: number; held: boolean; team: number; name: string; stufe: number; a?: unknown; typ?: string } | null => { const k = kampf as unknown as { bereit?: boolean; amSchirm?: (x: number, y: number) => ReturnType<NonNullable<typeof k>["amSchirm"] & ((...a: never[]) => unknown)> } | null; return k && k.bereit && k.amSchirm ? (k.amSchirm(px, py) as never) : null; },
   /** Aktionsmenü: Gegner an der Weltstelle, Mitspieler unter dem Bildschirmpunkt, dessen Karte */
-  kampfZielBei: (wx: number, wy: number): { name: string } | null => (kampf && kampf.bereit ? kampf.zielBei(wx, wy) : null),
+  kampfZielBei: (wx: number, wy: number): { name: string; stufe: number } | null => (kampf && kampf.bereit ? kampf.zielBei(wx, wy) : null),
   /** Mitspieler am Bildschirmpunkt: in der freien Welt die Mitspieler, im Kampfgebiet die anderen Helden der Zone (dann ohne Welt-Id: Flüstern per Name) */
   spielerBei: (px: number, py: number): Fremder | null => { const d = mit && mit.unterPunkt ? mit.unterPunkt(px, py) : null; if (d) return d;
     const k = kampf as unknown as { bereit?: boolean; amSchirm?: (x: number, y: number) => { held: boolean; name: string; stufe: number; a?: unknown } | null } | null, t = k && k.bereit && k.amSchirm ? k.amSchirm(px, py) : null;
     return t && t.held ? { i: 0, n: t.name, h: "schildwaechter", s: t.stufe, x: 0, y: 0, b: 0, l: 0, ...(t.a ? { a: t.a as Fremder["a"] } : {}) } : null; },
+  /** Folgen (#54): wo steht dieser Spieler gerade (Weltfelder)? Erst die Mitspieler der Welt, sonst die Helden des Kampfgebiets – null: nicht hier */
+  spielerOrt: (name: string): { x: number; y: number } | null => { const a = mit && mit.ortVon ? mit.ortVon(name) : null; if (a) return a; const k = kampf as unknown as { bereit?: boolean; heldOrt?: (n: string) => { x: number; y: number } | null } | null; return k && k.bereit && k.heldOrt ? k.heldOrt(name) : null; },
+  /** #67, für Prüfungen: welche Arbeit der Held mit diesem Namen im Kampfgebiet gerade zeigt */
+  /** #139: hat die Kampfwelt die erste Lage vom Server (null: kein Kampf verbunden) */ kampfBereit: (): boolean | null => (kampf ? kampf.bereit : null),
+  kampfArbeitZeigt: (name: string): string => { const k = kampf as unknown as { arbeitZeigt?: (n: string) => string } | null; return k && k.arbeitZeigt ? k.arbeitZeigt(name) : ""; },
   spielerKarteZeigen: (s: WeltKern, d: Fremder): void => { tafel(s, (zu) => spielerKarte(d, zu)); },
   /** Versetzen (Untergrund): der Kampf der alten Stelle endet */
   springen: () => kampfVersetzt(),
