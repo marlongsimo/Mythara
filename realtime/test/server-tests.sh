@@ -58,6 +58,7 @@ TESTS=(
   welt-waldmark
   waldweg
   welt-bau
+  welt-dreh
   welt-daten
   welt-grenzen
   welt-raster
@@ -80,6 +81,8 @@ TESTS=(
   gegnerlast
   gegner-vorbereitet
   streifgebiete
+  belohnung-wahl
+  bergwerk-welt
 )
 [ $# -gt 0 ] && TESTS=("$@")
 
