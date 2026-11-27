@@ -1028,6 +1028,116 @@
    ],
    "einzeln": true,
    "ohneWeg": true
+  },
+  {
+   "name": "Bergwald unter Steinhag",
+   "ort": "steinhag",
+   "baeume": [
+    {
+     "id": "bergwald_unter_steinhag_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7050.5,
+     "y": 5869.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "bergwald_unter_steinhag_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7046.5,
+     "y": 5869.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "bergwald_unter_steinhag_eibe_3",
+     "art": "eibe",
+     "x": 7046.5,
+     "y": 5864.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "bergwald_unter_steinhag_eibe_4",
+     "art": "eibe",
+     "x": 7051.5,
+     "y": 5864.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Kernbäume an der Hohen Alm",
+   "ort": "alm",
+   "baeume": [
+    {
+     "id": "kernbaume_an_der_hohen_alm_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7219.5,
+     "y": 5997.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "kernbaume_an_der_hohen_alm_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7214.5,
+     "y": 5996.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "kernbaume_an_der_hohen_alm_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7215.5,
+     "y": 5991.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "kernbaume_an_der_hohen_alm_eibe_4",
+     "art": "eibe",
+     "x": 7220.5,
+     "y": 5992.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Spiegelsee",
+   "ort": "einsiedelei",
+   "baeume": [
+    {
+     "id": "baume_am_spiegelsee_eibe_1",
+     "art": "eibe",
+     "x": 7359.5,
+     "y": 5663.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_spiegelsee_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7354.5,
+     "y": 5661.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_spiegelsee_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7358.5,
+     "y": 5657.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Der alte Baum über dem Spiegelsee",
+   "ort": "einsiedelei",
+   "baeume": [
+    {
+     "id": "der_alte_baum_uber_dem_spiegelsee_weltenbaum_1",
+     "art": "weltenbaum",
+     "x": 7382.5,
+     "y": 5645.5,
+     "region": "fl_216_169"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
   }
  ]
 }

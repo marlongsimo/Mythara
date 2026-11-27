@@ -937,6 +937,244 @@
    ],
    "einzeln": true,
    "ohneWeg": true
+  },
+  {
+   "name": "Erzadern im Erzberg-Bergwerk 1",
+   "ort": "bergwerk",
+   "x": 11630.8,
+   "y": 9632.8,
+   "r": 23,
+   "adern": [
+    {
+     "id": "bergwerk_sterneisen_1",
+     "art": "sterneisen",
+     "x": 11630.5,
+     "y": 9644.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_sterneisen_2",
+     "art": "sterneisen",
+     "x": 11628.5,
+     "y": 9642.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_sterneisen_3",
+     "art": "sterneisen",
+     "x": 11634.5,
+     "y": 9644.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_splittereisen_1",
+     "art": "splittereisen",
+     "x": 11622.5,
+     "y": 9626.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_splittereisen_2",
+     "art": "splittereisen",
+     "x": 11626.5,
+     "y": 9622.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_splittereisen_3",
+     "art": "splittereisen",
+     "x": 11642.5,
+     "y": 9616.5,
+     "region": "hochlande_bergwerk"
+    }
+   ]
+  },
+  {
+   "name": "Erzadern im Erzberg-Bergwerk 2",
+   "ort": "bergwerk",
+   "x": 11671.2,
+   "y": 9612.5,
+   "r": 7,
+   "adern": [
+    {
+     "id": "bergwerk_ureisen_1",
+     "art": "ureisen",
+     "x": 11668.5,
+     "y": 9608.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_ureisen_2",
+     "art": "ureisen",
+     "x": 11674.5,
+     "y": 9612.5,
+     "region": "hochlande_bergwerk"
+    },
+    {
+     "id": "bergwerk_ureisen_3",
+     "art": "ureisen",
+     "x": 11670.5,
+     "y": 9616.5,
+     "region": "hochlande_bergwerk"
+    }
+   ]
+  },
+  {
+   "name": "Geröllhang am Erzberg",
+   "ort": "erzberg",
+   "x": 7173.8,
+   "y": 5780.4,
+   "r": 5,
+   "adern": [
+    {
+     "id": "gerollhang_am_erzberg_sterneisen_1",
+     "art": "sterneisen",
+     "x": 7176.5,
+     "y": 5781.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "gerollhang_am_erzberg_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7172.5,
+     "y": 5782.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "gerollhang_am_erzberg_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7171.5,
+     "y": 5779.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "gerollhang_am_erzberg_splittereisen_4",
+     "art": "splittereisen",
+     "x": 7174.5,
+     "y": 5778.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Erzgrat am Hochpass",
+   "ort": "hochpass",
+   "x": 6964.3,
+   "y": 5588.1,
+   "r": 5,
+   "adern": [
+    {
+     "id": "erzgrat_am_hochpass_splittereisen_1",
+     "art": "splittereisen",
+     "x": 6966.5,
+     "y": 5589.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "erzgrat_am_hochpass_splittereisen_2",
+     "art": "splittereisen",
+     "x": 6962.5,
+     "y": 5589.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "erzgrat_am_hochpass_ureisen_3",
+     "art": "ureisen",
+     "x": 6964.5,
+     "y": 5585.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Steinbruch von Steinhag",
+   "ort": "steinhag",
+   "x": 6928,
+   "y": 5891.5,
+   "r": 5,
+   "adern": [
+    {
+     "id": "steinbruch_von_steinhag_sterneisen_1",
+     "art": "sterneisen",
+     "x": 6930.5,
+     "y": 5892.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "steinbruch_von_steinhag_sterneisen_2",
+     "art": "sterneisen",
+     "x": 6925.5,
+     "y": 5893.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "steinbruch_von_steinhag_splittereisen_3",
+     "art": "splittereisen",
+     "x": 6927.5,
+     "y": 5888.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Felsen an der Hohen Alm",
+   "ort": "alm",
+   "x": 7203.3,
+   "y": 5977.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "felsen_an_der_hohen_alm_sterneisen_1",
+     "art": "sterneisen",
+     "x": 7205.5,
+     "y": 5978.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "felsen_an_der_hohen_alm_splittereisen_2",
+     "art": "splittereisen",
+     "x": 7201.5,
+     "y": 5979.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "felsen_an_der_hohen_alm_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7202.5,
+     "y": 5975.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Adern in den Nordklippen",
+   "ort": "nordklippen",
+   "x": 7263.7,
+   "y": 5437.3,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_in_den_nordklippen_ureisen_1",
+     "art": "ureisen",
+     "x": 7266.5,
+     "y": 5438.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_in_den_nordklippen_splittereisen_2",
+     "art": "splittereisen",
+     "x": 7261.5,
+     "y": 5438.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "adern_in_den_nordklippen_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7263.5,
+     "y": 5434.5,
+     "region": "fl_216_169"
+    }
+   ]
   }
  ]
 }
