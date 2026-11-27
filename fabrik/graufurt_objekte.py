@@ -7,7 +7,7 @@ Weltobjekte (Maßstab 1 = 1 m, Ursprung Mitte unten):
   winde         – Kettenwinde am Westanleger: Holzbock mit Trommel, Kurbelrad, aufgewickelte Kette, Kette zum Wasser
   signalfeuer   – Signalfeuer-Schale auf dem Turmdach: Eisenschale auf drei Beinen, Splitterkern mit grüner Flamme
   waechterbuch  – das Wächterbuch auf einem Lesepult (Ebene 3 des Turms), aufgeschlagen, Wappen auf dem Deckel
-Grauwacht und Fahle Weiten (Phase 8): glocke · glocke_gesprungen (Riss, abgesprungenes Stück) · glockenform · dornenwall · grabhuegel_eingang · grabstein
+Grauwacht und Fahle Weiten (Phase 8): glocke · glocke_gesprungen (Riss, abgesprungenes Stück) · glocke_neu (frisch gegossen, ohne Joch – Questgegenstand) · glockenform · dornenwall · grabhuegel_eingang · grabstein
 Gegenstände (klein):
   kloeppel (Glocke) ·
   kettenglied · kettenschloss (Schäkel mit Bolzen) · splitterkern_gruen (Kern mit grüner Flamme) · krebsschere · wachtstein (Steinbrocken mit Wappen) ·
@@ -105,12 +105,14 @@ elif ART == "waechterbuch":
         wuerfel((sx * 0.125, 0, 1.08), (0.24, 0.32, 0.03), PAP, (math.radians(-20), math.radians(sx * -6), 0), 0.15)
     for k in range(6): wuerfel((random.choice((-1, 1)) * random.uniform(0.04, 0.2), random.uniform(-0.1, 0.1), 1.1), (0.12, 0.004, 0.001), mat("tinte", (40, 30, 25)), (math.radians(-20), 0, 0), 0)
     rohr((0.02, 0.12, 1.1), (0.03, -0.12, 1.02), 0.004, mat("band", (140, 30, 30), 0.7), 4)                               # Lesebändchen
-elif ART in ("glocke", "glocke_gesprungen"):                                                     # Glocke von Grauwacht (≈ 1,2 m) im Holzjoch
-    BR = mat("bronze", (176, 128, 70), 0.35, 0.85); o = dreh([(0, 1.38), (0.12, 1.38), (0.2, 1.33), (0.28, 1.2), (0.33, 0.9), (0.4, 0.62), (0.52, 0.42), (0.55, 0.36), (0.5, 0.34), (0.45, 0.4), (0.36, 0.6), (0.29, 0.9), (0.24, 1.2), (0, 1.3)], BR, 36)
+elif ART in ("glocke", "glocke_gesprungen", "glocke_neu"):                                                     # Glocke von Grauwacht (≈ 1,2 m) im Holzjoch
+    BR = mat("bronze", (176, 128, 70), 0.35, 0.85) if ART != "glocke_neu" else mat("bronze_neu", (214, 160, 82), 0.2, 0.95); o = dreh([(0, 1.38), (0.12, 1.38), (0.2, 1.33), (0.28, 1.2), (0.33, 0.9), (0.4, 0.62), (0.52, 0.42), (0.55, 0.36), (0.5, 0.34), (0.45, 0.4), (0.36, 0.6), (0.29, 0.9), (0.24, 1.2), (0, 1.3)], BR, 36)
     ring((0, 0, 0.4), 0.52, 0.02, BR); ring((0, 0, 1.1), 0.3, 0.015, BR)
     rohr((0, 0, 1.3), (0, 0, 0.55), 0.02, EIS, 8); kugel((0, 0, 0.5), 0.06, EIS)                                                   # Klöppel innen
-    for x in (-0.75, 0.75): rohr((x, 0, 0), (x, 0, 1.65), 0.07, HOLZ2, 8)
-    wuerfel((0, 0, 1.55), (1.7, 0.18, 0.16), HOLZ2)
+    if ART != "glocke_neu":                                                                           # glocke_neu (Questgegenstand E2): frisch gegossen, blank, ohne Joch – mit Krone zum Aufhängen
+        for x in (-0.75, 0.75): rohr((x, 0, 0), (x, 0, 1.65), 0.07, HOLZ2, 8)
+        wuerfel((0, 0, 1.55), (1.7, 0.18, 0.16), HOLZ2)
+    else: ring((0, 0, 1.43), 0.08, 0.025, BR, (math.radians(90), 0, 0))
     if ART == "glocke_gesprungen":                                                                  # Riss von unten bis zur Schulter, ein Stück ausgebrochen
         R = mat("riss", (20, 16, 12), 0.95)
         prof = [(0.4, 0.54), (0.62, 0.41), (0.9, 0.335), (1.2, 0.285)]
