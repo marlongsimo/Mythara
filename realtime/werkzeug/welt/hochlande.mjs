@@ -251,21 +251,21 @@ const ADERN = [], ARENA = [], ZIEGENWEGE = [], BWQUEST = [];
   ARENA.push({ region: "hochlande_bergwerk", x: BW_U[0] * 32 + HALLE.x, y: BW_U[1] * 32 + HALLE.y, r: HALLE.r - 1.2, hinweis: "Trollhalle: freie Fläche für den Mini-Boss (Instanz nach #116), Eingang von Osten über den Querschlag" });
   let m = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(k|hoehle|moor|wz|wald|dorf)_/, "").replace(/_\d+$/, "") + "_" + ++m, objekt, x, y, ...mehr });
   const dinge = [o("hoehle_leiter_01", 48, 59.4), o("moor_feuerkorb_01", 44, 52), o("moor_feuerkorb_01", 52, 52), o("hochland_lore", 47, 49, { id: "bergwerk_lore_1" }), o("hochland_lore", 66, 41, { id: "bergwerk_lore_2" }), o("hochland_schienen", 48, 54), o("hochland_schienen", 48, 51.5), o("hochland_schienen", 48, 49),
-    o("hochland_grubenholz", 30, 38), o("hochland_grubenholz", 60, 18.4, { spiegeln: true }), o("hochland_grubenholz", 76, 28.6), o("moor_feuerkorb_01", 16, 7), o("moor_feuerkorb_01", 30, 7), o("moor_feuerkorb_01", 16, 21), o("moor_feuerkorb_01", 30, 21), o("hoehle_steinsaeule_01", 83, 9), o("k_kiste", 51, 55), o("dorf_holzstapel_01", 40, 26)];
+    o("hochland_grubenholz", 30, 38), o("hochland_grubenholz", 60, 18.4, { spiegeln: true }), o("hochland_grubenholz", 76, 28.6), o("hoehle_steinsaeule_01", 83, 9), o("k_kiste", 51, 55), o("dorf_holzstapel_01", 40, 26)];
   /* Erzadern an den Stollenwänden: Sterneisen (35) im Hauptstollen, Splittereisen (45) im Querschlag, Ureisen (65) in der Kammer – für sammelstellen.mjs */
   const ader = (id, art, x, y) => { g[Math.floor(y)][Math.floor(x)] = "h"; ADERN.push({ id, art, x: BW_U[0] * 32 + x, y: BW_U[1] * 32 + y, region: "hochlande_bergwerk" }); };
   [[46, 44], [44, 42], [50, 44]].forEach(([x, y], i) => ader("bergwerk_sterneisen_" + (i + 1), "sterneisen", x + 0.5, y + 0.5));
   [[38, 26], [42, 22], [58, 16]].forEach(([x, y], i) => ader("bergwerk_splittereisen_" + (i + 1), "splittereisen", x + 0.5, y + 0.5));
   [[84, 8], [90, 12], [86, 16]].forEach(([x, y], i) => ader("bergwerk_ureisen_" + (i + 1), "ureisen", x + 0.5, y + 0.5));
   const iaU = (id, x, y, text, mehr = {}) => ({ id, art: mehr.tat ? "eingang" : "lesen", x, y, radius: mehr.tat ? 2.0 : 1.6, abgleich: "keiner", daten: { text, ...mehr } });
-  /* H3 „Tiefer als erlaubt“: eingestürzter Stollen vor der Urkammer (bis zur Quest gesperrt, Schalter bergwerk_stollen_frei), verletzte Bergleute, morsches Grubenholz */
+  /* H3 „Tiefer als erlaubt“: eingestürzter Stollen vor der Urkammer (bis zur Quest gesperrt, Schalter urkammer_offen – Tür „urkammer“ in shared/bosse.ts), verletzte Bergleute, morsches Grubenholz */
   dinge.push(o("k_truemmer", 80, 22.4, { id: "bergwerk_geroell_1" }), o("k_truemmer", 83, 21.6, { id: "bergwerk_geroell_2", spiegeln: true }), o("hochland_grubenholz", 75.5, 25.6, { id: "bergwerk_grubenholz_gebrochen" }));
-  const sperreH3 = { art: "rechteck", x0: 77, y0: 20, x1: 87, y1: 23, schalter: "bergwerk_stollen_frei" };
+  const sperreH3 = { art: "rechteck", x0: 77, y0: 20, x1: 87, y1: 23, schalter: "urkammer_offen" };   /* Schalter wie shared/hochlande.ts (H_SCHALTER.urkammer, Systeme 8f50070cf) */
   const H3IA = [iaU("eingestuerzter_stollen", 80.5, 25.4, "Hier ist der Stollen eingestürzt. Dahinter, gedämpft, ein Klopfen – und ein schwarzer Schimmer im Gestein.", { questobjekt: "eingestuerzter_stollen" }),
     iaU("morsches_grubenholz", 31.5, 37, "Das Grubenholz hier ist morsch und knackt. Es muss ersetzt werden, bevor noch mehr einstürzt.", { questobjekt: "morsches_grubenholz" }),
     ...[[74, 32], [68, 37], [61, 41]].map(([x, y], i) => iaU("verletzter_bergmann_" + (i + 1), x, y, "Ein verletzter Bergmann lehnt am Fels. „Wasser … und etwas für die Wunde.“", { questobjekt: "verletzter_bergmann_" + (i + 1) })),
-    iaU("trollhalle_tor", HALLE.x, HALLE.y + HALLE.r - 2.4, "Der Durchgang in die Trollhalle. Wer Grumhold allein stellen will, geht hier hinein.", { tat: "trollhalle", knopf: "Hineingehen", ziel: [365 * 32 + 16, 300 * 32 + 28] })];
-  BWQUEST.push({ sperre: { ...sperreH3, x0: BW_U[0] * 32 + 77, y0: BW_U[1] * 32 + 20, x1: BW_U[0] * 32 + 87, y1: BW_U[1] * 32 + 23 }, schalter: "bergwerk_stollen_frei", verletzte: [[74, 32], [68, 37], [61, 41]].map(([x, y]) => [BW_U[0] * 32 + x, BW_U[1] * 32 + y]) });
+    iaU("trollhalle_eingang", HALLE.x + 6, HALLE.y + HALLE.r - 1.2, "Der Eingang zur Trollhalle. Knochen, abgenagte Grubenhölzer – und tiefe Kratzspuren im Fels.", { questobjekt: "trollhalle" })];
+  BWQUEST.push({ sperre: { ...sperreH3, x0: BW_U[0] * 32 + 77, y0: BW_U[1] * 32 + 20, x1: BW_U[0] * 32 + 87, y1: BW_U[1] * 32 + 23 }, schalter: "urkammer_offen", verletzte: [[74, 32], [68, 37], [61, 41]].map(([x, y]) => [BW_U[0] * 32 + x, BW_U[1] * 32 + y]) });
   npc.push(...[[74, 32], [68, 37], [61, 41]].map(([x, y], i) => ({ id: "verletzter_bergmann_" + (i + 1), rolle: "Verletzter Bergmann (H3)", x: BW_U[0] * 32 + x - 1.2, y: BW_U[1] * 32 + y })));
   const dir = join(WELT, "regionen", "hochlande_bergwerk"); mkdirSync(dir, { recursive: true });
   for (const p of dinge) { if (!BIB.has(p.objekt)) throw new Error("unbekanntes Objekt " + p.objekt); if (g[Math.floor(p.y)][Math.floor(p.x)] === "F") throw new Error("bergwerk: im Fels " + p.id); }
@@ -291,7 +291,7 @@ const rasterH = (B, H, f) => Array.from({ length: H }, (_, y) => Array.from({ le
 const zaehler = {}; const oH = (gid) => (objekt, x, y, mehr = {}) => ({ id: mehr.id || `${gid}_${objekt.replace(/^(k|hoehle|moor|wz|wald|dorf|hochland|hand)_/, "").replace(/_\d+$/, "")}_${(zaehler[gid] = (zaehler[gid] || 0) + 1)}`, objekt, x, y, ...mehr });
 
 /* ── Grauhorn: Steinmann-Pfad vom Hochpass auf den Gipfel, Gipfelfläche (öffentlicher Horst) ── */
-const GIPFEL = [7030, 5540], HORST_U = [366, 300], EM = [6950, 5631];
+const GIPFEL = [7030, 5540], HORST_U = [366, 300], EM = [6950, 5631];   /* Kennungen und Plätze nach #163 (Systeme): horst_grauhorn 366|300, eishoehle_hochpass 367|300 */
 { const PFAD = [[PASS[0] + 10, PASS[1] - 6], [6980, 5592], [6996, 5574], [7012, 5558], [GIPFEL[0] - 6, GIPFEL[1] + 6]];
   male(6960, 5520, 7050, 5615, (x, y) => (strecke(x, y, PFAD) < 1.3 + 0.2 * welle(x, y) ? "g" : null));
   male(GIPFEL[0] - 16, GIPFEL[1] - 16, GIPFEL[0] + 16, GIPFEL[1] + 16, (x, y) => { const d = Math.hypot(x - GIPFEL[0], y - GIPFEL[1]) + 0.8 * welle(x * 0.5, y * 0.5); return d < 12 ? (breit(x, y) > 0.6 ? "S" : "g") : d < 13.5 ? "F" : null; });
@@ -301,42 +301,38 @@ const GIPFEL = [7030, 5540], HORST_U = [366, 300], EM = [6950, 5631];
   PFAD.slice(1, -1).forEach(([x, y], i) => ding("hochland_steinmann", x + 1.8, y + 0.5, { id: "horst_steinmann_" + (i + 1) }));
   ding("hoehle_federn_01", GIPFEL[0], GIPFEL[1] - 2, { id: "horst_nest" }); ding("wald_baumstamm_02", GIPFEL[0] - 3, GIPFEL[1] - 3.5, { id: "horst_aeste_1", s: 0.6, spiegeln: true }); ding("wald_baumstamm_01", GIPFEL[0] + 3, GIPFEL[1] - 1, { id: "horst_aeste_2", s: 0.6 });
   lies("horst", GIPFEL[0], GIPFEL[1] + 1.6, "Der Horst der Sturmschwinge auf dem Gipfel des Grauhorns. Federn, so lang wie ein Arm, und Knochen von Steinböcken. Der Wind reißt an deinem Mantel.");
-  lies("horst_aufstieg", GIPFEL[0] - 2, GIPFEL[1] + 8.4, "Der Gipfel des Grauhorns. Wer der Sturmschwinge allein begegnen will, geht hier hinauf.", { tat: "horst", knopf: "Zum Horst", ziel: [HORST_U[0] * 32 + 32, HORST_U[1] * 32 + 54] });
+  lies("horst_aufstieg", GIPFEL[0] - 2, GIPFEL[1] + 8.4, "Der Gipfel des Grauhorns. Wer der Sturmschwinge allein begegnen will, geht hier hinauf.", { tat: "horst", knopf: "Zum Horst", ziel: [HORST_U[0] * 32 + 16, HORST_U[1] * 32 + 28] });
   QUEST.h4.push("horst", "horst_aufstieg", ...PFAD.slice(1, -1).map((_, i) => "horst_steinmann_" + (i + 1)));
   npc.push({ id: "sturmschwinge_horst", rolle: "Die Sturmschwinge (Hüterin, öffentlich nach H4)", x: GIPFEL[0], y: GIPFEL[1] - 4 }); }
-/* Horst als Instanz (2 × 2 Chunks): Gipfelfläche im leeren Himmel – der Rand ringsum frei für den Flug */
-{ const M = [32, 30], g = rasterH(64, 64, (x, y) => { const d = Math.hypot(x - M[0], (y - M[1]) * 1.05) + 0.7 * zwH(x, y); if (d < 14) return (0.5 * Math.sin(x / 3) + 0.5 * Math.sin(y / 4)) > 0.55 ? "S" : "g";
-    if (Math.abs(x - 32) < 2 + 0.3 * zwH(x, y) && y > 40 && y < 58) return "g"; if (d < 15.5) return "F"; return "X"; });
-  const o = oH("horst"); const dinge = [o("hoehle_federn_01", 32, 28), o("wald_baumstamm_02", 29, 26.5, { s: 0.6, spiegeln: true }), o("wald_baumstamm_01", 35, 29, { s: 0.6 }), o("hochland_steinmann", 30, 52), o("hochland_gipfelkreuz", 41, 23)];
-  gebiet("horst_sturmschwinge", { name: "Der Horst der Sturmschwinge", untertitel: "Gipfel des Grauhorns (Instanz)", ursprung: HORST_U, chunks: [2, 2], biom: "schnee", stufe: 12, ebene: "untergrund" }, g, dinge,
-    { start: [[32, 54]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] },
-      interaktionen: [iaH("horst_hinab", 32, 56.6, "Hinab zum Steinmann-Pfad.", { tat: "horst_hinab", knopf: "Hinabsteigen", ziel: [GIPFEL[0] - 4, GIPFEL[1] + 11] }), iaH("horst_nest_instanz", 32, 30, "Das Nest der Sturmschwinge.", { questobjekt: "horst_nest" })] });
-  INSTANZEN.push({ id: "horst_sturmschwinge", boss: "sturmschwinge", arena: { x: HORST_U[0] * 32 + M[0], y: HORST_U[1] * 32 + M[1], r: 13 }, eingang: "horst_aufstieg", ausgang: "horst_hinab", rand: "frei (Leere ringsum, Flugraum)" }); }
+/* Horst als Instanz (1 × 1 Chunk, #163): runde Gipfelfläche (Radius ~10), ringsum Abbruchkanten in die Leere (nicht begehbar), kaum Hindernisse */
+{ const M = [16, 14], g = rasterH(32, 32, (x, y) => { const d = Math.hypot(x - M[0], y - M[1]) + 0.35 * zwH(x, y); if (d < 10) return (0.5 * Math.sin(x / 3) + 0.5 * Math.sin(y / 4)) > 0.55 ? "S" : "g";
+    if (Math.abs(x - 16) < 1.8 + 0.25 * zwH(x, y) && y > 22 && y < 31) return "g"; if (d < 10.8) return "F"; return "X"; });
+  const o = oH("horst"); const dinge = [o("hoehle_federn_01", 16, 6.5), o("wald_baumstamm_02", 13.5, 6, { s: 0.5, spiegeln: true }), o("hochland_steinmann", 14.4, 27)];
+  gebiet("horst_grauhorn", { name: "Der Horst der Sturmschwinge", untertitel: "Gipfel des Grauhorns (Instanz)", ursprung: HORST_U, chunks: [1, 1], biom: "schnee", stufe: 12, ebene: "untergrund" }, g, dinge,
+    { start: [[16, 28]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] },
+      interaktionen: [iaH("horst_hinab", 16, 30, "Hinab zum Steinmann-Pfad.", { tat: "horst_hinab", knopf: "Hinabsteigen", ziel: [GIPFEL[0] - 4, GIPFEL[1] + 11] }), iaH("horst_nest_instanz", 16, 8.4, "Das Nest der Sturmschwinge.", { questobjekt: "horst_nest" })] });
+  INSTANZEN.push({ id: "horst_grauhorn", boss: "sturmschwinge", schalter: ["sturmschwinge_horst", "sturmschwinge_danach"], raum: [HORST_U[0] * 32 + 6, HORST_U[1] * 32 + 4, HORST_U[0] * 32 + 26, HORST_U[1] * 32 + 24], bossStart: [HORST_U[0] * 32 + 16.5, HORST_U[1] * 32 + 13.5],
+    arena: { x: HORST_U[0] * 32 + M[0], y: HORST_U[1] * 32 + M[1], r: 9.5 }, eingang: "horst_aufstieg", ausgang: "horst_hinab", rand: "Abbruchkanten in die Leere (X), nicht begehbar" }); }
 
 /* ── Eishöhle der Frostwitwe am Hochpass: Höhlenmund an der Südostflanke des Grauhorns ── */
-const EIS_U = [368, 300];
+const EIS_U = [367, 300];
 { male(EM[0] - 5, EM[1] - 3, EM[0] + 6, EM[1] + 8, (x, y) => (Math.hypot((x - EM[0]) / 5, (y - EM[1] - 3) / 4.5) < 1 ? "S" : null)); male(EM[0] - 2, EM[1] + 4, EM[0] + 16, EM[1] + 14, (x, y) => (strecke(x, y, [[EM[0], EM[1] + 5], [PASS[0] - 6, PASS[1] + 6]]) < 1.4 ? "g" : null));
   ding("hoehle_tuer_01", EM[0], EM[1] - 0.6, { id: "eishoehle_eingang" }); ding("moor_menhir_01", EM[0] + 3, EM[1] + 1, { id: "eisrunen_stein", s: 0.7 });
   lies("eishoehle_eingang", EM[0], EM[1] + 1.4, "Ein Spalt im Grauhorn, aus dem eisige Luft strömt. Drinnen knistert es, als würde jemand flüstern.", { tat: "eishoehle", knopf: "Hineingehen", ziel: [EIS_U[0] * 32 + 16, EIS_U[1] * 32 + 28] });
   lies("eisrunen", EM[0] + 3, EM[1] + 2.6, "Runen, ins Eis geritzt. Der Einsiedler vom Spiegelsee könnte sie deuten.", { questobjekt: "eisrunen" });
   QUEST.h4.push("eishoehle_eingang", "eisrunen"); npc.push({ id: "frostwitwe_eishoehle", rolle: "Die Frostwitwe (Hüterin, Eishöhle)", x: EIS_U[0] * 32 + 16, y: EIS_U[1] * 32 + 11 }); }
-/* Eishöhle als Instanz (1 × 1 Chunk): runder Saal mit Eisboden im Schachbrett – jedes Feld gut sichtbar */
-{ const M = [16, 13], g = rasterH(32, 32, (x, y) => { const d = Math.hypot(x - M[0], (y - M[1]) * 1.15) + 0.5 * zwH(x, y); if (d < 11) return (Math.floor(x) + Math.floor(y)) % 2 ? "I" : "i";
-    if (Math.abs(x - 16) < 1.8 + 0.3 * zwH(x, y) && y > 22 && y < 31) return "h"; return null; });
-  const o = oH("eishoehle"); const dinge = [o("hoehle_steinsaeule_01", 7.5, 8.5), o("hoehle_steinsaeule_01", 24.5, 8.5), o("hoehle_steinsaeule_01", 8.5, 18.5), o("hoehle_steinsaeule_01", 23.5, 18.5), o("k_altar_stein", 16, 4.4)];
-  gebiet("eishoehle_frostwitwe", { name: "Die Eishöhle der Frostwitwe", untertitel: "Unter dem Hochpass (Instanz)", ursprung: EIS_U, chunks: [1, 1], biom: "hoehle", stufe: 12, ebene: "untergrund" }, g, dinge,
+/* Eishöhle als Instanz (1 × 1 Chunk, #163): runde Höhle (Radius ~9,5), vier Eissäulen als Deckung, Eisboden im Schachbrett (Optik; die Eisfelder setzt das System) */
+{ const M = [16, 13], g = rasterH(32, 32, (x, y) => { const d = Math.hypot(x - M[0], (y - M[1]) * 1.05) + 0.4 * zwH(x, y); if (d < 9.8) return (Math.floor(x) + Math.floor(y)) % 2 ? "I" : "i";
+    if (Math.abs(x - 16) < 1.8 + 0.3 * zwH(x, y) && y > 21 && y < 31) return "h"; return null; });
+  const o = oH("eishoehle"); const dinge = [o("hoehle_steinsaeule_01", 11.5, 8.5), o("hoehle_steinsaeule_01", 20.5, 8.5), o("hoehle_steinsaeule_01", 11.5, 17.5), o("hoehle_steinsaeule_01", 20.5, 17.5), o("k_altar_stein", 16, 4.6)];
+  gebiet("eishoehle_hochpass", { name: "Die Eishöhle der Frostwitwe", untertitel: "Unter dem Hochpass (Instanz)", ursprung: EIS_U, chunks: [1, 1], biom: "hoehle", stufe: 12, ebene: "untergrund" }, g, dinge,
     { start: [[16, 28]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] },
-      interaktionen: [iaH("eishoehle_hinaus", 16, 30, "Hinaus an den Hochpass.", { tat: "eishoehle_hinaus", knopf: "Hinaus", ziel: [EM[0], EM[1] + 3] }), iaH("eishoehle_altar", 16, 6, "Ein Altar aus Eis. Darauf ein Kranz aus gefrorenen Blumen.", { questobjekt: "frostwitwe_altar" })] });
-  INSTANZEN.push({ id: "eishoehle_frostwitwe", boss: "frostwitwe", arena: { x: EIS_U[0] * 32 + M[0], y: EIS_U[1] * 32 + M[1], r: 10 }, eingang: "eishoehle_eingang", ausgang: "eishoehle_hinaus", boden: "Eis im Schachbrett (i/I), ein Feld = eine Kachel" }); }
+      interaktionen: [iaH("eishoehle_hinaus", 16, 30, "Hinaus an den Hochpass.", { tat: "eishoehle_hinaus", knopf: "Hinaus", ziel: [EM[0], EM[1] + 3] }), iaH("eishoehle_altar", 16, 6.4, "Ein Altar aus Eis. Darauf ein Kranz aus gefrorenen Blumen.", { questobjekt: "frostwitwe_altar" })] });
+  INSTANZEN.push({ id: "eishoehle_hochpass", boss: "frostwitwe", schalter: ["frostwitwe_hoehle", "frostwitwe_danach"], raum: [EIS_U[0] * 32 + 6, EIS_U[1] * 32 + 3, EIS_U[0] * 32 + 26, EIS_U[1] * 32 + 23], bossStart: [EIS_U[0] * 32 + 16.5, EIS_U[1] * 32 + 11.5],
+    arena: { x: EIS_U[0] * 32 + M[0], y: EIS_U[1] * 32 + M[1], r: 9 }, eingang: "eishoehle_eingang", ausgang: "eishoehle_hinaus", boden: "Eis im Schachbrett (i/I), nur Optik" }); }
 
-/* ── Trollhalle als eigene Instanz (1 × 1 Chunk): Kopie der Halle im Bergwerk, Tor in der Halle des Bergwerks ── */
-const TROLL_U = [365, 300];
-{ const M = [16, 14], g = rasterH(32, 32, (x, y) => { const d = Math.hypot(x - M[0], y - M[1]) + 0.5 * zwH(x, y); if (d < 9.8) return "p"; if (d < 11) return "h"; if (Math.abs(x - 16) < 2 + 0.3 * zwH(x, y) && y > 23 && y < 31) return "h"; return null; });
-  const o = oH("trollhalle"); const dinge = [...[[9, 7], [23, 7], [9, 21], [23, 21]].map(([x, y]) => o("moor_feuerkorb_01", x, y)), o("hochland_grubenholz", 14.6, 26.2), o("k_truemmer", 17.6, 27.4)];
-  gebiet("trollhalle", { name: "Die Trollhalle", untertitel: "Grumhold (Instanz)", ursprung: TROLL_U, chunks: [1, 1], biom: "hoehle", stufe: 12, ebene: "untergrund" }, g, dinge,
-    { start: [[16, 28]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] },
-      interaktionen: [iaH("trollhalle_hinaus", 16, 30, "Zurück in den Stollen.", { tat: "trollhalle_hinaus", knopf: "Zurück", ziel: [BW_U[0] * 32 + 23, BW_U[1] * 32 + 24] })] });
-  INSTANZEN.push({ id: "trollhalle", boss: "grumhold", arena: { x: TROLL_U[0] * 32 + M[0], y: TROLL_U[1] * 32 + M[1], r: 9.8 }, eingang: "trollhalle_tor", ausgang: "trollhalle_hinaus", hinweis: "Die Halle im Bergwerk bleibt die öffentliche Arena (starke Fassung); die Instanz ist ihre Kopie für die Quest-Fassung" }); }
+/* ── Trollhalle: Grumholds Raum ist die Halle im Bergwerk (#163, Systeme: Raum [11595, 9602, 11618, 9624], Boss bei 11607,5 | 9611,5) – frei von Dingen ── */
+INSTANZEN.push({ id: "hochlande_bergwerk", boss: "grumhold", schalter: ["grumhold_halle", "grumhold_danach"], raum: [11595, 9602, 11618, 9624], bossStart: [11607.5, 9611.5], arena: ARENA[0], eingang: "bergwerk_eingang", ausgang: "bergwerk_hinaus" });
 
 /* ── Käsekeller unter der Almhütte (1 × 1 Chunk, H2) ── */
 const KELLER_U = [369, 300];

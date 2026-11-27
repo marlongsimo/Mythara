@@ -14,32 +14,32 @@
  },
  "interaktionen": [
   {
-   "id": "eishoehle_hinaus",
+   "id": "horst_hinab",
    "art": "eingang",
    "x": 16,
    "y": 30,
    "radius": 2,
    "abgleich": "keiner",
    "daten": {
-    "text": "Hinaus an den Hochpass.",
-    "tat": "eishoehle_hinaus",
-    "knopf": "Hinaus",
+    "text": "Hinab zum Steinmann-Pfad.",
+    "tat": "horst_hinab",
+    "knopf": "Hinabsteigen",
     "ziel": [
-     6950,
-     5634
+     7026,
+     5551
     ]
    }
   },
   {
-   "id": "eishoehle_altar",
+   "id": "horst_nest_instanz",
    "art": "lesen",
    "x": 16,
-   "y": 6,
+   "y": 8.4,
    "radius": 1.6,
    "abgleich": "keiner",
    "daten": {
-    "text": "Ein Altar aus Eis. Darauf ein Kranz aus gefrorenen Blumen.",
-    "questobjekt": "frostwitwe_altar"
+    "text": "Das Nest der Sturmschwinge.",
+    "questobjekt": "horst_nest"
    }
   }
  ]

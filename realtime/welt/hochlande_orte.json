@@ -324,7 +324,7 @@
   {
    "id": "frostwitwe_eishoehle",
    "rolle": "Die Frostwitwe (Hüterin, Eishöhle)",
-   "x": 11792,
+   "x": 11760,
    "y": 9611
   }
  ],
@@ -676,40 +676,83 @@
  },
  "instanzen": [
   {
-   "id": "horst_sturmschwinge",
+   "id": "horst_grauhorn",
    "boss": "sturmschwinge",
+   "schalter": [
+    "sturmschwinge_horst",
+    "sturmschwinge_danach"
+   ],
+   "raum": [
+    11718,
+    9604,
+    11738,
+    9624
+   ],
+   "bossStart": [
+    11728.5,
+    9613.5
+   ],
    "arena": {
-    "x": 11744,
-    "y": 9630,
-    "r": 13
+    "x": 11728,
+    "y": 9614,
+    "r": 9.5
    },
    "eingang": "horst_aufstieg",
    "ausgang": "horst_hinab",
-   "rand": "frei (Leere ringsum, Flugraum)"
+   "rand": "Abbruchkanten in die Leere (X), nicht begehbar"
   },
   {
-   "id": "eishoehle_frostwitwe",
+   "id": "eishoehle_hochpass",
    "boss": "frostwitwe",
+   "schalter": [
+    "frostwitwe_hoehle",
+    "frostwitwe_danach"
+   ],
+   "raum": [
+    11750,
+    9603,
+    11770,
+    9623
+   ],
+   "bossStart": [
+    11760.5,
+    9611.5
+   ],
    "arena": {
-    "x": 11792,
+    "x": 11760,
     "y": 9613,
-    "r": 10
+    "r": 9
    },
    "eingang": "eishoehle_eingang",
    "ausgang": "eishoehle_hinaus",
-   "boden": "Eis im Schachbrett (i/I), ein Feld = eine Kachel"
+   "boden": "Eis im Schachbrett (i/I), nur Optik"
   },
   {
-   "id": "trollhalle",
+   "id": "hochlande_bergwerk",
    "boss": "grumhold",
+   "schalter": [
+    "grumhold_halle",
+    "grumhold_danach"
+   ],
+   "raum": [
+    11595,
+    9602,
+    11618,
+    9624
+   ],
+   "bossStart": [
+    11607.5,
+    9611.5
+   ],
    "arena": {
-    "x": 11696,
+    "region": "hochlande_bergwerk",
+    "x": 11607,
     "y": 9614,
-    "r": 9.8
+    "r": 9.8,
+    "hinweis": "Trollhalle: freie Fläche für den Mini-Boss (Instanz nach #116), Eingang von Osten über den Querschlag"
    },
-   "eingang": "trollhalle_tor",
-   "ausgang": "trollhalle_hinaus",
-   "hinweis": "Die Halle im Bergwerk bleibt die öffentliche Arena (starke Fassung); die Instanz ist ihre Kopie für die Quest-Fassung"
+   "eingang": "bergwerk_eingang",
+   "ausgang": "bergwerk_hinaus"
   }
  ],
  "questorte": {
@@ -812,9 +855,9 @@
     "y0": 9620,
     "x1": 11671,
     "y1": 9623,
-    "schalter": "bergwerk_stollen_frei"
+    "schalter": "urkammer_offen"
    },
-   "schalter": "bergwerk_stollen_frei",
+   "schalter": "urkammer_offen",
    "verletzte": [
     [
      11658,

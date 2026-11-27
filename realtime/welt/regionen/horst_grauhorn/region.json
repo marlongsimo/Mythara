@@ -1,5 +1,5 @@
 {
- "id": "horst_sturmschwinge",
+ "id": "horst_grauhorn",
  "name": "Der Horst der Sturmschwinge",
  "untertitel": "Gipfel des Grauhorns (Instanz)",
  "ursprung": [
@@ -7,8 +7,8 @@
   300
  ],
  "chunks": [
-  2,
-  2
+  1,
+  1
  ],
  "biom": "schnee",
  "stufe": 12,

@@ -713,8 +713,8 @@
     "tat": "horst",
     "knopf": "Zum Horst",
     "ziel": [
-     11744,
-     9654
+     11728,
+     9628
     ]
    }
   },
@@ -730,7 +730,7 @@
     "tat": "eishoehle",
     "knopf": "Hineingehen",
     "ziel": [
-     11792,
+     11760,
      9628
     ]
    }

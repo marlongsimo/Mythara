@@ -16,7 +16,7 @@
     "y0": 20,
     "x1": 87,
     "y1": 23,
-    "schalter": "bergwerk_stollen_frei"
+    "schalter": "urkammer_offen"
    },
    {
     "art": "rechteck",
@@ -196,20 +196,15 @@
    }
   },
   {
-   "id": "trollhalle_tor",
-   "art": "eingang",
-   "x": 23,
-   "y": 22.6,
-   "radius": 2,
+   "id": "trollhalle_eingang",
+   "art": "lesen",
+   "x": 29,
+   "y": 23.8,
+   "radius": 1.6,
    "abgleich": "keiner",
    "daten": {
-    "text": "Der Durchgang in die Trollhalle. Wer Grumhold allein stellen will, geht hier hinein.",
-    "tat": "trollhalle",
-    "knopf": "Hineingehen",
-    "ziel": [
-     11696,
-     9628
-    ]
+    "text": "Der Eingang zur Trollhalle. Knochen, abgenagte Grubenhölzer – und tiefe Kratzspuren im Fels.",
+    "questobjekt": "trollhalle"
    }
   }
  ],
