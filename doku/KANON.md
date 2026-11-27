@@ -9,9 +9,9 @@ Zuletzt aktualisiert: 26.11.2026.
 |---|---|---|
 | Name des Spiels | **Riftmere** (Domain riftmere.de, iOS-App „Riftmere“) | entschieden |
 | Kontinent | Das **Festland** von Riftmere (Karte im Spiel); Großregionen: Grenzland, Smaragdküste, Fahle Weiten, Glutsande, Hochlande, Ockerlande, Frostkrone, Drachenarm; Meere: Splittermeer (NO), Endloses Meer (SO) | entschieden (Karte) |
-| Riftmere / Mythara | Riftmere = Kontinent und Spiel, Mythara = Name der alten Zeit vor dem Riss | Vorschlag |
-| Großstädte | ① Graufurt ② Kielmund ③ Grauwacht ④ Glutbrunn ⑤ Erzhalden ⑥ Steinkrone ⑦ Letzthafen | Vorschlag (Weltkonzept) |
-| Gebirge | A Smaragdgrat, B Frostkamm, C Glutgrat, D Weiße Zinnen | Vorschlag |
+| Riftmere / Mythara | Riftmere = Kontinent und Spiel, Mythara = Name der alten Zeit vor dem Riss | entschieden |
+| Großstädte | ① Graufurt ② Kielmund ③ Grauwacht ④ Glutbrunn ⑤ Erzhalden ⑥ Steinkrone ⑦ Letzthafen | entschieden |
+| Gebirge | A Smaragdgrat, B Frostkamm, C Glutgrat, D Weiße Zinnen | entschieden |
 | Zeitlinie | altes Mythara → Magierkrieg → die Wacht → Himmelsriss (Splitter, Splittermeer) → Zerfall der Wacht → heute | Vorschlag |
 | Fraktionen | Wacht, Grenzlandbund, Rabenorden, die Freien, Küstenhäuser, Wanderer | Vorschlag |
 | Die Insel der Raben-Trilogie | **Aschenwerth** (Brücke statt Kahn in C1, zwei Steinkreise in C2, Rabengrund unter der Gruft in C3) | Vorschlag (Fahrplan) |
@@ -84,6 +84,8 @@ Zuletzt aktualisiert: 26.11.2026.
 ## Für später (Ideen, noch nicht geplant)
 
 - **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
+- **Bosse – Wahl der Spielweise** (27.11.): Bei jedem Boss wählt man am Eingang **öffentlich** (gemeinsamer Kampf in der offenen Welt, wer da ist, macht mit) **oder Instanz**; eine Instanz geht **allein oder als Gruppe** (bis zu **4** Spieler, Vorschlag). Der Boss wird mit der Gruppengröße stärker, Beute bekommt jeder für sich. **Rotmantel** (B4) ist in der Quest eine Instanz (allein oder Gruppe), danach gilt die Wahl.
+- **Namen:** Alle bisher vorgeschlagenen Namen sind bestätigt – Weltkonzept (Riftmere/Mythara, Großstädte, Gebirge A–D), Phase 7 (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm), Phase 8 (Fahle Weiten, Heidrast, Mette Heider, Äbtissin Gunhild, Wigand Fels, Tjark Sölde, Der Graue Hauptmann), Phase 9 (Glutsande, Glutbrunn, Selma Dornfeld, Ruwen Kehl, Hasim Tal, Nalia, Sandmutter), Phase 10 (Smaragdküste, Kielmund, Möwenbucht, „Zum Ankerkraut“, Wrackkapitän, Küstenhäuser). Reihenfolge: W3 (Fahle Weiten) vor W2 (Glutsande). *(27.11.)*
 - **Belohnung zur Auswahl** (27.11.): Eine Auswahl zwischen besonderen Gegenständen ist erlaubt (z. B. Kristallschild, -schwert, -bogen), **aber die nicht gewählten müssen auf anderem Weg noch erreichbar bleiben** – Vorschlag: der Questgeber bietet sie danach gegen Splitter oder eine kleine Folgeaufgabe an. Keine Auswahl, die andere Gegenstände für immer sperrt. Die Wahl geschieht im **Abschlussfenster** mit Bild/Werten und Rückfrage („… nehmen?“), nicht über eine leicht verwechselbare Dialog-Antwort.
 - **Besondere Quest-Belohnungen für Fernkampf und Magie** (Wunsch 27.11.): bisher überwiegen Nahkampf-Belohnungen (Waldsäbel, Klinge des Grauen Hauptmanns). Künftige Quest-Blöcke sollen Belohnungen gleichmäßig auf **Nah, Fern und Magie** verteilen (eigene Bögen/Armbrüste, Stäbe, Köcher/Fokus …). Grundsatz für alle neuen Blöcke; vorhandene Entwürfe bei Gelegenheit prüfen.
 - **Feste Live-Zeiten** (3:00 und 16:00 Uhr deutscher Zeit, 15-Minuten-Countdown im Spiel, Bugfixes jederzeit) – Vorlage in #96 (geschlossen, „für später“).
@@ -91,10 +93,3 @@ Zuletzt aktualisiert: 26.11.2026.
 
 ## Offen (Fragen an den Nutzer)
 
-- Rotmantel nach Quest B4: öffentlicher Mini-Boss oder Instanz?
-- Bossing allein oder in Gruppen?
-- Phase 10: Namen (Smaragdküste, Kielmund, Möwenbucht, „Zum Ankerkraut“, Wrackkapitän, Küstenhäuser)
-- Phase 9: Namen (Glutsande, Glutbrunn, Selma Dornfeld, Ruwen Kehl, Hasim Tal, Nalia, Sandmutter).
-- Phase 8: Reihenfolge W2/W3 (Konzept nimmt W3 Fahle Weiten zuerst an), Namen (Heidrast, Mette Heider, Äbtissin Gunhild, Wigand Fels, Tjark Sölde, Der Graue Hauptmann)
-- Phase 7: Namen (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm), Turmkampf öffentlich oder Instanz, Ostufer mit Blick auf die Glutsande?
-- Weltkonzept: Namen (Riftmere/Mythara, Städte), Gebirge A–D, Reihenfolge W2/W3, Splitterinsel
