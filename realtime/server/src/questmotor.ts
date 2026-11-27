@@ -112,7 +112,10 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
     const F0 = q.figuren.find((x) => x.id === o.npc)!, bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y; let boden = 0;
     nehmen(); neu = geben(sb, nutzer, (f.geben || []).filter((G) => !G.verloren), k, lohnGeber(sb, nutzer, bx, by, (n) => { boden += n; })).neu; /* was die Figur im Gespräch gibt (Waffe nach Wahl), gleich */
     await setzen(sb, nutzer, q, QB.ABHOLBEREIT); if (boden) aus.amBoden = true; aus.abholen = q.id; }
-  else { const r = geben(sb, nutzer, f.geben || [], k); if (r.fehler) return { fehler: r.fehler }; neu = r.neu;
+  else { /* #144: was die Figur mitten in der Quest gibt und nicht mehr in den Rucksack passt, liegt am Boden neben dem Spieler (nur für ihn, nach den Boden-Regeln) – sonst wäre der Schritt erledigt, der Gegenstand weg und die Quest hinge */
+    const F0 = q.figuren.find((x) => x.id === o.npc)!, bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y; let boden = 0;
+    const rein = (g: string, n: number): number => { const k0 = aufnehmen(sb, nutzer, g, n); if (k0 < n && bodenDazu(weltRegionBei(bx, by), bx, by, g, n - k0, nutzer, QUESTLOHN)) boden += n - k0; return n; };
+    const r = geben(sb, nutzer, f.geben || [], k, rein); if (r.fehler) return { fehler: r.fehler }; neu = r.neu; if (boden) aus.amBoden = true;
     const n = QB.nachFolge(q, s, f); if (n !== s) await setzen(sb, nutzer, q, n); }
   let zeilen = QB.folgeZeilen(q, o.npc, qStand(nutzer, q.id), f.geben && f.geben.length && !neu.length && f.nichtsZuGeben ? f.nichtsZuGeben : f.zeilen);
   const F = q.figuren.find((x) => x.id === o.npc)!; if (neu.length) zeilen = [...zeilen, { wer: F.name, text: `(Du bekommst: ${neu.join(", ")}.)` }];
