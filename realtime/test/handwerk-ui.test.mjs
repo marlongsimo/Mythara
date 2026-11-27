@@ -66,7 +66,7 @@ try {
     check(banner === "Du hast Handwerk Stufe 21 erreicht!", `Aufstieg: Banner oben „${banner}“`);
     if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "stufe-banner.png" }); }
   await anna.click('#ez-leiste [data-l="skills"]'); await anna.waitForTimeout(400);
-  { const b = await anna.$$eval("[data-beruf]", (l) => l.map((x) => x.dataset.beruf).join(",")); check(b === "holzfaellerei,bergbau,schmieden,handwerk,splitterbinden,fischen,kochen", `Skill-Tab: Berufe aus shared/berufe.ts (${b})`); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "skills-tab.png" }); }
+  { const b = await anna.$$eval("[data-beruf]", (l) => l.map((x) => x.dataset.beruf).join(",")); check(b === "holzfaellerei,bergbau,schmieden,handwerk,splitterbinden,fischen,kochen,kraeuterkunde", `Skill-Tab: Berufe aus shared/berufe.ts (${b})`); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "skills-tab.png" }); }
   await anna.click('[data-beruf="handwerk"]'); check(await anna.evaluate(() => /Handwerk/.test(document.querySelector("#ez-skillstab .sfuss")?.textContent || "") && !!document.querySelector('#ez-skillstab .skachel.an[data-beruf="handwerk"]')), "Beruf kurz antippen: XP-Leiste unten (Name, Level, XP)");
   await anna.click('[data-beruf="handwerk"]', { button: "right" }); await anna.click('.ez-aktionen button:has-text("Skillbuch öffnen")'); /* lange drücken / Rechtsklick: Skillbuch */
   const fu = await anna.waitForSelector("#ez-konto .tafel.fuehrer", { timeout: 5000 }).then(() => true).catch(() => false);

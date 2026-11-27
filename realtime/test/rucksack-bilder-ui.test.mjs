@@ -49,14 +49,21 @@ try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6448, 6440, "waldmark"]); anna.setDefaultTimeout(90000); const weg = [];
   anna.on("requestfailed", (r) => weg.push("FAIL " + r.url().slice(-80))); anna.on("response", (r) => { if (r.status() >= 400) weg.push(r.status() + " " + r.url().slice(-80)); });
   anna.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") weg.push("CONSOLE " + m.text().slice(0, 160)); });
+  await anna.addInitScript(() => { const gc = HTMLCanvasElement.prototype.getContext; window.__gl = 0; HTMLCanvasElement.prototype.getContext = function (k, o) { if (/webgl/.test(k)) window.__gl++; return gc.call(this, k, o); }; });
   let gesperrt = true; await anna.context().route(/img\/(objekte3d\/ausruestung\/bilder|objekte3d\/beute|figuren-fabrik\/held\.[a-z]+\/editor|figuren-echt3d\/base[a-z]+3d\.teile)\//, (r) => (gesperrt ? r.abort("failed") : r.fallback()));
   await anna.goto(B + S + "&vorwaermen=0"); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && i.rucksack && i.rucksack.length; }, null, { timeout: 30000 }).catch(() => {});
   await anna.waitForTimeout(8000); gesperrt = false; /* das Vorladen beim Einloggen ist gescheitert; jetzt ist das Netz wieder da */
-  await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForFunction(() => [...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].every((c) => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 16) if (d[i] > 10) return true; return false; }), null, { timeout: 30000, polling: 500 }).catch(() => {});
-  const r = await anna.evaluate(() => [...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].map((c) => { const x = c.getContext("2d"), d = x.getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 10) n++; return c.dataset.bild + ":" + n; }));
-  const leer = r.filter((x) => Number(x.split(":")[1]) < 100);
-  check(r.length >= 8 && leer.length === 0, `Nach gescheitertem Vorladen zeigt der Rucksack alle Bilder (${leer.length ? "leer: " + leer.join(", ") : r.length + " Bilder"})`);
+  const gl0 = await anna.evaluate(() => window.__gl || 0);
+  await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForFunction(() => [...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].filter((c) => c.dataset.bild !== "splitter").every((c) => c.dataset.url), null, { timeout: 30000, polling: 500 }).catch(() => {});
+  /* #166: je Gegenstand ein festes Bild mit echtem Pfad (kein Zeichnen zur Laufzeit, kein WebGL); es lädt */
+  const r = await anna.evaluate(async () => Promise.all([...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].map(async (c) => { const u = c.dataset.url || "";
+    const ok = /^\.\.\/img\/.+\.(webp|png)$/.test(u) && /url\(/.test(c.style.backgroundImage) ? await new Promise((fertig) => { const i = new Image(); i.onload = () => fertig(i.naturalWidth > 0); i.onerror = () => fertig(false); i.src = u; }) : false;
+    return c.dataset.bild + ":" + (ok ? 1 : 0) + ":" + u; })));
+  const gl1 = await anna.evaluate(() => window.__gl || 0);
+  const leer = r.filter((x) => x.split(":")[1] !== "1" && !/^splitter:/.test(x));
+  check(gl1 === gl0, `Der Rucksack legt keine WebGL-Fläche an (${gl0} → ${gl1})`);
+  check(r.length >= 8 && leer.length === 0, `Auch nach gescheitertem Vorladen hat jeder Gegenstand ein festes Bild mit echtem Pfad, das lädt (${leer.length ? "fehlt: " + leer.join(", ") : r.length - 1 + " Bilder, Splitter als Symbol"})`);
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));
 console.log(fehler ? fehler + " Fehler" : "Rucksackbilder: alles in Ordnung"); process.exit(fehler ? 1 : 0);
