@@ -59,6 +59,7 @@ TESTS=(
   waldweg
   welt-bau
   welt-dreh
+  speer
   welt-daten
   welt-grenzen
   welt-raster

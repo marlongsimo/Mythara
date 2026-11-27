@@ -39,6 +39,8 @@ interface Spec { grund: number; min?: number; /* Höchst- und Mindestschaden; oh
 /** #143 Streifgebiet: so weit (Felder) liegt das nächste Ziel höchstens, Pause dazwischen (s) */
 /** Folge.angriff: so lange (s) ohne Ziel, dann geht der Gegner */
 export const EINMAL_WEG = 20;
+/** Ab dieser Reichweite schlägt eine Nahkampfwaffe im Feldmodus über ein Feld hinweg zu (Speer, Reichweite 2) */
+export const NAH_LANG = 2;
 export const STREIF_SCHRITT = 18, STREIF_PAUSE: [number, number] = [3, 12];
 export const AKTIV_WEIT = 48, SICHT_WEIT = 56, /** ab so vielen Wesen gilt das auch ohne Server (der Browser rechnet die Welt selbst) */ GROSS = 400;
 export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: number; /* Spezialangriff: Pause, Rest der Ladezeit, Zielfläche */ id: number; held: boolean; typ: string; team: number; bot: boolean; x: number; y: number; r: number; blick: number; lp: number; max: number;
@@ -141,9 +143,11 @@ export class Sim {
       const pf = this.wegZu(w, p); if (pf.length) { w.pfad = pf; return; } } }
   /** Felder je Sekunde: Gehen 2, Sprint 4; Gegner 2 (Feste 0); Verlangsamung wirkt weiter */
   private feldTempo(w: Wesen): number { if (!w.held && !MONSTER[w.typ].tempo) return 0; return (w.ausdauer && w.ausdauer.faktor > 1 ? SPRINT_TEMPO_FELDER : GEHEN_TEMPO) * (w.langsamT > 0 ? 1 - w.langsamF : 1); }
-  /** In Reichweite? Feldmodus: Nahkampf nur N/O/S/W (locker: beim Treffen auch schräg daneben), sonst Feldabstand ≤ Reichweite und freie Sicht */
+  /** In Reichweite? Feldmodus: Nahkampf nur N/O/S/W (locker: beim Treffen auch schräg daneben); Nahkampf mit Reichweite 2 (Speer) bis 2 Felder weit bei freier Sicht;
+   *  sonst Feldabstand ≤ Reichweite und freie Sicht */
   private inReich(w: Wesen, z: Wesen, A: { art: string; reich: number }, locker = false): boolean {
     if (!this.felder) return abstand(w, z) - z.r <= A.reich + (locker ? (w.held ? 0.6 : 0.35) : 0) && frei(w, z);
+    if (A.art === "nah" && A.reich >= NAH_LANG) { const d = feldAbstand(w, z); return d > 0 && d <= Math.floor(A.reich) && (d === 1 || frei(w, z)); } /* Speer: auch über ein Feld hinweg */
     if (A.art === "nah") return locker ? feldAbstand(w, z) <= 1 : nahkampfFeld(w, z);
     return feldAbstand(w, z) <= Math.max(1, Math.floor(A.reich)) + (locker ? 1 : 0) && feldAbstand(w, z) > 0 && frei(w, z); }
   /** Wohin laufen, um z anzugreifen: Nahkampf das freie N/O/S/W-Feld, das am nächsten liegt (nicht von einem anderen Gegner belegt), sonst das Ziel selbst */

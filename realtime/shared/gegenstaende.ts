@@ -34,7 +34,7 @@ export function werteVon(G: Gegenstand): [string, string][] {
     if (W.art === "nah") z.push(["Geschick", `+${W.geschick || 0}`], ["Stärke", `+${W.staerke || 0}`]);
     else if (W.art === "fern") z.push(["Fernkampf-Angriff", `+${W.fernAngriff || 0}`], ["Fernkampf-Stärke", `+${W.fernStaerke || 0}`]);
     else z.push(["Magische Genauigkeit", `+${W.genau || 0}`], ["Magie-Stärke", `+${W.magieStaerke || 0}`]);
-    z.push(["Angriffstempo", `${W.ticks} Ticks (${zahl(W.ticks * 0.5)} s)`], ["Reichweite", W.art === "nah" ? (W.reich <= 1 ? "1 Feld (Nahkampf)" : "Nahkampf") : `${zahl(W.reich)} Felder`]);
+    z.push(["Angriffstempo", `${W.ticks} Ticks (${zahl(W.ticks * 0.5)} s)`], ["Reichweite", W.art === "nah" ? (W.reich >= 2 ? `${Math.floor(W.reich)} Felder (Nahkampf)` : W.reich <= 1 ? "1 Feld (Nahkampf)" : "Nahkampf") : `${zahl(W.reich)} Felder`]);
     if (G.abwehr) z.push(["Eigene Abwehr", `Nah ${G.abwehr.nah} · Fern ${G.abwehr.fern} · Magie ${G.abwehr.magie}`]); if (G.zweihand) z.push(["Hände", "zweihändig (kein Schild)"]);
     if (G.anforderung) z.push(["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`]); return z; }
   if (G.trank && VERBRAUCH[G.trank]) return VERBRAUCH[G.trank].werte;
@@ -97,7 +97,7 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 4, staerke: 6 }, /* vorläufig: Streitkolben, 3 Ticks – Werte folgen */
     text: "Ein Streitkolben mit sternförmigem Kopf aus dunklem Stahl, der Schaft grün lackiert und bronzebeschlagen." },
   sterndorn: { id: "sterndorn", name: "Seltener Speer", platz: "waffe", art: "Speer", seltenheit: "selten", ebenen: ["waffe.sterndorn"],
-    waffe: { art: "nah", ticks: 4, reich: 1.5, geschick: 6, staerke: 6 }, /* vorläufig: Speer, 4 Ticks, Reichweite wie Nahkampf (Reichweite 2 folgt) – Werte folgen */
+    waffe: { art: "nah", ticks: 4, reich: 2, geschick: 6, staerke: 6 }, /* Speer: Nahkampf aus 2 Feldern (sim.ts NAH_LANG); Werte aus BALANCING */
     text: "Ein langer Speer mit schlanker Spitze und grünem Wimpel – für zwei Hände und große Reichweite." },
   mondlangbogen: { id: "mondlangbogen", name: "Seltener Langbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.lang"],
     waffe: { art: "fern", ticks: 5, reich: 7, flug: 18, fernAngriff: 12, fernStaerke: 12 }, /* vorläufig: Langbogen – Werte folgen */
@@ -390,7 +390,7 @@ const BALANCING: Record<string, Bal> = {
   eiddolch_gewoehnlich: { a: ["geschick", 10], w: { ticks: 2, reich: 1, geschick: 10, staerke: 6 } }, eiddolch: { a: ["geschick", 20], w: { ticks: 2, reich: 1, geschick: 11, staerke: 11 } },
   eidzweihaender_gewoehnlich: { a: ["staerke", 10], w: { ticks: 4, reich: 1, geschick: 27, staerke: 26 }, zweihand: true }, eidzweihaender: { a: ["staerke", 20], w: { ticks: 4, reich: 1, geschick: 38, staerke: 38 }, zweihand: true },
   sternbrecher_gewoehnlich: { a: ["staerke", 10], w: { ticks: 3, reich: 1, geschick: 13, staerke: 14 } }, sternbrecher: { a: ["staerke", 20], w: { ticks: 3, reich: 1, geschick: 16, staerke: 20 } },
-  sterndorn_gewoehnlich: { a: ["geschick", 10], w: { ticks: 4, reich: 1, geschick: 11, staerke: 12 }, ab: [5, 5, 0], zweihand: true }, sterndorn: { a: ["geschick", 20], w: { ticks: 4, reich: 1, geschick: 15, staerke: 17 }, ab: [7, 7, 0], zweihand: true },
+  sterndorn_gewoehnlich: { a: ["geschick", 10], w: { ticks: 4, reich: 2, geschick: 11, staerke: 12 }, ab: [5, 5, 0], zweihand: true }, sterndorn: { a: ["geschick", 20], w: { ticks: 4, reich: 2, geschick: 15, staerke: 17 }, ab: [7, 7, 0], zweihand: true },
   /* Fernkampf: Oak/Willow-Kurzbogen mit Eisen-/Stahlpfeilen, Langbogen, Armbrust mit Bolzen (Black/Mithril) */
   mondkurzbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 3, reich: 5, fernAngriff: 14, fernStaerke: 16 } }, mondkurzbogen: { a: ["fernkampf", 20], w: { ticks: 3, reich: 5, fernAngriff: 20, fernStaerke: 22 } },
   mondlangbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 5, reich: 7, fernAngriff: 14, fernStaerke: 20 } }, mondlangbogen: { a: ["fernkampf", 20], w: { ticks: 5, reich: 7, fernAngriff: 20, fernStaerke: 27 } },
@@ -414,7 +414,7 @@ const BALANCING: Record<string, Bal> = {
   eiddolch_episch: { a: ["geschick", 35], w: { ticks: 2, reich: 1, geschick: 15, staerke: 14 } }, eiddolch_legendaer: { a: ["geschick", 45], w: { ticks: 2, reich: 1, geschick: 25, staerke: 24 } }, eiddolch_mythisch: { a: ["geschick", 65], w: { ticks: 2, reich: 1, geschick: 40, staerke: 40 } },
   eidzweihaender_episch: { a: ["staerke", 35], w: { ticks: 4, reich: 1, geschick: 43, staerke: 44 }, zweihand: true }, eidzweihaender_legendaer: { a: ["staerke", 45], w: { ticks: 4, reich: 1, geschick: 69, staerke: 70 }, zweihand: true }, eidzweihaender_mythisch: { a: ["staerke", 65], w: { ticks: 4, reich: 1, geschick: 92, staerke: 93 }, zweihand: true },
   sternbrecher_episch: { a: ["staerke", 35], w: { ticks: 3, reich: 1, geschick: 25, staerke: 23 } }, sternbrecher_legendaer: { a: ["staerke", 45], w: { ticks: 3, reich: 1, geschick: 36, staerke: 39 } }, sternbrecher_mythisch: { a: ["staerke", 65], w: { ticks: 3, reich: 1, geschick: 60, staerke: 55 } },
-  sterndorn_episch: { a: ["geschick", 35], w: { ticks: 4, reich: 1, geschick: 23, staerke: 24 }, ab: [9, 9, 0], zweihand: true }, sterndorn_legendaer: { a: ["geschick", 45], w: { ticks: 4, reich: 1, geschick: 36, staerke: 42 }, ab: [12, 12, 0], zweihand: true }, sterndorn_mythisch: { a: ["geschick", 65], w: { ticks: 4, reich: 1, geschick: 55, staerke: 60 }, ab: [15, 15, 0], zweihand: true },
+  sterndorn_episch: { a: ["geschick", 35], w: { ticks: 4, reich: 2, geschick: 23, staerke: 24 }, ab: [9, 9, 0], zweihand: true }, sterndorn_legendaer: { a: ["geschick", 45], w: { ticks: 4, reich: 2, geschick: 36, staerke: 42 }, ab: [12, 12, 0], zweihand: true }, sterndorn_mythisch: { a: ["geschick", 65], w: { ticks: 4, reich: 2, geschick: 55, staerke: 60 }, ab: [15, 15, 0], zweihand: true },
   mondkurzbogen_episch: { a: ["fernkampf", 35], w: { ticks: 3, reich: 5, fernAngriff: 29, fernStaerke: 31 } }, mondkurzbogen_legendaer: { a: ["fernkampf", 45], w: { ticks: 3, reich: 5, fernAngriff: 47, fernStaerke: 49 } }, mondkurzbogen_mythisch: { a: ["fernkampf", 65], w: { ticks: 3, reich: 5, fernAngriff: 69, fernStaerke: 60 } },
   mondlangbogen_episch: { a: ["fernkampf", 35], w: { ticks: 5, reich: 7, fernAngriff: 31, fernStaerke: 38 } }, mondlangbogen_legendaer: { a: ["fernkampf", 45], w: { ticks: 5, reich: 7, fernAngriff: 49, fernStaerke: 60 } }, mondlangbogen_mythisch: { a: ["fernkampf", 65], w: { ticks: 5, reich: 7, fernAngriff: 69, fernStaerke: 73 } },
   sternarmbrust_episch: { a: ["fernkampf", 35], w: { ticks: 6, reich: 6, fernAngriff: 55, fernStaerke: 82 } }, sternarmbrust_legendaer: { a: ["fernkampf", 45], w: { ticks: 6, reich: 6, fernAngriff: 90, fernStaerke: 100 } }, sternarmbrust_mythisch: { a: ["fernkampf", 65], w: { ticks: 6, reich: 6, fernAngriff: 94, fernStaerke: 122 } },
