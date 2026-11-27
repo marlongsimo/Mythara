@@ -13,7 +13,7 @@ umfärben (`fabrik/textur_ton.py`, `fabrik/stein.py`, `fabrik/geist.py`) oder da
 | `gegner.bergtroll` | Bergtroll | 58 | Troll / Riese (gebückt, lange Arme) | `fabrik/rig_riese.py` | faustschlag, gehen, ruhe, tod, treffer |
 | `gegner.tundraelch` | Tundraelch | 62 | Vierbeiner Huftier (mit Geweih) | `fabrik/rig_vierbeiner.py` | angriff, gehen, laufen, ruhe, tod, treffer |
 | `gegner.frostwolf` | Frostwolf | 64 | Vierbeiner Wolf | `fabrik/rig_vierbeiner.py` | angriff, gehen, laufen, ruhe, tod, treffer |
-| `gegner.drakling` | Drakling | 66 | Drache (Flieger mit Schwanz) | `fabrik/rig_flieger.py` | fliegen, sturz, tod, treffer |
+| `gegner.drakling` | Drakling | 66 | Boden-Drache (Vierbeiner mit Flügeln, fliegt nicht) | `fabrik/rig_vierbeiner.py … fluegel=1` | angriff, gehen, laufen, ruhe, tod, treffer |
 | `gegner.eisgolem` | Eisgolem | 72 | Golem / Riese (gebückt) | `fabrik/rig_riese.py` | faustschlag, gehen, ruhe, tod, treffer |
 
 ## Schon vorhandene Grundformen (Auswahl)
