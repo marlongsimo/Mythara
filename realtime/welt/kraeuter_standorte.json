@@ -485,6 +485,20 @@
    "region": "fl_201_183"
   },
   {
+   "id": "reifbach_wegerich_1",
+   "art": "wegerich",
+   "x": 6414.5,
+   "y": 5712.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "reifbach_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6434.5,
+   "y": 5712.5,
+   "region": "fl_201_169"
+  },
+  {
    "id": "kohlstatt_wegerich_1",
    "art": "wegerich",
    "x": 6410.5,

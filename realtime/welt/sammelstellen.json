@@ -1033,6 +1033,33 @@
    ]
   },
   {
+   "name": "Bäume am Reifbach",
+   "ort": "reifbach",
+   "baeume": [
+    {
+     "id": "baume_am_reifbach_tanne_1",
+     "art": "tanne",
+     "x": 6451.5,
+     "y": 5719.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_reifbach_eibe_2",
+     "art": "eibe",
+     "x": 6446.5,
+     "y": 5717.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_reifbach_eibe_3",
+     "art": "eibe",
+     "x": 6450.5,
+     "y": 5713.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
    "name": "Weiden am Weiher",
    "ort": "weiherhof",
    "baeume": [
@@ -1992,6 +2019,33 @@
      "x": 6547.5,
      "y": 5869.5,
      "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 29)",
+   "ort": "fwweg_alt_29",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_29_eiche_1",
+     "art": "eiche",
+     "x": 6499.5,
+     "y": 5729.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_29_eiche_2",
+     "art": "eiche",
+     "x": 6494.5,
+     "y": 5727.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_29_tanne_3",
+     "art": "tanne",
+     "x": 6498.5,
+     "y": 5723.5,
+     "region": "fl_201_169"
     }
    ]
   },
@@ -3820,6 +3874,36 @@
      "x": 6582.5,
      "y": 5713.5,
      "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Adern an der Bucht",
+   "ort": "reifbach",
+   "x": 6404.5,
+   "y": 5736,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_an_der_bucht_kupfer_1",
+     "art": "kupfer",
+     "x": 6406.5,
+     "y": 5736.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "adern_an_der_bucht_eisen_2",
+     "art": "eisen",
+     "x": 6402.5,
+     "y": 5737.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "adern_an_der_bucht_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6404.5,
+     "y": 5733.5,
+     "region": "fl_186_169"
     }
    ]
   },

@@ -343,6 +343,8 @@
  {"id":"wollhag_bankkiste","objekt":"steinhag_bankkiste","x":141,"y":330},
  {"id":"wollhag_laden","objekt":"dorf_marktstand_02","x":135,"y":331},
  {"id":"wollhag_kessel","objekt":"hand_kessel_01","x":144,"y":332},
+ {"id":"fwf_kate_71","objekt":"moor_kate_01","x":2,"y":318},
+ {"id":"reifbach_netze","objekt":"kueste_netze","x":4.5,"y":312.5},
  {"id":"rast_graeberweg_feuer","objekt":"dorf_festfeuer_01","x":106,"y":432.25},
  {"id":"rast_graeberweg_stamm","objekt":"wald_baumstamm_01","x":103.5,"y":433.82,"s":0.8},
  {"id":"furtbruecke_3","objekt":"hochland_bruecke_mitte_ow","x":314.2,"y":352.2},

@@ -135,6 +135,7 @@
  {"id":"kielmund_werft_holz","objekt":"dorf_holzstapel_01","x":428,"y":117},
  {"id":"ks_wald_baumstamm_1","objekt":"wald_baumstamm_01","x":429,"y":120.9},
  {"id":"ks_kiste_2","objekt":"k_kiste","x":431,"y":117},
+ {"id":"kielmund_neues_boot","objekt":"graufurt_faehre_01","x":421,"y":119,"ausbau":"kielmund_boot","spiegeln":true},
  {"id":"kuestenhaus","objekt":"waldmark_rathaus_01","x":462.5,"y":96},
  {"id":"fischmarkt_1","objekt":"dorf_marktstand_03","x":470,"y":121},
  {"id":"fischmarkt_2","objekt":"dorf_marktstand_01","x":477,"y":121},

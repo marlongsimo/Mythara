@@ -35,7 +35,7 @@ const huegel = (x, y, r, h) => { for (let j = -r - 1; j <= r + 1; j++) for (let 
 const NORDSAUM_ENDE = [6696, 6336];   /* hier endet der Weg aus nordsaum.mjs am Nordrand der alten Karte */
 export const ORTE = { grenzposten: [6640, 6112], heidrast: [6596, 5872], grauwacht: [6706, 5748], graeber: [6462, 5770], kernbaumtal: [6236, 5778] };
 /* neue Orte aus fahleweiten_fuellen.mjs (#171) – hier nur, damit das Heide-Streugut dort frei bleibt */
-const NEUE_ORTE = { huegelgrund: [6165, 5800], kohlstatt: [6420, 5878], brechstein: [6656, 5946], wollhag: [6570, 5738], weiherhof: [6340, 5834] };
+const NEUE_ORTE = { huegelgrund: [6165, 5800], kohlstatt: [6420, 5878], brechstein: [6656, 5946], wollhag: [6570, 5738], weiherhof: [6340, 5834], reifbach: [6424, 5722] };
 const W_NORD = [NORDSAUM_ENDE, [6694, 6300], [6682, 6246], [6662, 6182], [6648, 6124], [6640, 6064], [6628, 6004], [6612, 5944], [6600, 5890]];
 const W_GRAUWACHT = [[6604, 5866], [6622, 5846], [6648, 5826], [6668, 5818], [6680, 5814], [6680, 5801]];   /* durchs Südtor der Stadtmauer (#171, fahleweiten_fuellen.mjs) */
 const W_GRAEBER = [[6584, 5872], [6556, 5858], [6520, 5830], [6494, 5800], [6476, 5786]];
