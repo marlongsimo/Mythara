@@ -5,7 +5,7 @@
 Bergwerk: stolleneingang (Felsportal mit Grubenholz-Rahmen, dunkler Schacht, Laterne) · lore (Grubenwagen mit Erz auf vier Rädern) ·
           schienen (gerades Gleisstück 3 m mit Schwellen) · grubenholz (Stapel Stempel und Kappen)
 Alm:      kaeserad (Käserad auf einem Brett, ein Stück angeschnitten; Deko, auch als Rucksackbild für einen Käselaib)
-Pass:     steinbruecke (Bogenbrücke aus Steinblöcken, 7 m, Nord–Süd) · pass_schranke (Schlagbaum mit Gegengewicht und Pfosten, rot-weiß) ·
+Pass:     steinbruecke (Bogenbrücke aus Steinblöcken, 7 m, Nord–Süd) · steinbruecke_ow (dieselbe, Bogen 6,6 m, West–Ost – Brücke zur Furt) · pass_schranke (Schlagbaum mit Gegengewicht und Pfosten, rot-weiß) ·
           gipfelkreuz (Holzkreuz auf Steinsockel) · steinmann (aufgeschichtete Steine)
 Teil:     grubenhelm (Lederkappe mit Messinglampe vorn – Kopfteil der Bergleute, art "kopf", Rand bei z = 0)
 """
@@ -88,12 +88,15 @@ elif ART == "kaeserad":
     kugel((0.2, -0.17, 0.08), 0.035, K_, (1.6, 0.8, 0.8), 8)                                         # abgeschnittenes Stück
     for k in range(6): kugel((random.uniform(-.1, .1), random.uniform(-.1, .1), 0.181), 0.012, mat("loch", (180, 140, 60), 0.6), (1, 1, 0.2), 6)
     rohr((0.25, 0.12, 0.05), (0.38, 0.18, 0.05), 0.008, EIS, 4); wuerfel((0.42, 0.2, 0.05), (0.08, 0.03, 0.02), HOLZ2, (0, 0, 0.45), 0.1)   # Messer
-elif ART == "steinbruecke":
-    for k in range(15):                                                                              # Bogen aus Quadern, Nord–Süd (y)
-        y = -3.5 + k * 0.5; z = 1.2 * math.sin(math.pi * (k + 0.5) / 15) + 0.2
-        wuerfel((0, y, z), (2.4, 0.48, 0.4), STEIN if k % 2 else STEIN2, (math.cos(math.pi * (k + 0.5) / 15) * -0.45, 0, 0), 0.1)
-        for sx in (-1, 1): wuerfel((sx * 1.15, y, z + 0.35), (0.22, 0.48, 0.35), STEIN2 if k % 2 else STEIN, (math.cos(math.pi * (k + 0.5) / 15) * -0.45, 0, 0), 0.15)   # Brüstung
-    for sy in (-1, 1): wuerfel((0, sy * 3.6, 0.15), (2.8, 0.6, 0.3), STEIN2, fase=0.1)
+elif ART in ("steinbruecke", "steinbruecke_ow"):
+    SP_ = 7.0 if ART == "steinbruecke" else 6.6; ST_ = SP_ / 14                                       # Bogen aus Quadern entlang y (Nord–Süd); _ow: 6,6 m und danach um 90° gedreht (West–Ost)
+    for k in range(15):
+        y = -SP_ / 2 + k * ST_; z = 1.2 * math.sin(math.pi * (k + 0.5) / 15) + 0.2
+        wuerfel((0, y, z), (2.4, ST_ * 0.96, 0.4), STEIN if k % 2 else STEIN2, (math.cos(math.pi * (k + 0.5) / 15) * -0.45, 0, 0), 0.1)
+        for sx in (-1, 1): wuerfel((sx * 1.15, y, z + 0.35), (0.22, ST_ * 0.96, 0.35), STEIN2 if k % 2 else STEIN, (math.cos(math.pi * (k + 0.5) / 15) * -0.45, 0, 0), 0.15)   # Brüstung
+    for sy in (-1, 1): wuerfel((0, sy * (SP_ / 2 + 0.1), 0.15), (2.8, 0.6, 0.3), STEIN2, fase=0.1)
+    if ART == "steinbruecke_ow":
+        for o_ in list(bpy.context.scene.objects): o_.location = Vector((-o_.location.y, o_.location.x, o_.location.z)); o_.rotation_mode = "XYZ"; o_.rotation_euler.rotate_axis("Z", 0) if False else None; o_.rotation_euler = (o_.rotation_euler.to_matrix().to_4x4().__rmatmul__(__import__("mathutils").Matrix.Rotation(math.radians(90), 4, "Z"))).to_euler()
 elif ART == "pass_schranke":
     for sx in (-1, 1): wuerfel((sx * 2.2, 0, 0.6), (0.3, 0.3, 1.2), HOLZ2, fase=0.1)
     rohr((-2.1, 0, 1.0), (2.1, 0, 1.0), 0.07, mat("weiss", (232, 228, 220), 0.6), 10)
