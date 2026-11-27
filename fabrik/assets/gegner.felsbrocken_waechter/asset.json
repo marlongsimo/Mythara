@@ -1,0 +1,9 @@
+{
+  "id": "gegner.felsbrocken_waechter",
+  "name": "Felsbrocken-Wächter",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "grundform": "Golem / Riese (gebückt), klein",
+  "status": "v001: kleiner Wächter aus Fels, 1,4 m – Eisgolem, fabrik/rig_riese.py hoehe=1.4, fabrik/stein.py; Bewegungen faustschlag, gehen, ruhe, tod, treffer – img/figuren-echt3d/felsbrocken_waechter3d.glb (+ .mobil.glb) (Block H #159)",
+  "herkunft": "aus Vorlagen"
+}

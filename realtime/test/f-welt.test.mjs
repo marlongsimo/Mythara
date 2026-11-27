@@ -1,5 +1,6 @@
 /*
- * Riftmere – Block F (Phase 9) Ende zu Ende: F1 „Ende des Grases“, F2 „Salz und Feuer“, F3 „Der versandete Tempel“, F4 „Der Strom trägt“ und „Die Karte des Boten“.
+ * Riftmere – Block F (Phase 9) Ende zu Ende: F1 „Ende des Grases“, F2 „Salz und Feuer“, F4 „Der Strom trägt“ und „Die Karte des Boten“.
+ * Block F ist geteilt (unter 400 s je Test): f-welt (F1, F2, F4, Karte), f3-welt (F3 bis zur Inschrift), f3b-welt (F3: Sandmutter, Abgabe, danach).
  * Echter Spielserver (localhost:8816), nachgebildete Supabase (localhost:8815), Kampfwelt in den Glutsanden, im Tempel und in der Kammer der Sandmutter (Instanz).
  * Ida (stark, D2 und E4 fertig) spielt alles ganz, Lohn mit „abholen“; Tom (ohne D2) ist die Gegenprobe.
  * Aufruf: node test/f-welt.test.mjs   (nach node build.mjs und python3 werkzeug/weltzonen.py)
@@ -15,7 +16,6 @@ const F1_ID = "glutsande_ende_des_grases", F2_ID = "glutsande_salz_und_feuer", F
 const W = await starte({ sb: 8815, srv: 8816, helden: {
   ida: geruestet(starkerHeld({ fertig: [D2] })),                                                              /* F1 */
   bea: geruestet(starkerHeld({ fertig: [D2, F1_ID], berufe: { schmieden: 55 }, rucksack: ["hammer", "barren_splittereisen", "barren_splittereisen"] })), /* F2 */
-  cora: geruestet(starkerHeld({ fertig: [D2, F1_ID] })),                                                      /* F3 */
   dora: geruestet(starkerHeld({ fertig: [D2, F1_ID, F2_ID], berufe: { fischen: 70, kochen: 70 }, rucksack: ["reuse", { g: "salz", n: 5 }] })), /* F4 */
   ella: geruestet(starkerHeld({ fertig: [D2, E4, F1_ID, F3_ID], berufe: { kraeuterkunde: 35 }, rucksack: ["steinhaut_schwach"] })),          /* Karte */
   tom: starkerHeld({}) } });
@@ -29,7 +29,7 @@ const fig = (q, id) => q.figuren.find((x) => x.id === id);
 async function mitHeld(s, q, npc, a) { const F = fig(q, npc), z = await kampf(s.name, F.x + 1, F.y); const ok = await sprich(s, q, npc, a); if (z) { z.ws.close(); await schlaf(2500); } return ok; }
 
 try {
-  const [ida, bea, cora, dora, ella, tom] = await Promise.all(["ida", "bea", "cora", "dora", "ella", "tom"].map((n) => spieler(n)));
+  const [ida, bea, dora, ella, tom] = await Promise.all(["ida", "bea", "dora", "ella", "tom"].map((n) => spieler(n)));
   check([F1, F2, F3, F4, K].every(Boolean), "F1–F4 und die Karte des Boten sind im Spiel");
   async function spielF1() {
     console.log("F1 „Ende des Grases“");
@@ -59,28 +59,6 @@ try {
     check(schalterAn(F2, bea, "ruwen_salz") && !schalterAn(F2, tom, "ruwen_salz"), "Schalter ruwen_salz: bei Bea an, bei Tom aus");
 
   }
-  async function spielF3() {
-    console.log("F3 „Der versandete Tempel“");
-    check(await mitHeld(cora, F3, "hasim", "annehmen") && stand(cora, F3).phase === "laeuft", "Cora nimmt F3 an (Defense 50)");
-    check(!schalterAn(F3, cora, "sandmutter_danach") && schalterAn(F3, cora, "sandmutter_kammer"), "Während F3: Kammer als Instanz (sandmutter_kammer), noch nicht „danach“");
-    /* durchs Tor hinab: der Browser meldet den Regionswechsel ({ t: "ort" }), dann die Stelle */
-    await stelle(cora, 7112, 6694.4); W.sende(cora, { t: "ort", ort: "tempel" }); await schlaf(300); await stelle(cora, 11312, 9660); await schlaf(800);
-    check(erl(cora, F3, "abstieg"), "In den Tempel hinabgestiegen (Region tempel)");
-    { const [x, y] = F3.schritte.find((x) => x.id === "geister").wo; const r = await kampfBis(cora, x, y, ["glutgeist"], () => erl(cora, F3, "geister"), 600000); /* Glutgeister flackern – lange */
-      check(erl(cora, F3, "geister"), `Drei Glutgeister besiegt (${r.siege} Siege)`); }
-    { const t = await objekt(cora, F3, "f3_spiegel_2"); check(!erl(cora, F3, "spiegel_2"), "Falsche Reihenfolge: die zweite Platte zerstreut das Licht (" + t.slice(0, 40) + ")"); }
-    for (let i = 1; i <= 4; i++) await objekt(cora, F3, "f3_spiegel_" + i);
-    check([1, 2, 3, 4].every((i) => erl(cora, F3, "spiegel_" + i)), "Vier Spiegelplatten in der richtigen Reihenfolge");
-    await objekt(cora, F3, "f3_inschrift"); check(erl(cora, F3, "inschrift") && anzahl(cora, "tempelabschrift") === 1, "Inschrift abgeschrieben");
-    { const [x, y] = F3.schritte.find((x) => x.id === "sandmutter").wo; await stelle(cora, x, y); const z = await kampf("cora", x, y);
-      const sm = () => z && z.w.find((w) => w[2] === "sandmutter"); check(Boolean(sm()), "Die Sandmutter steht in Coras Kammer (Instanz)");
-      const r = z ? await kaempfen(z, ["sandmutter", "sandkriecher"], () => erl(cora, F3, "sandmutter"), 360000) : 0;
-      check(erl(cora, F3, "sandmutter"), `Sandmutter besiegt, allein (${r} Siege, ${z ? z.ev.filter((e) => e.a === "ansage").length : 0} Ansagen)`); if (z) { z.ws.close(); await schlaf(2500); } }
-    W.sende(cora, { t: "ort", ort: "fl_216_198" }); await schlaf(300);
-    check(await sprich(cora, F3, "hasim", "abgeben") && fertig(cora, F3) && anzahl(cora, "tempelabschrift") === 0, "F3 fertig, Lohn abgeholt");
-    check(schalterAn(F3, cora, "sandmutter_danach") && !schalterAn(F3, cora, "sandmutter_kammer") && schalterAn(F3, cora, "ureisen_tafelberge"), "Nach F3: sandmutter_danach an (stärkere Fassung öffentlich oder eigene Instanz), ureisen_tafelberge an");
-
-  }
   async function spielF4() {
     console.log("F4 „Der Strom trägt“");
     check(await sprich(dora, F4, "nalia", "annehmen") && stand(dora, F4).phase === "laeuft", "Dora nimmt F4 an (nach F2, Fischen und Kochen 65)");
@@ -102,6 +80,6 @@ try {
     check(await sprich(ella, K, "ysolde", "zusammenlegen") && fertig(ella, K) && anzahl(ella, "reisekarte") === 1 && [1, 2, 3, 4, 5].every((i) => anzahl(ella, "kartenstueck_" + i) === 0),
       `Die Karte des Boten fertig: die fünf Stücke werden zur Reisekarte (${anzahl(ella, "reisekarte")})`);
   }
-  await Promise.all([spielF1(), spielF2(), spielF3(), spielF4(), spielKarte()]);
+  await Promise.all([spielF1(), spielF2(), spielF4(), spielKarte()]);
 } catch (e) { console.error(e); check(false, "Ausnahme: " + e.message); }
 W.ende("Block F (Phase 9)");

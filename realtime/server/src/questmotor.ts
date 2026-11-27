@@ -45,7 +45,8 @@ async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promis
 /** Aufheben-Schritte, deren Gegenstand der Spieler schon bei sich hat (z. B. das Pergament oder Bruchstücke schon früher gefunden): gleich erledigt, alle Stücke zählen */
 function nachziehen(nutzer: string, q: QB.QuestDef, s: string): string { let n = s;
   for (const S of q.schritte) if (S.ereignis.art === "aufheben" && QB.moeglich(q, n, S.id) && besitzt(nutzer).includes(S.ereignis.g)) {
-    const g = S.ereignis.g, mal = Math.max(1, Math.min(anzahlVon(nutzer, g) || 1, (S.anzahl || 1) - QB.zaehler(q, n, S.id))); for (let i = 0; i < mal; i++) n = QB.ereignis(q, n, { art: "aufheben", g }); }
+    const g = S.ereignis.g, mal = Math.min(anzahlVon(nutzer, g) || 1, S.anzahl || 1) - QB.zaehler(q, n, S.id); /* #158: bis zur Zahl der Stücke, die da sind – nicht bei jedem Aufruf eins mehr (setzen ruft nachziehen nach jedem Ereignis, ein Siegel zählte so dreifach) */
+    for (let i = 0; i < mal; i++) n = QB.ereignis(q, n, { art: "aufheben", g }); }
   return n; }
 
 /** Weltzustand je Spieler (QuestDef.schalter): Mühle dreht, Kapelle offen, Zielscheiben frei … */
