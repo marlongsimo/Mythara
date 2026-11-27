@@ -70,10 +70,13 @@ Alle mit **Querverbindung** zu bekannten Orten (Kanon „Quests über Regionsgre
 | **H2 „Käse für die Passwacht“** (klein) | Die Sennerin versorgt die Passwacht, ihre Ziegen sind ausgebüxt (Folgen-Baustein wie S6), Käse reifen lassen (Kochen), zur Passwacht tragen. | Mettes Schafe (Grauwacht, E-Block) | Kochen-XP, Käserad-Rezept (Kochen, Herd der Alm), Laden der Sennerin |
 | **H3 „Tiefer als erlaubt“** | Bergleute sind tiefer gegraben als die Vögte erlaubten – unten in der Trollhalle wurde etwas geweckt. Grubenholz ersetzen (Handwerk), eingestürzten Stollen freilegen (Bergbau), verletzte Bergleute versorgen (Tränke). | Hedda (Rabenmoor) erkennt Splitterlicht in Erzproben (Haken für die Rissgrube später) | Bergbau-/Handwerk-XP, Zugang zur Urkammer (Ureisen) |
 | **H4 „Der alte Bergtroll“** (Boss) | In der Trollhalle wacht **Grumhold**, ein uralter Bergtroll, der das Bergwerk für sein Revier hält. Quest-Kampf allein und schwächer. Danach Wahl: öffentlich oder eigene Instanz, stärkere Fassung. | Bergvögtin, Passwächter | Questpunkte, XP, **Drops in der starken Fassung: Waffen der Stufe 70** (Echoschneide, Seelenbogen, Seelenfokus, je etwa 1 : 100) |
+| **H5 „Das erste Echo“** (Boss, Wunsch des Nutzers 27.11.) | Nach H3/H4: In der **Urkammer** reißt der Splitterriss auf; heraus tritt **das erste Echo**, ein uralter Krieger aus Splitterlicht. Quest-Kampf allein und schwächer, danach öffentlich oder eigene Instanz. | Hedda (Splitterlicht), Haken für die Rissgrube | Questpunkte, XP, **Drops in der starken Fassung: Rüstung der Stufe 70** |
 | **Nebenquest „Der Einsiedler vom Spiegelsee“** | Der Einsiedler sammelt Bergkräuter und schreibt die Geschichte der Hochlande; Kräuter bringen, Steinmänner am Grauhorn finden (Erkunden). | Mira (Waldmark) | Kräuterkunde-XP, Kessel am Spiegelsee frei |
 
 Mini-Boss **Grumhold** (Vorschlag): Stufe ~72, Nahkampf (Keule), Stampf-Ring (angezeigt), wirft Felsbrocken (Schattenkreis), schwach gegen Magie; Quest-Fassung ~60 %.
 Beute der starken Fassung: Splitter, hochstufige Erze/Barren, Wildbret, selten die Waffen der Stufe 70 (vorbereitet: STUFE70_BEUTE, #151).
+
+Mini-Boss **Das erste Echo** (Wunsch des Nutzers): zweiter Mini-Boss der Hochlande, in der Urkammer; Krieger aus Splitterlicht (Modell: Heldenfigur mit Leuchtschicht), wechselt seine Schwäche (Farbe zeigt sie). **Droppt Rüstung der Stufe 70** (keine Waffen) – Sätze je Kampfstil (Nahkampf, Fernkampf, Magie), Werte etwa +8 % über Mythisch, Entwurf der Werte wie im Vorschlag `gipfelgericht.md`.
 
 ## Was der Nutzer liefern bzw. entscheiden muss
 
