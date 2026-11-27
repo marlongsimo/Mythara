@@ -1,0 +1,296 @@
+{
+ "hinweis": "Zunfthäuser ab Stufe 60 (#168), Welt: werkzeug/welt/zunfthaeuser.mjs. Je Zunft: flaeche (eingehegt), tor (Feld der Tür für Systeme, Weltfelder, Ecken eingeschlossen), wache, bankkiste (Lesestelle), stationen; Bäume als Sammelstellen (sammelstellen.mjs), Kräuter (kraeuter.py). Bergmannszunft/Zunftschmiede: hochlande_orte.json → hauptstadt; Fischerzunft: kueste_orte.json.",
+ "zuenfte": [
+  {
+   "zunft": "holzfaellerhof",
+   "name": "Holzfällerhof",
+   "ort": "Erlengrund",
+   "beruf": "holzfaellerei",
+   "ab": 60,
+   "region": "fl_186_211",
+   "flaeche": [
+    6389,
+    7009,
+    6411,
+    7025
+   ],
+   "tor": [
+    6395,
+    7009,
+    6399,
+    7009
+   ],
+   "wache": [
+    6397.5,
+    7007.4
+   ],
+   "bankkiste": {
+    "id": "holzfaellerhof_bankkiste",
+    "x": 6406,
+    "y": 7023.6
+   },
+   "stationen": [
+    {
+     "id": "werkbank_holzfaellerhof",
+     "station": "werkbank",
+     "x": 6397.5,
+     "y": 7023.1
+    }
+   ],
+   "baeume": [
+    "holzfaellerhof_kernbaum_1",
+    "holzfaellerhof_kernbaum_2",
+    "holzfaellerhof_kernbaum_3",
+    "holzfaellerhof_eibe_4",
+    "holzfaellerhof_weltenbaum_5",
+    "holzfaellerhof_weltenbaum_6",
+    "holzfaellerhof_eibe_7"
+   ]
+  },
+  {
+   "zunft": "kochzunft",
+   "name": "Kochzunft",
+   "ort": "Haferstedt",
+   "beruf": "kochen",
+   "ab": 60,
+   "region": "fl_186_211",
+   "flaeche": [
+    6230,
+    6959,
+    6246,
+    6971
+   ],
+   "tor": [
+    6230,
+    6963,
+    6232,
+    6966
+   ],
+   "wache": [
+    6228,
+    6965.5
+   ],
+   "bankkiste": {
+    "id": "kochzunft_bankkiste",
+    "x": 6234,
+    "y": 6969.4
+   },
+   "stationen": [
+    {
+     "id": "herd_kochzunft_1",
+     "station": "herd",
+     "x": 6235,
+     "y": 6963.4
+    },
+    {
+     "id": "herd_kochzunft_2",
+     "station": "herd",
+     "x": 6238.5,
+     "y": 6963.4
+    },
+    {
+     "id": "herd_kochzunft_3",
+     "station": "herd",
+     "x": 6242,
+     "y": 6963.4
+    },
+    {
+     "id": "backofen_kochzunft_1",
+     "station": "backofen",
+     "x": 6235.5,
+     "y": 6969.4
+    },
+    {
+     "id": "backofen_kochzunft_2",
+     "station": "backofen",
+     "x": 6239.5,
+     "y": 6969.4
+    },
+    {
+     "id": "kessel_kochzunft",
+     "station": "kessel",
+     "x": 6242.4,
+     "y": 6968.2
+    }
+   ]
+  },
+  {
+   "zunft": "kraeutergarten",
+   "name": "Kräutergarten der Heilkundigen",
+   "ort": "Waldmark",
+   "beruf": "kraeuterkunde",
+   "ab": 60,
+   "region": "waldmark",
+   "flaeche": [
+    6461,
+    6435,
+    6473,
+    6443
+   ],
+   "tor": [
+    6461,
+    6437,
+    6463,
+    6441
+   ],
+   "wache": [
+    6459.5,
+    6439.5
+   ],
+   "bankkiste": {
+    "id": "kraeutergarten_bankkiste",
+    "x": 6469.4,
+    "y": 6437.8
+   },
+   "stationen": [
+    {
+     "id": "kessel_kraeutergarten",
+     "station": "kessel",
+     "x": 6469.4,
+     "y": 6441
+    }
+   ],
+   "kraeuter": [
+    "kraeutergarten_ringelblume_1",
+    "kraeutergarten_eisenhut_2",
+    "kraeutergarten_moorgloeckchen_3",
+    "kraeutergarten_nebelkraut_4",
+    "kraeutergarten_wegerich_5",
+    "kraeutergarten_eisenhut_6"
+   ],
+   "beete": [
+    [
+     6464.5,
+     6437.5
+    ],
+    [
+     6466.5,
+     6437.5
+    ],
+    [
+     6464.5,
+     6439.5
+    ],
+    [
+     6466.5,
+     6439.5
+    ],
+    [
+     6464.5,
+     6441.5
+    ],
+    [
+     6466.5,
+     6441.5
+    ]
+   ]
+  }
+ ],
+ "holzgruppen": [
+  {
+   "ort": "erlengrund",
+   "name": "Hain des Holzfällerhofs: Kernbäume",
+   "baeume": [
+    {
+     "id": "holzfaellerhof_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6393.5,
+     "y": 7013.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_kernbaum_2",
+     "art": "kernbaum",
+     "x": 6399.5,
+     "y": 7014.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_kernbaum_3",
+     "art": "kernbaum",
+     "x": 6405.5,
+     "y": 7013.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_eibe_4",
+     "art": "eibe",
+     "x": 6407.5,
+     "y": 7018.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "ort": "erlengrund",
+   "name": "Hain des Holzfällerhofs: Weltenbaum-Setzlinge",
+   "baeume": [
+    {
+     "id": "holzfaellerhof_weltenbaum_5",
+     "art": "weltenbaum",
+     "x": 6394.5,
+     "y": 7019.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_weltenbaum_6",
+     "art": "weltenbaum",
+     "x": 6400.5,
+     "y": 7020.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_eibe_7",
+     "art": "eibe",
+     "x": 6404.5,
+     "y": 7022.5,
+     "region": "fl_186_211"
+    }
+   ]
+  }
+ ],
+ "kraeuter": [
+  {
+   "id": "kraeutergarten_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6464.5,
+   "y": 6437.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_eisenhut_2",
+   "art": "eisenhut",
+   "x": 6466.5,
+   "y": 6437.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_moorgloeckchen_3",
+   "art": "moorgloeckchen",
+   "x": 6464.5,
+   "y": 6439.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_nebelkraut_4",
+   "art": "nebelkraut",
+   "x": 6466.5,
+   "y": 6439.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_wegerich_5",
+   "art": "wegerich",
+   "x": 6464.5,
+   "y": 6441.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_eisenhut_6",
+   "art": "eisenhut",
+   "x": 6466.5,
+   "y": 6441.5,
+   "region": "waldmark"
+  }
+ ]
+}

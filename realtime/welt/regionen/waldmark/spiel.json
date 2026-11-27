@@ -303,6 +303,28 @@
     "tat": "bald",
     "knopf": "Markt – kommt noch"
    }
+  },
+  {
+   "id": "kraeutergarten",
+   "art": "lesen",
+   "x": 59.6,
+   "y": 38,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Kräutergarten der Heilkundigen. Mira hat den Schlüssel – „nur für Meister der Kräuterkunde, ab Stufe 60“."
+   }
+  },
+  {
+   "id": "kraeutergarten_bankkiste",
+   "art": "lesen",
+   "x": 69.4,
+   "y": 37.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Heilkundigen. Was du hier einlegst, liegt auf deinem Konto."
+   }
   }
  ],
  "ausgaenge": [],

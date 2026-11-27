@@ -28,7 +28,7 @@ const standorte = [...HOLZ, ...[...(ORTE.lichtungen || []), ...SAMMEL.lichtungen
   ...[...BERG, ...[...(ORTE.senken || []), ...SAMMEL.senken].filter((l) => !schonDa.has(l.name))].map((s) => ({ ...s, baeume: s.adern, senke: true }))];
 const bib = JSON.parse(readFileSync(join(RT, "welt", "bibliothek", "objekte.json"), "utf8")).objekte;
 const kategorie = new Map(bib.map((o) => [o.id, o.kategorie]));
-const istBewuchs = (p) => kategorie.get(p.objekt) === "bewuchs";
+const istBewuchs = (p) => kategorie.get(p.objekt) === "bewuchs" && !String(p.id || "").startsWith("zaun_");   /* Hecken als Einhegung (zaun_…, #168) bleiben stehen und sperren den Feldweg */
 const zufall = (x, y) => { let h = Math.imul(x | 0, 0x9e3779b1) ^ Math.imul(y | 0, 0x85ebca77); h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
 
 const nachRegion = new Map();

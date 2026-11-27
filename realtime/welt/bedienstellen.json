@@ -570,6 +570,15 @@
    ]
   },
   {
+   "id": "kraeutergarten_kessel",
+   "station": "kessel",
+   "x": 6469.5,
+   "y": 6441.5,
+   "quelle": "welt/regionen/waldmark (Objekt)",
+   "innen": false,
+   "region": "waldmark"
+  },
+  {
    "id": "huette_holz_51_kessel",
    "station": "kessel",
    "x": 6462.8,

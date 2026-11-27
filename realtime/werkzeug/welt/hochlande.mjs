@@ -256,14 +256,24 @@ const hauptstadt = { mauer: [MAUER.x0, MAUER.y0, MAUER.x1, MAUER.y1], tore: TORE
   /* Zunftviertel: zweite Bank, Zunftschmiede, Brennofen, Stände, Abstieg in den Stollen der Bergmannszunft */
   ding("waldmark_bank_01", 7065, 5915, { id: "steinhag_zunftbank" }); lies("steinhag_zunftbank_tuer", 7065, 5915.6, "Die Zunftbank von Steinhag. Dasselbe Konto wie überall – nur näher an der Grube.");
   hauptstadt.banken.push({ id: "steinhag_bank", gebaeude: "steinhag_bank", schalter: [6969, 5880], vorhanden: true }, { id: "steinhag_zunftbank", gebaeude: "steinhag_zunftbank", schalter: [7065, 5916.4], blick: [0, -1], vorhanden: false });
-  ding("dorf_schmiede_01", 7060, 5933, { id: "steinhag_zunftschmiede", s: 1.4 }); lies("steinhag_zunftschmiede", 7060, 5934.6, "Die Zunftschmiede der Bergleute: vier Essen, vier Ambosse, und an der Wand die Meisterstücke der Zunft.");
-  ding("hand_backofen_01", 7049, 5932, { id: "steinhag_brennofen", s: 1.3 }); lies("steinhag_brennofen", 7049, 5934, "Der Brennofen der Zunft. Hier werden Tiegel und Formen gebrannt.");
-  hauptstadt.stationen.push(...[7055, 7058.3, 7061.7, 7065].flatMap((x, i) => [{ id: `esse_zunft_${i + 1}`, station: "esse", x, y: 5934.4 }]), ...[7056.6, 7063.4].map((x, i) => ({ id: `amboss_zunft_${i + 1}`, station: "amboss", x, y: 5935.6 })),
-    { id: "brennofen_zunft", station: "brennofen (neu, Systeme)", x: 7049, y: 5934 });
+  /* Zunftschmiede (#168): ummauerter Hof (Bruchsteinmauer) mit Schmiede, vier Essen, zwei Ambossen, Brennofen und Bankkiste; ein Tor im Süden (Tür ab Schmieden 60, Systeme) */
+  const ZH = { x0: 7048, y0: 5921, x1: 7070, y1: 5936, tor: 7058 };
+  male(ZH.x0 + 1, ZH.y0 + 2, ZH.x1 - 1, ZH.y1 - 2, () => "p");
+  for (let x = ZH.x0; x < ZH.x1; x += 2) ding("burg_mauer_quer", x + 1, ZH.y0 + 2, { id: mid() });
+  for (let x = ZH.x0; x < ZH.x1; x += 2) if (x + 1 < ZH.tor - 2 || x + 1 > ZH.tor + 2) ding("burg_mauer_quer", x + 1, ZH.y1, { id: mid() });
+  for (let y = ZH.y0 + 2; y < ZH.y1 - 1; y += 2) { ding("burg_mauer_laengs", ZH.x0, y + 2, { id: mid() }); ding("burg_mauer_laengs", ZH.x1, y + 2, { id: mid() }); }
+  ding("dorf_schmiede_01", 7059, 5930, { id: "steinhag_zunftschmiede", s: 1.4 }); lies("steinhag_zunftschmiede", 7059, 5932.4, "Die Zunftschmiede der Bergleute: vier Essen, zwei Ambosse, und an der Wand die Meisterstücke der Zunft.");
+  ding("hand_backofen_01", 7051.5, 5928, { id: "steinhag_brennofen", s: 1.3 }); lies("steinhag_brennofen", 7051.5, 5930.4, "Der Brennofen der Zunft. Hier werden Tiegel und Formen gebrannt.");
+  ding("k_kiste", 7067, 5926, { id: "steinhag_zunftschmiede_bankkiste" }); lies("steinhag_zunftschmiede_bankkiste", 7067, 5927.4, "Die Bankkiste der Zunftschmiede. Was du hier einlegst, liegt auf deinem Konto.");
+  lies("steinhag_zunftschmiede_tor", ZH.tor + 3.2, ZH.y1 + 1.6, "Das Tor zum Hof der Zunftschmiede. „Nur für Meister der Schmiedekunst – ab Stufe 60.“");
+  hauptstadt.stationen.push(...[7055, 7057.7, 7060.3, 7063].map((x, i) => ({ id: `esse_zunft_${i + 1}`, station: "esse", x, y: 5931.2 })), ...[7056.3, 7061.7].map((x, i) => ({ id: `amboss_zunft_${i + 1}`, station: "amboss", x, y: 5932.8 })),
+    { id: "brennofen_zunft", station: "brennofen (neu, Systeme)", x: 7051.5, y: 5930.4 });
+  hauptstadt.zunftschmiede = { flaeche: [ZH.x0, ZH.y0, ZH.x1, ZH.y1], tor: [ZH.tor - 2, ZH.y1 - 2, ZH.tor + 1, ZH.y1 - 1], wache: [ZH.tor, ZH.y1 + 1.6], bankkiste: { id: "steinhag_zunftschmiede_bankkiste", x: 7067, y: 5927.4 }, beruf: "schmieden", ab: 60 };
+  npc.push({ id: "zunftschmied", rolle: "Meisterschmied der Zunft", x: 7062, y: 5930.8 }, { id: "zunftschmiede_wache", rolle: "Wache am Tor der Zunftschmiede (ab Stufe 60)", x: ZH.tor - 3, y: ZH.y1 + 1.6 });
   for (const [i, x] of [7049, 7057].entries()) { ding(["dorf_marktstand_02", "dorf_marktstand_03"][i], x, 5905.5, { id: "steinhag_zunftstand_" + (i + 1) }); hauptstadt.laeden.push({ id: "steinhag_zunftstand_" + (i + 1), art: "Marktstand", x, y: 5906.6, blick: [0, -1], vor: [x, 5903.4] }); }
   ding("hochland_stolleneingang", 7066, 5943, { id: "steinhag_zunftstollen_eingang" });
   lies("steinhag_zunftstollen_eingang", 7066, 5944.6, "Der Abstieg in den Stollen der Bergmannszunft. Ein Schild: „Nur für Zunftmitglieder – Meisterschaft ab Stufe 60.“", { tat: "zunftstollen", knopf: "Hinabsteigen", ziel: [ZS_U[0] * 32 + 32, ZS_U[1] * 32 + 57] }); ding("hochland_lore", 7061, 5944.5, { id: "steinhag_zunftstollen_lore" }); ding("dorf_kiste_01", 7070, 5944.5);
-  npc.push({ id: "zunftmeister", rolle: "Zunftmeisterin der Bergleute", x: 7060, y: 5936 }, { id: "zunftbankier", rolle: "Bank (Zunftbank)", x: 7065, y: 5916.6 }, { id: "stollenwache", rolle: "Wache am Zunftstollen (ab Stufe 60)", x: 7063, y: 5945.5 });
+  npc.push({ id: "zunftmeister", rolle: "Zunftmeisterin der Bergleute", x: 7060, y: 5943.5 }, { id: "zunftbankier", rolle: "Bank (Zunftbank)", x: 7065, y: 5916.6 }, { id: "stollenwache", rolle: "Wache am Zunftstollen (ab Stufe 60)", x: 7063, y: 5945.5 });
   /* Seeufer: zwei weitere Stege, Fischerhütten */
   ding("dorf_bruecke_01", 6962, 5861.3, { id: "steinhag_steg_2" }); freigeben.push({ art: "rechteck", x0: 6957.1, y0: 5858.7, x1: 6965, y1: 5861.3 });
   uferplatz("fischplatz_steinhagsee_west", "muehlbarsch", 10, 6952, 5848, "Am Westufer des Steinhagsees ziehen Mühlbarsche durchs Schilf.");

@@ -524,37 +524,37 @@
   {
    "id": "ort_d_osthof_72",
    "objekt": "k_zaun",
-   "x": 6505.5,
-   "y": 6409.8
+   "x": 6556.5,
+   "y": 6407.8
   },
   {
    "id": "ort_d_osthof_73",
    "objekt": "k_zaun",
-   "x": 6508.5,
+   "x": 6505.5,
    "y": 6409.8
   },
   {
    "id": "ort_d_osthof_74",
    "objekt": "k_zaun",
-   "x": 6580.5,
-   "y": 6425.8
+   "x": 6508.5,
+   "y": 6409.8
   },
   {
    "id": "ort_d_osthof_75",
+   "objekt": "k_zaun",
+   "x": 6577.5,
+   "y": 6425.8
+  },
+  {
+   "id": "ort_d_osthof_76",
    "objekt": "k_zaun",
    "x": 6547.5,
    "y": 6439.8
   },
   {
-   "id": "ort_d_osthof_76",
-   "objekt": "k_zaun",
-   "x": 6550.5,
-   "y": 6439.8
-  },
-  {
    "id": "ort_d_osthof_77",
    "objekt": "k_zaun",
-   "x": 6553.5,
+   "x": 6550.5,
    "y": 6439.8
   },
   {
@@ -566,37 +566,37 @@
   {
    "id": "ort_d_osthof_79",
    "objekt": "k_zaun",
-   "x": 6559.5,
+   "x": 6565.5,
    "y": 6439.8
   },
   {
    "id": "ort_d_osthof_80",
    "objekt": "k_zaun",
-   "x": 6562.5,
+   "x": 6568.5,
    "y": 6439.8
   },
   {
    "id": "ort_d_osthof_81",
    "objekt": "k_zaun",
-   "x": 6565.5,
+   "x": 6571.5,
    "y": 6439.8
   },
   {
    "id": "ort_d_osthof_82",
    "objekt": "k_zaun",
-   "x": 6568.5,
+   "x": 6574.5,
    "y": 6439.8
   },
   {
    "id": "ort_d_osthof_83",
    "objekt": "k_zaun",
-   "x": 6571.5,
+   "x": 6577.5,
    "y": 6439.8
   },
   {
    "id": "ort_d_osthof_84",
    "objekt": "k_zaun",
-   "x": 6574.5,
+   "x": 6580.5,
    "y": 6439.8
   },
   {
@@ -682,16 +682,17 @@
   {
    "id": "ort_d_nordwald_96",
    "objekt": "hoehle_felswand_01",
-   "x": 6310.77,
-   "y": 6378.74,
-   "s": 0.31
+   "x": 6278.79,
+   "y": 6344.32,
+   "s": 0.41
   },
   {
    "id": "ort_d_nordwald_97",
    "objekt": "hoehle_felswand_01",
-   "x": 6278.79,
-   "y": 6344.32,
-   "s": 0.41
+   "x": 6315.11,
+   "y": 6376.93,
+   "s": 0.44,
+   "spiegeln": true
   },
   {
    "id": "ort_d_nordwald_98",
@@ -863,27 +864,20 @@
   {
    "id": "ort_d_obstwiesen_125",
    "objekt": "hoehle_felswand_01",
-   "x": 6580.96,
-   "y": 6687.51,
-   "s": 0.34
-  },
-  {
-   "id": "ort_d_obstwiesen_126",
-   "objekt": "hoehle_felswand_01",
    "x": 6565.74,
    "y": 6744.96,
    "s": 0.44,
    "spiegeln": true
   },
   {
-   "id": "ort_d_obstwiesen_127",
+   "id": "ort_d_obstwiesen_126",
    "objekt": "hoehle_felswand_01",
    "x": 6576.1,
    "y": 6732.33,
    "s": 0.32
   },
   {
-   "id": "ort_d_obstwiesen_128",
+   "id": "ort_d_obstwiesen_127",
    "objekt": "hoehle_felswand_01",
    "x": 6579.03,
    "y": 6706.41,
@@ -891,21 +885,21 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_obstwiesen_129",
+   "id": "ort_d_obstwiesen_128",
    "objekt": "hoehle_felswand_01",
    "x": 6548.49,
    "y": 6745.41,
    "s": 0.42
   },
   {
-   "id": "ort_d_obstwiesen_130",
+   "id": "ort_d_obstwiesen_129",
    "objekt": "hoehle_felswand_01",
    "x": 6581.62,
    "y": 6671.7,
    "s": 0.43
   },
   {
-   "id": "ort_d_obstwiesen_131",
+   "id": "ort_d_obstwiesen_130",
    "objekt": "hoehle_felswand_01",
    "x": 6534.41,
    "y": 6743.43,
@@ -913,7 +907,7 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_obstwiesen_132",
+   "id": "ort_d_obstwiesen_131",
    "objekt": "hoehle_felswand_01",
    "x": 6581.82,
    "y": 6680.99,
@@ -921,13 +915,15 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_133",
-   "objekt": "k_kiste",
-   "x": 6306.1,
-   "y": 6582.8
+   "id": "ort_d_obstwiesen_132",
+   "objekt": "hoehle_felswand_01",
+   "x": 6562.79,
+   "y": 6687.17,
+   "s": 0.33,
+   "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_134",
+   "id": "ort_d_westmark_133",
    "objekt": "hoehle_felswand_01",
    "x": 6277.09,
    "y": 6521.88,
@@ -935,7 +931,7 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_135",
+   "id": "ort_d_westmark_134",
    "objekt": "hoehle_felswand_01",
    "x": 6306.27,
    "y": 6624.96,
@@ -943,14 +939,14 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_136",
+   "id": "ort_d_westmark_135",
    "objekt": "hoehle_felswand_01",
    "x": 6282.47,
    "y": 6606.27,
    "s": 0.42
   },
   {
-   "id": "ort_d_westmark_137",
+   "id": "ort_d_westmark_136",
    "objekt": "hoehle_felswand_01",
    "x": 6285.84,
    "y": 6511.82,
@@ -958,28 +954,28 @@
    "spiegeln": true
   },
   {
-   "id": "ort_d_westmark_138",
+   "id": "ort_d_westmark_137",
    "objekt": "hoehle_felswand_01",
    "x": 6322.85,
    "y": 6596.98,
    "s": 0.4
   },
   {
-   "id": "ort_d_westmark_139",
+   "id": "ort_d_westmark_138",
    "objekt": "hoehle_felswand_01",
    "x": 6322.71,
    "y": 6555.07,
    "s": 0.37
   },
   {
-   "id": "ort_d_westmark_140",
+   "id": "ort_d_westmark_139",
    "objekt": "hoehle_felswand_01",
    "x": 6276.96,
    "y": 6560.58,
    "s": 0.35
   },
   {
-   "id": "ort_d_westmark_141",
+   "id": "ort_d_westmark_140",
    "objekt": "hoehle_felswand_01",
    "x": 6280.53,
    "y": 6586.52,

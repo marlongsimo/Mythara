@@ -12,9 +12,9 @@
   "sperren": [
    {
     "art": "rechteck",
-    "x0": 473,
+    "x0": 470,
     "y0": 44.5,
-    "x1": 476,
+    "x1": 478,
     "y1": 48.5,
     "schalter": "lehmfurt_trittsteine"
    },
@@ -103,6 +103,27 @@
     "y0": 98.7,
     "x1": 441.5,
     "y1": 101.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 437,
+    "y0": 150.7,
+    "x1": 444.9,
+    "y1": 153.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 429.1,
+    "y0": 150.7,
+    "x1": 437,
+    "y1": 153.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 421.2,
+    "y0": 150.7,
+    "x1": 429.1,
+    "y1": 153.3
    }
   ]
  },
@@ -209,6 +230,106 @@
    }
   },
   {
+   "id": "fischerzunft_fang_1",
+   "art": "lesen",
+   "x": 433.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "fischerzunft_fang_2",
+   "art": "lesen",
+   "x": 431.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "fischerzunft_fang_3",
+   "art": "lesen",
+   "x": 429.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Klippenbarsche.",
+    "fisch": "klippenbarsch",
+    "stufe": 35
+   }
+  },
+  {
+   "id": "fischerzunft_fang_4",
+   "art": "lesen",
+   "x": 427.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "fischerzunft_fang_5",
+   "art": "lesen",
+   "x": 425.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "fischerzunft_fang_6",
+   "art": "lesen",
+   "x": 423.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Heringe.",
+    "fisch": "hering",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "fischerzunft_bankkiste",
+   "art": "lesen",
+   "x": 447,
+   "y": 159,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Fischerzunft. Was du hier einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "fischerzunft",
+   "art": "lesen",
+   "x": 451.6,
+   "y": 150.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Privatsteg der Fischerzunft. „Nur für Meister des Fischens – ab Stufe 60.“"
+   }
+  },
+  {
    "id": "wrack",
    "art": "lesen",
    "x": 331,
@@ -235,7 +356,7 @@
   {
    "id": "furt",
    "art": "lesen",
-   "x": 476.5,
+   "x": 478.5,
    "y": 46.5,
    "radius": 1.8,
    "abgleich": "keiner",

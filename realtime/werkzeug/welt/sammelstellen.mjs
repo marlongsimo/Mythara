@@ -43,7 +43,7 @@ const ORTSRADIUS = { haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 34,
 /* ───── Gruppen: Ort, Art (holz/erz), Arten der Bäume bzw. Adern, Name ───── */
 const fest = (liste) => liste.filter((p) => p.x !== undefined).map((p) => ({ id: p.id, art: p.art, x: p.x, y: p.y }));
 const S = lies("sueden_orte.json"), K = lies("kueste_orte.json"), GL = lies("glutsande_orte.json");
-const ureisen = fest(GL.adern || []);
+const ureisen = fest(GL.adern || []), ZO = lies("zunft_orte.json");
 const PLAN = [
   /* Süden an der Südstraße (Stufe 1–35) */
   ["heckenhof", "holz", ["eiche", "eiche", "eiche", "eiche"], "Eichen am Heckenhof"],
@@ -94,6 +94,7 @@ const PLAN = [
   ["nordstrand", "holz", ["kernbaum", "kernbaum", "moorweide"], "Kernbäume am Nordstrand"],
   ["nordstrand", "erz", ["sterneisen", "sterneisen", "splittereisen"], "Felsen am Nordstrand"],
   /* Hochlande (Phase 11, #147): Stufe 40–65 – Bergbau im Bergwerk und an den Geröllhängen, Holz in den Tälern, einzelne alte Bäume */
+  ...(ZO.holzgruppen || []).map((g) => [g.ort, "fest", g.baeume.map((p) => ({ ...p })), g.name]),   /* Zunfthäuser #168: Hain des Holzfällerhofs */
   ["bergwerk", "festerz", (HL.adern || []).map((p) => ({ ...p })), "Erzadern im Erzberg-Bergwerk"],
   ...[...new Set((HL.zunft_adern || []).map((p) => p.gruppe))].map((gr) => ["steinhag", "festerz", HL.zunft_adern.filter((p) => p.gruppe === gr).map(({ gruppe, ...p }) => p), `Adern im Stollen der Bergmannszunft: ${gr}`]),   /* #167, ab Stufe 60 */
   ["erzberg", "erz", ["sterneisen", "sterneisen", "splittereisen", "splittereisen"], "Geröllhang am Erzberg"],
