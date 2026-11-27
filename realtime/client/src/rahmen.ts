@@ -30,7 +30,7 @@ async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: st
 import { inventar, ablegen, anlegen, fallenLassen, tauschenBitten, inventarAmServer, trinken, wirkungenJetzt } from "./inventar";
 import { benutzen, benutzt } from "./benutzen";
 import { REZEPTE } from "../../shared/handwerk";
-import { skillFuehrer } from "./skillfuehrer";
+import { skillFuehrer, skillBuch, kampfFreischaltungen } from "./skillfuehrer";
 import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel, Skill } from "../../shared/kampfwerte";
 import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLesen, autoSetzen, SKILL_ZEICHEN, BERUF_ZEICHEN, BERUF_NAME } from "./skills";
 
@@ -224,10 +224,8 @@ const SKILL_INFO: Record<Skill, { wofuer: string; xp: string }> = {
   lp: { wofuer: "Deine Lebenspunkte: so viele wie dein Lebenspunkte-Level (du startest auf Level 10). Sie regenerieren 1 LP je 50 Sekunden.", xp: "Mit jeder Waffe und in jedem Stil: 1,33 XP je Schadenspunkt, den du verursachst." },
   defense: { wofuer: "Deine Verteidigung gegen Nah- und Fernkampf und zu 30 % gegen Magie (dazu kommen die Boni deiner Rüstung und des Stils).", xp: "Je abgezogenem Lebenspunkt: Nahkampf Verteidigung 4 XP, Ausgewogen 1,33 XP · Fernkampf Fern 2 XP · Magie Defensiv 1 XP. Ein Block gibt keine XP mehr." },
 };
-function skillInfo(k: Skill): void {
-  const S = skillStand(skillsLesen()[k], k), I = SKILL_INFO[k], name = k === "lp" ? "Lebenspunkte" : SKILL_NAME[k];
-  tafelZeigen("skillinfo", `<div class="skopf"><span class="sz gross">${SKILL_ZEICHEN[k]}</span><div><h2>${name}</h2><small>Level ${S.L}${S.L < 100 ? ` · ${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : " · höchstes Level"}</small></div></div><div class="zier"></div>
-    <h3>Wofür</h3><p>${I.wofuer}</p><h3>So steigst du auf</h3><p>${I.xp}</p>`, () => { /* zu */ }); }
+function skillInfo(k: Skill): void { /* Kampf-Skills: dasselbe Skillbuch wie die Berufe, mit dem Reiter „Info“ */
+  skillBuch({ zeichen: SKILL_ZEICHEN[k], name: k === "lp" ? "Lebenspunkte" : SKILL_NAME[k], S: skillStand(skillsLesen()[k], k), reiter: k === "lp" ? [] : kampfFreischaltungen(k), text: [SKILL_INFO[k].wofuer, SKILL_INFO[k].xp] }); }
 /** Info-Fenster der Berufe: Wofür, So steigst du auf */
 const BERUF_TEXT: Record<string, [string, string]> = Object.fromEntries(BERUFE.map((b) => [b.id, [b.wofuer, b.aufstieg]]));
 function berufInfo(k: string): void {
