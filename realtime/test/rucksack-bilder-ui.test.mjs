@@ -4,6 +4,13 @@
 import { createRequire } from "node:module"; import { createServer } from "node:http"; import { spawn } from "node:child_process";
 const require = createRequire(import.meta.url), { chromium } = require("playwright");
 let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) fehler++; };
+/* #166: kein Gegenstand wird mehr zur Laufzeit gezeichnet (symbol) – jeder hat ein festes Bild, und die Datei gibt es */
+{ const { build } = await import("esbuild"), AUS = new URL("./gegenstaende.gebaut.mjs", import.meta.url).pathname;
+  await build({ entryPoints: [new URL("../shared/gegenstaende.ts", import.meta.url).pathname], bundle: true, platform: "node", format: "esm", outfile: AUS, logLevel: "error" });
+  const { GEGENSTAENDE } = await import(AUS); require("fs").unlinkSync(AUS); const alle = Object.values(GEGENSTAENDE);
+  const mitSymbol = alle.filter((G) => G.symbol).map((G) => G.id), ohneBild = alle.filter((G) => !G.bild).map((G) => G.id), ohneDatei = alle.filter((G) => G.bild && !require("fs").existsSync(new URL("../../" + G.bild, import.meta.url))).map((G) => G.id);
+  check(mitSymbol.length === 0 && ohneBild.length === 0, `Kein Gegenstand hat symbol ohne bild (${mitSymbol.length ? "symbol: " + mitSymbol.join(", ") : ""}${ohneBild.length ? " ohne bild: " + ohneBild.join(", ") : ""}${mitSymbol.length + ohneBild.length ? "" : alle.length + " Gegenstände"})`);
+  check(ohneDatei.length === 0, `Jedes bild gibt es als Datei (${ohneDatei.join(", ") || "alle da"})`); }
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000a001", ["tok_ben__" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000b002" };
 const WERTE = { "00000000-0000-0000-0000-00000000a001": { ep: { schildwaechter: 300 }, seelen: 0 }, "00000000-0000-0000-0000-00000000b002": { ep: { kopfgeldjaeger: 120 }, seelen: 0 } }, SIEGE = [], buchungen = [];
 const EINL = []; const PROFIL = { "00000000-0000-0000-0000-00000000a001": "Anna", "00000000-0000-0000-0000-00000000b002": "Ben" }, AKTIV = { "00000000-0000-0000-0000-00000000b002": "kopfgeldjaeger" }, HELDSETZEN = [];
@@ -50,20 +57,28 @@ try {
   anna.on("requestfailed", (r) => weg.push("FAIL " + r.url().slice(-80))); anna.on("response", (r) => { if (r.status() >= 400) weg.push(r.status() + " " + r.url().slice(-80)); });
   anna.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") weg.push("CONSOLE " + m.text().slice(0, 160)); });
   await anna.addInitScript(() => { const gc = HTMLCanvasElement.prototype.getContext; window.__gl = 0; HTMLCanvasElement.prototype.getContext = function (k, o) { if (/webgl/.test(k)) window.__gl++; return gc.call(this, k, o); }; });
-  let gesperrt = true; await anna.context().route(/img\/(objekte3d\/ausruestung\/bilder|objekte3d\/beute|figuren-fabrik\/held\.[a-z]+\/editor|figuren-echt3d\/base[a-z]+3d\.teile)\//, (r) => (gesperrt ? r.abort("failed") : r.fallback()));
+  let gesperrt = true, langsam = false; await anna.context().route(/img\/(objekte3d\/|figuren-fabrik\/held\.[a-z]+\/editor|figuren-echt3d\/base[a-z]+3d\.teile)/, async (r) => { const u = r.request().url(); if (gesperrt && (!/objekte3d\//.test(u) || /\.(webp|png)$/.test(u))) return r.abort("failed"); if (langsam && /\.(webp|png)$/.test(r.request().url())) await new Promise((w) => setTimeout(w, 6000)); return r.fallback(); });
   await anna.goto(B + S + "&vorwaermen=0"); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && i.rucksack && i.rucksack.length; }, null, { timeout: 30000 }).catch(() => {});
-  await anna.waitForTimeout(8000); gesperrt = false; /* das Vorladen beim Einloggen ist gescheitert; jetzt ist das Netz wieder da */
+  await anna.waitForTimeout(8000); gesperrt = false; langsam = true; /* das Vorladen beim Einloggen ist gescheitert; jetzt ist das Netz wieder da, aber langsam (jedes Bild 6 s) */
   const gl0 = await anna.evaluate(() => window.__gl || 0);
-  await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForFunction(() => [...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].filter((c) => c.dataset.bild !== "splitter").every((c) => c.dataset.url), null, { timeout: 30000, polling: 500 }).catch(() => {});
+  await anna.click('#ez-leiste [data-l="rucksack"]');
+  /* #166 (Nutzer): Rucksack öffnen, während die Bilder noch laden – danach müssen sie ohne weitere Aktion erscheinen (vorher blieben die Fächer leer, bis man etwas anlegte) */
+  const fertig = new Set(); anna.on("requestfinished", (q) => fertig.add(q.url())); /* Bild beim Browser angekommen (performance-Puffer ist bei dieser Seite längst voll) */
+  const geladen = async () => (await anna.evaluate(() => [...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].map((c) => ({ g: c.dataset.bild, u: c.dataset.url ? new URL(c.dataset.url, location.href).href : "", bg: /url\(/.test(c.style.backgroundImage) }))))
+    .map((x) => ({ ...x, da: Boolean(x.u) && x.bg && fertig.has(x.u) }));
+  const frueh = await geladen(); await anna.waitForTimeout(12000); const spaet = await geladen(); langsam = false;
+  check(frueh.length >= 8 && frueh.filter((x) => x.da).length < frueh.length, `Beim Öffnen laden die Bilder noch (${frueh.filter((x) => x.da).length}/${frueh.length} da)`);
+  check(spaet.length >= 8 && spaet.every((x) => x.da), `Ohne weitere Aktion erscheinen danach alle Bilder im Rucksack (${spaet.filter((x) => !x.da).map((x) => x.g).join(", ") || spaet.length + " Fächer"})`);
+  await anna.waitForFunction(() => [...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].every((c) => c.dataset.url), null, { timeout: 30000, polling: 500 }).catch(() => {});
   /* #166: je Gegenstand ein festes Bild mit echtem Pfad (kein Zeichnen zur Laufzeit, kein WebGL); es lädt */
   const r = await anna.evaluate(async () => Promise.all([...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].map(async (c) => { const u = c.dataset.url || "";
     const ok = /^\.\.\/img\/.+\.(webp|png)$/.test(u) && /url\(/.test(c.style.backgroundImage) ? await new Promise((fertig) => { const i = new Image(); i.onload = () => fertig(i.naturalWidth > 0); i.onerror = () => fertig(false); i.src = u; }) : false;
     return c.dataset.bild + ":" + (ok ? 1 : 0) + ":" + u; })));
   const gl1 = await anna.evaluate(() => window.__gl || 0);
-  const leer = r.filter((x) => x.split(":")[1] !== "1" && !/^splitter:/.test(x));
+  const leer = r.filter((x) => x.split(":")[1] !== "1");
   check(gl1 === gl0, `Der Rucksack legt keine WebGL-Fläche an (${gl0} → ${gl1})`);
-  check(r.length >= 8 && leer.length === 0, `Auch nach gescheitertem Vorladen hat jeder Gegenstand ein festes Bild mit echtem Pfad, das lädt (${leer.length ? "fehlt: " + leer.join(", ") : r.length - 1 + " Bilder, Splitter als Symbol"})`);
+  check(r.length >= 8 && leer.length === 0, `Auch nach gescheitertem Vorladen hat jeder Gegenstand ein festes Bild mit echtem Pfad, das lädt (${leer.length ? "fehlt: " + leer.join(", ") : r.length + " Bilder"})`);
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));
 console.log(fehler ? fehler + " Fehler" : "Rucksackbilder: alles in Ordnung"); process.exit(fehler ? 1 : 0);

@@ -30,6 +30,8 @@ export async function rucksackVorladen(): Promise<void> { const I = inventar(), 
 /** #166 (Notlösung, Entscheidung des Nutzers): kein Zeichnen zur Laufzeit – das feste Bild (bild bzw. BILDER_AUS_FABRIK) als Hintergrund der Fläche, so wie ein img;
  *  ohne festes Bild ein schlichtes Ersatzsymbol. Vorher: in Canvas gemalt, Rüstungen über WebGL (teilbild) – auf dem iPhone (WKWebView) blieben die Fächer leer. */
 const ERSATZ = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M24 14h16l-4 8c9 4 14 12 14 20 0 8-8 12-18 12s-18-4-18-12c0-8 5-16 14-20z" fill="#5a4426" stroke="#d8b46a" stroke-width="2.5" stroke-linejoin="round"/><path d="M26 22h12" stroke="#d8b46a" stroke-width="2.5" stroke-linecap="round"/></svg>');
+/** #166: jedes Bildfach malen, das noch kein Bild trägt – auch wenn der Reiter sein HTML nicht neu setzt (gleicher Inhalt), sonst bleiben früh gebaute Fächer leer */
+function faecherMalen(wurzel: ParentNode): void { wurzel.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (!G || c.dataset.url === dingBildUrl(G)) return; if (G.symbol) { symbolMalen(c, G.symbol); c.dataset.url = dingBildUrl(G); } else void dingBild(c, G); }); }
 export const dingBildUrl = (G: { bild?: string }): string => (G.bild ? "../" + G.bild : ERSATZ);
 async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: string; bild?: string }): Promise<void> {
   const x = c.getContext("2d"); if (x) x.clearRect(0, 0, c.width, c.height);
@@ -399,7 +401,7 @@ function tabZeichnen(): void {
     neu = `<div class="kopf"><span class="swaffe">${wid ? `<canvas width="96" height="96" data-bild="${wid}"></canvas>` : `<span class="leer">${PLATZBILD.waffe}</span>`}</span><span class="stitel"><b>${w ? w.name : "Fäuste"}</b><small>${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"} · Heldenlevel ${heldenlevel(x)}</small></span></div>
       <div class="stile n${n}">${STILE[art].map((_, i) => feld(i)).join("")}</div>
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`;
-    if (setzen()) el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); return; }
+    setzen(); faecherMalen(el); return; }
   if (tabJetzt === "freunde") { neu = freundeHtml(); setzen(); return; }
   if (tabJetzt === "quests") { const alle = questListe(), fertig = alle.filter((q) => q.art === "fertig"), offen = alle.filter((q) => q.art !== "fertig"), zeigen = questReiter === "fertig" ? fertig : offen;
     /* eine Spalte schmaler Zeilen mit vollem Namen; die Liste scrollt (Wunsch des Nutzers), Kopf und Reiter bleiben stehen */
@@ -423,8 +425,7 @@ function tabZeichnen(): void {
   if (tabJetzt === "rucksack") neu = `<div class="kopf"><b>Rucksack</b><small>${inv.rucksack.length} / ${RUCKSACK_PLAETZE}</small></div><div class="traster">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div>${wahl}`;
   else neu = `<div class="kopf"><b>Ausrüstung</b><button type="button" class="info" data-t="werte" aria-label="Werte der Ausrüstung" title="Werte der Ausrüstung">i</button></div>
     <div class="kreuz">${heldKachel(heldenlevel(skillsLesen()))}${PLAETZE.map((p) => feld(inv.angelegt[p.id], p.id, p.id)).join("")}</div>${wahl}`;
-  if (!setzen()) return;
-  el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); }
+  setzen(); faecherMalen(el); }
 function tabKlick(e: Event): void {
   e.stopPropagation(); const t = e.target as HTMLElement;
   if (t.closest("[data-tzu]")) { tabZu(); return; } /* rotes ✕ oben rechts */
