@@ -3,6 +3,7 @@
  * nur die Darstellung ist 3D: Gegner und andere Helden als Aufsteller mit ihren bisherigen Bildern (FigurLeinwand, Todesbewegung),
  * Namen, Lebensbalken und Schadenszahlen als HTML über der Szene, das gewählte Ziel mit einem roten Ring am Boden.
  */
+import { gegnerLv } from "../gefahranzeige";
 import { arbeitVon } from "../arbeit";
 import { ArbeitAnzeige } from "./arbeit3d";
 import { zielscheibeFrei } from "../../../shared/quests";
@@ -76,14 +77,14 @@ export class WeltKampf3D extends WeltKampf {
     if (!dauer) { b.fl.entfernen(this.w.motor.szene); return; }
     const t0 = performance.now(), weiter = () => { if (performance.now() - t0 > dauer + LIEGEN) { b.fl.entfernen(this.w.motor.szene); return; } b.fl.schritt(16, this.w.motor.gieren); requestAnimationFrame(weiter); }; requestAnimationFrame(weiter); }
   /** Wer steht am Bildschirmpunkt (px, py)? Die ganze Figur zählt (Füße bis Kopf), nicht nur der Boden darunter – der vorderste gewinnt */
-  amSchirm(px: number, py: number): { id: number; held: boolean; team: number; name: string; stufe: number; a?: unknown; typ: string } | null {
+  amSchirm(px: number, py: number): { id: number; held: boolean; team: number; name: string; stufe: number; farbe?: string; a?: unknown; typ: string } | null {
     const m = this.w.motor; let best: { id: number; f: Figur; t: number } | null = null;
     for (const [id, f] of this.figuren) { if (id === this.ichId || f.tot || this.zielscheibeVerborgen(f)) continue; const b = this.bilder.get(f); if (!b) continue;
       const x = this.zone.x0 + f.x, z = this.zone.y0 + f.y, y = m.hoehe(x, z), fu = m.bildschirm(x, y, z), ko = m.bildschirm(x, y + b.h, z); if (!fu || !ko) continue;
       const breit = Math.max(20, Math.abs(fu.y - ko.y) * 0.4), dx = Math.abs(px - fu.x); if (dx > breit || py > fu.y + 10 || py < ko.y - 10) continue;
       if (!best || fu.y > best.t) best = { id, f, t: fu.y }; } /* weiter vorn (tiefer im Bild) zuerst */
     if (!best) return null; const f = best.f, n = f.held ? this.namen.get(best.id) : undefined, M = MONSTER[f.typ] as { name?: string; stufe?: number } | undefined;
-    return { id: best.id, held: f.held, team: f.team, name: f.held ? (n ? n.name : "Wanderer") : M && M.name ? M.name : f.typ, stufe: f.held ? (n ? n.stufe : 1) : (M && M.stufe) || 1, a: n && n.a, typ: f.typ }; }
+    return { id: best.id, held: f.held, team: f.team, name: f.held ? (n ? n.name : "Wanderer") : M && M.name ? M.name : f.typ, ...(f.held ? { stufe: n ? n.stufe : 1 } : (() => { const L = gegnerLv(f.typ, f.max); return { stufe: L.stufe, farbe: L.farbe }; })()), a: n && n.a, typ: f.typ }; } /* #98: Gegner mit Stufe aus den Werten und Gefahrenfarbe */
   /** Antippen am Bildschirm: einen Gegner unter dem Finger angreifen */
   antippenSchirm(px: number, py: number): boolean { const t = this.amSchirm(px, py); if (!t || t.team === 0 || !this.netz) return false; this.netz.sende({ t: "ziel", id: t.id }); return true; }
   /** Wo eine Figur in der Welt steht (Weltfelder) und wie hoch sie ist */
@@ -114,7 +115,7 @@ export class WeltKampf3D extends WeltKampf {
     if (f.held && b.id !== undefined && b.id !== this.ichId) { const n = this.namen.get(b.id), w = n && !lauf && !f.tot ? arbeitVon(n.name) : undefined; if (w || b.ar) (b.ar || (b.ar = new ArbeitAnzeige())).schritt(b.fl as never, w, x, z); } /* #67: Holz fällen, abbauen, angeln, werken */
     b.fl.schritt(dt * 1000, m.gieren);
     { const mein = this.namen.get(this.ichId), g = !f.held && mein ? /^(.*) · Lv (\d+)$/.exec(name) : null, schl = name + "|" + (g && mein ? mein.stufe : "");
-      if (b.nm.dataset.s !== schl) { b.nm.dataset.s = schl; if (g && mein) { b.nm.textContent = g[1] + " · "; const l = document.createElement("b"); l.className = "lvfarbe"; l.textContent = "Lv " + g[2]; l.style.color = levelFarbe(Number(g[2]) - mein.stufe); b.nm.appendChild(l); } else b.nm.textContent = name; } }
+      if (b.nm.dataset.s !== schl) { b.nm.dataset.s = schl; if (g && mein) { b.nm.textContent = g[1] + " · "; const l = document.createElement("b"); l.className = "lvfarbe"; l.textContent = "Lv " + g[2]; l.style.color = gegnerLv(f.typ, f.max).farbe; /* #98: Gefahr für den eigenen Helden */ b.nm.appendChild(l); } else b.nm.textContent = name; } }
     schildAn(b.nm, m, x, y + b.h + 0.42, z);
     const a = Math.max(0, Math.min(1, f.lp / f.max)), i = b.lb.firstChild as HTMLElement; i.style.width = Math.round(a * 100) + "%"; if (f.team === 0) i.className = a > 0.5 ? "" : a > 0.25 ? "mittel" : "wenig"; if ((f.kampfBis || 0) + (f.team !== 0 ? 1000 : 4000) < performance.now()) { if (!b.lb.hidden) b.lb.hidden = true; } /* Gegner: Lebensbalken nur im Kampf und noch 2 Ticks danach (25.11.2026); andere Spieler ebenso, mit ein paar Sekunden Nachlauf (#66) – der eigene Balken steht im HUD */ else schildAn(b.lb, m, x, y + b.h + 0.18, z); }
   protected zielUndLeben(leben: number | null, zf: Figur | null) { const m = this.w.motor;
