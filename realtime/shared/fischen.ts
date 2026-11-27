@@ -22,13 +22,15 @@ export const FISCHE: Record<FischArt, FischDef> = {
 /** Die Geräte (ohne Stufen): Angelrute ab Level 1, Reuse ab Level 20 */
 export const FISCH_GERAETE: SammelWerkzeug[] = [{ g: "angelrute", stufe: 0, level: 1 }, { g: "reuse", stufe: 0, level: 20 }];
 
-export interface Fanggrund { id: string; name: string; art: FischArt; region: string; /** so viele Stellen gleichzeitig */ aktiv: number; felder: [number, number][] }
+export interface Fanggrund { id: string; name: string; art: FischArt; region: string; /** so viele Stellen gleichzeitig */ aktiv: number; felder: [number, number][]; /** nur mit diesem Quest-Schalter (Wehrkolk: wehr_heil aus B2) – je Spieler */ schalter?: string }
 export const FANGGRUENDE: Fanggrund[] = (ORTE as unknown as { gruende: Fanggrund[] }).gruende;
 /** Eine Stelle auf dem Wasser: „<grund>_<n>“ */
 export interface Fangstelle { id: string; grund: string; art: FischArt; x: number; y: number }
 export const FANGSTELLEN: Fangstelle[] = FANGGRUENDE.flatMap((g) => g.felder.map(([x, y], i) => ({ id: `${g.id}_${i + 1}`, grund: g.id, art: g.art, x, y })));
 export const fangstelle = (id: string): Fangstelle | undefined => FANGSTELLEN.find((s) => s.id === id);
 export const fanggrund = (id: string): Fanggrund | undefined => FANGGRUENDE.find((g) => g.id === id);
+/** Schalter, ohne den an dieser Stelle keine Fische sind (oder "") */
+export const fangSchalter = (stelle: string): string => { const S = fangstelle(stelle), G = S && fanggrund(S.grund); return (G && G.schalter) || ""; };
 
 /** Würmer graben (ohne Werkzeug, ohne XP, ohne Splitter) */
 export const WURMACKER_ART: SammelArt = { name: "Wurmacker", level: 1, xp: 0, lo: 170, hi: 250, fall: 0.25, nachwachsen: 0, ertrag: "wurm" };

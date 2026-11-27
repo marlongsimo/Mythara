@@ -41,7 +41,7 @@ export const QUEST_B2: QuestDef = {
   logFertig: "Das Wehr von Weidenhain hält wieder, und die Mühle mahlt. Tebbes Schuppen ist jetzt deine Werkstatt: Esse, Amboss und Werkbank, gleich neben der Bank. Hanne Kalk verkauft Mehl.",
   geber: "tebbe",
   figuren: [
-    { id: "tebbe", name: "Tebbe", modell: "npcmann3d", x: 6458.6, y: 6692.6, blick: [0, 1] },
+    { id: "tebbe", name: "Tebbe", modell: "npc.tebbe", x: 6458.6, y: 6692.6, blick: [0, 1] },
     { id: "hanne", name: "Hanne Kalk", modell: "npcfrau3d", x: 6433.4, y: 6679.4, blick: [0, 1] },
   ],
   voraussetzungen: [

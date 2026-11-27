@@ -41,15 +41,15 @@ const DB = { "u-cara": { waffe: "bogen", inventar: { angelegt: { waffe: "jagdbog
 const sb = async (pfad, init) => { if (pfad.startsWith("/rest/v1/rpg_held?")) { const u = /user_id=eq\.([^&]+)/.exec(pfad)[1]; return DB[u] ? [DB[u]] : []; }
   if (pfad === "/rest/v1/rpc/rpg_held_inventar_setzen") { const a = JSON.parse(init.body); gespeichert.push(a); DB[a.p_user].inventar = a.p_inventar; return true; } throw new Error("unbekannt " + pfad); };
 const anna = await I.inventarLaden(sb, "u-anna"), ben = await I.inventarLaden(sb, "u-ben");
-check(JSON.stringify(anna.inv) === JSON.stringify({ angelegt: { waffe: "ritterschwert", nebenhand: "rundschild" }, rucksack: [], v: 2 }), "Ohne gespeichertes Inventar: aus der Startwaffe (Schwert und Schild)");
-check(JSON.stringify(ben.inv) === JSON.stringify({ angelegt: { waffe: "jagdbogen", brust: "lederpanzer" }, rucksack: ["hirtenstab"], v: 2 }), "Gespeichertes Inventar wird geprüft: Unbekanntes fällt weg (Lederpanzer nachgereicht)");
+check(JSON.stringify(anna.inv) === JSON.stringify({ angelegt: { waffe: "ritterschwert", nebenhand: "rundschild" }, rucksack: [], v: 2, merker: ["schmieden"] }), "Ohne gespeichertes Inventar: aus der Startwaffe (Schwert und Schild), Merker der Schmieden-Umstellung gesetzt");
+check(JSON.stringify(ben.inv) === JSON.stringify({ angelegt: { waffe: "jagdbogen", brust: "lederpanzer" }, rucksack: ["hirtenstab"], v: 2, merker: ["schmieden"] }), "Gespeichertes Inventar wird geprüft: Unbekanntes fällt weg (Lederpanzer nachgereicht)");
 check(await I.inventarLaden(sb, "u-niemand") === null, "Ohne eigenen Helden: kein Inventar");
 { const cara = await I.inventarLaden(sb, "u-cara"), dan = await I.inventarLaden(sb, "u-dan");
   check(cara.inv.angelegt.brust === "lederpanzer" && cara.inv.v === 2, "Bogen, schon gespeichertes Inventar: der Lederpanzer wird einmal nachgereicht");
   check(!dan.inv.angelegt.brust && dan.inv.rucksack.length === 1, "Stab mit Magiepanzer im Rucksack: nichts doppelt nachgereicht");
   const neu = I.invPruefen(null, "stab"); check(neu.angelegt.brust === "magiepanzer" && neu.angelegt.waffe === "hirtenstab", "Neuer Held mit Stab: Stab und Magiepanzer"); }
 const gesehen = []; I.inventarHoeren("u-anna", (inv) => gesehen.push(inv));
-check(I.ablegen(sb, "u-anna", "nebenhand") === null && JSON.stringify(I.inventarVon("u-anna")) === JSON.stringify({ angelegt: { waffe: "ritterschwert" }, rucksack: ["rundschild"], v: 2 }), "Ablegen: der Schild wandert in den Rucksack");
+check(I.ablegen(sb, "u-anna", "nebenhand") === null && JSON.stringify(I.inventarVon("u-anna")) === JSON.stringify({ angelegt: { waffe: "ritterschwert" }, rucksack: ["rundschild"], v: 2, merker: ["schmieden"] }), "Ablegen: der Schild wandert in den Rucksack");
 check(I.anlegen(sb, "u-anna", 0) === null && I.inventarVon("u-anna").angelegt.nebenhand === "rundschild", "Anlegen aus dem Rucksack");
 check(I.anlegen(sb, "u-anna", 5) !== null && I.ablegen(sb, "u-anna", "brust") !== null, "Unsinnige Bitten werden abgelehnt (leerer Platz, falsche Nummer)");
 check(gesehen.length === 2, `Jede Änderung wird gemeldet (${gesehen.length})`);

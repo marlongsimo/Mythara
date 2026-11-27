@@ -62,7 +62,7 @@ async function sammeln(s, art, id, x, y, g, n, ms = 120000) { await stelle(s, x 
 async function herstellen(s, x, y, rezept, menge = 1) { if (x !== null) await stelle(s, x + 1.2, y); s.handwerk = []; sende(s, { t: "handwerk", tat: "start", rezept, menge });
   const a = (await warte(s, (m) => m.t === "handwerk" && (m.tat === "nein" || m.tat === "start"))) || {}; if (a.tat !== "start") return a.text || "?";
   await (s.handwerk.find((m) => m.tat === "stop") || warte(s, (m) => m.t === "handwerk" && m.tat === "stop", 30000)); await schlaf(300); return "ok"; }
-const WERKBANK = [6530.5, 6426.5], ESSE = [6467.4, 6427.8], AMBOSS = [6470.4, 6427.6], GESA = [6445.2, 6458.6], ANSELM = [6457.5, 6424.8], ULF = [6360.5, 6428.5], TILL = [6564.5, 6425.5], GRETE = [6454.5, 6451.8];
+const WERKBANK = [6530.5, 6426.5], ESSE = [6467.4, 6427.8], AMBOSS = [6470.4, 6427.6], GESA = [6445.2, 6458.6], ANSELM = [6457.5, 6423.6], ULF = [6360.5, 6428.5], TILL = [6564.5, 6425.5], GRETE = [6454.5, 6451.8];
 try {
   const anna = await spieler(TA), ben = await spieler(TB), dora = await spieler(TD);
   await warte(anna, (m) => m.t === "inventar"); await warte(dora, (m) => m.t === "inventar"); await schlaf(400);
