@@ -12,13 +12,15 @@ import type { SammelArt, SammelWerkzeug } from "./sammeln";
 import ORTE from "./fanggruende.json";
 
 export const BERUF_FISCHEN = "fischen", BERUF_KOCHEN = "kochen";
-export type FischArt = "bachling" | "muehlbarsch" | "moorhecht" | "wels";
+export type FischArt = "bachling" | "muehlbarsch" | "moorhecht" | "wels" | "glutwels";
 export interface FischDef extends SammelArt { art: FischArt; /** nur mit diesem Gerät */ werkzeug: string; /** verbraucht je Fisch (fehlt = ohne Köder) */ koeder?: string }
 export const FISCHE: Record<FischArt, FischDef> = {
   bachling: { art: "bachling", name: "Bachling", level: 1, xp: 20, lo: 100, hi: 250, fall: 0.12, nachwachsen: 0, ertrag: "fisch_bachling_roh", werkzeug: "angelrute", koeder: "wurm" },
   muehlbarsch: { art: "muehlbarsch", name: "Mühlbarsch", level: 10, xp: 35, lo: 70, hi: 230, fall: 0.12, nachwachsen: 0, ertrag: "fisch_muehlbarsch_roh", werkzeug: "angelrute", koeder: "wurm" },
   moorhecht: { art: "moorhecht", name: "Moorhecht", level: 20, xp: 60, lo: 50, hi: 210, fall: 0.12, nachwachsen: 0, ertrag: "fisch_moorhecht_roh", werkzeug: "reuse" },
   /* Phase 7 (#40, D3): Graufurter Wels im Fährhafen, Fischen 45, mit Angelrute und Wurm */
+  /* Phase 9 (#86): Glutwels im Strom bei Glutbrunn, Fischen 65, mit der Reuse */
+  glutwels: { art: "glutwels", name: "Glutwels", level: 65, xp: 180, lo: 25, hi: 170, fall: 0.12, nachwachsen: 0, ertrag: "fisch_glutwels_roh", werkzeug: "reuse" },
   wels: { art: "wels", name: "Graufurter Wels", level: 45, xp: 110, lo: 35, hi: 190, fall: 0.12, nachwachsen: 0, ertrag: "fisch_wels_roh", werkzeug: "angelrute", koeder: "wurm" },
 };
 /** Die Geräte (ohne Stufen): Angelrute ab Level 1, Reuse ab Level 20 */

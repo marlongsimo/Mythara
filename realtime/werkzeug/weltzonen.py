@@ -20,6 +20,15 @@ import subprocess
 US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"],
                                cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])  # die Quelle meldet zuerst ihren Umfang
 BESONDERS = {
+    # Phase 9 (#86): die Glutsande (Festland-Kacheln der Welt #79) – Sandkriecher in den Dünen, Glutskorpione an der Salzpfanne, Karawanenräuber am Kanal (F1).
+    # WARTEN wie Phase 8: Festland-Kacheln sind noch kein Kampfgebiet – die Lager wirken, wenn das Festland Teil der Kampfwelt wird
+    "fl_216_211": {"leine": 12, "wandern": 3,
+                   "lager": [("sandkriecher", 7045, 6856), ("sandkriecher", 7043, 6854), ("glutskorpion", 7045, 6854), ("glutskorpion", 7047, 6854)]},
+    "fl_216_198": {"leine": 12, "wandern": 3,
+                   "lager": [("karawanenraeuber_saebel", 7209, 6728), ("karawanenraeuber_saebel", 7207, 6726), ("karawanenraeuber_bogen", 7209, 6726), ("karawanenraeuber_bogen", 7211, 6726),
+                             ("glutskorpion", 7330, 6630), ("glutskorpion", 7328, 6628), ("glutskorpion", 7330, 6628)]},
+    # Phase 9 (#86, F3): der versandete Tempel (Untergrund, Welt #79) – Glutgeister und Sandkriecher; die Sandmutter in ihrer Kammer (Instanz tempel_kammer)
+    "tempel": {"leine": 10, "wandern": 2, "lager": [("glutgeist", 11294, 9622), ("sandkriecher", 11292, 9620), ("glutgeist", 11328, 9618), ("glutgeist", 11326, 9616), ("sandkriecher", 11312, 9640)]},
     # Phase 8 (#58): die Fahlen Weiten (Festland-Kacheln der Welt #50) – Heidewölfe in der offenen Heide, der Rudelführer mit Rudel (E1),
     # Wiedergänger bei den Hügelgräbern (friedlich beim Glockenschlag), Deserteure am Grenzposten (E3).
     # WARTEN: Festland-Kacheln sind noch kein Kampfgebiet (FESTLAND unten) – diese Lager wirken erst, wenn das Festland Teil der Kampfwelt wird (Entscheidung offen, Größe des Spiels)

@@ -369,6 +369,48 @@ Object.assign(MONSTER, {
       { wurf: [{ g: "@selten", chance: 100 / 12 }, { g: "@episch", chance: 100 / 48 }, { g: "@legendaer", chance: 100 / 600 }] }] },
 } as Record<string, MonsterDef>);
 
+/* ───────── Phase 9 (#86): die Glutsande und Glutbrunn – Werte doku/konzepte/phase-9.md (Beute: Vorschläge des Konzepts, beute.md folgt) ───────── */
+Object.assign(MONSTER, {
+  /** Sandkriecher: Stufe 42, liegt eingegraben und taucht mit Ansage-Feld unter dem Helden auf (Dünen) */
+  sandkriecher: { name: "Sandkriecher", stufe: 42, bild: "img/echtzeit/bandit.webp", hoehe: 80, lp: 90, tempo: 2.6, angriffswert: { nah: 45, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 45, magie: 30 }, r: 0.55,
+    angriff: { name: "Kieferbiss", art: "nah", schaden: [1, 9], takt: 2.5, reich: 1.6, aushol: 0 }, eingegraben: { weit: 3, schaden: [6, 12], name: "Der Sand bebt" },
+    v2: { staerke: 80, geschick: 50, defense: 50, magie: 10, ticks: 5, abwehr: { nah: 20, fern: 15, magie: 0 } },
+    info: "Ein Wurm aus Panzerplatten, so lang wie ein Wagen. Man sieht ihn erst, wenn der Sand unter den Füßen nachgibt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [12, 24] }] }, { wurf: [{ g: "leder_gehaertet", chance: 15 }, { g: "seelenlicht", chance: 10, anzahl: [1, 3] }] }, { wurf: [{ g: "@selten", chance: 100 / 128 }] }] },
+  /** Glutskorpion: Stufe 48, Gift (Schaden über Zeit), Salzpfanne und Kanal */
+  glutskorpion: { name: "Glutskorpion", stufe: 48, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 95, tempo: 3.0, angriffswert: { nah: 50, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 55, magie: 35 }, r: 0.5,
+    angriff: { name: "Stachel", art: "nah", schaden: [1, 10], takt: 2.5, reich: 1.5, aushol: 0 }, gift: { chance: 0.3, jeSek: 1, dauer: 8 },
+    v2: { staerke: 85, geschick: 60, defense: 60, magie: 10, ticks: 5, abwehr: { nah: 25, fern: 20, magie: 0 } },
+    info: "Ein Skorpion mit glühendem Stachel. Wen er trifft, dem brennt das Gift noch lange in den Adern.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [14, 26] }] }, { wurf: [{ g: "salz", chance: 20, anzahl: [1, 3] }, { g: "seelenlicht", chance: 10, anzahl: [1, 3] }] }, { wurf: [{ g: "@selten", chance: 100 / 96 }] }] },
+  /** Karawanenräuber mit Säbel: Stufe 50, wie Banditen, flieht (Kanal-Lager) */
+  karawanenraeuber_saebel: { name: "Karawanenräuber", stufe: 50, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 95, tempo: 3.4, angriffswert: { nah: 55, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 45, magie: 30 }, r: 0.4, fliehen: 0.25,
+    angriff: { name: "Säbel", art: "nah", schaden: [1, 11], takt: 2, reich: 1.6, aushol: 0 },
+    v2: { staerke: 95, geschick: 70, defense: 50, magie: 10, ticks: 4, abwehr: { nah: 20, fern: 15, magie: 0 } },
+    info: "Ein Räuber in Tüchern gegen den Sand, mit krummem Säbel. Wer die Karawanen überfällt, kennt keine Gnade – und läuft, wenn es eng wird.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [15, 30] }] }, { wurf: [{ g: "salz", chance: 15, anzahl: [1, 2] }, { g: "heiltrank", chance: 10 }, { g: "garn", chance: 10, anzahl: [5, 10] }] }, { wurf: [{ g: "@selten:Schwert", chance: 100 / 80 }, { g: "@episch:Schwert", chance: 100 / 1024 }] }] },
+  /** Karawanenräuber mit Bogen: Stufe 52, Fernkampf */
+  karawanenraeuber_bogen: { name: "Karawanenräuber", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 85, tempo: 3.2, angriffswert: { nah: 10, fern: 55, magie: 0 }, abwehr: { nah: 40, fern: 50, magie: 30 }, r: 0.4, fliehen: 0.25,
+    angriff: { name: "Wüstenbogen", art: "fern", schaden: [1, 11], takt: 2, reich: 6, aushol: 0 },
+    v2: { fernkampf: 100, geschick: 40, staerke: 20, defense: 45, magie: 10, ticks: 4, abwehr: { nah: 5, fern: 20, magie: 0 } },
+    info: "Ein Räuber mit Kurzbogen, das Gesicht hinter Tüchern. Er schießt aus dem Schatten der Kanalmauer.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [15, 30] }] }, { wurf: [{ g: "salz", chance: 15, anzahl: [1, 2] }, { g: "garn", chance: 15, anzahl: [5, 10] }] }, { wurf: [{ g: "@selten:Bogen", chance: 100 / 80 }, { g: "@episch:Bogen", chance: 100 / 1024 }] }] },
+  /** Glutgeist: Stufe 56, Magie, flackert (kurz unangreifbar) – Tempel, nachts in den Dünen */
+  glutgeist: { name: "Glutgeist", stufe: 56, bild: "img/gegner/irrlicht.jpg", hoehe: 110, lp: 85, tempo: 3.0, angriffswert: { nah: 0, fern: 0, magie: 60 }, abwehr: { nah: 55, fern: 45, magie: 70 }, r: 0.45,
+    angriff: { name: "Glutstrahl", art: "magie", schaden: [1, 12], takt: 2.5, reich: 5, aushol: 0 }, flackern: { alle: 7, dauer: 1.5 },
+    v2: { magie: 100, geschick: 30, staerke: 10, defense: 55, ticks: 5, abwehr: { nah: 10, fern: -5, magie: 35 } },
+    info: "Eine Gestalt aus Hitze und Licht. Sie flackert – und für einen Atemzug ist da nichts, was man treffen könnte.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [18, 34] }] }, { wurf: [{ g: "seelenlicht", chance: 50, anzahl: [2, 5] }] }, { wurf: [{ g: "@selten:Stab", chance: 100 / 48 }, { g: "@episch:Stab", chance: 100 / 768 }] }] },
+  /** Die Sandmutter: Mini-Boss, Stufe 60, riesiger Sandkriecher – gräbt sich ein, Ansage-Felder (Kammer im Tempel, Instanz) */
+  sandmutter: { name: "Die Sandmutter", stufe: 60, bild: "img/echtzeit/bandit.webp", hoehe: 150, lp: 320, tempo: 2.6, angriffswert: { nah: 65, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 60, magie: 45 }, r: 0.9, boss: true, wiederkehr: 999999,
+    angriff: { name: "Kieferbiss", art: "nah", schaden: [1, 16], takt: 2.5, reich: 2.2, aushol: 0 },
+    v2: { staerke: 110, geschick: 75, defense: 70, magie: 20, staerkeBonus: 30, ticks: 5, abwehr: { nah: 30, fern: 20, magie: 0 } },
+    info: "Die Mutter aller Sandkriecher. Sie schläft in der Kammer unter dem Tempel – bis jemand das Auge öffnet.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [250, 450] }] }, { wurf: [{ g: "leder_gehaertet", chance: 60, anzahl: [2, 4] }] }, { wurf: [{ g: "seelenlicht", chance: 50, anzahl: [5, 10] }] },
+      { wurf: [{ g: "@selten", chance: 100 / 10 }, { g: "@episch", chance: 100 / 40 }, { g: "@legendaer", chance: 100 / 500 }] }] },
+} as Record<string, MonsterDef>);
+
+
 
 
 

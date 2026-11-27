@@ -548,3 +548,21 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
   GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
     anforderung: { skill: "geschick", level: 25 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 22, staerke: 22 },
     text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }
+
+/* ───────── Phase 9 (#86): Glutsande und Glutbrunn – Bilder img/objekte3d/glutsande/symbole/, Glutwels img/objekte3d/skilling/angeln/symbole/ (Figuren #75) ───────── */
+{ const G9 = "img/objekte3d/glutsande/symbole/", A9 = "img/objekte3d/skilling/angeln/symbole/", R = ["I", "II", "III", "IV", "V"];
+  for (let i = 1; i <= 5; i++) GEGENSTAENDE["kartenstueck_" + i] = { id: "kartenstueck_" + i, name: `Kartenstück ${R[i - 1]}`, art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: G9 + `kartenstueck_${i}.webp`,
+    text: `Ein Stück einer alten Karte mit dem Siegel der Wacht, Nummer ${R[i - 1]}. Alle fünf zusammen ergeben die Reisekarte.` };
+  GEGENSTAENDE.reisekarte = { id: "reisekarte", name: "Reisekarte", art: "Splitterbinden", seltenheit: "episch", untauschbar: true, bild: G9 + "reisekarte.webp",
+    text: "Die ganze Karte mit dem Siegel der Wacht. Einmal am Tag bringt sie dich ohne Ladung zu einem Wegstein-Ziel – im Rucksack „Reisen“." };
+  GEGENSTAENDE.salz = { id: "salz", name: "Salz", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: G9 + "salz.webp", wert: 4,
+    text: "Grobes Salz aus der Salzpfanne der Glutsande. In Glutbrunn kocht man damit den Glutwels in der Kruste." };
+  GEGENSTAENDE.fisch_glutwels_roh = { id: "fisch_glutwels_roh", name: "Glutwels (roh)", art: "Rohstoff", seltenheit: "selten", bild: A9 + "fisch_glutwels_roh.webp",
+    text: "Ein Wels aus dem braunen Strom, die Haut rot wie Glut. Gebraten heilt er 15 Lebenspunkte, in der Salzkruste 18." };
+  GEGENSTAENDE.fisch_glutwels_gebraten = { id: "fisch_glutwels_gebraten", name: "Gebratener Glutwels", art: "Essen", seltenheit: "selten", bild: A9 + "fisch_glutwels_gebraten.webp", trank: "fisch_glutwels_gebraten",
+    text: "Feurig und fett. Heilt 15 Lebenspunkte." };
+  GEGENSTAENDE.fisch_glutwels_verbrannt = { id: "fisch_glutwels_verbrannt", name: "Verbrannter Glutwels", art: "Abfall", seltenheit: "anfaenger", bild: A9 + "fisch_glutwels_verbrannt.webp", text: "Kohle mit Gräten." };
+  GEGENSTAENDE.glutwels_salzkruste = { id: "glutwels_salzkruste", name: "Glutwels in Salzkruste", art: "Essen", seltenheit: "episch", bild: G9 + "glutwels_salzkruste.webp", trank: "glutwels_salzkruste",
+    text: "Das Gericht von Glutbrunn: Glutwels, im Salz gegart. Heilt 18 Lebenspunkte." };
+  VERBRAUCH.fisch_glutwels_gebraten = { id: "fisch_glutwels_gebraten", name: "Gebratener Glutwels", art: "Essen", seltenheit: "selten", heilt: { fest: 15, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "15 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Feurig und fett." };
+  VERBRAUCH.glutwels_salzkruste = { id: "glutwels_salzkruste", name: "Glutwels in Salzkruste", art: "Essen", seltenheit: "episch", heilt: { fest: 18, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "18 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Das Gericht von Glutbrunn." }; }

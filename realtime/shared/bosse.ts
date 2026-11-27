@@ -22,6 +22,16 @@ export const TUEREN: Tuer[] = [];
 TUEREN.push({ id: "turm_wappentuer", feld: [6840, 6519, 6840, 6519], schalter: "wappentuer_offen", eingang: "turm_wappentuer",
   zu: "Die Tür trägt ein Wappen – ein Turm über drei Wellen. Sie ist verschlossen. Vielleicht weiß jemand in Graufurt, wer hier hineindarf." });
 
+/* ───────── Phase 9 (#86, F3): die Sandmutter in ihrer Kammer unter dem Tempel (Region tempel_kammer, Weltfelder 11360…11391 × 9600…9631) ─────────
+   Gräbt sich ein (unangreifbar), ruft Sandkriecher, Treibsand auf angesagten Feldern. Instanz je Spieler, solange „sandmutter_kammer“ an ist (F3). */
+BOSSE.sandmutter = { typ: "sandmutter", phasen: [
+  { ab: 1, ansagen: [{ name: "Sandschlag", alle: 4, felder: "rundum", schaden: [9, 15] }] },
+  { ab: 0.6, text: "Die Sandmutter gräbt sich ein!", eingraben: 5, ruf: { art: "sandkriecher", n: 2, text: "Der Sand bebt überall!" },
+    ansagen: [{ name: "Treibsand", sek: 3, felder: "ziel", weite: 1, vorlauf: 2, schaden: [10, 16] }] },
+  { ab: 0.3, text: "Die Sandmutter brüllt!", eingraben: 4, ansagen: [{ name: "Treibsand", sek: 2.5, felder: "ziel", weite: 2, vorlauf: 2, schaden: [12, 18] }, { name: "Sandschlag", alle: 3, felder: "rundum", schaden: [9, 15] }] } ] };
+INSTANZEN.push({ id: "tempel_kammer", name: "Die Kammer der Sandmutter", feld: [11360, 9600, 11391, 9631], schalter: "sandmutter_kammer",
+  gegner: [{ art: "sandmutter", x: 11376.5, y: 9612.5 }], text: "Das Tor mit dem Auge schließt sich. Der Boden der Kammer atmet." });
+
 /* ───────── Phase 8 (#58, E4): der Graue Hauptmann in seiner Gruft (Region hauptmann_gruft, Weltfelder 11200…11231 × 9600…9631) ─────────
    Ruft Wiedergänger, später Ansage über die Gruft mit Deckung hinter den Grabsteinen. Instanz je Spieler, solange „hauptmann_gruft“ an ist (E4). */
 BOSSE.grauer_hauptmann = { typ: "grauer_hauptmann", phasen: [

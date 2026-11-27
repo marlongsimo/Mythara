@@ -229,6 +229,13 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   deserteur_armbrust: { datei: "deserteur_armbrust3d", angriff: "schiessen", ersatz: "gegner.bandit.v003" },
   tjark: { datei: "tjark3d", angriff: "hieb2h", ersatz: "gegner.bandit.v003" },
   grabwaechter: { datei: "grabwaechter3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
-  grauer_hauptmann: { datei: "grauer_hauptmann3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
+  grauer_hauptmann: { datei: "grauer_hauptmann3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  /* Phase 9 (#86): Glutsande und der versandete Tempel (Figuren #75; bis die Modelle da sind, der Ersatz) */
+  sandkriecher: { datei: "sandkriecher3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  glutskorpion: { datei: "glutskorpion3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  karawanenraeuber_saebel: { datei: "karawanenraeuber_saebel3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
+  karawanenraeuber_bogen: { datei: "karawanenraeuber_bogen3d", angriff: "schiessen", ersatz: "gegner.bandit.v003" },
+  glutgeist: { datei: "glutgeist3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  sandmutter: { datei: "sandmutter3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.4 } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }
