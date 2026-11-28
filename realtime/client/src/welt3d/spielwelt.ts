@@ -67,7 +67,7 @@ import { HELDEN } from "../../../shared/config";
 import { WeltRaster } from "../../../shared/welt/raster";
 import { CHUNK_FELDER, chunkName, inZone } from "../../../shared/welt/typen";
 /** Eine Stelle, an der man etwas tun kann: wohin gehen, was der Knopf sagt, was passiert und ob man schon dort ist */
-interface Stelle { /** eine Figur zum Reden (kurz antippen: nur hingehen, reden über lange drücken) */ npc?: boolean; x: number; y: number; text: string; tat: () => void; da: () => boolean; /** mehrere Knöpfe untereinander (z. B. je Gegenstand am Boden und „Alles aufheben“) */ knoepfe?: { text: string; tat: () => void }[]; /** weitere Aktionen im Aktionsmenü nach der ersten (Händler: „Laden ansehen“) */ mehr?: { text: string; sym: string; tat: () => void }[] }
+interface Stelle { /** eine Figur zum Reden (kurz antippen: nur hingehen, reden über lange drücken) */ npc?: boolean; /** „Sprechen“ im Menü, wenn es etwas anderes ist als kurzes Antippen (Händlerin, die auch Questfigur ist) */ reden?: () => void; x: number; y: number; text: string; tat: () => void; da: () => boolean; /** mehrere Knöpfe untereinander (z. B. je Gegenstand am Boden und „Alles aufheben“) */ knoepfe?: { text: string; tat: () => void }[]; /** weitere Aktionen im Aktionsmenü nach der ersten (Händler: „Laden ansehen“) */ mehr?: { text: string; sym: string; tat: () => void }[] }
 import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../../shared/welt/typen";
 import { aktiverHeld } from "../held";
 import { angelegteEbenen, inventarVomServerDa, inventar, petBitten } from "../inventar";
@@ -358,7 +358,9 @@ export class Spielwelt3D implements WeltKern {
   private vorhaben: Stelle | null = null; private wahl: { el: HTMLElement; x: number; z: number } | null = null;
   /** Was ist an diesem Bodenpunkt zu tun? Die nächste Interaktion in ihrem Umkreis (mindestens gut ein Feld), sonst ein Ausgang, dessen Zone ihn enthält */
   anStelle(x: number, y: number): Stelle | null {
-    { const q = this.quest && this.quest.stelle(x, y); if (q) return q; } /* Questfiguren: „Mit … sprechen“ */
+    { const q = this.quest && this.quest.stelle(x, y); if (q) { const h = this.haendler && this.haendler.stelle(x, y); /* steht die Questfigur an einem Laden (Mira: Quest „Einsiedler“), bleibt der Laden im Menü erreichbar */
+      /* Entscheidung des Nutzers (28.11.): wie bei Händlern – kurz antippen grüßt mit „Laden ansehen“, lange drücken → „Sprechen“ ist das Quest-Gespräch */
+      return h ? { ...h, npc: false, reden: q.tat, mehr: [...(q.mehr || []), ...h.mehr] } : q; } } /* Questfiguren: „Mit … sprechen“ */
     { const h = this.haendler && this.haendler.stelle(x, y); if (h) return h; } /* Händler am Marktplatz: „Mit … sprechen“, dazu „Laden ansehen“ */
     { const b = this.bank && this.bank.stelle(x, y); if (b) return b; } /* Bankmitarbeiter: „Mit … sprechen“, dazu „Bank“ */
     { const h = this.holz && this.holz.stelle(x, y); if (h) return h; }
@@ -433,7 +435,7 @@ export class Spielwelt3D implements WeltKern {
           ...boden.hier.map((x) => { const G = GEGENSTAENDE[x.g]; return { text: G ? G.name : x.g, sym: "✋", anzahl: x.n, farbe: G && SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, tat: () => this.ausfuehren(st, () => aufheben(x.i, this.ort), `Aufheben: ${G ? G.name : x.g}`), lupe: () => gegenstandUntersuchen(x.g) }; }),
           ...(boden.hier.length > 1 ? [{ text: "Alles aufheben", sym: "✋", haupt: true, tat: () => this.ausfuehren(st, () => aufheben(boden.hier.map((x) => x.i), this.ort), "Aufheben: alles") }] : [])] });
         else { const n = /^Mit (.+) sprechen$/.exec(st.text);
-          gr.push(n ? { kopf: n[1], farbe: FARBE.figur, aktionen: [{ text: "Sprechen", sym: "💬", tat: () => this.ausfuehren(st, st.tat) }, ...(st.mehr || []).map((m) => ({ text: m.text, sym: m.sym, tat: () => this.ausfuehren(st, m.tat, `${m.text}: ${n[1]}`) }))] } : { kopf: st.text, farbe: FARBE.objekt, aktionen: [{ text: st.text, sym: "➜", tat: () => this.ausfuehren(st, st.tat) }] }); } }
+          gr.push(n ? { kopf: n[1], farbe: FARBE.figur, aktionen: [{ text: "Sprechen", sym: "💬", tat: () => this.ausfuehren(st, st.reden || st.tat) }, ...(st.mehr || []).map((m) => ({ text: m.text, sym: m.sym, tat: () => this.ausfuehren(st, m.tat, `${m.text}: ${n[1]}`) }))] } : { kopf: st.text, farbe: FARBE.objekt, aktionen: [{ text: st.text, sym: "➜", tat: () => this.ausfuehren(st, st.tat) }] }); } }
       const gehen = { text: "Hierhin gehen", sym: "👣", tat: () => { this.wahlWeg(); this.gehe(b.x, b.z); } };
       if (gehenZuerst) gr.splice(Math.max(0, gr.findIndex((g) => g.farbe === FARBE.objekt || g.farbe === FARBE.figur)), 0, { kopf: "Hier", farbe: FARBE.objekt, aktionen: [gehen] }); else gr.push({ kopf: "", aktionen: [gehen] }); }
     if (b) { const P = this.meinPet, inv = inventar(); /* #170: das eigene Pet wegschicken; am eigenen Helden ein gefundenes rufen */

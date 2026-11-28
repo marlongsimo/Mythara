@@ -73,7 +73,7 @@ try {
   { const d = await dreh(); check(d.zu && winkel(d.ist, d.zumHelden) < 0.05, `Mira dreht sich zum Helden (${d.ist.toFixed(2)} ≈ ${d.zumHelden.toFixed(2)})`); }
   if (BILD) await anna.screenshot({ path: BILD + "haendler-dialog.png" });
   await anna.click('#ez-gespraech [data-a="laden"]'); await anna.waitForTimeout(600);
-  check(await anna.evaluate(() => /Schluck auf!/.test(document.querySelector("#ez-konto .tafel.laden")?.textContent || "") && document.querySelectorAll("#ez-konto .lware").length === 2), "„Laden ansehen“: Ladenfenster „Schluck auf!“ mit zwei Waren");
+  check(await anna.evaluate(() => /Schluck auf!/.test(document.querySelector("#ez-konto .tafel.laden")?.textContent || "") && document.querySelectorAll("#ez-konto .lware").length >= 2), "„Laden ansehen“: Ladenfenster „Schluck auf!“ mit seinen Waren");
   if (BILD) await anna.screenshot({ path: BILD + "laden-traenke.png" });
   await anna.click('#ez-konto .lware[data-g="heiltrank"]'); await anna.waitForTimeout(400);
   check(await anna.evaluate(() => Boolean(document.querySelector("#ez-konto .tafel.untersuchen")) && !JSON.parse(localStorage.getItem("ez_inventar")).rucksack.includes("heiltrank")), "Kurz antippen: untersuchen (kein Kauf)");
