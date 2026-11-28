@@ -31,7 +31,7 @@ Das Konzept sieht die Wahl im Abschlussfenster vor. `belohnung.wahl` kann dort a
 - Drei Antworten, je mit den Teilen des Satzes im Text.
 - Hauke gibt den Satz mit „(Du bekommst: …)“.
 
-Baut Systeme eine Wahl von Sätzen im Abschlussfenster, stelle ich auf das Fenster um.
+**Vorläufig.** Laut KANON („Belohnung zur Auswahl“) wählt man im Fenster mit Bild, Werten und Rückfrage, nicht über eine Antwort. Die Leitstelle hat Systeme deshalb gebeten, eine Wahl zwischen ganzen Sätzen zu bauen, auch als Zwischenbelohnung mitten in der Quest bei Hauke (#190). Sobald Systeme die Struktur nennt, stelle ich um.
 
 ## Was andere bauen (laut Konzept)
 
