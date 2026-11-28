@@ -159,5 +159,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Skilling-Orte ausdünnen (vorgemerkt, 28.11.):** Zu viele Arbeitsstellen (Holz, Erz, Fisch …) liegen dicht beieinander. Sie sollen später auf etwa **50 %** reduziert und besser verteilt werden. Das wird jetzt noch nicht umgesetzt, gilt aber schon als Richtschnur für neue Stellen (Kleinorte, Verdichtung). Höherrangige Stellen dürfen abgelegen liegen (siehe Dichte wie klassisches MMO).
 - **Weltkarte (Wunsch 28.11.):** Kochstellen als Kartensymbol. Beim Herauszoomen werden die Symbole auch kleiner, nicht nur weniger.
 
+- **Reine Anzeige-Hotfixes** (28.11., Freigabe des Nutzers): Ein Hotfix, der nur Client-Dateien ändert (Anzeige, keine Spiellogik, kein Server, nichts in shared), darf live gehen, wenn seine eigenen Tests grün sind (lokal und die dazugehörigen UI-Tests) und in der CI nur die bekannten wackelnden Welt-Durchspieltests rot sind. Integration nennt diese Tests beim Livegang. Alles andere bleibt bei „nur mit grünen Tests“. Bugs stabilisiert die wackelnden Welt-Tests mit Vorrang.
+
 ## Offen (Fragen an den Nutzer)
 
