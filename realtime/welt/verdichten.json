@@ -12,15 +12,15 @@
    "schritt": "grenzland",
    "bewuchs": 193,
    "gruppen": 80,
-   "kleinigkeiten": 19,
+   "kleinigkeiten": 17,
    "tiere": 2
   },
   "nordwald": {
    "schritt": "grenzland",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 3,
-   "tiere": 1
+   "kleinigkeiten": 2,
+   "tiere": 0
   },
   "nordsaum": {
    "schritt": "grenzland",
@@ -47,8 +47,8 @@
    "schritt": "grenzland",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 3,
-   "tiere": 0
+   "kleinigkeiten": 2,
+   "tiere": 1
   },
   "weidenhain": {
    "schritt": "grenzland",
@@ -74,11 +74,11 @@
    "region": "westried"
   },
   {
-   "id": "vd_tier_nordwald_1",
+   "id": "vd_tier_osthang_1",
    "tier": "Rind",
-   "x": 6354.7,
-   "y": 6449.7,
-   "region": "nordwald"
+   "x": 6598.5,
+   "y": 6503.0,
+   "region": "osthang"
   }
  ]
 }

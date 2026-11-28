@@ -52,6 +52,9 @@ SM = lies(W, 'sammelstellen.json')
 for g in SM['lichtungen'] + SM['senken'] + lies(RT, 'shared', 'holz_standorte.json')['lichtungen'] + lies(RT, 'shared', 'bergbau_standorte.json')['senken']:
     for q in g.get('baeume') or g.get('adern') or []: meiden.append((q['x'], q['y'], 4))
 for k in lies(W, 'kraeuter_standorte.json')['stellen']: meiden.append((k['x'], k['y'], 3))
+for t in lies(W, 'troedler_standorte.json')['standorte']: meiden.append((t['x'], t['y'], 5))   # Trödler: ringsum frei (welt-troedler)
+for t in lies(RT, 'shared', 'tierplaetze.json')['plaetze']: meiden.append((t['x'], t['y'], t.get('radius', 6) + 3))   # Tiere wandern dort (tiere.test)
+STREIF = [g['rechteck'] for g in lies(W, 'streifgebiete.json')['gebiete'] if g.get('rechteck')]   # Rudel streifen dort; Bäume stören Wege und Kämpfe (e2-welt)
 ORTE = []   # Bewuchs nicht in Orte
 RAD = {'Stadt': 45, 'Dorf': 30, 'Gehöft': 18}
 on = lies(W, 'ortsnamen.json')
@@ -115,6 +118,7 @@ for schritt in schritte:
         geh = np.vectorize(lambda c: bool(ARTEN.get(c, {}).get('begehbar', False)) and not ARTEN.get(c, {}).get('wasser', False))(G)
         weg = np.isin(G, list('ekpd')); dweg = ndimage.distance_transform_edt(~weg) if weg.any() else np.full((H, B), 99.0)
         rand = np.zeros((H, B), bool); rand[3:-3, 3:-3] = True
+        rand8 = np.zeros((H, B), bool); rand8[8:-8, 8:-8] = True   # Kleinigkeiten 8 Felder vom Gebietsrand (dort liegen u. a. die festen Kampfplätze der Tests, kampf-v1/v2)
         nahe = [(x - ux, y - uy, rr) for x, y, rr in meiden if -10 < x - ux < B + 10 and -10 < y - uy < H + 10] + [(i['x'], i['y'], 3.5) for i in spiel.get('interaktionen', [])]
         verboten = np.zeros((H, B), bool); yy, xx = np.mgrid[0:H, 0:B]
         for x, y, rr in nahe:
@@ -124,6 +128,7 @@ for schritt in schritte:
         for x, y, rr in ORTE:
             x, y = x - ux, y - uy
             if -rr < x < B + rr and -rr < y < H + rr: imOrt |= (xx + 0.5 - x) ** 2 + (yy + 0.5 - y) ** 2 < rr * rr
+        for m in STREIF: verboten |= (xx + ux >= m[0]) & (xx + ux <= m[2]) & (yy + uy >= m[1]) & (yy + uy <= m[3])
         for m in MAUERN: imOrt |= (xx + ux >= m[0] - 4) & (xx + ux <= m[2] + 4) & (yy + uy >= m[1] - 4) & (yy + uy <= m[3] + 4)
         RASTER = {}; belegt = []
         def belege(a, b, rr):
@@ -199,14 +204,14 @@ for schritt in schritte:
                 if y_ > o['y'] - 0.6: su += max(0, min(r[2], k[2] + 0.6) - max(r[0], k[0] - 0.6)) * max(0, min(r[3], k[3] + 0.6) - max(r[1], k[1] - 0.6))   # Spielraum: bauen.mjs richtet noch auf Felder aus
             return su > 0.05 * f
         for _ in range(3000):
-            offen = weg & ~erledigt & (dk > WEG_ABSTAND) & rand
+            offen = weg & ~erledigt & (dk > WEG_ABSTAND) & rand8
             if not offen.any(): break
             wy, wx = np.argwhere(offen)[0]; erledigt[wy, wx] = True
             best = None
             for _v in range(60):
                 a, rr = (3.3 + rng.random() * 2.8 if _v < 30 else rng.random() * 6.283), 2.5 + rng.random() * 3   # zuerst nördlich des Wegs: davor liegt der Weg, kein Baum verdeckt
                 x, y = wx + 0.5 + math.cos(a) * rr, wy + 0.5 + math.sin(a) * rr; i, j = int(x), int(y)
-                if not (0 <= i < B and 0 <= j < H) or not rand[j, i] or not geh[j, i] or weg[j, i] or verboten[j, i] or G[j, i] == 'p': continue
+                if not (0 <= i < B and 0 <= j < H) or not rand8[j, i] or not geh[j, i] or weg[j, i] or verboten[j, i] or G[j, i] == 'p': continue
                 wiese = G[j, i] in WIESE; art = gewichtet(rng, DW if wiese else DWA)
                 o = {'id': f'vd_{n}_k{dekor + 1}', 'objekt': art, 'x': round(x, 2), 'y': round(y, 2)}
                 k = BIB[art].get('kollision') or {}
