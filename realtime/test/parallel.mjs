@@ -14,7 +14,7 @@ import { spawn } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const liste = () => { const t = readFileSync(new URL("./server-tests.sh", import.meta.url), "utf8"); const m = /TESTS=\(([\s\S]*?)\)/.exec(t);
+const liste = () => { const t = readFileSync(new URL("./server-tests.sh", import.meta.url), "utf8"); const m = /TESTS=\(([\s\S]*?)^\)/m.exec(t); /* Ende: eine Zeile nur mit „)“ – Klammern in Kommentaren zählen nicht */
   return m[1].split("\n").map((z) => z.replace(/#.*/, "").trim()).filter(Boolean); };
 const tests = process.argv.slice(2).length ? process.argv.slice(2) : liste();
 const N = Math.max(1, Number(process.env.GLEICHZEITIG) || 6), LOGS = process.env.TEST_LOGS || mkdtempSync(join(tmpdir(), "tests-"));

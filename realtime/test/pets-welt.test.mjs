@@ -25,10 +25,12 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
 let srv, log = "";
 const starten = async (env) => { srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8871", SUPABASE_URL: "http://localhost:8873", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765", ...env }, stdio: ["ignore", "pipe", "pipe"] });
   srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d)); await new Promise((r) => setTimeout(r, 1200)); };
-function spieler(token, ort) { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8785".replace("8785", "8871") + "/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }), s = { ws, inv: null, chat: [], berg: [], holz: [], adern: null, warte: [] };
-  ws.on("message", (r) => { const m = JSON.parse(String(r)); if (m.t === "inventar") s.inv = m.inv; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text); if (m.t === "holz") s.holz.push(m); if (m.t === "berg") s.berg.push(m); if (m.t === "adern") s.adern = m.weg; if (m.t === "spieler") s.spieler = m.liste; for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
+function spieler(token, ort) { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8785".replace("8785", "8871") + "/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }), s = { ws, inv: null, chat: [], berg: [], holz: [], adern: null, warte: [], alle: [] };
+  ws.on("message", (r) => { const m = JSON.parse(String(r)); s.alle.push(m); if (m.t === "inventar") s.inv = m.inv; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text); if (m.t === "holz") s.holz.push(m); if (m.t === "berg") s.berg.push(m); if (m.t === "adern") s.adern = m.weg; if (m.t === "spieler") s.spieler = m.liste; for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
   ws.on("open", () => { ws.send(JSON.stringify(token ? { t: "anmeldung", token, geraet: "test-" + String(token).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") } : { t: "anmeldung", gast: true })); fertig(s); }); }); }
-const warte = (s, fn, ms = 4000) => new Promise((r) => { const t = setTimeout(() => r(null), ms); s.warte.push({ f: fn, r: (m) => { clearTimeout(t); r(m); } }); });
+/** Auf eine Meldung warten; ab: auch schon mitgeschriebene ab diesem Index zählen (unter Last kommt sie sonst, bevor der Test hinsieht) */
+const warte = (s, fn, ms = 4000, ab) => new Promise((r) => { if (ab !== undefined) { const m = s.alle.slice(ab).find(fn); if (m) return r(m); }
+  const t = setTimeout(() => r(null), ms); s.warte.push({ f: fn, r: (m) => { clearTimeout(t); r(m); } }); });
 const sende = (s, m) => s.ws.send(JSON.stringify(m)), schlaf = (ms) => new Promise((r) => setTimeout(r, ms));
 const anzahl = (s, g) => (s.inv.rucksack || []).filter((x) => (typeof x === "string" ? x : x.g) === g).length;
 const ST = JSON.parse(readFileSync("shared/bergbau_standorte.json", "utf8")).senken.flatMap((l) => l.adern).filter((b) => b.art !== "waldstein") /* ohne den Questfels (Quest 03) */, KUPFER = ST.find((b) => b.art === "kupfer"), EISEN = ST.find((b) => b.art === "eisen");
@@ -40,13 +42,15 @@ try {
   await starten({ BERG_FALL: "0", BERG_KERN: "0", PET_CHANCE: "1" });
   const anna = await spieler(TA, KUPFER.region), ben = await spieler(TB, KUPFER.region); await warte(anna, (m) => m.t === "inventar"); await warte(ben, (m) => m.t === "inventar");
   check(!(anna.inv.pets || []).length, "Anna hat noch keinen Begleiter");
-  await bei(anna, KUPFER); await bei(ben, KUPFER, 2); const st = await nein(anna, KUPFER.id); check(st.tat === "start", "Anna baut Kupfer ab");
-  const fund = await warte(anna, (m) => m.t === "pet" && m.tat === "fund", 15000); await schlaf(300);
+  await bei(anna, KUPFER); await bei(ben, KUPFER, 2); const vorAbbau = anna.alle.length, vorBen = ben.alle.length; const st = await nein(anna, KUPFER.id); check(st.tat === "start", "Anna baut Kupfer ab");
+  const fund = await warte(anna, (m) => m.t === "pet" && m.tat === "fund", 40000, vorAbbau) /* von Anfang an mitgeschrieben – unter Last (CI) kommt der Fund schon während des Starts */;
+  await warte(anna, (m) => m.t === "inventar" && (m.inv.pets || []).includes("steinbert"), 10000, vorAbbau); /* der neue Spielerstand */
+  await warte(ben, (m) => m.t === "chat" && /Steinbert/.test(m.text || ""), 10000, vorBen); /* die Ansage auch bei Ben */
   check(fund && fund.id === "steinbert", "beim Abbau gefunden: Steinbert (Bergbau)");
   check((anna.inv.pets || []).join() === "steinbert" && anna.inv.petAktiv === "steinbert", "im Spielerstand (pets, petAktiv) – es folgt sofort");
-  check(!(anna.inv.rucksack || []).some((x) => /stein/.test(typeof x === "string" ? x : x.g)), "nicht im Rucksack (gebunden, nicht handelbar, geht nicht verloren)");
+  check(anzahl(anna, "pet_steinbert") === 1, "als Gegenstand im Rucksack (KANON fd1014fd0: Pets werden Gegenstände)");
   check(anna.chat.some((t) => /Anna hat beim Bergbau einen kleinen Begleiter gefunden: Steinbert/.test(t)) && ben.chat.some((t) => /Steinbert/.test(t)), "Ansage im Chat – auch Ben liest sie");
-  await warte(anna, (m) => m.t === "berg" && m.tat === "erz", 15000); await schlaf(300);
+  await warte(anna, (m) => m.t === "berg" && m.tat === "erz", 40000); await schlaf(300);
   check((anna.inv.pets || []).length === 1, "je Beruf nur eins: weiterer Abbau, kein zweiter Fund");
   sende(anna, { t: "berg", tat: "stop" }); await bei(anna, KUPFER); await schlaf(2500);
   check(ben.spieler && ben.spieler.some((d) => d.n === "Anna" && d.p === "steinbert"), "Ben sieht Steinbert bei Anna (Spielerliste: p)");
@@ -54,12 +58,21 @@ try {
   await schlaf(2300); check(ben.spieler && ben.spieler.some((d) => d.n === "Anna" && !d.p), "Ben sieht kein Pet mehr bei Anna");
   sende(anna, { t: "pet", tat: "rufen", id: "nagbert" }); await schlaf(400); check(!anna.inv.petAktiv && anna.chat.some((t) => /noch nicht gefunden/.test(t)), "ein fremdes Pet (Nagbert) lässt sich nicht rufen");
   sende(anna, { t: "pet", tat: "rufen", id: "steinbert" }); await schlaf(400); check(anna.inv.petAktiv === "steinbert", "gerufen: Steinbert folgt wieder");
+  /* Bank: legt man den Begleiter in die Bank, geht er mit; aus der Bank heraus folgt er nicht */
+  sende(anna, { t: "ort", ort: "waldmark" }); await schlaf(200); sende(anna, { t: "pos", x: 0, y: 0, wx: 6476.6, wy: 6429.6 }); await schlaf(300);
+  sende(anna, { t: "bank", tat: "ein", g: "pet_steinbert", menge: 1 }); await schlaf(600);
+  check(anzahl(anna, "pet_steinbert") === 0 && (anna.inv.bank || []).some(([g, n]) => g === "pet_steinbert" && n === 1) && !anna.inv.petAktiv, "in die Bank gelegt: dort liegt er, er folgt nicht mehr");
+  sende(anna, { t: "pet", tat: "rufen", id: "steinbert" }); await schlaf(400); check(!anna.inv.petAktiv && anna.chat.some((t) => /in deinem Rucksack sein/.test(t)), "aus der Bank heraus lässt er sich nicht rufen");
+  sende(anna, { t: "bank", tat: "ab", g: "pet_steinbert", menge: 1 }); await schlaf(600);
+  sende(anna, { t: "pet", tat: "rufen", id: "steinbert" }); await schlaf(400); check(anzahl(anna, "pet_steinbert") === 1 && anna.inv.petAktiv === "steinbert", "abgehoben und gerufen: er folgt wieder");
   await schlaf(1800); const gesp = GESPEICHERT[GESPEICHERT.length - 1]; check(gesp && (gesp.p_inventar.pets || []).includes("steinbert") && gesp.p_inventar.petAktiv === "steinbert", "gespeichert (rpg_held_inventar_setzen: pets, petAktiv)");
   anna.ws.close(); ben.ws.close(); srv.kill(); await schlaf(400);
-  /* neu angemeldet: Steinbert ist noch da und folgt */
-  await starten({ BERG_FALL: "0", BERG_KERN: "0" }); const a2 = await spieler(TA, KUPFER.region); await warte(a2, (m) => m.t === "inventar");
-  check((a2.inv.pets || []).includes("steinbert") && a2.inv.petAktiv === "steinbert", "nach dem neuen Anmelden: Steinbert ist noch da und folgt");
-  a2.ws.close();
+  /* neu angemeldet: Steinbert ist noch da und folgt; Ben hat Nagbert noch vom alten Stand (nur im Spielerstand) – er bekommt ihn als Gegenstand */
+  HELD[B].inventar = { ...HELD[B].inventar, pets: ["nagbert"] };
+  await starten({ BERG_FALL: "0", BERG_KERN: "0" }); const a2 = await spieler(TA, KUPFER.region), b2 = await spieler(TB, KUPFER.region); await warte(a2, (m) => m.t === "inventar"); await warte(b2, (m) => m.t === "inventar");
+  check((a2.inv.pets || []).includes("steinbert") && a2.inv.petAktiv === "steinbert" && anzahl(a2, "pet_steinbert") === 1, "nach dem neuen Anmelden: Steinbert ist noch da und folgt");
+  check(anzahl(b2, "pet_nagbert") === 1, "früher gefunden (vor dem Umbau): Nagbert liegt jetzt als Gegenstand im Rucksack");
+  a2.ws.close(); b2.ws.close();
 } catch (e) { console.error(e); f++; }
 srv && srv.kill(); sb.close();
 console.log(f ? `\nPets: ${f} FEHLER` : "\nPets: alles in Ordnung");

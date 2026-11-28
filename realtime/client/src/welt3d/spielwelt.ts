@@ -14,6 +14,8 @@ import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch, qu
 import { markeDa, stufenSchluessel } from "../../../shared/stadtstufen";
 import { schalterAn } from "../../../shared/quests";
 import { SPRUENGE } from "../../../shared/bosse";
+import { WELT_SPERREN, sperrAbstand } from "../../../shared/sperren";
+import { Schneesturm } from "./wetter3d";
 /** Stadtstufen: Schalter dieses Spielers (vor dem Laden der Quests: die erste Stufe) */
 const stufenAn = (s: string): boolean => questGeladen() && schalterAn((id) => questStandB(id), s);
 /** eigenes Heldenlevel (für die Levelfarbe der Gegner im Menü) */
@@ -68,7 +70,7 @@ import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../
 import { aktiverHeld } from "../held";
 import { angelegteEbenen, inventarVomServerDa, inventar, petBitten } from "../inventar";
 import { PetFigur } from "./npc3d";
-import { PETS } from "../../../shared/pets";
+import { PETS, petGegenstand } from "../../../shared/pets";
 /* angelegtes Beil / angelegte Spitzhacke: in der Hand zeigen */
 import { serverZusatz } from "../gruppe";
 import { karteDrehen, rucksackVorladen } from "../rahmen";
@@ -76,6 +78,7 @@ import { karteDrehen, rucksackVorladen } from "../rahmen";
 const KARTE_RAND = 1.5, HANDY_KARTE = matchMedia("(pointer: coarse)").matches;
 import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
 import { WeltKampf3D, levelFarbe } from "./kampf3d";
+import { gegnerLv } from "../gefahranzeige";
 import { bodenListe as bodenAlle, aufheben, BodenDing } from "../welt";
 import { unterLeiche } from "./leichen";
 /** Beute am Boden, die man schon sehen darf (unter einer Leiche erst, wenn sie verschwunden ist) */
@@ -132,6 +135,7 @@ export class Spielwelt3D implements WeltKern {
     { /* nach dem Drehen (hoch ↔ quer) die Seite auf null zurück und die 3D-Ansicht neu messen – iOS meldet die neue Größe verzögert */
       const neu = () => { scrollTo(0, 0); this.motor.groesse(); }, spaeter = () => { neu(); for (const t of [120, 350, 800]) setTimeout(neu, t); };
       addEventListener("orientationchange", spaeter); addEventListener("resize", spaeter); if (window.visualViewport) window.visualViewport.addEventListener("resize", spaeter); }
+    { const sturm = new Schneesturm(this.motor); this.motor.nachNebel = (dt, fog) => { sturm.schritt(dt, this.ort.x, this.ort.y, this.motor.hoehe(this.ort.x, this.ort.y), stufenAn("frostkrone_frei"), fog); this.sperrHinweis(); }; } /* #186 Schneesturm vor der Frostkrone */
     this.eingaben(); this.motor.beimBild = (dt) => this.bild(dt); this.motor.beimKlick = (x, z) => { if (!this.gesperrt) this.gehe(x, z); };
     /* erst die ersten Bilder zeichnen (dabei übersetzt der Browser die Shader – das hält die Seite kurz an), dann mit dem Server verbinden:
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
@@ -209,6 +213,10 @@ export class Spielwelt3D implements WeltKern {
   private ausbauSperren(): number[][] { const aus: number[][] = []; for (const d of this.daten.values()) if (d !== "holt" && d.ausbau) for (const A of d.ausbau) if (markeDa(A.m, stufenAn)) for (const [i, j] of A.f) aus.push([i, j, i + 1, j + 1]); return aus; }
   private stufenSchl = "";
   /** Queststand geändert: hat sich eine Stadtstufe geändert, Dinge und Gehraster neu */
+  /** #186: nahe einer noch geschlossenen Weltsperre (Drachenarm, Frostkrone) ein Hinweis im Chat, höchstens alle 30 Sekunden */
+  private sperrZuletzt = 0;
+  private sperrHinweis() { const t = performance.now(); if (t - this.sperrZuletzt < 30000) return;
+    for (const S of WELT_SPERREN) if (!stufenAn(S.schalter) && sperrAbstand(S, this.ort.x, this.ort.y) <= 4) { this.sperrZuletzt = t; chatSystem(S.text); return; } }
   private stufenPruefen() { const k = stufenSchluessel(stufenAn); if (k === this.stufenSchl) return; const erst = !this.stufenSchl; this.stufenSchl = k; if (erst && k === stufenSchluessel(() => false)) return; this.motor.ausbauNeu(); this.sperrenNeu(); }
   /** Sperren haben sich geändert (die Wachen lassen den Spieler durch): Gehraster der geladenen Chunks neu aufbauen */
   sperrenNeu() { for (const d of this.daten.values()) if (d !== "holt") this.raster.dazu(d); for (const [x0, y0, x1, y1] of this.alleSperren()) this.raster.sperren(x0, y0, x1, y1); }
@@ -245,7 +253,7 @@ export class Spielwelt3D implements WeltKern {
       if (st.weit < 12 && e.timeStamp - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
         /* kurz tippen / Linksklick = die erste Aktion (wie OSRS): an einer Stelle mit Handlung (Figur, Treppe, Tür, Ausgang, Gegenstand) hingehen und handeln */
         const stelle = this.stelleAmSchirm(e.clientX, e.clientY, true) || (b ? this.anStelle(b.x, b.z) : null); if (stelle && stelle.npc) { this.wahlWeg(); const v = this.vorFigur(stelle, () => {}); if (v.da()) { v.tat(); return; } this.gehe(v.x, v.y); this.vorhaben = this.pfad.length ? v : null; return; } /* Quest-NPC: kurz = nur hingehen, ein Feld davor, und zu ihm drehen (reden: lange drücken) */ if (stelle) /* kurz: Figuren als ganze Gestalt, Türen/Treppen nur am Boden – sonst erst dorthin gehen */ { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
-        { const g = anschluss3D.kampfAmSchirm(e.clientX, e.clientY); if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) { if (g && !g.held && g.team !== 0) tatZeigen(`Angriff: ${g.name}`, g.stufe ? { text: `Lvl ${g.stufe}`, farbe: levelFarbe(g.stufe - eigenesLv()) } : undefined); return; } } /* Gegner: ganze Figur, sonst der Boden darunter */
+        { const g = anschluss3D.kampfAmSchirm(e.clientX, e.clientY); if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) { if (g && !g.held && g.team !== 0) tatZeigen(`Angriff: ${g.name}`, g.stufe ? { text: `Lvl ${g.stufe}`, farbe: (g.farbe || levelFarbe(g.stufe - eigenesLv())) } : undefined); return; } } /* Gegner: ganze Figur, sonst der Boden darunter */
         if (anschluss3D.spielerBei(e.clientX, e.clientY)) { this.menueBei(e.clientX, e.clientY); return; } /* Mitspieler: gleich das Menü (Flüstern, Freund hinzufügen …) */
         this.motor.klick(e.clientX, e.clientY); } };
     /* PC: Rechtsklick = Aktionsmenü – aber nicht, wenn mit der rechten Maustaste die Kamera gedreht wurde */
@@ -409,9 +417,9 @@ export class Spielwelt3D implements WeltKern {
       { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) },
       ...(d.n && d.n !== ichName() ? [{ text: "Folgen", sym: "👣", tat: () => this.folgen(d.n) }, ...(konto ? [{ text: "Handeln", sym: "🤝", tat: () => this.handeln(d.n) }] : [])] : [])] });
     { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) { const M = t.typ && !t.held ? (MONSTER[t.typ] as { info?: string } | undefined) : undefined; /* Untersuchen (Bestiarium): Text zum Wesen; der Mooshocker zählt für Quest 02 */
-        gr.push({ kopf: t.name, lv: { text: `Lvl ${t.stufe}`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angriff: ${t.name}`, { text: `Lvl ${t.stufe}`, farbe: levelFarbe(t.stufe - eigenesLv()) }); anschluss3D.kampfZiel(t.id); } }, /* den Gegner selbst, nicht die Bildschirmstelle – er kann inzwischen weitergelaufen sein (#109) */
-          ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${t.name}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${t.name}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
-      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, lv: { text: `Lvl ${g.stufe}`, farbe: levelFarbe(g.stufe - eigenesLv()) } /* wie beim Antippen der Figur (#97) */, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
+        gr.push({ kopf: t.name, lv: { text: `Lvl ${t.stufe}`, farbe: (t.farbe || levelFarbe(t.stufe - eigenesLv())) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angriff: ${t.name}`, { text: `Lvl ${t.stufe}`, farbe: (t.farbe || levelFarbe(t.stufe - eigenesLv())) }); anschluss3D.kampfZiel(t.id); } }, /* den Gegner selbst, nicht die Bildschirmstelle – er kann inzwischen weitergelaufen sein (#109) */
+          ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { const L = gegnerLv(t.typ!), kopf = `${t.name} (Lvl ${t.stufe}${L.text ? ", " + L.text : ""})`; chatSystem(`${kopf}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${kopf}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
+      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, lv: { text: `Lvl ${g.stufe}`, farbe: (g.farbe || levelFarbe(g.stufe - eigenesLv())) } /* wie beim Antippen der Figur (#97) */, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
     if (b) {
       const stBoden = this.stelleAmSchirm(px, py, true) || this.anStelle(b.x, b.z), st = stBoden || this.stelleAmSchirm(px, py), gehenZuerst = !stBoden && Boolean(st); /* ganze Figur; Treppe/Tür auch über ihrer Höhe – dann aber „Hierhin gehen“ zuerst */
       if (st) { const boden = this.bodenHier(b.x, b.z);
@@ -424,7 +432,7 @@ export class Spielwelt3D implements WeltKern {
       if (gehenZuerst) gr.splice(Math.max(0, gr.findIndex((g) => g.farbe === FARBE.objekt || g.farbe === FARBE.figur)), 0, { kopf: "Hier", farbe: FARBE.objekt, aktionen: [gehen] }); else gr.push({ kopf: "", aktionen: [gehen] }); }
     if (b) { const P = this.meinPet, inv = inventar(); /* #170: das eigene Pet wegschicken; am eigenen Helden ein gefundenes rufen */
       if (P && Math.hypot(P.x - b.x, P.z - b.z) <= 1.3) gr.unshift({ kopf: PETS[P.id].name, farbe: FARBE.figur, aktionen: [{ text: "Wegschicken", sym: "👋", tat: () => { petBitten(null); } }] });
-      else if (Math.hypot(this.ort.x - b.x, this.ort.y - b.z) <= 1.2 && (inv.pets || []).some((p) => p !== inv.petAktiv)) gr.push({ kopf: "Begleiter", farbe: FARBE.figur, aktionen: (inv.pets || []).filter((p) => p !== inv.petAktiv && PETS[p]).map((p) => ({ text: `${PETS[p].name} rufen`, sym: "🐾", tat: () => { petBitten(p); } })) }); }
+      else if (Math.hypot(this.ort.x - b.x, this.ort.y - b.z) <= 1.2 && (inv.pets || []).some((p) => p !== inv.petAktiv && inv.rucksack.includes(petGegenstand(p)))) gr.push({ kopf: "Begleiter", farbe: FARBE.figur, aktionen: (inv.pets || []).filter((p) => p !== inv.petAktiv && PETS[p] && inv.rucksack.includes(petGegenstand(p))) /* nur, was im Rucksack ist (#170) */.map((p) => ({ text: `${PETS[p].name} rufen`, sym: "🐾", tat: () => { petBitten(p); } })) }); }
     aktionsMenue(px, py, gr); }
   /** Gegenstände am Boden beim Punkt: der nächste (bis gut ein Feld) und alles auf seinem Feld */
   bodenHier(x: number, y: number): { d0: BodenDing; hier: BodenDing[] } | null { let b: BodenDing | null = null, bd = 1.2; for (const d of bodenListe()) { const w = Math.hypot(d.x - x, d.y - y); if (w <= bd) { bd = w; b = d; } }

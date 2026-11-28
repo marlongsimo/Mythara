@@ -7,7 +7,7 @@ import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende"
 import { H_QUESTS } from "./hochlande";
 import TROEDLER_STANDORTE from "../welt/troedler_standorte.json";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}` | `zunft_${string}` | `fahleweiten_${string}` | `kielmund_${string}` | `grauwacht_${string}`;
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}` | `zunft_${string}` | `fahleweiten_${string}` | `kielmund_${string}` | `grauwacht_${string}` | `rotlehm_${string}` | `brunnenkreis_${string}` | `dornhag_${string}` | `tafelrast_${string}`;
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
   gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" };
@@ -29,6 +29,15 @@ const waffen = Object.keys(GEGENSTAENDE).filter((id) => { const G = GEGENSTAENDE
 const PLATZ_REIHE = ["kopf", "brust", "beine", "nebenhand"];
 const ruestung = Object.keys(GEGENSTAENDE).filter((id) => { const G = GEGENSTAENDE[id]; return !G.untauschbar && G.platz && G.platz !== "waffe" && BIS_SELTEN.includes(G.seltenheit); })
   .sort((a, b) => PLATZ_REIHE.indexOf(GEGENSTAENDE[a].platz!) - PLATZ_REIHE.indexOf(GEGENSTAENDE[b].platz!) || nachSeltenheit(a, b));
+/** Händler-Staffel (Entscheidung des Nutzers, 27.11., Ausgabe 1): je weiter man kommt, desto höher die Stufe – nichts wird weggenommen.
+ *  „Episch“ (Stufe 35) nur in Rotlehm (Ockerlande); Legendär und Mythisch nie im Laden (Handwerk und Drops). */
+const EPISCH_PREIS = 3000;
+const istLadenWaffe = (id: string) => { const G = GEGENSTAENDE[id]; return !G.untauschbar && G.platz === "waffe" && (WAFFEN_ARTEN.includes(G.art) || istKurzbogen(id)) && !(G.art === "Bogen" && !istKurzbogen(id)); };
+const waffenEpisch = Object.keys(GEGENSTAENDE).filter((id) => GEGENSTAENDE[id].seltenheit === "episch" && istLadenWaffe(id));
+const ruestungEpisch = Object.keys(GEGENSTAENDE).filter((id) => { const G = GEGENSTAENDE[id]; return !G.untauschbar && G.seltenheit === "episch" && G.platz && G.platz !== "waffe"; });
+/** Diese Preise zählen nicht als Grundwert für den Trödler – sonst zahlte er für jedes geschmiedete epische Teil 1.500 statt 240 (Rotlehm kauft seine eigene Ware wie jeder Händler zu 80 % an) */
+const OHNE_GRUNDWERT = new Set<Ware>();
+const wareEpisch = (g: string): Ware => { const w = { g, preis: EPISCH_PREIS }; OHNE_GRUNDWERT.add(w); return w; };
 
 export const LAEDEN: Record<LadenId, Laden> = {
   waffen: { id: "waffen", name: "Zur Scharfen Kante", spruch: "Spitz, schwer oder beides – wir haben's.", haendler: "Brann Hackebeil", modell: "npc.schmied", x: 6439.2, y: 6439.2, blick: [0, -1], vor: [6439.5, 6436.5],
@@ -113,10 +122,10 @@ ort("sandquell_herberge", { name: "Herberge Zur kühlen Quelle", spruch: "Schatt
 ort("sandquell_markt", { name: "Wüstenmarkt", spruch: "Was die Karawanen bringen.", haendler: "Tarek Salzer", modell: "npc.kaufmann", x: 7378, y: 6753.4,
   gruss: "Tränke gegen die Hitze, Fläschchen, Äpfel aus dem Westen. Teuer? Sie sind weit gereist.", tschuess: "Möge der Wind dir den Rücken kühlen.",
   waren: [W("kleiner_heiltrank", 40), W("heiltrank", 170), W("leeres_flaeschchen", 3), W("apfel", 3), W("krug", 6)] });
-ort("troedler_sandquell", { name: "Karawanenlager", spruch: "Wir kaufen, was sich tragen lässt.", haendler: "Karawanenmeister Ruben Weit", modell: "npc.karawane", x: 7370, y: 6759.6, troedler: true,
+ort("troedler_sandquell", { questFigur: "ruben", name: "Karawanenlager", spruch: "Wir kaufen, was sich tragen lässt.", haendler: "Karawanenmeister Ruben Weit", modell: "npc.karawane", x: 7370, y: 6759.6, troedler: true,
   gruss: "Alles, was sich auf ein Tier packen lässt, nehme ich. Zum halben Preis – die Reise ist lang.", tschuess: "Wir ziehen morgen weiter. Vielleicht.",
   zeilen: ["Glutbrunn, die Salzpfanne, der Nordstrand – ohne Sandquell kommt keine Karawane durch."] });
-ort("sandquell_quelle", { name: "Quellwächterin", spruch: "", haendler: "Ayla Dünenruh", modell: "npc.glutbrunn_frau", x: 7386, y: 6745, nurReden: true,
+ort("sandquell_quelle", { questFigur: "ayla", name: "Quellwächterin", spruch: "", haendler: "Ayla Dünenruh", modell: "npc.glutbrunn_frau", x: 7386, y: 6745, nurReden: true,
   gruss: "Die Quelle gehört niemandem. Darum wache ich über sie.", tschuess: "Geh mit Wasser.",
   zeilen: ["Seit hundert Jahren ist sie nicht versiegt. Wer Sand hineinwirft, bekommt es mit mir zu tun.", "Nachts hört man die Dünen singen. Das ist nur der Wind. Meistens."] });
 /* ───── Phase 11 (doku/konzepte/phase-11.md): die Hochlande – Steinhag, Erzberg, Passwacht, Hohe Alm, Einsiedelei. Plätze der Welt (welt/hochlande_orte.json),
@@ -188,7 +197,7 @@ ort("zunft_meisterfischer", { name: "Meisterfischer", spruch: "", haendler: "Mei
 /* ───── #174 Hauptstadt Kielmund (Welt 7a15f6624, welt/kielmund_orte.json): zehn Ladenplätze – drei Stände am Kai, drei Marktstände im Kaufmannsviertel,
    vier Ladenhäuser; nur vorhandene Waren (Konzept hauptstaedte.md: dazu Fischhändler, Schiffsbedarf, Gewürze). Stände: Händler dahinter, Kunde davor (3,2 Felder). ───── */
 const stand = (x: number, y: number) => ({ x, y, blick: [0, -1] as [number, number], vor: [x, y - 3.2] as [number, number] });
-ort("kielmund_fischmarkt", { name: "Fang vom Kai", spruch: "Was heute Nacht ins Netz ging.", haendler: "Wiebke Hering", modell: "npc.hafen_frau", ...stand(6404, 7309.2),
+ort("kielmund_fischmarkt", { questFigur: "wiebke_hering", name: "Fang vom Kai", spruch: "Was heute Nacht ins Netz ging.", haendler: "Wiebke Hering", modell: "npc.hafen_frau", ...stand(6404, 7309.2),
   gruss: "Hering, Barsch, Aal – frischer kriegst du's nur, wenn du selbst rausfährst.", tschuess: "Wind von achtern!",
   waren: [W("fisch_hering_roh", 4), W("fisch_hering_gebraten", 8), W("fisch_klippenbarsch_gebraten", 11), W("fisch_seeaal_gebraten", 14)] });
 ort("kielmund_schiffsbedarf", { name: "Tau und Teer", spruch: "Was ein Fischer braucht.", haendler: "Klaas Knoten", modell: "npc.hafen_mann", ...stand(6412.5, 7323.2),
@@ -196,7 +205,7 @@ ort("kielmund_schiffsbedarf", { name: "Tau und Teer", spruch: "Was ein Fischer b
   waren: [W("angelrute", 10), W("reuse", 40), W("wurm", 2), W("krug", 5), W("garn", 4)] });
 ort("kielmund_rauchfang", { name: "Rauchfang", spruch: "Geräuchert hält länger.", haendler: "Hinrich Rauch", modell: "npc.fischer", ...stand(6400.5, 7343.2), vor: [6402.5, 7343.5] /* vor dem Stand steht ein Lagerhaus – der Kunde kommt von der Seite */,
   gruss: "Räucherhering für die lange Fahrt, Aalsuppe für den kalten Abend.", tschuess: "Lass dir's schmecken.", waren: [W("raeucherhering", 14), W("aalsuppe", 30)] });
-ort("kielmund_gewuerze", { name: "Salz und Gewürz", spruch: "Aus den Glutsanden und von weiter her.", haendler: "Samira Pfeffer", modell: "npc.kauffrau", ...stand(6440, 7307.2),
+ort("kielmund_gewuerze", { questFigur: "samira", name: "Salz und Gewürz", spruch: "Aus den Glutsanden und von weiter her.", haendler: "Samira Pfeffer", modell: "npc.kauffrau", ...stand(6440, 7307.2),
   gruss: "Salz aus der Salzpfanne, Mehl aus Haferstedt, Äpfel aus dem Tal. Was darf's sein?", tschuess: "Beehr mich bald wieder.", waren: [W("salz", 6), W("mehl", 3), W("apfel", 3)] });
 ort("kielmund_waffen", { name: "Klingen der Küste", spruch: "Scharf wie der Wind auf der Mole.", haendler: "Jorge Säbel", modell: "npc.schmied", ...stand(6476, 7307.2),
   gruss: "Für Räuber am Strand und Schlimmeres in den Klippen. Such dir was aus.", tschuess: "Schlag zuerst.", waren: waffen.map(ware) });
@@ -209,7 +218,7 @@ ort("troedler_kielmund", { name: "Strandgut", spruch: "Ich nehm alles – fast a
   gruss: "Was das Meer anspült und die Leute nicht mehr brauchen – ich kauf's.", tschuess: "Komm wieder, wenn der Rucksack drückt." });
 ort("kielmund_traenke", { name: "Salbe und Sud", spruch: "Gegen Salzwunden und Seekrankheit.", haendler: "Imke Salbei", modell: "npc.kraeuterfrau", x: 6424, y: 7276.2,
   gruss: "Ein Heiltrank vor der Fahrt hat noch keinem geschadet.", tschuess: "Gute Besserung – falls nötig.", waren: [W("kleiner_heiltrank", 35), W("heiltrank", 150), W("leeres_flaeschchen", 2)] });
-ort("kielmund_baecker", { name: "Kombüse", spruch: "Brot und Suppe für die Mannschaft.", haendler: "Hanne Kombüse", modell: "npc.baecker", x: 6454, y: 7372.2,
+ort("kielmund_baecker", { questFigur: "hanne_kombuese", name: "Kombüse", spruch: "Brot und Suppe für die Mannschaft.", haendler: "Hanne Kombüse", modell: "npc.baecker", x: 6454, y: 7372.2,
   gruss: "Schiffszwieback hab ich keinen – aber Brot und Fischsuppe, frisch.", tschuess: "Mahlzeit!", waren: [W("brot", 8), W("mehl", 3), W("fischsuppe", 15)] });
 /* Wachen, Wahrzeichen und Hafenleben (Plätze der Welt, kielmund_orte.json → npc) */
 ort("kielmund_torwache_nord", { name: "Torwache", spruch: "", haendler: "Torwache am Nordtor", modell: "stadtwache3d", x: 6448.5, y: 7265, blick: [0, -1], nurReden: true,
@@ -218,7 +227,7 @@ ort("kielmund_torwache_bruecke", { name: "Torwache", spruch: "", haendler: "Torw
   gruss: "Über die Kielbrücke kommt alles: Fisch, Salz, Gesindel.", tschuess: "Gute Reise.", zeilen: ["Nachts ziehen wir die Brücke nicht hoch. Aber wir schauen genau hin."] });
 ort("kielmund_leuchtturmwaerter", { name: "Leuchtturmwärter", spruch: "", haendler: "Leuchtturmwärter Tamme", modell: "npc.moewen_fischer", x: 6351.1, y: 7336.5, nurReden: true,
   gruss: "Das Feuer brennt, seit es Kielmund gibt. Ich sorge dafür, dass das so bleibt.", tschuess: "Halt Kurs.", zeilen: ["Bei Sturm sieht man das Licht bis zu den Klippenhöhlen. Und manchmal Schiffe, die keiner kennt."] });
-ort("kielmund_priesterin", { name: "Priesterin", spruch: "", haendler: "Schwester Maren", modell: "npc.nonne", x: 6475.5, y: 7278, nurReden: true,
+ort("kielmund_priesterin", { questFigur: "maren", name: "Priesterin", spruch: "", haendler: "Schwester Maren", modell: "npc.nonne", x: 6475.5, y: 7278, nurReden: true,
   gruss: "Der Tempel ist für alle offen, die vom Meer heimkehren – und für die, die warten.", tschuess: "Mögen die Wellen dich tragen.", zeilen: ["Für jedes Schiff, das nicht zurückkam, brennt eine Kerze."] });
 ort("kielmund_marktrufer", { name: "Marktrufer", spruch: "", haendler: "Marktrufer Pit", modell: "npc.marktschreier", x: 6428.5, y: 7316.5, nurReden: true,
   gruss: "Frischer Fisch am Kai! Salz und Gewürz am Markt! Klingen und Panzer bei den Ständen!", tschuess: "Kauft, Leute, kauft!", zeilen: ["Zwei Banken hat Kielmund – eine bei den Kaufleuten, eine am Hafen. Mehr Gold als Fisch, sagen manche."] });
@@ -241,6 +250,9 @@ ort("fahleweiten_brechstein", { name: "Steinbrecherbedarf", spruch: "Hacken für
 ort("fahleweiten_wollhag", { name: "Wollhager Hofladen", spruch: "Milch und Käse von der Heide.", haendler: "Hilla Schur", modell: "npc.sennerin", x: 6567, y: 5740.2, blick: [0, -1],
   gruss: "Die Schafe geben Wolle, die Ziegen Milch – und aus der Milch wird Käse. Probier!", tschuess: "Grüß mir die Grauwacht.",
   waren: [W("ziegenmilch", 6), W("kaeselaib", 45), W("brot", 8)] });
+ort("fahleweiten_reifbach", { name: "Reifbacher Räucherei", spruch: "Räucherfisch und Angelzeug.", haendler: "Fischer Arno", modell: "npc.fischer", x: 6427, y: 5731.2, blick: [0, -1],
+  gruss: "Bachling aus dem Bach, Hering aus der Bucht – und alles, womit man sie fängt.", tschuess: "Petri Heil!",
+  waren: [W("angelrute", 10), W("wurm", 2), W("raeucherhering", 14), W("fisch_muehlbarsch_gebraten", 9)] });
 ort("fahleweiten_weiherhof", { name: "Am Weiher", spruch: "Fisch und Angeln.", haendler: "Jost Reuse", modell: "npc.fischer", x: 6337, y: 5835.7, blick: [0, -1],
   gruss: "Hecht am Steg, Barsch am Ostufer, und im Süden liegt ein alter Wels. Angel und Würmer hab ich da.", tschuess: "Petri Heil!",
   waren: [W("angelrute", 10), W("wurm", 2), W("fisch_muehlbarsch_gebraten", 9), W("fisch_moorhecht_gebraten", 12), W("fisch_wels_gebraten", 25)] });
@@ -268,6 +280,29 @@ ort("grauwacht_tischlerei", { ...BURG, name: "Tischlerei", spruch: "Holz in Form
   gruss: "Bretter schneidest du selbst. Ein Beil und einen Krug hab ich für dich.", tschuess: "Und immer gerade sägen.", waren: [W("holzbeil_training", 10), W("holzbeil_einfach", 350), W("krug", 5)] });
 ort("grauwacht_weberei", { ...BURG, name: "Weberei", spruch: "Garn und Tuch.", haendler: "Weberin Adelheid", modell: "npc.kauffrau", x: 6740, y: 5798.2, blick: [0, 1],
   gruss: "Wolle aus Wollhag, gesponnen und gewebt. Was brauchst du?", tschuess: "Bleib warm.", waren: [W("garn", 4), W("stoff_grob", 6)] });
+/* ───── Ockerlande (Welt 67d60003/8afc1d43, welt/ockerlande_orte.json → laeden): Rotlehm am Ockerstrom (Markt, Karawanenhof, Taverne) und der Rastplatz Brunnenkreis. Nur vorhandene Waren. ───── */
+ort("rotlehm_stand_1", { name: "Früchte der Ockerlande", spruch: "Was am Strom wächst.", haendler: "Amara Lehm", modell: "npc.marktfrau", x: 6823.5, y: 7335.2, blick: [0, -1],
+  gruss: "Äpfel vom Strom, Brot aus dem Lehmofen. Mehr braucht man hier draußen nicht.", tschuess: "Trink genug, Fremder.", waren: [W("apfel", 3), W("brot", 8), W("mehl", 3)] });
+ort("rotlehm_stand_2", { name: "Heiltränke", spruch: "Gegen Hitze und Wunden.", haendler: "Nabila Salbe", modell: "npc.kraeuterfrau", x: 6835.5, y: 7335.2, blick: [0, -1],
+  gruss: "In den Ockerlanden heilt nichts von allein. Ein Trank hilft.", tschuess: "Bleib im Schatten.", waren: [W("kleiner_heiltrank", 40), W("heiltrank", 170), W("leeres_flaeschchen", 2)] });
+ort("rotlehm_waffen", { name: "Klingen von Rotlehm", spruch: "Geschmiedet im roten Lehm.", haendler: "Tariq Schmied", modell: "npc.schmied", x: 6824.5, y: 7349.2, blick: [0, -1],
+  gruss: "Die Karawanen brauchen Schutz – und du eine Klinge.", tschuess: "Schlag zuerst.", waren: [...waffen.map(ware), ...waffenEpisch.map(wareEpisch)] });
+ort("rotlehm_ruestung", { name: "Leder und Platten", spruch: "Hält Sonne und Säbel ab.", haendler: "Zahra Niet", modell: "npc.schmiedin", x: 6836.5, y: 7350.7, blick: [0, -1],
+  gruss: "Leichtes Leder für die Hitze, Platten für die Mutigen.", tschuess: "Bleib heil.", waren: [...ruestung.map(ware), ...ruestungEpisch.map(wareEpisch)] });
+ort("rotlehm_karawanenhof_1", { name: "Salz und Vorrat", spruch: "Was die Karawanen brauchen.", haendler: "Karim Salz", modell: "npc.glutbrunn_mann", x: 6786, y: 7309.2, blick: [0, -1],
+  gruss: "Salz, Mehl, Wasserkrüge – ohne das zieht keine Karawane los.", tschuess: "Gute Reise.", waren: [W("salz", 6), W("mehl", 3), W("krug_wasser", 2), W("krug", 5)] });
+ort("troedler_rotlehm", { name: "Karawanentausch", spruch: "Wir nehmen, was sich tragen lässt.", haendler: "Händlerin Leyla", modell: "npc.karawane", x: 6806, y: 7309.2, blick: [0, -1], troedler: true,
+  gruss: "Alles, was aufs Kamel passt, kaufe ich. Zum halben Preis – der Weg ist weit.", tschuess: "Möge der Wind dir den Rücken kühlen." });
+ort("rotlehm_taverne", { name: "Zum roten Krug", spruch: "Kühl im Schatten der Lehmmauern.", haendler: "Wirt Omar", modell: "npc.glutbrunn_mann", x: 6817.5, y: 7331.4, blick: [0, 1],
+  gruss: "Setz dich aus der Sonne! Wels aus dem Strom, Eintopf, kühles Wasser.", tschuess: "Komm wieder, wenn der Staub dich durstig macht.",
+  waren: [W("brot", 8), W("bauerneintopf", 20), W("fisch_wels_gebraten", 25), W("krug_wasser", 2)] });
+ort("brunnenkreis_stand", { name: "Wasser und Proviant", spruch: "Die letzte Quelle vor den Tafelbergen.", haendler: "Händlerin Selin", modell: "npc.glutbrunn_frau", x: 7065, y: 7189.2, blick: [0, -1],
+  gruss: "Füll deine Krüge, Wanderer. Bis zur nächsten Quelle ist es weit.", tschuess: "Trink, bevor du gehst.", waren: [W("krug_wasser", 2), W("krug", 5), W("brot", 8), W("apfel", 3)] });
+ort("dornhag_stand", { name: "Hof von Dornhag", spruch: "Milch und Käse aus den Ockerlanden.", haendler: "Bäuerin Naila", modell: "npc.sennerin", x: 7293, y: 7412.2, blick: [0, -1],
+  gruss: "Die Ziegen geben wenig, aber gute Milch. Und Käse, der die Hitze aushält.", tschuess: "Trink genug, Fremder.", waren: [W("ziegenmilch", 6), W("kaeselaib", 45), W("brot", 8)] });
+ort("tafelrast_stand", { name: "Rast unter den Tafelbergen", spruch: "Werkzeug und Proviant.", haendler: "Händler Jasim", modell: "npc.kaufmann", x: 7484, y: 7524.2, blick: [0, -1],
+  gruss: "Wer zu den Tafelbergen will, braucht Hacke, Wasser und Brot. Alles da.", tschuess: "Mögen die Felsen dir gnädig sein.",
+  waren: [W("spitzhacke_training", 10), W("spitzhacke_einfach", 350), W("holzbeil_training", 10), W("krug_wasser", 2), W("brot", 8)] });
 /* #160: die Läden in Steinhag öffnen erst nach H1 „Über den Pass“ (Entscheidung des Nutzers, 27.11.) – die Bank (shared/bank.ts) und die Bergvögtin bleiben immer da */
 export const STEINHAG_LAEDEN: LadenId[] = ["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter", "troedler_steinhag",
   "steinhag_waffen", "steinhag_ruestung", "steinhag_backstube", "steinhag_seefisch", "steinhag_stoffe", "steinhag_zunftbedarf", "steinhag_grubenproviant"];
@@ -297,20 +332,22 @@ ort("hochland_einsiedler", { questFigur: "einsiedler", name: "Einsiedler", spruc
   zeilen: ["Ich schreibe die Geschichte der Hochlande auf. Sie ist älter als die Splitter.", "Am Grauhorn stehen Steinmänner. Jeder erzählt von einem, der nicht zurückkam."] });
 ort("hochland_furtwache", { questFigur: "furtwache", name: "Wache an der Furt", spruch: "", haendler: "Wache Odo", modell: "stadtwache3d", x: 6725, y: 5763, blick: [1, 0], nurReden: true,
   gruss: "Die Brücke trägt. Drüben beginnen die Hochlande – und die Trolle.", tschuess: "Pass auf dich auf.", zeilen: ["Früher kamen hier jeden Tag Erzwagen aus Steinhag. Seit Wochen keiner mehr."] });
+/* Quests 99ce952fe: die Wache am Holzfällerhof ist Questfigur (sonst stünde sie doppelt) */
+Object.assign(LAEDEN.zunft_wache_holzfaellerhof, { questFigur: "hofwaechter_jost" });
 export const LADEN_LISTE = Object.values(LAEDEN);
 /** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */
 /** schalter: prüft einen Quest-Schalter (Server: quests.schalter, Browser: schalterAn) – ohne ihn bleibt ein Laden mit schalter zu */
 export const ladenOffen = (L: Laden, stand: (id: string) => string, schalter?: (id: string) => boolean): boolean =>
   (!L.wenn || stand(L.wenn.quest) === L.wenn.phase) && (!L.schalter || Boolean(schalter && schalter(L.schalter)));
 /** Symbol je Laden (Minikarte und Karte) */
-export const LADEN_ZEICHEN: Record<string, string> = { grauwacht_stand_1: "🍞", grauwacht_stand_2: "🧪", grauwacht_taverne: "🍲", grauwacht_waffen: "⚔️", grauwacht_stand_3: "🛡️", grauwacht_stand_4: "🔨", grauwacht_gerberei: "🧶", grauwacht_tischlerei: "🪚", grauwacht_weberei: "🧵", fahleweiten_huegelgrund: "🧺", fahleweiten_kohlstatt: "🪓", fahleweiten_brechstein: "⛏️", fahleweiten_wollhag: "🧀", fahleweiten_weiherhof: "🎣", waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
+export const LADEN_ZEICHEN: Record<string, string> = { fahleweiten_reifbach: "🎣", dornhag_stand: "🧀", tafelrast_stand: "⛏️", rotlehm_stand_1: "🍎", rotlehm_stand_2: "🧪", rotlehm_waffen: "⚔️", rotlehm_ruestung: "🛡️", rotlehm_karawanenhof_1: "🧂", rotlehm_taverne: "🍲", brunnenkreis_stand: "💧", grauwacht_stand_1: "🍞", grauwacht_stand_2: "🧪", grauwacht_taverne: "🍲", grauwacht_waffen: "⚔️", grauwacht_stand_3: "🛡️", grauwacht_stand_4: "🔨", grauwacht_gerberei: "🧶", grauwacht_tischlerei: "🪚", grauwacht_weberei: "🧵", fahleweiten_huegelgrund: "🧺", fahleweiten_kohlstatt: "🪓", fahleweiten_brechstein: "⛏️", fahleweiten_wollhag: "🧀", fahleweiten_weiherhof: "🎣", waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
   haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺", graufurt_alma: "🥧", steinhag_taverne: "🍲", kielmund_fischmarkt: "🐟", kielmund_schiffsbedarf: "🎣", kielmund_rauchfang: "🐟", kielmund_gewuerze: "🧂", kielmund_waffen: "⚔️", kielmund_ruestung: "🛡️", kielmund_werkzeug: "🔨", kielmund_traenke: "🧪", kielmund_baecker: "🍞", steinhag_waffen: "⚔️", steinhag_ruestung: "🛡️", steinhag_backstube: "🍞", steinhag_seefisch: "🐟", steinhag_stoffe: "🧵", steinhag_zunftbedarf: "🔨", steinhag_grubenproviant: "🍲", steinhag_schmiede: "🔨", steinhag_allerlei: "🧺", steinhag_kraeuter: "🧪" };
 for (const L of LADEN_LISTE) if (L.troedler) LADEN_ZEICHEN[L.id] = "🪙"; /* Trödler (#88) */
 /* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */
 /** Ein Händler zahlt für seine eigenen Waren so viel von seinem Preis; der Trödler so viel vom Grundwert */
 export const ANKAUF_ANTEIL = 0.8, TROEDLER_ANTEIL = 0.5;
 /** Grundwert eines Gegenstands: der höchste Ladenpreis, sonst GegenstandDef.wert (sonst keiner – dann kauft auch der Trödler nicht) */
-export function grundwert(g: string): number | null { let p = 0; for (const L of Object.values(LAEDEN)) for (const w of L.waren) if (w.g === g) p = Math.max(p, w.preis);
+export function grundwert(g: string): number | null { let p = 0; for (const L of Object.values(LAEDEN)) for (const w of L.waren) if (w.g === g && !OHNE_GRUNDWERT.has(w)) p = Math.max(p, w.preis);
   if (p > 0) return p; const G = GEGENSTAENDE[g]; return G && G.wert && G.wert > 0 ? G.wert : G ? standardWert(G) : null; }
 /** Trödler (#88): Grundwert nach Seltenheit für alles ohne Ladenpreis und ohne eigenen wert – Rohstoffe, Fische, Essen, Werkzeug, Ausrüstung (×4), Abfall 1.
  *  Questgegenstände, Zierde, Sammelstücke, Währung und Splitterbinden-Dinge haben keinen – die kauft niemand. */

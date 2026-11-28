@@ -9,7 +9,7 @@
  *   Beute eines Gegners: 30 s nur für den, der den meisten Schaden gemacht hat (bei Gleichstand den letzten Schlag), dann 5 min für alle.
  *   Selbst fallen gelassen: 1 min nur für einen selbst, dann 10 min für alle. Danach verschwindet es.
  */
-import { PETS } from "../../shared/pets";
+import { PETS, petGegenstand } from "../../shared/pets";
 import { Wirkung, wirkungenPruefen, wirkungenAktiv, wirkungDazu } from "../../shared/wirkungen";
 import { LADBAR, LADUNG_MAX, LADUNG_MAX_KERN, KERN_MERKER, WAFFE_LADEN, WAFFE_LADUNG_MAX } from "../../shared/splitterbinden";
 import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN, fachD, Daten, datenPruefen, datenGleich, geladen, ablegbar, handelbar, anzeigeName } from "../../shared/gegenstaende";
@@ -76,14 +76,14 @@ export function inventarLaden(sb: Sb, nutzer: string): Promise<Eintrag | null> {
   const da = je.get(nutzer); if (da) return Promise.resolve(da); const l = laedt.get(nutzer); if (l) return l;
   const p = (sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=*`) as Promise<{ waffe: string; inventar?: unknown }[]>).then((z) => {
     const r = z && z[0]; if (!r || !["schwert", "bogen", "stab"].includes(String(r.waffe))) return null; const waffe = r.waffe as Startwaffe;
-    const e: Eintrag = { inv: invPruefen(r.inventar, waffe), waffe, hoerer: new Set() }; je.set(nutzer, e); if (!r.inventar || (Number((r.inventar as { v?: unknown }).v) || 1) < INV_STAND) merken(sb, nutzer, e); return e; })
+    const e: Eintrag = { inv: invPruefen(r.inventar, waffe), waffe, hoerer: new Set() }; je.set(nutzer, e); if (petNachreichen(e)) merken(sb, nutzer, e); /* #170: früher gefundene Pets als Gegenstand */ if (!r.inventar || (Number((r.inventar as { v?: unknown }).v) || 1) < INV_STAND) merken(sb, nutzer, e); return e; })
     .catch((x) => { console.error("Inventar laden:", (x as Error).message); return null; }).finally(() => laedt.delete(nutzer));
   laedt.set(nutzer, p); return p; }
 /** Das geladene Inventar (Kopie) oder null */
 export function inventarVon(nutzer: string): Inv | null { const e = je.get(nutzer); return e ? kopie(e.inv) : null; }
 /** Bei jeder Änderung Bescheid bekommen (Welt-Verbindung schickt es dem Browser, das Kampfgebiet setzt die Kampfwerte neu). Zurück: abmelden */
 export function inventarHoeren(nutzer: string, f: (inv: Inv) => void): () => void { const e = je.get(nutzer); if (!e) return () => {}; e.hoerer.add(f); return () => { e.hoerer.delete(f); }; }
-function geaendert(sb: Sb, nutzer: string, e: Eintrag) { for (const f of e.hoerer) try { f(kopie(e.inv)); } catch (x) { console.error("Inventar-Hörer:", (x as Error).message); } merken(sb, nutzer, e); }
+function geaendert(sb: Sb, nutzer: string, e: Eintrag) { petPruefen(e); for (const f of e.hoerer) try { f(kopie(e.inv)); } catch (x) { console.error("Inventar-Hörer:", (x as Error).message); } merken(sb, nutzer, e); }
 /** Speichern kurz nach der letzten Änderung (mehrere schnelle Änderungen = ein Speichern) */
 function merken(sb: Sb, nutzer: string, e: Eintrag) { if (e.uhr) clearTimeout(e.uhr); e.uhr = setTimeout(() => { e.uhr = undefined; void speichern(sb, nutzer, e); }, 1500); }
 async function speichern(sb: Sb, nutzer: string, e: Eintrag) {
@@ -243,15 +243,25 @@ export function ladungAbziehen(sb: Sb, nutzer: string, g: string): boolean { con
 export function berufXp(nutzer: string, beruf: string): number { const e = je.get(nutzer); return (e && e.inv.berufe && e.inv.berufe[beruf]) || 0; }
 export function berufXpDazu(sb: Sb, nutzer: string, beruf: string, n: number): number { const e = je.get(nutzer); if (!e || !(n > 0)) return berufXp(nutzer, beruf);
   const b = e.inv.berufe || (e.inv.berufe = {}); b[beruf] = Math.min(200_000_000, Math.round((b[beruf] || 0) + n)); geaendert(sb, nutzer, e); return b[beruf]; }
-/* ───────── #170 Skilling-Pets (shared/pets.ts): gebunden im Spielerstand, nicht im Rucksack ───────── */
+/* ───────── #170 Skilling-Pets (shared/pets.ts): Gegenstand im Rucksack (KANON fd1014fd0); pets = die je gefundenen (je Beruf nur eins), petAktiv = wer gerade folgt ───────── */
+const petImRucksack = (e: Eintrag, id: string): boolean => e.inv.rucksack.some((f) => fachG(f) === petGegenstand(id));
+const petIrgendwo = (e: Eintrag, id: string): boolean => petImRucksack(e, id) || bankVon(e).some((b) => b[0] === petGegenstand(id) && b[1] > 0);
+/** Folgen nur, solange der Gegenstand im Rucksack ist (in die Bank gelegt: es geht mit) */
+/** Wer ein Pet vor dem Umbau (nur im Spielerstand) gefunden hat, bekommt es einmal als Gegenstand – in den Rucksack, sonst in die Bank */
+function petNachreichen(e: Eintrag): boolean { let neu = false; for (const id of e.inv.pets || []) if (!petIrgendwo(e, id) && petGeben(e, id)) neu = true; petPruefen(e); return neu; }
+function petPruefen(e: Eintrag): void { if (e.inv.petAktiv && !petImRucksack(e, e.inv.petAktiv)) delete e.inv.petAktiv; }
+/** Ein gefundenes Pet als Gegenstand geben: in den Rucksack, ist er voll, in die Bank */
+function petGeben(e: Eintrag, id: string): "rucksack" | "bank" | null { const g = petGegenstand(id); if (einlegen(e, g, 1)) return "rucksack";
+  const B = bankVon(e), fach = B.find((b) => b[0] === g); if (fach) { fach[1] += 1; return "bank"; } if (B.length < BANK_PLAETZE) { B.push([g, 1]); e.inv.bank = B; return "bank"; } return null; }
 export const petsVon = (nutzer: string): string[] => { const e = je.get(nutzer); return (e && e.inv.pets) || []; };
-export const petAktiv = (nutzer: string): string | undefined => { const e = je.get(nutzer); return (e && e.inv.petAktiv) || undefined; };
-/** Ein Pet dazu (es folgt gleich); false, wenn schon da */
-export function petDazu(sb: Sb, nutzer: string, id: string): boolean { const e = je.get(nutzer); if (!e || !(id in PETS)) return false; const l = e.inv.pets || (e.inv.pets = []); if (l.includes(id)) return false;
-  l.push(id); e.inv.petAktiv = id; geaendert(sb, nutzer, e); return true; }
-/** Rufen (id) oder wegschicken (null). Zurück: Fehlertext oder null */
+export const petAktiv = (nutzer: string): string | undefined => { const e = je.get(nutzer); if (!e) return undefined; petPruefen(e); return e.inv.petAktiv || undefined; };
+/** Ein Pet gefunden: als Gegenstand in den Rucksack (voll: in die Bank); liegt es im Rucksack, folgt es gleich. Zurück: wohin, oder null, wenn schon gefunden */
+export function petDazu(sb: Sb, nutzer: string, id: string): "rucksack" | "bank" | null { const e = je.get(nutzer); if (!e || !(id in PETS)) return null; const l = e.inv.pets || (e.inv.pets = []); if (l.includes(id)) return null;
+  const wo = petGeben(e, id); if (!wo) return null; l.push(id); if (wo === "rucksack") e.inv.petAktiv = id; geaendert(sb, nutzer, e); return wo; }
+/** Folgen lassen (id) oder wegschicken (null) – folgen geht nur aus dem Rucksack. Zurück: Fehlertext oder null */
 export function petAktivSetzen(sb: Sb, nutzer: string, id: string | null): string | null { const e = je.get(nutzer); if (!e) return "Ohne Konto keine Begleiter.";
   if (id !== null && !(e.inv.pets || []).includes(id)) return "Diesen Begleiter hast du noch nicht gefunden.";
+  if (id !== null && !petImRucksack(e, id)) return "Der Begleiter muss in deinem Rucksack sein, damit er dir folgt.";
   if (id === null) delete e.inv.petAktiv; else e.inv.petAktiv = id; geaendert(sb, nutzer, e); return null; }
 /** Gegenstände, die der Held trägt (Rucksack und angelegt) – für Werkzeuge */
 /** Hat man es irgendwo – Rucksack, angelegt oder in der Bank (Questgegenstände zurückgeben, wenn verloren) */

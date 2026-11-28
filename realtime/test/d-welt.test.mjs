@@ -3,11 +3,11 @@
  * Kai spielt alle drei ganz (Lohn mit „abholen“), danach: Fähre frei, Wappentür offen, Wegstein-Ziel am Turm, Alma verkauft Welspastete. Lea (ohne Voraussetzungen) als Gegenprobe.
  * Ports: Supabase localhost:8811, Spielserver localhost:8812.   Aufruf (im Ordner realtime, nach node build.mjs): node test/d-welt.test.mjs
  */
-import { starte, starkerHeld, roh, QUESTS, QB } from "./questwelt.mjs";
+import { starte, starkerHeld, roh, LEGENDAER, QUESTS, QB } from "./questwelt.mjs";
 const D1 = QUESTS.find((q) => q.id === "graufurt_die_faehrkette"), D2 = QUESTS.find((q) => q.id === "ostufer_das_gruene_licht"), D3 = QUESTS.find((q) => q.id === "graufurt_wels_im_trueben");
 const kai = starkerHeld({ fertig: ["nordwald_das_wappen_mit_dem_turm"], berufe: { bergbau: 50, schmieden: 50, fischen: 50, kochen: 50 },
-  rucksack: ["hammer", "spitzhacke_legendaer", "angelrute", "wappenabrieb", { g: "wurm", n: 40 }, ...Array(3).fill("stamm_tanne"), ...Array(8).fill("barren_splittereisen"), { g: "mehl", n: 3 }] });
-kai.inventar.angelegt.waffe = "eidschwert_episch"; /* mit dem Anfänger-Ritterschwert heilt das Grünlicht den Turmwächter schneller, als man trifft */
+  rucksack: ["hammer", "spitzhacke_legendaer", "angelrute", "wappenabrieb", { g: "wurm", n: 40 }, ...Array(3).fill("stamm_tanne"), ...Array(8).fill("barren_splittereisen"), { g: "mehl", n: 5 } /* zwei mehr: eine Pastete kann anbrennen */] });
+kai.inventar.angelegt = { ...LEGENDAER }; /* Ausrüstung in passender Stufe: mit dem Trainingsschwert heilt das Grünlicht den Turmwächter schneller, als man trifft */
 const W = await starte({ sb: 8811, srv: 8812, helden: { kai, lea: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: [{ g: "splitter", n: 20 }], v: 2 } } } });
 /* Ports für parallel.mjs: localhost:8811, localhost:8812 */
 const { check, schlaf, anzahl, sprich, objekt, stand, erl, fertig, kampfBis, sammeln, herstellen, fischen, sende, warte } = W;
@@ -37,8 +37,10 @@ try {
     if (zw() < 2) await kampfBis(k, 10928.5, 9614.5, ["turmwaechter"], () => zw() >= 2, 180000);
     check(erl(k, D2, "waechter"), `Zwei Turmwächter auf Ebene 1 und 2 (Zähler ${zw()})`); }
   await objekt(k, D2, "d2_buch"); check(erl(k, D2, "buch"), "Das Wächterbuch gelesen");
-  { await W.stelle(k, 10990, 9617.2); const z = await W.kampf("kai", 10990, 9617.2); await schlaf(1500);
-    if (z) { await W.kaempfen(z, ["gruenlicht", "turmwaechter"], () => erl(k, D2, "gruenlicht"), 240000); await schlaf(800); z.ws.close(); await schlaf(2500); } }
+  { /* in Runden (wie f-welt): hängt ein Ziel oder die Verbindung (CI mit mehreren Läufen zugleich), neu verbinden – höchstens 330 s */
+    const t0 = Date.now(); for (let runde = 0; runde < 4 && !erl(k, D2, "gruenlicht") && Date.now() - t0 < 330000; runde++) {
+      await W.stelle(k, 10990, 9617.2); const z = await W.kampf("kai", 10990, 9617.2); await schlaf(1500); if (!z) continue;
+      await W.kaempfen(z, ["gruenlicht", "turmwaechter"], () => erl(k, D2, "gruenlicht"), Math.min(120000, 330000 - (Date.now() - t0))); await schlaf(800); z.ws.close(); await schlaf(2500); } }
   check(erl(k, D2, "gruenlicht"), "Das Grünlicht auf dem Dach besiegt");
   await objekt(k, D2, "d2_feuer"); check(erl(k, D2, "kern") && anzahl(k, "splitterkern_gruen") === 1, "Den Splitterkern aus dem Signalfeuer genommen");
   check(await sprich(k, D2, "ysolde", "sprechen") && erl(k, D2, "ysolde"), "Mit Ysolde gesprochen");
@@ -47,7 +49,7 @@ try {
 
   console.log("D3 „Wels im Trüben“");
   check(await sprich(k, D3, "alma", "annehmen") && stand(k, D3).phase === "laeuft", "Kai nimmt D3 an");
-  check(await fischen(k, "faehrhafen", "fisch_wels_roh", 3, 180000) && erl(k, D3, "welse"), `Drei Graufurter Welse im Fährhafen (${anzahl(k, "fisch_wels_roh")})`);
+  check(await fischen(k, "faehrhafen", "fisch_wels_roh", 5, 240000) /* zwei mehr: eine Pastete kann anbrennen */ && erl(k, D3, "welse"), `Drei Graufurter Welse im Fährhafen (${anzahl(k, "fisch_wels_roh")})`);
   { let r = ""; for (let i = 0; i < 6 && anzahl(k, "welspastete") < 2; i++) r = await herstellen(k, 6698.2, 6537.2, "welspastete", 2 - anzahl(k, "welspastete")); check(r === "ok" && anzahl(k, "welspastete") >= 2 && erl(k, D3, "pasteten"), `Zwei Welspasteten am Herd „Zur Furt“ (${r}, ${anzahl(k, "welspastete")})`); }
   check(await sprich(k, D3, "alma", "abgeben") && fertig(k, D3), "D3 fertig, Lohn abgeholt");
   { const vor = anzahl(k, "welspastete"); await W.stelle(k, 6700.5, 6543.8); sende(k, { t: "kaufen", laden: "graufurt_alma", g: "welspastete" }); await schlaf(800);

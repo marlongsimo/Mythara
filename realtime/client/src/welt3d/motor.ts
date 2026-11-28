@@ -8,6 +8,7 @@
  * Alle Koordinaten sind Weltfelder wie in der 2D-Welt und auf dem Server (x Osten, z = y der Welt nach Süden, Höhe nach oben).
  */
 import { daecherAus } from "../skills";
+import { karteDeckt } from "../uebersicht";
 import GELAENDE from "../../../welt/bibliothek/gelaende.json";
 import * as THREE from "three";
 import { bauen, gebaeudeDrehen, type Bauplan, type Gebaeude } from "./bauten";
@@ -97,7 +98,7 @@ export class Welt3D {
   bilder = new THREE.TextureLoader(); bildMat = new Map<string, THREE.SpriteMaterial>(); bildTex = new Map<string, THREE.Texture>();
 
   /** Hook je Bild (vor dem Zeichnen) und für angeklickte Bodenpunkte (Weltfelder) */
-  beimBild: ((dt: number) => void) | null = null; beimKlick: ((x: number, z: number) => void) | null = null;
+  beimBild: ((dt: number) => void) | null = null; /** #186: nach dem Nebel des Bildes (Wetter darf ihn verändern) */ nachNebel: ((dt: number, fog: THREE.Fog | null) => void) | null = null; beimKlick: ((x: number, z: number) => void) | null = null;
   async start(behaelter: HTMLElement, sx: number, sz: number, laden: (text: string) => void = () => {}) {
     this.r = new THREE.WebGLRenderer({ antialias: !HANDY, powerPreference: "high-performance" });
     this.r.setPixelRatio(P.get("aufloesung") ? Math.max(0.25, Math.min(2, Number(P.get("aufloesung")) || 1)) : pixelVerhaeltnis(grafikStufe())); /* #103: Handy „flüssig“ = 1 (Messung #91: +60 % Bilder/s) */ /* ?aufloesung=0.5: nur für Tests auf langsamen Rechnern */ this.r.shadowMap.enabled = !HANDY && P.get("schatten") !== "0"; this.r.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -291,6 +292,7 @@ export class Welt3D {
   /** Die Umgebung des Helden von oben in eine 2D-Leinwand zeichnen: felder = Breite des Ausschnitts in Weltfeldern; oben ist die Blickrichtung der Kamera */
   /** danach: wird gerufen, sobald das Bild in der Leinwand steht (Marken darüber zeichnen) */
   karteZeichnen(ziel: HTMLCanvasElement, felder: number, danach?: () => void): void {
+    if (karteDeckt()) return; /* #183: die Minikarte liegt unter der Weltkarte */
     const n = ziel.width; if (!n || this.karteLiest) return; /* #103: das vorige Bild ist noch unterwegs */ if (!this.karteZiel || this.karteZiel.width !== n) { this.karteZiel = new THREE.WebGLRenderTarget(n, n); this.kartePixel = new Uint8Array(n * n * 4); }
     const H = this.held, k = this.karteKam, h = felder / 2; k.left = -h; k.right = h; k.top = h; k.bottom = -h; k.updateProjectionMatrix();
     k.position.set(H.x, this.gelaendeHoehe(H.x, H.z) + 200, H.z); k.up.set(-Math.sin(this.gieren), 0, -Math.cos(this.gieren)); k.lookAt(H.x, 0, H.z);
@@ -344,7 +346,10 @@ export class Welt3D {
   /** Ein umhergehender Bewohner mit diesem Modell (Quests: der Bürgermeister im Rathaus), falls sein Chunk geladen ist */
   wandererMit(datei: string): { x: number; z: number } | null { for (const s of this.st.values()) for (const w of s.wanderer || []) if (w.datei === datei) return w; return null; }
   bild() {
-    const dt = Math.min(DT_MAX, this.uhr.getDelta()), H = this.held; ZEIT.value += dt;   /* auf schwachen Geräten bis 0,1 s je Bild – sonst liefe der Held dort langsamer */
+    /* #183: hinter der offenen Weltkarte läuft die Spiellogik gedrosselt (etwa 10-mal je Sekunde, die Zeit wird gesammelt) – der Held läuft weiter, das HUD dahinter wird nicht jedes Bild angefasst */
+    let roh = this.uhr.getDelta() + this.gesammelt; this.gesammelt = 0;
+    if (karteDeckt() && roh < 0.1) { this.gesammelt = roh; return; }
+    const dt = Math.min(DT_MAX, roh), H = this.held; ZEIT.value += dt;   /* auf schwachen Geräten bis 0,1 s je Bild – sonst liefe der Held dort langsamer */
     /* fertig geladene Chunks bauen: einer je Bild, damit nichts ruckelt */
     if (this.warte.length) this.bauSchritt();
     this.lodPruefen();
@@ -365,7 +370,8 @@ export class Welt3D {
     const cp = Math.cos(this.neigen), sp = Math.sin(this.neigen); this.kamera.position.set(this.ziel.x + Math.sin(this.gieren) * cp * this.abstand, this.ziel.y + sp * this.abstand, this.ziel.z + Math.cos(this.gieren) * cp * this.abstand); this.kamera.lookAt(this.ziel);
     const hier = this.chunkBei(H.x, H.z); if (hier) this.stimmung(hier.d.ebene, hier.d.art); else this.stimmung(this.ebene || "oberwelt", this.art); const unten = this.art !== "oberwelt" && this.art !== "draussen", fog = this.szene.fog as THREE.Fog;
     const weit = Math.min((RADIUS + 0.4) * C, unten ? 34 + this.abstand : HANDY ? 42 + this.abstand * 1.2 : 60 + this.abstand * 1.8); fog.far = weit; fog.near = unten ? 6 + this.abstand * 0.4 : weit * 0.45; /* Handy: kürzere Sichtweite */
-    { const fern = weit + 10; if (Math.abs(this.kamera.far - fern) > 2) { this.kamera.far = fern; this.kamera.updateProjectionMatrix(); } } /* nichts hinter dem Nebel zeichnen */
+    if (this.nachNebel) this.nachNebel(dt, fog); /* #186 Wetter: Schneesturm */
+    { const fern = Math.max(fog.far, 16) + 10; if (Math.abs(this.kamera.far - fern) > 2) { this.kamera.far = fern; this.kamera.updateProjectionMatrix(); } } /* nichts hinter dem Nebel zeichnen */
     this.licht.position.set(this.ziel.x - 30, this.ziel.y + 55, this.ziel.z + 22); this.licht.target.position.copy(this.ziel); this.fackel.position.set(H.x + 0.4, y + 2.6, H.z + 0.6);
     /* Gebäude: drinnen kein Dach, Türen öffnen sich in der Nähe, Mühlenflügel drehen sich */
     for (const s of this.st.values()) for (const b of s.bauten) { const drin = b.raeume.some((r) => H.x > r.x0 && H.x < r.x1 && H.z > r.z0 && H.z < r.z1);
@@ -377,9 +383,11 @@ export class Welt3D {
       const t = performance.now() / 1000; this.feuerLichter.forEach((l, i) => { const p = nah[i]; if (!p || !unten) { l.intensity = 0; return; } l.position.copy(p); l.intensity = 22 * (0.85 + 0.15 * Math.sin(t * 9 + i * 2.1) * Math.sin(t * 5.3 + i)); }); }
     /* Schattenkarte nur jedes zweite Bild neu (halbiert die teuerste Arbeit je Bild; der Schatten folgt einen Bruchteil später) */
     if (this.r.shadowMap.enabled) { this.bildNr++; this.r.shadowMap.autoUpdate = false; this.r.shadowMap.needsUpdate = this.bildNr % (HANDY ? 3 : 2) === 0; }
+    if (karteDeckt()) return; /* #183: hinter der offenen Weltkarte nicht zeichnen (auf dem Handy ruckelte sonst das Ziehen) */
     this.r.render(this.szene, this.kamera);
   }
   private bildNr = 0;
+  private gesammelt = 0;
 }
 const FLECK = new THREE.CircleGeometry(0.42, 16); FLECK.userData.geteilt = true;
 /** Leuchtschein über Feuern und Laternen (additiv, ohne Tiefe) */
