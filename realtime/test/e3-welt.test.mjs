@@ -42,9 +42,15 @@ try {
     const ok = await sprich(tom, E3, "tjark", "kampf"); await schlaf(1500);
     const tj = () => z && z.w.find((w) => w[2] === "tjark");
     check(ok && Boolean(tj()), "„Ergib dich“: Tjark wird zum Gegner (Folge.angriff)"); 
-    const s = z ? await kaempfen(z, ["tjark"], () => erl(tom, E3, "tjark"), 180000) : 0;
+    /* Tjark ist ein einmaliger Gegner (Folge.angriff): Hat er 20 s kein Ziel (EINMAL_WEG), geht er wieder. Unter Last (6 Tests gleichzeitig) kam
+       der Angriff manchmal zu spät – Tjark war weg und kaempfen() wartete bis zur Frist (rot nach rund 201 s, „0 Siege“). Dann erneut ansprechen. */
+    let s = 0, weg = 0;
+    for (let v = 0; z && v < 3 && !erl(tom, E3, "tjark"); v++) {
+      if (!tj()) { weg++; await stelle(tom, T.x + 1, T.y); await schlaf(800); await sprich(tom, E3, "tjark", "kampf"); await schlaf(1500); }
+      s += await kaempfen(z, ["tjark"], () => erl(tom, E3, "tjark") || !tj(), 120000);
+      for (let i = 0; i < 50 && !erl(tom, E3, "tjark"); i++) await schlaf(100); }
     await schlaf(1500);
-    check(erl(tom, E3, "tjark") && anzahl(tom, "tjarks_eid") === 0, `Tjark besiegt, sein Tod erledigt den Schritt (${s} Siege)`);
+    check(erl(tom, E3, "tjark") && anzahl(tom, "tjarks_eid") === 0, `Tjark besiegt, sein Tod erledigt den Schritt (${s} Siege${weg ? `, ${weg}× war Tjark wieder fort und wurde neu angesprochen` : ""})`);
     if (z) { z.ws.close(); await schlaf(2500); } }
   check(await sprich(tom, E3, "wigand", "bericht") && fertig(tom, E3) && an(tom, E3, "grauwacht_burg"), "Tom: E3 über „Bericht erstatten“ fertig; grauwacht_burg an");
 
