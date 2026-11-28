@@ -87,11 +87,15 @@ export const QUEST1: QuestDef = {
   dialoge: {
     jori: {
       reden: [
-        { wenn: NEU, anbieten: true, zeilen: [...z("Jori", "Du! Bitte, warte! Der Bürgermeister braucht deine Hilfe!"), ...z(ICH, "Was ist denn los?"),
-          ...z("Jori", "Die Straße ist gesperrt. Schon wieder. Die Wagen kommen nicht durch, und im Dorf reden alle nur noch darüber. Der Bürgermeister sucht jemanden, der sich die Sache ansehen kann.")],
+        /* die Ankunft erzählen (Rückmeldung des Nutzers, 28.11.): wer man ist, wie man herkam, wo man ist, wer wartet – bis Ankerholm (#190) die Überfahrt selbst erzählt */
+        { wenn: NEU, anbieten: true, zeilen: [...z("Jori", "Du! Bitte, warte! Du bist neu hier, oder? Kommst du mit den Auswanderern, von den Schiffen übers Endlose Meer?"),
+          ...z(ICH, "Ja. Ein Fuhrmann hat mich von der Küste mitgenommen, bis hierher. Wo bin ich?"),
+          ...z("Jori", "In der Waldmark! Hier kommen alle an, die neu in die Splitterlande wollen. Ich bin Jori. Und du kommst genau richtig: Bürgermeister Hagan Voss braucht Hilfe!"),
+          ...z(ICH, "Was ist denn los?"),
+          ...z("Jori", "Die Straße nach Weidenhain ist gesperrt. Schon wieder. Die Wagen kommen nicht durch, und im Dorf reden alle nur noch darüber. Der Bürgermeister sucht jemanden, der sich die Sache ansehen kann.")],
           antworten: ["warum", "annehmen", "verwerfen"] },
         { wenn: FERTIG, zeilen: ["Die Wagen fahren wieder! Mama sagt, es gibt bald wieder richtiges Mehl."], antworten: [ENDE] },
-        { zeilen: ["Das Rathaus ist dort vorne, an der Westseite vom Marktplatz. Der Bürgermeister wartet!"], antworten: [ENDE] },
+        { zeilen: ["Das Rathaus ist dort vorne, an der Westseite vom Marktplatz. Bürgermeister Hagan Voss wartet!"], antworten: [ENDE] },
       ],
       optionen: [
         { id: "warum", text: "Warum geht niemand aus dem Dorf selbst?", folge: [{ f: { weiter: true, zeilen: ["Die Wachen lassen niemanden durch. Und die, die hinausgehen, sollen nicht allein in den Wald. Bitte, geh zum Rathaus. Er wird dir erklären, was passiert ist."] } }] },
