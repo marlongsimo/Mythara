@@ -62,7 +62,7 @@ try {
   await anna.waitForTimeout(1500); const o0 = await offen(anna); if (BILD) await anna.screenshot({ path: BILD + "quest-jori.png" });
   { const L = await anna.evaluate(() => { const g = document.getElementById("ez-gespraech").getBoundingClientRect(), c = document.querySelector(".ez-chat").getBoundingClientRect(); return { dx: Math.abs(g.left - c.left), dy: Math.abs(g.top - c.top), dw: Math.abs(g.width - c.width) }; });
     check(L.dx < 2 && L.dy < 2 && L.dw < 2, `Das Gespräch liegt genau über dem Chatfenster (${JSON.stringify(L)})`); }
-  check(o0 && o0.art === "npc" && o0.name === "Jori" && /Bürgermeister braucht deine Hilfe/.test(o0.text) && o0.bild, `Jori läuft auf Anna zu und spricht sie an – mit Kopfbild links (${JSON.stringify(o0)})`);
+  check(o0 && o0.art === "npc" && o0.name === "Jori" && /Du bist neu hier/.test(o0.text) && o0.bild, `Jori läuft auf Anna zu und spricht sie an – mit Kopfbild links (${JSON.stringify(o0)})`);
   { const { gesehen, o } = await bisWahl(anna); if (BILD) await anna.screenshot({ path: BILD + "quest-wahl.png" });
     check(gesehen.some((g) => g.art === "ich" && g.name === "Du") && o && o.antworten.includes("annehmen") && o.passt, `Aussage für Aussage (${gesehen.map((g) => g.name).join(" → ")}), dann „Wähle eine Antwort“: ${o && o.antworten.join(", ")}`); }
   await klick(anna, '#ez-gespraech [data-a="annehmen"]'); await anna.waitForTimeout(800);
