@@ -254,6 +254,52 @@ for (const [k, [cx, cy]] of Object.entries(ORT)) if (k !== "huegelgrund") ["wege
 /* Küstenfische an der Nordküste bei Wollhag (Klippenbarsch) */
 uferplatz("fischplatz_nordkueste_wollhag", "klippenbarsch", 35, 6560, 5690, "An der Nordküste der Fahlen Weiten stehen Klippenbarsche zwischen den Steinen.");
 
+/* ═══════════════════════ Westwald (Leitstelle 28.11., freigegeben): Pechtann – Harzsammler und Pechsieder, eine Jägerin ═══════════════════════
+   Lichtung östlich der Heidewölfe (Streifgebiet E2 bleibt frei), Wege nach Osten (Straße bei 6642|6080, nicht durch den Grenzposten), Nordosten (Straße → Brechstein),
+   Süden (Alte Wachruine → Gehöft) und Westen (Harzpfad zur Küste); unterwegs Harzlichtung, die Verfallene Pechhütte und ein Jägerlager. */
+const PT = { dorf: [6470, 6095], lichtung: [6230, 6045], huette: [6200, 6126], lager: [6402, 6172] }, WOELFE = [6286, 5954, 6417, 6085];
+orte.pechtann = PT.dorf; orte.harzlichtung = PT.lichtung;
+{ const [cx, cy] = PT.dorf; ortsboden(cx, cy, 22, 15); eben.push([cx - 18, cy - 12, cx + 18, cy + 12]);
+  /* Wege zuerst (die Häuser stehen an ihnen) */
+  weg([[cx + 20, cy - 2], [6540, cy - 6], [6600, 6084], [6642, 6080]], 2);                       /* Ost: zur Straße Grauwacht–Heidrast */
+  weg([[cx + 6, cy - 14], [6500, 6040], [6560, 5996], [6612, 5972]], 1.8);                       /* Nordost: Waldpfad zur Straße (→ Brechstein) */
+  weg([[cx - 6, cy + 14], [6440, 6140], PT.lager, [6360, 6206], [6326, 6228]], 1.8);            /* Süd: über das Jägerlager zur Alten Wachruine */
+  weg([[cx - 21, cy + 2], [6420, 6104], [6340, 6102], [6280, 6080], PT.lichtung, [6196, 6056], [6176, 6060]], 1.6);   /* West: Harzpfad bis an die Küste */
+  weg([[6262, 6086], [6226, 6106], [PT.huette[0] + 2, PT.huette[1] - 2]], 1.4);               /* Abzweig zur Pechhütte */
+  /* Pechsiederei: Kessel (Station), Fässer, Meiler */
+  const kessel = baue("hand_kessel_01", cx - 6, cy + 4, { id: "pechtann_pechkessel", rand: 0 }, 5); stationen.push({ id: "kessel_pechtann", station: "kessel", x: kessel.x, y: kessel.y + 1.4 });
+  lies("pechtann_pechsiederei", kessel.x + 1.6, kessel.y + 1.2, "Die Pechsiederei. Im Kessel brodelt Harz zu Pech – für Fackeln, Fässer und die Bootsbauer in Kielmund.");
+  for (const [o, dx, dy] of [["k_faesser", -10, 6], ["dorf_fass_01", -2, 7], ["k_faesser", -11, 1]]) try { baue(o, cx + dx, cy + dy, { rand: 0 }, 3); } catch { /* kein Platz */ }
+  baue("wald_meiler_01", cx + 11, cy + 8, { id: "pechtann_meiler", rand: 0 }, 5);
+  for (const [o, dx, dy, id] of [["dorf_haus_holz_01", -12, -7, "pechtann_pechsieder_haus"], ["dorf_huette_holz_01", 10, -8, "pechtann_jaegerhuette"], ["dorf_haus_holz_03", -2, -10], ["dorf_huette_holz_02", 15, 2], ["dorf_haus_holz_02", -16, 8], ["dorf_schuppen_holz_01", 4, 11], ["dorf_huette_holz_01", -7, 12]])
+    try { baue(o, cx + dx, cy + dy, id ? { id } : {}, 6); } catch { /* weniger Häuser */ }
+  baue("dorf_holzstapel_01", cx + 7, cy - 3, { rand: 0 }, 4); baue("dorf_festfeuer_01", cx + 1, cy + 2, { id: "pechtann_feuer", rand: 0 }, 3);
+  const kiste = baue("steinhag_bankkiste", cx + 5, cy + 4, { id: "pechtann_bankkiste", rand: 0 }, 6); lies("pechtann_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste von Pechtann – mit Pech versiegelt. Was du einlegst, liegt auf deinem Konto.");
+  banken.push({ id: "pechtann_bankkiste", ort: "Pechtann", kiste: [kiste.x, kiste.y + 1.4] });
+  const laden = baue("dorf_marktstand_02", cx - 3, cy - 3, { id: "pechtann_laden", rand: 0 }, 5); laeden.push({ id: "pechtann_laden", ort: "Pechtann", art: "Pech und Pfeile (Pech, Fackeln, Pfeile, Felle)", x: laden.x, y: +(laden.y + 1.2).toFixed(1), blick: [0, -1] });
+  lies("pechtann", cx + 2.5, cy + 0.4, "Pechtann. Ein Dorf der Harzsammler mitten im Westwald – die Kiefern weinen hier Harz, und die Leute machen Pech daraus.");
+  const jh = objekte.find((o) => o.id === "pechtann_jaegerhuette"); if (jh) lies("pechtann_jaegerhuette", jh.x, jh.y + 1.4, "Die Hütte der Jägerin. Felle hängen zum Trocknen, an der Wand lehnt ein Bogen.");
+  npc.push({ id: "jaegerin_pechtann", rolle: "Jägerin (Aufgabe: Wildschweine)", x: (jh?.x ?? cx + 10) + 1.5, y: (jh?.y ?? cy - 8) + 2.2 },
+    { id: "pechsieder_pechtann", rolle: "Pechsieder (Aufgabe: Harzeimer)", x: kessel.x - 1.5, y: kessel.y + 1.6 }, { id: "haendlerin_pechtann", rolle: "Händlerin (Laden)", x: laden.x, y: laden.y + 1.2 });
+  namen.push(["Pechtann", "Dorf", cx, cy]);
+  kraut("pechtann_moorgloeckchen_1", "moorgloeckchen", cx - 18, cy - 4); kraut("pechtann_eisenhut_1", "eisenhut", cx + 18, cy + 8); }
+/* Harzlichtung am Harzpfad: Lichtung (Holz setzt sammelstellen.mjs), Kräuter, ein Rastplatz */
+{ const [cx, cy] = PT.lichtung; male(cx - 12, cy - 9, cx + 12, cy + 9, (x, y) => (Math.hypot((x - cx) / 11, (y - cy) / 8) + 0.08 * welle(x, y) < 1 && jetzt(x, y) === "f" ? (welle(x, y) > 0.9 ? "," : ".") : null));
+  const f = baue("dorf_festfeuer_01", cx + 4, cy + 3, { id: "rast_harzlichtung_feuer", rand: 0 }, 5); try { baue("wald_baumstamm_01", f.x - 2.5, f.y + 1.5, { id: "rast_harzlichtung_stamm", s: 0.8, rand: 0 }, 3); } catch { }
+  lies("rast_harzlichtung", f.x + 0.5, f.y + 2.4, "Die Harzlichtung. An den Stämmen ringsum sind Rinnen geschnitten, darunter hängen Eimer – manche voll, manche umgestoßen."); rast.push("rast_harzlichtung");
+  kraut("harzlichtung_ringelblume_1", "ringelblume", cx - 6, cy + 2); kraut("harzlichtung_moorgloeckchen_1", "moorgloeckchen", cx + 8, cy - 4); namen.push(["Harzlichtung", "Ort", cx, cy]); }
+/* Verfallene Pechhütte: Ruine, umgestürzte Fässer – Ort der Aufgabe „Die verlorenen Harzeimer“ */
+{ const [cx, cy] = PT.huette; male(cx - 7, cy - 6, cx + 7, cy + 6, (x, y) => (Math.hypot((x - cx) / 6, (y - cy) / 5) < 1 && jetzt(x, y) === "f" ? "." : null));
+  for (const [o, dx, dy] of [["k_ruine_mauer", -2, -1], ["k_ruine_turmstumpf", 3, -2], ["k_truemmer", 1, 2], ["k_faesser", -4, 2]]) try { baue(o, cx + dx, cy + dy, { rand: 0 }, 3); } catch { }
+  lies("pechhuette", cx, cy + 3.2, "Die Verfallene Pechhütte. Das Dach ist eingestürzt, der Kessel gesprungen. Zwischen den Trümmern liegen Harzeimer – jemand hat sie hier zurückgelassen.");
+  npc.push({ id: "pechhuette_harzeimer", rolle: "Questplatz: Harzeimer (Quests)", x: cx + 2, y: cy + 3.5 }); namen.push(["Verfallene Pechhütte", "Ruine", cx, cy]); }
+/* Jägerlager am Südweg: Zelt, Feuer, Spuren */
+{ const [cx, cy] = PT.lager; const z = baue("welt_zelt_01", cx - 4, cy - 3, { id: "jaegerlager_zelt", rand: 0 }, 5); const f = baue("dorf_festfeuer_01", cx + 2, cy - 2, { id: "jaegerlager_feuer", rand: 0 }, 4);
+  stationen.push({ id: "feuer_jaegerlager", station: "feuer", x: f.x, y: f.y + 1.6 });
+  for (const [dx, dy] of [[6, 3], [9, 5], [12, 8]]) try { baue("welt_spuren_01", cx + dx, cy + dy, { rand: 0 }, 2); } catch { }
+  lies("jaegerlager", f.x + 0.5, f.y + 2.4, "Ein Jägerlager. Die Spuren führen nach Westen – Wildschweine, dem Wühlen nach eine ganze Rotte."); rast.push("jaegerlager"); namen.push(["Jägerlager", "Ort", cx, cy]); }
+/* das Streifgebiet der Heidewölfe (WOELFE) bleibt frei – Test welt-fahleweiten-fuellen */
+
 /* ───── schreiben ───── */
 const keys = [...feld.keys()].map((k) => k.split(",").map(Number)), X0 = Math.min(...keys.map((k) => k[0])), Y0 = Math.min(...keys.map((k) => k[1])), X1 = Math.max(...keys.map((k) => k[0])), Y1 = Math.max(...keys.map((k) => k[1]));
 const patches = []; for (let ya = Y0; ya <= Y1; ya += 64) { const zeilen = []; for (let y = ya; y < Math.min(ya + 64, Y1 + 1); y++) { let s = ""; for (let x = X0; x <= X1; x++) s += feld.get(x + "," + y) || " "; zeilen.push(s.replace(/ +$/, "")); } if (zeilen.some((s) => s.trim())) patches.push({ x0: X0, y0: ya, zeilen }); }
@@ -264,5 +310,5 @@ writeFileSync(GRUNDDATEI, JSON.stringify({ hinweis: "fahleweiten_fuellen.mjs: ur
 /* alle Wege der Fahlen Weiten (auch die aus fahleweiten.mjs) – für sammelstellen.mjs („am Weg“) und den Test */
 const FW_WEGE = [[[6600, 5890], [6612, 5944], [6628, 6004], [6640, 6064], [6648, 6124], [6662, 6182], [6682, 6246], [6694, 6300]], [[6604, 5866], [6622, 5846], [6648, 5826], [6668, 5818], [6680, 5814], [6680, 5801]], [[6584, 5872], [6556, 5858], [6520, 5830], [6494, 5800], [6476, 5786]], [[6444, 5770], [6400, 5778], [6344, 5786], [6288, 5784], [6252, 5780]]];
 writeFileSync(join(WELT, "fahleweiten_orte.json"), JSON.stringify({ hinweis: "Fahle Weiten füllen, Schritt 1 (Welt #171): Orte, Ortsnamen, Grauwacht (Mauer, Tore, Läden), Banken und Bankkisten, Ladenplätze, Stationen, NPC-Plätze, Fischplätze, Kräuter, Wege, Rastplätze. Weltfelder. Objekte und NPCs mit ausbau gelten erst ab dieser Stadtstufe.",
-  orte, namen, grauwacht, banken, laeden, stationen, npc, fischplaetze: fische, kraeuter, rastplaetze: rast, wege: [...FW_WEGE.map((punkte) => ({ punkte, breite: 2 })), ...wege] }, null, 1) + "\n");
+  orte, namen, grauwacht, westwald: { ...PT, woelfe: WOELFE }, banken, laeden, stationen, npc, fischplaetze: fische, kraeuter, rastplaetze: rast, wege: [...FW_WEGE.map((punkte) => ({ punkte, breite: 2 })), ...wege] }, null, 1) + "\n");
 console.log(`Fahle Weiten füllen: Grauwacht ${grauwacht.gebaeude} Gebäude (Mauer ${grauwacht.mauer.join(",")}, ${grauwacht.laeden.length} Läden), ${Object.keys(ORT).length} neue Orte, ${objekte.length} Objekte, ${interaktionen.length} Lesestellen, ${npc.length} NPC-Plätze, ${fische.length} Fischplätze, ${kraeuter.length} Kräuter, ${banken.length} Banken/Kisten`);

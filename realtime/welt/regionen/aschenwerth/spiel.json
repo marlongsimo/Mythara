@@ -248,6 +248,28 @@
    "daten": {
     "text": "Ein Spiralstein. Wenn du die Hand auflegst, summt er kaum hörbar."
    }
+  },
+  {
+   "id": "ko_14_l",
+   "art": "lesen",
+   "x": 40.44,
+   "y": 42.36,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hopfenhof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_36_l",
+   "art": "lesen",
+   "x": 86.31,
+   "y": 136.91,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Kleindorf. Ein paar Hütten um einen Brunnen – hier kennt jeder jeden."
+   }
   }
  ]
 }

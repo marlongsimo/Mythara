@@ -42,6 +42,116 @@
      "Nach Weidenhain ↓"
     ]
    }
+  },
+  {
+   "id": "ko_5_l",
+   "art": "lesen",
+   "x": 226.8,
+   "y": 104.59,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Brandstätte. Mauerreste, halb eingesunken. Niemand weiß mehr, wer hier gewohnt hat."
+   }
+  },
+  {
+   "id": "ko_7_l",
+   "art": "lesen",
+   "x": 41.63,
+   "y": 38.57,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Rübenkreuz. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_9_l",
+   "art": "lesen",
+   "x": 55.87,
+   "y": 113.24,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hof am Dorfteich. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_18_l",
+   "art": "lesen",
+   "x": 42.2,
+   "y": 191.0,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Leere Mauern. Mauerreste, halb eingesunken. Niemand weiß mehr, wer hier gewohnt hat."
+   }
+  },
+  {
+   "id": "ko_20_l",
+   "art": "lesen",
+   "x": 217.3,
+   "y": 180.65,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Bruns Meiler. Ein Kohlenmeiler qualmt still vor sich hin."
+   }
+  },
+  {
+   "id": "ko_23_l",
+   "art": "lesen",
+   "x": 114.77,
+   "y": 113.34,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Igelwarte. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_25_l",
+   "art": "lesen",
+   "x": 108.93,
+   "y": 36.24,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Spukhof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_45_l",
+   "art": "lesen",
+   "x": 143.0,
+   "y": 172.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hasellager. Ein Jägerlager: Feuerstelle, ein Zelt und Spuren, die in den Wald führen."
+   }
+  },
+  {
+   "id": "ko_46_l",
+   "art": "lesen",
+   "x": 171.0,
+   "y": 121.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Gretes Turm. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_52_l",
+   "art": "lesen",
+   "x": 84.0,
+   "y": 157.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Kiefernmeiler. Ein Kohlenmeiler qualmt still vor sich hin."
+   }
   }
  ],
  "ausgaenge": [],

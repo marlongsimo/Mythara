@@ -540,7 +540,7 @@
     "art": "fransen",
     "breite": 1.6
    },
-   "farbe": "#b86b42",
+   "farbe": "#a8865e",
    "kachelPx": 420,
    "herkunft": "werkzeug/welt/boden_lehm.py (#172) aus der Erdkachel gerechnet – frei verwendbar"
   },
@@ -556,7 +556,7 @@
     "art": "fransen",
     "breite": 1.4
    },
-   "farbe": "#9e5736",
+   "farbe": "#94734f",
    "kachelPx": 420,
    "herkunft": "werkzeug/welt/boden_lehm.py (#172) aus der Erdkachel gerechnet – frei verwendbar"
   }

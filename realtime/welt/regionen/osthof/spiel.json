@@ -56,6 +56,17 @@
    "daten": {
     "text": "Die Scheune ist bis unters Dach mit Heu gefüllt."
    }
+  },
+  {
+   "id": "ko_6_l",
+   "art": "lesen",
+   "x": 82.7,
+   "y": 51.82,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Moosschrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
   }
  ],
  "ausgaenge": [],

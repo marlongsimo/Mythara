@@ -57,6 +57,72 @@
      "Nach Waldmark ←"
     ]
    }
+  },
+  {
+   "id": "ko_13_l",
+   "art": "lesen",
+   "x": 102.67,
+   "y": 50.25,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eschenau. Ein paar Hütten um einen Brunnen – hier kennt jeder jeden."
+   }
+  },
+  {
+   "id": "ko_16_l",
+   "art": "lesen",
+   "x": 293.0,
+   "y": 42.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Stiller Schrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_28_l",
+   "art": "lesen",
+   "x": 227.0,
+   "y": 18.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eilerts Meiler. Ein Kohlenmeiler qualmt still vor sich hin."
+   }
+  },
+  {
+   "id": "ko_37_l",
+   "art": "lesen",
+   "x": 71.0,
+   "y": 6.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Bienenschrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_50_l",
+   "art": "lesen",
+   "x": 151.0,
+   "y": 6.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hirschlager. Ein Jägerlager: Feuerstelle, ein Zelt und Spuren, die in den Wald führen."
+   }
+  },
+  {
+   "id": "ko_54_l",
+   "art": "lesen",
+   "x": 188.0,
+   "y": 63.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Tammes Meiler. Ein Kohlenmeiler qualmt still vor sich hin."
+   }
   }
  ],
  "kollision": {

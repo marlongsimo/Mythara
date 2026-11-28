@@ -1,5 +1,5 @@
 """
-World Pipeline – Lehmboden der Ockerlande (#172, 27.11.2026): zwei Kacheln „Lehm“ (rot-ocker, fest) und „Lehm, rissig“ (dunkler, Trockenrisse),
+World Pipeline – Lehmboden der Ockerlande (#172, 27.11.2026): zwei Kacheln „Lehm“ (gedeckter Ocker, fest; bis 28.11. rot-ocker) und „Lehm, rissig“ (dunkler, Trockenrisse),
 aus der Erdkachel gerechnet (ohne Bildvorlage, frei verwendbar). Die Lehmsteppe der Ockerlande mischt beide nach Rauschen.
 Aufruf (im Ordner realtime): python3 werkzeug/welt/boden_lehm.py   → werkzeug/boden/gemalt/lehm.webp, lehm-rissig.webp
 """
@@ -22,7 +22,8 @@ for py, px in pkt:
         for ox in (-W, 0, W):
             d = np.hypot(yy + wackel - py - oy, xx - wackel - px - ox); m = d < d1; d2 = np.where(m, d1, np.minimum(d2, d)); d1 = np.where(m, d, d1)
 kanten = np.clip(1 - (d2 - d1) / 2.2, 0, 1).astype(np.float32)
-for name, farbe, risse in (('lehm', (0.72, 0.42, 0.26), 0.10), ('lehm-rissig', (0.62, 0.34, 0.21), 0.42)):
+# Variante C, ganz gedeckt (Entscheidung des Nutzers 28.11.): Lehm #a8865e, rissig #94734f – vorher rot-ocker (0.72, 0.42, 0.26) / (0.62, 0.34, 0.21)
+for name, farbe, risse in (('lehm', (0xa8 / 255, 0x86 / 255, 0x5e / 255), 0.10), ('lehm-rissig', (0x94 / 255, 0x73 / 255, 0x4f / 255), 0.42)):
     bild = np.clip(np.asarray(farbe) * (1 + 0.10 * hell) - risse * 0.35 * kanten[..., None], 0, 1)
     Image.fromarray((bild * 255).astype(np.uint8)).save(os.path.join(ZIEL, name + '.webp'), quality=88)
     print(name, 'geschrieben')
