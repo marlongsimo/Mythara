@@ -120,6 +120,30 @@ def nah_gebaeude(x, y, r=6):   # ein Gebäude (auch Nachbarregion) näher als r:
     n = region_bei(x, y); D = daten(n)
     return any(abs(o['x'] + D['ux'] - x) < r and abs(o['y'] + D['uy'] - y) < r and BIB.get(o['objekt'], {}).get('kategorie') == 'gebaeude' for o in D['obj'])
 
+# Leistung (Leitstelle 28.11.: Fahle Weiten wieder über ~17 Bilder/s): jede eigene Objektart im Bild kostet auf dem Handy einen Zeichenaufruf.
+# Darum nimmt ein Kleinort vor allem Arten, die in der Nähe (50 Felder) schon stehen: das Hauptstück weicht auf eine vorhandene Art gleicher Rolle aus,
+# Nebenstücke kommen nur, wenn ihre Art (oder ein Ersatz) schon da ist. So bringt ein Ort höchstens eine neue Art mit. Besonderheiten bleiben, wie sie sind.
+ERSATZ = {'weidenhain_bauernhaus_01': ['weidenhain_bauernhaus_01', 'dorf_huette_holz_01', 'dorf_huette_holz_02', 'moor_fischer_01'],
+          'dorf_huette_holz_01': ['dorf_huette_holz_01', 'dorf_huette_holz_02', 'weidenhain_bauernhaus_01'], 'dorf_huette_holz_02': ['dorf_huette_holz_02', 'dorf_huette_holz_01', 'weidenhain_bauernhaus_01'],
+          'moor_fischer_01': ['moor_fischer_01', 'dorf_huette_holz_02', 'dorf_huette_holz_01'], 'dorf_windmuehle_01': ['dorf_windmuehle_01', 'weidenhain_muehle_01'],
+          'k_zaun': ['k_zaun', 'dorf_palisade_01'], 'wegrand_heuhaufen': ['wegrand_heuhaufen', 'dorf_holzstapel_01', 'k_kiste', 'k_faesser', 'dorf_fass_01'],
+          'dorf_holzstapel_01': ['dorf_holzstapel_01', 'wegrand_heuhaufen', 'k_kiste', 'k_faesser'], 'k_kiste': ['k_kiste', 'dorf_kiste_01', 'k_faesser', 'dorf_fass_01'],
+          'dorf_festfeuer_01': ['dorf_festfeuer_01', 'moor_feuerkorb_01'], 'welt_zelt_01': ['welt_zelt_01'], 'k_fels_klein': ['k_fels_klein', 'k_fels_gross'], 'k_fels_gross': ['k_fels_gross', 'k_fels_klein'],
+          'moor_menhir_01': ['moor_menhir_01', 'moor_menhir_02', 'hochland_steinmann'], 'moor_menhir_02': ['moor_menhir_02', 'moor_menhir_01', 'hochland_steinmann'], 'hochland_steinmann': ['hochland_steinmann', 'moor_menhir_01', 'moor_menhir_02'],
+          'wz_seelenlicht_grablicht': ['wz_seelenlicht_grablicht', 'wegrand_wegkreuz_holz', 'k_grabstein_rund'], 'wegrand_wegkreuz_holz': ['wegrand_wegkreuz_holz', 'wz_seelenlicht_grablicht'],
+          'k_ruine_mauer': ['k_ruine_mauer', 'k_ruine_turmstumpf', 'k_truemmer'], 'k_ruine_turmstumpf': ['k_ruine_turmstumpf', 'k_ruine_mauer', 'k_truemmer'], 'k_truemmer': ['k_truemmer', 'k_ruine_mauer', 'k_fels_klein'],
+          'kueste_netze': ['kueste_netze', 'kueste_fischkisten', 'k_kiste'], 'welt_spuren_01': ['welt_spuren_01'], 'dorf_brunnen_01': ['dorf_brunnen_01']}
+def arten_nah(x, y, r=50):   # Objektarten, die schon in der Nähe stehen (Region und schon gesetzte Kleinorte)
+    n = region_bei(x, y); D = daten(n)
+    return {o['objekt'] for o in D['obj'] + D['neu_obj'] if abs(o['x'] + D['ux'] - x) < r and abs(o['y'] + D['uy'] - y) < r}
+def sparsam(teile, x0, y0):   # Zusammenstellung auf vorhandene Arten umstellen (Hauptstück immer, Nebenstücke nur mit vorhandener Art)
+    da = arten_nah(x0, y0); neu = []
+    for k, (ob, dx, dy, s) in enumerate(teile):
+        alt = [a for a in ERSATZ.get(ob, [ob]) if a in BIB]; hier = [a for a in alt if a in da]
+        if hier: neu.append((hier[0], dx, dy, s))
+        elif k == 0: neu.append((ob, dx, dy, s))   # Hauptstück: die eigene Art, wenn nichts Passendes in der Nähe steht
+    return neu
+
 def lichtung(x0, y0):   # Bäume am Ort (r 5) und davor (südlich, die Kronen verdecken sonst den Ort) herausnehmen, merken
     n = region_bei(x0, y0); D = daten(n); weg = []
     for o in D['obj']:
@@ -160,6 +184,8 @@ for schritt in FREIGEGEBEN:
         teile = TEILE.get(q['art'], TEILE['lager']); sonder_text = None
         if q['name'] in SONDER: teile, sonder_text = SONDER[q['name']]
         if q['art'] == 'muehle' and any(zeichen(x0 + dx, y0 + dy) in '~w' for dx in range(-8, 9, 2) for dy in range(-8, 9, 2)): teile = [('weidenhain_muehle_01', 0, 0, 1), ('dorf_holzstapel_01', 4, 2, 1)]
+        voll = teile
+        if q['name'] not in SONDER: teile = sparsam(teile, x0, y0)
         def versuch():
             gesetzt = []
             for k, (ob, dx, dy, s) in enumerate(teile):
@@ -177,6 +203,7 @@ for schritt in FREIGEGEBEN:
             return gesetzt
         gesetzt = versuch()
         if not gesetzt: lichtung(x0, y0); gesetzt = versuch()   # im dichten Wald: kleine Lichtung schlagen
+        if not gesetzt and teile != voll: teile = voll; gesetzt = versuch()   # die sparsame Art passt nicht hin: die eigene Zusammenstellung
         if not gesetzt: continue
         hx, hy = gesetzt[0]; n = region_bei(hx, hy); D = daten(n)
         # Lesestelle vor dem Hauptstück: das nächste begehbare, von keinem Körper verdeckte Feld (vorn/südlich zuerst)

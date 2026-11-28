@@ -46,8 +46,8 @@
   {
    "id": "ko_5_l",
    "art": "lesen",
-   "x": 226.8,
-   "y": 104.59,
+   "x": 232.0,
+   "y": 97.2,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -68,8 +68,8 @@
   {
    "id": "ko_9_l",
    "art": "lesen",
-   "x": 55.87,
-   "y": 113.24,
+   "x": 45.67,
+   "y": 105.64,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -90,8 +90,8 @@
   {
    "id": "ko_20_l",
    "art": "lesen",
-   "x": 217.3,
-   "y": 180.65,
+   "x": 207.0,
+   "y": 184.2,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {

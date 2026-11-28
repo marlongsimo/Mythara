@@ -342,5 +342,5 @@
  {"id":"naht_1199","objekt":"stil_eiche_02","x":127.5,"y":93.5,"s":0.91,"spiegeln":true},
  {"id":"naht_1200","objekt":"stil_tanne_02","x":0.5,"y":95.5,"s":0.85},
  {"id":"ko_31_0","objekt":"welt_zelt_01","x":120,"y":87,"spiegeln":true},
- {"id":"vd_weidenhain_k1","objekt":"wegrand_feldstein_2","x":114.5,"y":71.5}
+ {"id":"vd_weidenhain_k1","objekt":"wegrand_bildstock","x":114.5,"y":68.5}
 ]
