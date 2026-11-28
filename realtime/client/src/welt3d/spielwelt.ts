@@ -10,10 +10,12 @@
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
 import { arbeitMelden, arbeitVon } from "../arbeit";
-import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch, questGeladen, questStandB } from "../welt";
+import { bossWahlBitten, chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch, questGeladen, questStandB } from "../welt";
 import { markeDa, stufenSchluessel } from "../../../shared/stadtstufen";
 import { schalterAn } from "../../../shared/quests";
-import { SPRUENGE } from "../../../shared/bosse";
+import { SPRUENGE, INSTANZEN } from "../../../shared/bosse";
+import { imFeld } from "../../../shared/boss";
+import { bossWahlFenster } from "../bosswahl";
 import { WELT_SPERREN, sperrAbstand } from "../../../shared/sperren";
 import { Schneesturm } from "./wetter3d";
 /** Stadtstufen: Schalter dieses Spielers (vor dem Laden der Quests: die erste Stufe) */
@@ -343,7 +345,11 @@ export class Spielwelt3D implements WeltKern {
     { const zu = this.quest ? this.quest.eingangZu(a.id) : null; if (zu) return { text: knopf || "Betreten", tat: () => { const el = $("#ez-dorf-hilfe"); el.textContent = zu; el.style.display = ""; } }; } /* Wappentür (#40): verschlossen */
     if (ziel) { const S = SPRUENGE[a.id]; /* Phase 4: manche Sprünge erst mit Quest-Schalter (shared/bosse.ts) */
       return { text: /hinauf|hoch/i.test(knopf) ? "Hoch" : /hinab|hinunter|runter/i.test(knopf) ? "Runter" : knopf || "Hinabsteigen",
-        tat: () => { if (S && !(questGeladen() && schalterAn((id) => questStandB(id), S.schalter))) { chatSystem(S.zu); return; } this.springen(ziel[0], ziel[1]); } }; }
+        tat: () => { if (S && !(questGeladen() && schalterAn((id) => questStandB(id), S.schalter))) { chatSystem(S.zu); return; }
+          /* #125: in einen Boss-Raum nach der Quest – erst wählen: öffentlich oder eigene Instanz; der Server bestätigt, dann hinein */
+          const I = questGeladen() ? INSTANZEN.find((d) => d.danach && imFeld(d.feld, ziel[0], ziel[1]) && schalterAn((id) => questStandB(id), d.danach)) : undefined;
+          if (I) { bossWahlFenster(I, (wahl) => { void bossWahlBitten(I.id, wahl).then((ok) => { if (ok && !this.gesperrt) this.springen(ziel[0], ziel[1]); }); }); return; }
+          this.springen(ziel[0], ziel[1]); } }; }
     if (tat) return { text: anschluss3D.knopf(tat, knopf || "Betreten"), tat: () => anschluss3D.tat(tat, this) };
     if (text) return { text: "Ansehen", tat: () => { const el = $("#ez-dorf-hilfe"); el.textContent = text; el.style.display = ""; } };
     return null;

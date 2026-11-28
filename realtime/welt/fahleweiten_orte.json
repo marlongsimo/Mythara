@@ -28,6 +28,14 @@
   "reifbach": [
    6424,
    5722
+  ],
+  "pechtann": [
+   6470,
+   6095
+  ],
+  "harzlichtung": [
+   6230,
+   6045
   ]
  },
  "namen": [
@@ -66,6 +74,30 @@
    "Ort",
    6424,
    5722
+  ],
+  [
+   "Pechtann",
+   "Dorf",
+   6470,
+   6095
+  ],
+  [
+   "Harzlichtung",
+   "Ort",
+   6230,
+   6045
+  ],
+  [
+   "Verfallene Pechhütte",
+   "Ruine",
+   6200,
+   6126
+  ],
+  [
+   "Jägerlager",
+   "Ort",
+   6402,
+   6172
   ]
  ],
  "grauwacht": {
@@ -163,6 +195,30 @@
   ],
   "gebaeude": 42
  },
+ "westwald": {
+  "dorf": [
+   6470,
+   6095
+  ],
+  "lichtung": [
+   6230,
+   6045
+  ],
+  "huette": [
+   6200,
+   6126
+  ],
+  "lager": [
+   6402,
+   6172
+  ],
+  "woelfe": [
+   6286,
+   5954,
+   6417,
+   6085
+  ]
+ },
  "banken": [
   {
    "id": "grauwacht_bank",
@@ -240,6 +296,14 @@
     6418,
     5725.4
    ]
+  },
+  {
+   "id": "pechtann_bankkiste",
+   "ort": "Pechtann",
+   "kiste": [
+    6475,
+    6100.4
+   ]
   }
  ],
  "laeden": [
@@ -308,6 +372,17 @@
     0,
     -1
    ]
+  },
+  {
+   "id": "pechtann_laden",
+   "ort": "Pechtann",
+   "art": "Pech und Pfeile (Pech, Fackeln, Pfeile, Felle)",
+   "x": 6467,
+   "y": 6093.2,
+   "blick": [
+    0,
+    -1
+   ]
   }
  ],
  "stationen": [
@@ -370,6 +445,18 @@
    "station": "feuer",
    "x": 6429,
    "y": 5729.1
+  },
+  {
+   "id": "kessel_pechtann",
+   "station": "kessel",
+   "x": 6464,
+   "y": 6100.4
+  },
+  {
+   "id": "feuer_jaegerlager",
+   "station": "feuer",
+   "x": 6403.5,
+   "y": 6170.6
   }
  ],
  "npc": [
@@ -521,6 +608,30 @@
    "rolle": "Händler (Laden)",
    "x": 6427,
    "y": 5731.2
+  },
+  {
+   "id": "jaegerin_pechtann",
+   "rolle": "Jägerin (Aufgabe: Wildschweine)",
+   "x": 6481.5,
+   "y": 6089.2
+  },
+  {
+   "id": "pechsieder_pechtann",
+   "rolle": "Pechsieder (Aufgabe: Harzeimer)",
+   "x": 6462.5,
+   "y": 6100.6
+  },
+  {
+   "id": "haendlerin_pechtann",
+   "rolle": "Händlerin (Laden)",
+   "x": 6467,
+   "y": 6093.2
+  },
+  {
+   "id": "pechhuette_harzeimer",
+   "rolle": "Questplatz: Harzeimer (Quests)",
+   "x": 6202,
+   "y": 6129.5
   }
  ],
  "fischplaetze": [
@@ -753,12 +864,42 @@
    "x": 6260.5,
    "y": 5840.5,
    "region": "fl_186_169"
+  },
+  {
+   "id": "pechtann_moorgloeckchen_1",
+   "art": "moorgloeckchen",
+   "x": 6452.5,
+   "y": 6091.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "pechtann_eisenhut_1",
+   "art": "eisenhut",
+   "x": 6488.5,
+   "y": 6103.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "harzlichtung_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6225.5,
+   "y": 6047.5,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "harzlichtung_moorgloeckchen_1",
+   "art": "moorgloeckchen",
+   "x": 6238.5,
+   "y": 6041.5,
+   "region": "fl_186_183"
   }
  ],
  "rastplaetze": [
   "rast_talweg",
   "rast_graeberweg",
-  "rast_nordweg"
+  "rast_nordweg",
+  "rast_harzlichtung",
+  "jaegerlager"
  ],
  "wege": [
   {
@@ -1183,6 +1324,128 @@
     ]
    ],
    "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6490,
+     6093
+    ],
+    [
+     6540,
+     6089
+    ],
+    [
+     6600,
+     6084
+    ],
+    [
+     6642,
+     6080
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6476,
+     6081
+    ],
+    [
+     6500,
+     6040
+    ],
+    [
+     6560,
+     5996
+    ],
+    [
+     6612,
+     5972
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6464,
+     6109
+    ],
+    [
+     6440,
+     6140
+    ],
+    [
+     6402,
+     6172
+    ],
+    [
+     6360,
+     6206
+    ],
+    [
+     6326,
+     6228
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6449,
+     6097
+    ],
+    [
+     6420,
+     6104
+    ],
+    [
+     6340,
+     6102
+    ],
+    [
+     6280,
+     6080
+    ],
+    [
+     6230,
+     6045
+    ],
+    [
+     6196,
+     6056
+    ],
+    [
+     6176,
+     6060
+    ]
+   ],
+   "breite": 1.6,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6262,
+     6086
+    ],
+    [
+     6226,
+     6106
+    ],
+    [
+     6202,
+     6124
+    ]
+   ],
+   "breite": 1.4,
    "zeichen": "e"
   }
  ]

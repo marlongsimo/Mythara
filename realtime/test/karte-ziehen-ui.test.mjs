@@ -55,7 +55,7 @@ try {
   await anna.goto(B + S + "&vorwaermen=0"); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   await anna.waitForTimeout(4000);
   await anna.keyboard.press("m"); await anna.waitForSelector("#ez-uebersicht .wk-flaeche", { timeout: 20000 }); await anna.waitForTimeout(3000);
-  const n = await anna.evaluate(() => ({ sym: document.querySelectorAll("#ez-uebersicht .wk-symbol").length, namen: document.querySelectorAll("#ez-uebersicht .wk-name").length, img: document.querySelectorAll("#ez-uebersicht img").length }));
+  const n = await anna.evaluate(() => ({ sym: document.querySelectorAll("#ez-uebersicht .wk-oben .wk-sym").length, namen: document.querySelectorAll("#ez-uebersicht .wk-oben .wk-n").length, img: document.querySelectorAll("#ez-uebersicht img").length }));
   console.log("Karte:", JSON.stringify(n));
   const cdp = await anna.context().newCDPSession(anna); await cdp.send("Emulation.setCPUThrottlingRate", { rate: Number(process.env.BREMSE || 4) });
   const bilder3d = () => anna.evaluate(() => window.EZW.welt3d.motor.r.info.render.frame);
@@ -67,12 +67,12 @@ try {
   await cdp.send("Performance.enable"); const met = async () => Object.fromEntries((await cdp.send("Performance.getMetrics")).metrics.map((m) => [m.name, m.value])); const m0 = await met();
   const g0 = await bilder3d(), t0 = Date.now(); let x = 300, y = 200, r = 1;
   await finger("touchStart", { x, y }); for (let k = 0; k < 60; k++) { x += r * 6; if (x > 700 || x < 150) r = -r; y += (k % 40 < 20 ? 2 : -2); await finger("touchMove", { x, y }); } await finger("touchEnd");
-  const dt = (Date.now() - t0) / 1000, e = await anna.evaluate(() => { window.__lauf = false; const sym = [...document.querySelectorAll("#ez-uebersicht .wk-symbol")]; const mv = window.__mv.slice().sort((a, b) => a - b); return { b: window.__b, m: window.__sym, med: mv[mv.length >> 1] || 0, mvn: mv.length, lw: document.querySelector("#ez-uebersicht .wk-leinwand").style.transform }; }), g1 = await bilder3d();
+  const dt = (Date.now() - t0) / 1000, e = await anna.evaluate(() => { window.__lauf = false; const sym = [...document.querySelectorAll("#ez-uebersicht .wk-sym")]; const mv = window.__mv.slice().sort((a, b) => a - b); return { b: window.__b, m: window.__sym, med: mv[mv.length >> 1] || 0, mvn: mv.length, lw: document.querySelector("#ez-uebersicht .wk-leinwand").style.transform }; }), g1 = await bilder3d();
   const m1 = await met(), proZug = (m1.TaskDuration - m0.TaskDuration) * 1000 / 60, logik = await anna.evaluate(() => window.__logik);
   console.log(`  Arbeit je Zug: ${proZug.toFixed(1)} ms (Skript ${((m1.ScriptDuration - m0.ScriptDuration) * 1000 / 60).toFixed(1)} ms, Stil ${((m1.RecalcStyleDuration - m0.RecalcStyleDuration) * 1000 / 60).toFixed(1)} ms), Spiellogik ${logik}× in ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   console.log(`  Ziehen: ${(e.b / dt).toFixed(1)} Bilder/s (${e.b} in ${dt.toFixed(1)} s), Leinwand ${e.lw}`);
   await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
-  check(n.sym > 50, `Karte mit vielen Symbolen offen (${n.sym} Symbole, ${n.namen} Namen)`);
+  check(n.sym >= 3 && n.sym + n.namen <= 100, `Karte offen, Symbole und Namen nach Stufe ausgedünnt (#183: höchstens 100 – ${n.sym} Symbole, ${n.namen} Namen)`);
   check(/translate\(/.test(e.lw), "Die Karte hat sich beim Ziehen verschoben");
   check(e.m <= 1, `Beim Ziehen bleiben Symbole und Namen unangetastet (${e.m} Stiländerungen außer der Leinwand)`);
   check(proZug < 30, `Ein Zug kostet wenig Arbeit (${proZug.toFixed(1)} ms bei 4× gebremster CPU; vor Teil 2 rund 49 ms, weil die Spiellogik dahinter jedes Bild lief)`);
@@ -87,7 +87,7 @@ try {
   await anna.evaluate(() => { window.__zoom = []; addEventListener("ez-karte-zoom", (e) => window.__zoom.push(e.detail.stufe)); });
   const s1 = await stand();
   check(Math.abs(s1.z - 1) < 1e-3 && s1.an > 0 && s1.an < s1.alle, `Geöffnet in „Gegend“ (Leinwand-Zoom ${s1.z}), geladen sind nur die nahen Regionsbilder (${s1.an} von ${s1.alle}, ${s1.mpx.toFixed(1)} MPx statt 73)`);
-  { const st = await anna.evaluate(() => { const lw = document.querySelector("#ez-uebersicht .wk-leinwand"), n = lw.querySelector(".wk-name"); return { b: parseFloat(lw.style.width), h: parseFloat(lw.style.height), schatten: n ? getComputedStyle(n).textShadow : "" }; });
+  { const st = await anna.evaluate(() => { const lw = document.querySelector("#ez-uebersicht .wk-leinwand"), n = document.querySelector("#ez-uebersicht .wk-n"); return { b: parseFloat(lw.style.width), h: parseFloat(lw.style.height), schatten: n ? getComputedStyle(n).textShadow : "" }; });
     check(st.b < 4000, `Leinwand in der Dichte von „Gegend“ statt 9600×12672 px mit scale (${Math.round(st.b)}×${Math.round(st.h)} px)`);
     check((st.schatten.match(/rgb/g) || []).length <= 2, `Namen mit leichtem Schatten (${st.schatten})`); }
   check(s1.ebene, "Ebene für die Symbole der Oberfläche liegt auf der Leinwand (karteEbene)");

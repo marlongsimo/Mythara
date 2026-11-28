@@ -8,6 +8,7 @@ import { bilderPruefen } from "./rahmen";
 import { blockieren, blockierteNamen } from "./welt";
 import { dropsAn, dropsSetzen, daecherAus, daecherAusSetzen } from "./skills";
 import { musikAus, musikAusSetzen } from "./musik";
+import { grafikStufe, GRAFIK_SCHLUESSEL, type Grafik } from "./welt3d/motor";
 import { eigenesLevel } from "./skills";
 import { profilZeigen } from "./held";
 import { HELDEN, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
@@ -181,6 +182,8 @@ export function menueTafel(zu: () => void) {
       <button type="button" data-t="drops" class="schalter${dropsAn() ? " an" : ""}" role="switch" aria-checked="${dropsAn()}"><span>XP-Drops anzeigen</span><i class="regler"></i></button>
       <button type="button" data-t="daecher" class="schalter${daecherAus() ? " an" : ""}" role="switch" aria-checked="${daecherAus()}"><span>Dächer immer ausblenden</span><i class="regler"></i></button>
       <button type="button" data-t="musik" class="schalter${musikAus() ? "" : " an"}" role="switch" aria-checked="${!musikAus()}"><span>Musik</span><i class="regler"></i></button>
+      <button type="button" data-t="grafik" class="schalter${grafikStufe() === "scharf" ? " an" : ""}" role="switch" aria-checked="${grafikStufe() === "scharf"}"><span>Grafik <small>${grafikStufe() === "scharf" ? "scharf" : "flüssig"}</small></span><i class="regler"></i></button>
+      <p class="ehinweis" hidden>Figurenbilder wechseln nach dem Neuladen.</p>
     </div><div class="erechts">
     <button type="button" class="weltknopf" data-t="welt"><span>Welt</span><b>Riftmere 1</b><i>›</i></button>
     <button type="button" class="weltknopf" data-t="bilder"><span>Bilder prüfen</span><b></b><i>›</i></button>
@@ -197,6 +200,9 @@ export function menueTafel(zu: () => void) {
     if (w === "blockiert") { blockiertFenster(f.querySelector(".tafel") as HTMLElement); return; }
     if (w === "daecher") { daecherAusSetzen(!daecherAus()); t.classList.toggle("an", daecherAus()); t.setAttribute("aria-checked", String(daecherAus())); return; }
     if (w === "musik") { musikAusSetzen(!musikAus()); t.classList.toggle("an", !musikAus()); t.setAttribute("aria-checked", String(!musikAus())); return; }
+    if (w === "grafik") { const g: Grafik = grafikStufe() === "scharf" ? "fluessig" : "scharf"; /* #110: wirkt sofort (Pixelverhältnis, Bäume, Figuren); die Figurenbilder erst nach dem Neuladen */
+      const M = (window as unknown as { EZW?: { welt3d?: { motor?: { grafikSetzen?: (g: Grafik) => void } } } }).EZW?.welt3d?.motor; if (M && M.grafikSetzen) M.grafikSetzen(g); else { try { localStorage.setItem(GRAFIK_SCHLUESSEL, g); } catch { /* privat */ } }
+      t.classList.toggle("an", g === "scharf"); t.setAttribute("aria-checked", String(g === "scharf")); (t.querySelector("small") as HTMLElement).textContent = g === "scharf" ? "scharf" : "flüssig"; const h = f.querySelector(".ehinweis") as HTMLElement | null; if (h) h.hidden = false; return; }
     if (w === "drops") { dropsSetzen(!dropsAn()); t.classList.toggle("an", dropsAn()); t.setAttribute("aria-checked", String(dropsAn())); return; }
     if (w === "zu") schliessen(); else if (w === "koop") { removeEventListener("keydown", esc, true); f.innerHTML = ""; gruppenTafel(zu); } else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") { const n = wechselWarten(); /* wie beim Weltenwechsel: erst 10 s nach dem letzten Kampf (25.11.2026) */
       if (n > 0) { const alt = t.innerHTML; t.innerHTML = `Im Kampf <small>Abmelden in ${n} s möglich</small>`; t.classList.add("gesperrt"); setTimeout(() => { if (t.isConnected) { t.innerHTML = alt; t.classList.remove("gesperrt"); } }, 2200); }

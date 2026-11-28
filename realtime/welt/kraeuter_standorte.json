@@ -60,14 +60,14 @@
   {
    "id": "wegerich_9",
    "art": "wegerich",
-   "x": 6584.5,
-   "y": 6456.5,
+   "x": 6560.5,
+   "y": 6438.5,
    "region": "osthof"
   },
   {
    "id": "wegerich_10",
    "art": "wegerich",
-   "x": 6560.5,
+   "x": 6568.5,
    "y": 6438.5,
    "region": "osthof"
   },
@@ -581,6 +581,34 @@
    "x": 6260.5,
    "y": 5840.5,
    "region": "fl_186_169"
+  },
+  {
+   "id": "pechtann_moorgloeckchen_1",
+   "art": "moorgloeckchen",
+   "x": 6452.5,
+   "y": 6091.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "pechtann_eisenhut_1",
+   "art": "eisenhut",
+   "x": 6488.5,
+   "y": 6103.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "harzlichtung_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6225.5,
+   "y": 6047.5,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "harzlichtung_moorgloeckchen_1",
+   "art": "moorgloeckchen",
+   "x": 6238.5,
+   "y": 6041.5,
+   "region": "fl_186_183"
   },
   {
    "id": "dornhag_nebelkraut_1",

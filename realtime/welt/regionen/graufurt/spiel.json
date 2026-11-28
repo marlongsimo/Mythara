@@ -235,6 +235,94 @@
      "Nach Glutbrunn ↓"
     ]
    }
+  },
+  {
+   "id": "ko_8_l",
+   "art": "lesen",
+   "x": 1.51,
+   "y": 219.29,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Kiefernwarte. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_11_l",
+   "art": "lesen",
+   "x": 106.85,
+   "y": 50.54,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Versteck am Schwarzwasser. Ein verlassenes Lager. Die Asche ist noch warm – sie sind nicht weit."
+   }
+  },
+  {
+   "id": "ko_17_l",
+   "art": "lesen",
+   "x": 50.48,
+   "y": 307.72,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinterm Moor. Ein Brunnen am Wegrand. Das Wasser ist klar und kalt."
+   }
+  },
+  {
+   "id": "ko_19_l",
+   "art": "lesen",
+   "x": 123.88,
+   "y": 175.82,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Distelbrunnen. Ein Brunnen am Wegrand. Das Wasser ist klar und kalt."
+   }
+  },
+  {
+   "id": "ko_38_l",
+   "art": "lesen",
+   "x": 123.33,
+   "y": 351.65,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ruprechts Schrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_39_l",
+   "art": "lesen",
+   "x": 106.69,
+   "y": 273.29,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Birkennest. Ein verlassenes Lager. Die Asche ist noch warm – sie sind nicht weit."
+   }
+  },
+  {
+   "id": "ko_55_l",
+   "art": "lesen",
+   "x": 103.13,
+   "y": 111.7,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Holunderhof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_57_l",
+   "art": "lesen",
+   "x": 63.57,
+   "y": 247.3,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Birkenwinkel. Ein paar Hütten um einen Brunnen – hier kennt jeder jeden."
+   }
   }
  ],
  "ausgaenge": [],

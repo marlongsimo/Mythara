@@ -46,6 +46,61 @@
    "daten": {
     "text": "Ein umgestürzter Baum versperrt den Steinweg. Hier geht es noch nicht weiter."
    }
+  },
+  {
+   "id": "ko_2_l",
+   "art": "lesen",
+   "x": 11.0,
+   "y": 61.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Galgenhügel. Ein toter Baum auf einem Hügel – früher hing hier der Galgenstrick. Die Krähen sitzen hier lieber als sonst irgendwo."
+   }
+  },
+  {
+   "id": "ko_41_l",
+   "art": "lesen",
+   "x": 1.0,
+   "y": 4.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Rußiger Meiler. Ein Kohlenmeiler qualmt still vor sich hin."
+   }
+  },
+  {
+   "id": "ko_42_l",
+   "art": "lesen",
+   "x": 48.0,
+   "y": 151.21,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Tinis Hof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_56_l",
+   "art": "lesen",
+   "x": 50.9,
+   "y": 98.11,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Leerer Turm. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_61_l",
+   "art": "lesen",
+   "x": 1.0,
+   "y": 172.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ansgars Brunnen. Ein Brunnen am Wegrand. Das Wasser ist klar und kalt."
+   }
   }
  ],
  "ausgaenge": [],

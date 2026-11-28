@@ -56,7 +56,7 @@ try {
   await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && i.angelegt && i.angelegt.waffe === "ritterschwert"; }, null, { timeout: 30000 }).catch(() => {}); await anna.waitForTimeout(3000);
   const ort = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, y: window.EZW.welt3d.ort.y, hier: window.EZW.welt3d.hier }));
   check(ort.hier === "waldmark" && Math.hypot(ort.x - (process.env.START ? +process.env.START.split(",")[0] : 6479.4), ort.y - (process.env.START ? +process.env.START.split(",")[1] : 6429.6)) < 2, `Anna steht in der Bank der Waldmark (${ort.x.toFixed(1)}, ${ort.y.toFixed(1)})`);
-  const liste = await anna.evaluate(() => window.EZW.welt3d.bank.liste);
+  const liste = await anna.evaluate(() => window.EZW.welt3d.bank.liste.filter((b) => Math.hypot(b.x - 6479, b.y - 6430) < 60 || b.name === "Mattis Schober")); /* die Bank der Waldmark und Mattis im Süden – die Banken der anderen Städte (Inhalt) zählen hier nicht */
   check(liste.length === 3 && liste.filter((b) => b.y < 6500).length === 2, `Drei Bankmitarbeiter: ${liste.map((b) => b.name).join(", ")}`);
   await anna.waitForFunction(() => { let n = 0; window.EZW.welt3d.bank.alle.forEach((f) => { if (f.npc.geladen || f.npc.gruppe.children.length > 1) n++; }); return n >= 2; }, null, { timeout: 60000 }).catch(() => {});
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "bank-schalter.png" });
