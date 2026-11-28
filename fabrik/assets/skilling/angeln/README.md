@@ -10,6 +10,6 @@ Rucksackbilder (256 × 256, durchsichtig) in `img/objekte3d/skilling/angeln/symb
 
 Gebaut mit `fabrik/fische.py -- <ziel> [art=…] [zustand=…]` (Blender, Körper aus Ringen, Muster im Shader).
 
-Werkzeuge (Utensilien, in der Hand wie Holzbeil und Spitzhacke): `angelrute` (Stufen Training bis Mythisch), `lamberts_rute` (Einzelstück),
+Werkzeuge (Utensilien, in der Hand wie Holzbeil und Spitzhacke): `angelrute` (nur eine, ohne Stufen),
 `fischreuse` – 3D unter `img/objekte3d/skilling/utensilien/`, Teile `waffe.<id>` an den Grundfiguren, Bilder hier in `symbole/`.
 Gebaut mit `fabrik/angelzeug.py -- <art> <ziel.glb>`; Rucksackbilder mit `fabrik/symbol.py`.

@@ -1,11 +1,10 @@
-"""Mythara Fabrik – Angelzeug in Blender bauen: Angelrute, Lamberts Rute, Fischreuse (als glb, Stielende/Griff im Ursprung, oben = +z).
+"""Mythara Fabrik – Angelzeug in Blender bauen: Angelrute, Fischreuse (als glb, Stielende/Griff im Ursprung, oben = +z).
 
   python3 fabrik/angelzeug.py -- <art> <ziel.glb>
-  art: angelrute | lamberts_rute | fischreuse
+  art: angelrute | fischreuse
 
 Angelrute: 2 m, sich verjüngender Holzstab, Korkgriff, Metallringe, Rolle mit Kurbel, Ringführungen, Schnur mit rot-weißem Schwimmer.
-  Metall grau und Holz hell – so färbt fabrik/seltenheit.py … holz=1 die Stufen (Training bis Mythisch) wie bei Holzbeil und Spitzhacke.
-Lamberts Rute: dunkles Nussholz, Messingbeschläge, grüne Seidenwicklungen, grünblaue Schnur, Federköder – ein Einzelstück.
+  Nur eine Angelrute, ohne Stufen (KANON, #182/#184).
 Fischreuse: Weidengeflecht (Längsstäbe, vier Reifen), Trichter vorn, Tragschlaufe oben (dort wird sie gehalten).
 """
 import math, os, sys
@@ -33,11 +32,11 @@ def kugel(ort, r, m, n=12):
     for p in o.data.polygons: p.use_smooth = True
     return o
 
-if ART in ("angelrute", "lamberts_rute"):
-    L = 2.0; lambert = ART == "lamberts_rute"
-    HOLZ = mat("holz", lin((112, 70, 40) if lambert else (196, 150, 92)), 0.55); GRIFF = mat("griff", lin((90, 60, 40) if lambert else (176, 130, 84)), 0.85)
-    MET = mat("metall", lin((200, 160, 70)) if lambert else lin((150, 152, 158)), 0.3, 1.0)
-    WICKEL = mat("wickel", lin((40, 110, 60) if lambert else (150, 40, 30)), 0.6); SCHNUR = mat("schnur", lin((120, 200, 190) if lambert else (235, 235, 225)), 0.4)
+if ART == "angelrute":
+    L = 2.0
+    HOLZ = mat("holz", lin((196, 150, 92)), 0.55); GRIFF = mat("griff", lin((176, 130, 84)), 0.85)
+    MET = mat("metall", lin((150, 152, 158)), 0.3, 1.0)
+    WICKEL = mat("wickel", lin((150, 40, 30)), 0.6); SCHNUR = mat("schnur", lin((235, 235, 225)), 0.4)
     rohr((0, 0, 0), (0, 0, L), 0.017, 0.004, HOLZ, 14)                                     # Stab (verjüngt)
     rohr((0, 0, 0.0), (0, 0, 0.34), 0.022, 0.02, GRIFF, 14)                                 # Griff
     rohr((0, 0, -0.012), (0, 0, 0.004), 0.024, 0.024, MET, 14)                              # Endkappe
@@ -52,12 +51,7 @@ if ART in ("angelrute", "lamberts_rute"):
         r = 0.017 - z * 0.0065; ring((0, -r - 0.012, z), 0.009 - i * 0.0008, 0.0018, MET, "y"); rohr((0, 0, z - 0.012), (0, 0, z + 0.012), r + 0.0015, r + 0.0015, WICKEL, 10)
     rohr((0, -0.05, 0.42), (0, -0.016, 1.99), 0.0012, 0.0012, SCHNUR, 4)                    # Schnur zur Spitze …
     rohr((0, -0.006, 2.0), (0, -0.06, 1.62), 0.0012, 0.0012, SCHNUR, 4)                     # … und hängend
-    if lambert:                                                                               # Federköder
-        kugel((0, -0.06, 1.6), 0.012, MET); rohr((0, -0.06, 1.6), (0.02, -0.07, 1.54), 0.008, 0.001, WICKEL, 6); rohr((0, -0.06, 1.6), (-0.02, -0.07, 1.55), 0.007, 0.001, mat("feder", lin((200, 60, 40)), 0.7), 6)
-    else:                                                                                     # Schwimmer rot-weiß
-        kugel((0, -0.06, 1.6), 0.018, mat("rot", lin((200, 40, 30)), 0.4)); kugel((0, -0.06, 1.615), 0.014, mat("weiss", lin((240, 240, 235)), 0.4)); rohr((0, -0.06, 1.62), (0, -0.06, 1.66), 0.003, 0.002, mat("rot", lin((200, 40, 30))))
-    if lambert:
-        for z in (0.12, 0.22): rohr((0, 0, z), (0, 0, z + 0.03), 0.0225, 0.0225, WICKEL, 14)   # Seidenwicklungen im Griff
+    kugel((0, -0.06, 1.6), 0.018, mat("rot", lin((200, 40, 30)), 0.4)); kugel((0, -0.06, 1.615), 0.014, mat("weiss", lin((240, 240, 235)), 0.4)); rohr((0, -0.06, 1.62), (0, -0.06, 1.66), 0.003, 0.002, mat("rot", lin((200, 40, 30))))
 elif ART == "fischreuse":
     WEIDE = mat("weide", lin((170, 130, 80)), 0.85); RING = mat("ring", lin((120, 85, 50)), 0.8); SEIL = mat("seil", lin((190, 165, 120)), 0.9)
     LR = 0.75; R = 0.17                                                                       # liegt waagrecht (x), wird an der Schlaufe getragen: wir bauen sie hängend (oben = Schlaufe)

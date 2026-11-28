@@ -511,22 +511,6 @@
       ]
     },
     {
-      "id": "waffe.lamberts_rute",
-      "platz": "hand_r",
-      "art": "schwert",
-      "glb": "skilling/utensilien/lamberts_rute/v001/hand/lamberts_rute.glb",
-      "griff": 0.09,
-      "klasse": "werkzeug",
-      "angriff": "angriff",
-      "bewegungen": [
-        "ruhe",
-        "gehen",
-        "laufen",
-        "tod",
-        "angriff"
-      ]
-    },
-    {
       "id": "waffe.fischreuse",
       "platz": "hand_r",
       "art": "schwert",
