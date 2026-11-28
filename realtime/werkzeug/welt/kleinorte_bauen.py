@@ -79,11 +79,12 @@ TEXT = {'hof': 'Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weit
 SONDER = {'Der Hängende Stein': ([('k_fels_klein', 0, 0.6, 1.3), ('k_fels_gross', 0, 0, 2.1), ('k_fels_klein', 4, 1.5, 0.9)], None),
           'Galgenhügel': ([('stil_tot_01', 0, 0, 1.2), ('k_grabstein_zerbrochen', 2, 1, 1), ('k_grabstein_rund', -2, 1.5, 1), ('wegrand_wegkreuz_holz', 3, -1, 1)],
                           'Ein toter Baum auf einem Hügel – früher hing hier der Galgenstrick. Die Krähen sitzen hier lieber als sonst irgendwo.'),
-          'Die Sieben Linden': ([('moor_menhir_01', 0, 0, 0.8)] + [('stil_linde_01', round(6 * math.cos(k * 0.8976 - 1.2), 1), round(6 * math.sin(k * 0.8976 - 1.2), 1), 1) for k in range(7)], None),
+          'Die Sieben Linden': ([('moor_menhir_01', 0, 0, 0.8)] + [('stil_linde_01', round(9 * math.cos(k * 0.8976 - 1.2), 1), round(9 * math.sin(k * 0.8976 - 1.2), 1), 1) for k in range(7)], None),
           'Hünengrab': ([('grauwacht_grabhuegel_eingang', 0, 0, 1.3), ('moor_menhir_01', -3, 0.5, 1), ('moor_menhir_02', 3, 0, 1)], None),
           'Die Windharfe': ([('dorf_wachturm_01', 0, 0, 1), ('k_truemmer', 3, 2, 1), ('k_ruine_mauer', -4, 1, 1)], None),
           'Krähenbaum': ([('stil_tot_01', 0, 0, 1.4), ('k_grabstein_zerbrochen', 1.5, 1, 1), ('wz_seelenlicht_grablicht', -1.5, 1, 1)], None),
           'Der Versunkene Hof': ([('k_ruine_mauer', 0, 0, 1), ('k_truemmer', 2.5, 1, 1), ('stil_erle_tot_01', -3, 1, 1)], 'Ein Hof, halb im Moor versunken. Nur ein Stück Mauer schaut noch heraus.')}
+VERSATZ = {'Die Sieben Linden': (11, -16)}   # nach dem Augenschein: der Planpunkt liegt auf einer Sandzunge, der Kreis braucht freies Land
 ORTART = {'hof': 'Gehöft', 'ruine': 'Ruine', 'hoehle': 'Ruine', 'banditen': 'Lager'}   # für die Karte (sonst „Ort“); „Lager“ hat keinen gegnerfreien Kreis (Banditen)
 
 # ───── Gelände und Objekte der Gebiete (zum Prüfen) ─────
@@ -155,7 +156,7 @@ orte, namen = [], []; nr = 0
 for schritt in FREIGEGEBEN:
     P = lies(W, 'plaene', f'kleinorte_{schritt}.json')
     for q in P['orte']:
-        nr += 1; kid = f'ko_{nr}'; rng = random.Random(kid); x0, y0 = q['x'], q['y']
+        nr += 1; kid = f'ko_{nr}'; rng = random.Random(kid); x0, y0 = q['x'] + VERSATZ.get(q['name'], (0, 0))[0], q['y'] + VERSATZ.get(q['name'], (0, 0))[1]
         teile = TEILE.get(q['art'], TEILE['lager']); sonder_text = None
         if q['name'] in SONDER: teile, sonder_text = SONDER[q['name']]
         if q['art'] == 'muehle' and any(zeichen(x0 + dx, y0 + dy) in '~w' for dx in range(-8, 9, 2) for dy in range(-8, 9, 2)): teile = [('weidenhain_muehle_01', 0, 0, 1), ('dorf_holzstapel_01', 4, 2, 1)]

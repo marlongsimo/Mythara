@@ -33,8 +33,8 @@
    "name": "Die Sieben Linden",
    "art": "schrein",
    "land": "Grenzland",
-   "x": 6041.0,
-   "y": 6374.0,
+   "x": 6052.0,
+   "y": 6358.0,
    "lesestelle": "ko_3_l",
    "besonders": true,
    "abseits": true,
@@ -2025,8 +2025,8 @@
   [
    "Die Sieben Linden",
    "Ort",
-   6041.0,
-   6374.0
+   6052.0,
+   6358.0
   ],
   [
    "Hohe Heide",
