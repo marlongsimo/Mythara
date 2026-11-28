@@ -12,7 +12,7 @@ import { kontoName } from "./konto";
 const LUPE = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/></svg>`;
 const keineBank = (): string => (kontoName() ? "Keine Verbindung zum Spielserver – die Bank öffnet sich, sobald er wieder erreichbar ist. Versuch es gleich noch einmal." : "Eine Bank gibt es mit Konto (Menü → Anmelden).");
 import { inventar, bankBitten, inventarAmServer } from "./inventar";
-import { gegenstandMalen, gegenstandUntersuchen } from "./rahmen";
+import { gegenstandMalen, gegenstandUntersuchen, dingImg } from "./rahmen";
 import { aktionsMenue, langDruecken } from "./aktionsmenue";
 
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
@@ -22,8 +22,10 @@ let menge: Menge = (() => { try { const v = localStorage.getItem(SPEICHER); retu
 let xWert = (() => { try { return Math.max(1, Number(localStorage.getItem(SPEICHER + "_x")) || 50); } catch { return 50; } })();
 let offen = false, suche = "", reiter = 0; /* offener Reiter: 0 = alle */
 /* Gegenstandsbilder einmal zeichnen und danach nur umhängen: das 3D-Bild je Gegenstand ist teuer, das Fenster zeichnet sich bei jeder Änderung neu */
-const bilder = new Map<string, HTMLCanvasElement>();
-function bild(schluessel: string, g: string): HTMLCanvasElement { let c = bilder.get(schluessel); if (!c) { c = document.createElement("canvas"); c.width = c.height = 72; gegenstandMalen(c, g); bilder.set(schluessel, c); } return c; }
+const bilder = new Map<string, HTMLElement>();
+/** #190: ein echtes <img> je Gegenstand (Symbol-Gegenstände weiter als Leinwand) – einmal anlegen, danach nur umhängen */
+function bild(schluessel: string, g: string): HTMLElement { let c = bilder.get(schluessel); if (!c) { const G = GEGENSTAENDE[g];
+    if (G && !G.symbol) c = dingImg(G, "", 72, 72); else { const k = document.createElement("canvas"); k.width = k.height = 72; gegenstandMalen(k, g); c = k; } bilder.set(schluessel, c); } return c; }
 export const bankOffen = (): boolean => offen;
 
 /** Mengen wie in OSRS: bis 99.999 gelb, ab 100.000 weiß in K, ab 10 Mio. grün in M */
