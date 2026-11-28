@@ -365,7 +365,5 @@
  {"id":"naht_818","objekt":"stil_eiche_01","x":88.5,"y":9.5,"s":0.89},
  {"id":"naht_819","objekt":"stil_eiche_01","x":126.5,"y":45.5,"s":1.05,"spiegeln":true},
  {"id":"naht_820","objekt":"stil_eiche_01","x":127.5,"y":50.5,"s":1.14,"spiegeln":true},
- {"id":"naht_821","objekt":"stil_eiche_01","x":127.5,"y":67.5,"s":1.2},
- {"id":"vd_rabenmoor_k1","objekt":"wegrand_karren_kaputt","x":106.1,"y":8,"dreh":90,"spiegeln":true},
- {"id":"vd_rabenmoor_k2","objekt":"wegrand_bildstock","x":110.5,"y":83.5}
+ {"id":"naht_821","objekt":"stil_eiche_01","x":127.5,"y":67.5,"s":1.2}
 ]

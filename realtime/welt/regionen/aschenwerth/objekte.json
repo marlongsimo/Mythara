@@ -289,9 +289,5 @@
  {"id":"ort_p6_novizen_federn","objekt":"hoehle_federn_01","x":95.5,"y":142.5},
  {"id":"ort_p6_gruft_federn","objekt":"hoehle_federn_01","x":46.5,"y":136.5,"spiegeln":true},
  {"id":"naht_1","objekt":"stil_busch_02","x":19.5,"y":3,"s":0.93},
- {"id":"naht_2","objekt":"stil_busch_01","x":30.5,"y":12.5,"s":1.08,"spiegeln":true},
- {"id":"vd_aschenwerth_k1","objekt":"wegrand_feldstein_1","x":42.5,"y":7.5},
- {"id":"vd_aschenwerth_k2","objekt":"wegrand_huette_feld","x":53.5,"y":9,"spiegeln":true},
- {"id":"vd_aschenwerth_k3","objekt":"wegrand_feldstein_1","x":31.5,"y":15.5},
- {"id":"vd_aschenwerth_k4","objekt":"wegrand_zaun_latten","x":101.22,"y":110.9}
+ {"id":"naht_2","objekt":"stil_busch_01","x":30.5,"y":12.5,"s":1.08,"spiegeln":true}
 ]

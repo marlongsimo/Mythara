@@ -1,5 +1,5 @@
 {
- "hinweis": "Stellschraube für verdichten.py (Welt-Erlebnis). staerke 1 = heutiger Stand; 1,5 = deutlich kräftiger (weniger leeres Land, Kleinigkeiten am Weg enger, mehr Arten, mehr Tiere); einzelne Gebiete unter „gebiete“ überschreiben. Danach: python3 werkzeug/welt/verdichten.py und die Kette ab bauen.mjs.",
+ "hinweis": "Stellschraube für verdichten.py (Welt-Erlebnis). staerke 1 = heutiger Stand; 1,5 = deutlich kräftiger (weniger leeres Land, Kleinigkeiten am Weg enger, mehr Arten, mehr Tiere); einzelne Gebiete unter „gebiete“ überschreiben. Danach: python3 werkzeug/welt/verdichten.py und die Kette ab bauen.mjs. „schritte“: welche Schritte aktiv sind (die übrigen warten auf die Freigabe des Nutzers; alle: grenzland, waldland, westmark, moor, fahleweiten, glutsande, kueste, hochlande, ockerlande).",
  "staerke": 1.0,
  "leer_ziel": 0.12,
  "weg_abstand": 12,
@@ -7,5 +7,8 @@
  "arten_wald": 3,
  "tiere": 0.45,
  "gross": 1.0,
- "gebiete": {}
+ "gebiete": {},
+ "schritte": [
+  "grenzland"
+ ]
 }

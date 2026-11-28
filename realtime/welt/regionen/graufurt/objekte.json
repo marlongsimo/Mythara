@@ -1029,21 +1029,5 @@
  {"id":"naht_367","objekt":"stil_tanne_01","x":8.5,"y":328.5,"s":1.07,"spiegeln":true},
  {"id":"naht_368","objekt":"stil_eiche_01","x":11.5,"y":335.5,"s":1.08,"spiegeln":true},
  {"id":"naht_369","objekt":"stil_linde_01","x":0.5,"y":342.5,"s":1.02},
- {"id":"naht_370","objekt":"stil_busch_01","x":121.5,"y":342.5,"s":1.04},
- {"id":"vd_graufurt_k1","objekt":"wegrand_bildstock","x":47.5,"y":7.5},
- {"id":"vd_graufurt_k2","objekt":"wegrand_wegkreuz_holz","x":47.5,"y":25.5},
- {"id":"vd_graufurt_k3","objekt":"wegrand_wegkreuz_holz","x":43.5,"y":34.5},
- {"id":"vd_graufurt_k4","objekt":"wegrand_bildstock","x":37.5,"y":92.5,"spiegeln":true},
- {"id":"vd_graufurt_k5","objekt":"wegrand_zaun_flecht","x":90.25,"y":110.66},
- {"id":"vd_graufurt_k6","objekt":"wegrand_zaun_flecht","x":103.44,"y":109.28},
- {"id":"vd_graufurt_k7","objekt":"wegrand_wegkreuz_holz","x":118.5,"y":112.5,"spiegeln":true},
- {"id":"vd_graufurt_k8","objekt":"wegrand_wegkreuz_holz","x":30.5,"y":132.5,"spiegeln":true},
- {"id":"vd_graufurt_k9","objekt":"wegrand_bildstock","x":37.5,"y":148.5,"spiegeln":true},
- {"id":"vd_graufurt_k10","objekt":"wegrand_wegkreuz_holz","x":6.5,"y":200.5},
- {"id":"vd_graufurt_k11","objekt":"wegrand_wegkreuz_holz","x":6.5,"y":215.5,"spiegeln":true},
- {"id":"vd_graufurt_k12","objekt":"wegrand_bildstock","x":8.5,"y":228.5,"spiegeln":true},
- {"id":"vd_graufurt_k13","objekt":"wegrand_bildstock","x":5.5,"y":248.5},
- {"id":"vd_graufurt_k14","objekt":"wegrand_bildstock","x":6.5,"y":274.5},
- {"id":"vd_graufurt_k15","objekt":"wegrand_wegkreuz_holz","x":6.5,"y":302.5,"spiegeln":true},
- {"id":"vd_graufurt_k16","objekt":"wegrand_bildstock","x":8.5,"y":338.5}
+ {"id":"naht_370","objekt":"stil_busch_01","x":121.5,"y":342.5,"s":1.04}
 ]

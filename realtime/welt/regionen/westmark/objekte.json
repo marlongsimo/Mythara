@@ -333,19 +333,5 @@
  {"id":"naht_1258","objekt":"stil_eiche_02","x":63.5,"y":186.5,"s":0.91,"spiegeln":true},
  {"id":"naht_1259","objekt":"stil_schilf_02","x":55.55,"y":188.32},
  {"id":"naht_1260","objekt":"stil_herbst_01","x":58.5,"y":190.5,"s":0.95},
- {"id":"naht_1261","objekt":"stil_eiche_01","x":63.5,"y":190.5,"s":1.07},
- {"id":"vd_westmark_k1","objekt":"wegrand_feldstein_2","x":21.5,"y":37.5},
- {"id":"vd_westmark_k2","objekt":"wegrand_feldstein_3","x":33.5,"y":38.5,"spiegeln":true},
- {"id":"vd_westmark_k3","objekt":"wegrand_feldstein_2","x":54.5,"y":39.5,"spiegeln":true},
- {"id":"vd_westmark_k4","objekt":"wegrand_feldstein_2","x":34.5,"y":48.5},
- {"id":"vd_westmark_k5","objekt":"wegrand_feldstein_2","x":41.5,"y":59.5},
- {"id":"vd_westmark_k6","objekt":"wegrand_feldstein_2","x":51.5,"y":61.5,"spiegeln":true},
- {"id":"vd_westmark_k7","objekt":"wegrand_feldstein_2","x":31.5,"y":68.5},
- {"id":"vd_westmark_k8","objekt":"wegrand_feldstein_2","x":6.5,"y":72},
- {"id":"vd_westmark_k9","objekt":"wegrand_feldstein_2","x":30.5,"y":76.5,"spiegeln":true},
- {"id":"vd_westmark_k10","objekt":"wegrand_feldstein_2","x":33.5,"y":87.5,"spiegeln":true},
- {"id":"vd_westmark_k11","objekt":"wegrand_zaun_flecht","x":32.07,"y":97.01,"dreh":90},
- {"id":"vd_westmark_k12","objekt":"wegrand_feldstein_2","x":54.5,"y":97.5},
- {"id":"vd_westmark_k13","objekt":"wegrand_feldstein_2","x":37.5,"y":101.5},
- {"id":"vd_westmark_k14","objekt":"wegrand_zaun_flecht","x":30.76,"y":133.01,"dreh":90}
+ {"id":"naht_1261","objekt":"stil_eiche_01","x":63.5,"y":190.5,"s":1.07}
 ]
