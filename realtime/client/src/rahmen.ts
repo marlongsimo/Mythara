@@ -15,7 +15,7 @@ import { aktionsMenue, langDruecken, Aktion, menueZu } from "./aktionsmenue";
 import { chatSystem, tafelZeigen } from "./welt";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
-import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon, SELTENHEITEN, SETS, aktiveSets } from "../../shared/gegenstaende";
+import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon, SELTENHEITEN, SETS, aktiveSets, anzeigeName, geladen, ablegbar } from "../../shared/gegenstaende";
 import { aktiverHeld, gegenstandBild } from "./held";
 import { teilBild, TEIL_3D } from "./welt3d/teilbild";
 import { heldGanzbild } from "./welt3d/heldbild";
@@ -181,6 +181,8 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReite
 }
 /** Untersuchen: die Werte eines Gegenstands */
 /** Aktionsmenü zu einem Gegenstand im Rucksack (wo = "r0" …) oder in der Ausrüstung (wo = Platz): Ausrüsten bzw. Ablegen zuerst, dann Untersuchen, Fallen lassen */
+/** #79: Tooltip eines Fachs – Name „… (s)“, Ladungen, gebundener Questlohn */
+const dingTitel = (g: string, d?: { ladungen?: number; gebunden?: boolean }): string => [anzeigeName(g, d), geladen(d) ? `Ladungen: ${d!.ladungen} / 1000` : "", d && d.gebunden ? "Questlohn – nicht handelbar" : ""].filter(Boolean).join(" · ").replace(/"/g, "&quot;");
 /** Aktionen eines Gegenstands im Tab; die erste führt kurzes Antippen aus */
 function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a: Aktion[] } | null {
   const G = GEGENSTAENDE[g]; if (!G) return null; const imRucksack = wo.startsWith("r"), n = imRucksack ? (inventar().anzahl || [])[Number(wo.slice(1))] || 1 : 1, a: Aktion[] = [];
@@ -194,8 +196,9 @@ function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a:
   if (imRucksack && g === "wegstein") a.push({ text: "Reiben", sym: "✨", tat: () => setTimeout(wegsteinMenue, 0) /* erst nach dem Schließen dieses Menüs */ });   /* Phase 3a: Ziele wählen, der Server reist */
   if (imRucksack && !G.platz && !G.trank && g !== "splitter" && g !== "wegstein" && !petAusGegenstand(g)) a.push({ text: "Benutzen", sym: "✋", tat: () => { benutzen({ wo, g }); chatSystem(`${G.name} benutzen mit … (Werkstatt oder Gegenstand antippen)`); } });
   a.push({ text: "Untersuchen", sym: "🔍", tat: () => untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }) });
-  if (imRucksack && inventarAmServer()) a.push({ text: "Fallen lassen", sym: "⬇️", tat: () => fallenLassen(Number(wo.slice(1))) });
-  return { kopf: G.name + (n > 1 ? ` ×${n}` : ""), farbe: SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, a }; }
+  const d = imRucksack ? (inventar().daten || [])[Number(wo.slice(1))] : (inventar().angelegtD || {})[wo as Platz];
+  if (imRucksack && inventarAmServer() && ablegbar(g, d)) a.push({ text: "Fallen lassen", sym: "⬇️", tat: () => fallenLassen(Number(wo.slice(1))) }); /* #79: geladene Waffen nicht */
+  return { kopf: anzeigeName(g, d) + (n > 1 ? ` ×${n}` : ""), farbe: SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, a }; }
 /** Wegstein reiben: die freigeschalteten Ziele (shared/wegstein.ts) zur Wahl – oder warum es nicht geht */
 function wegsteinMenue(karte = false): void { const l = (inventar().ladungen || {}).wegstein || 0, ziele = wegzieleFrei((id) => questStandB(id));
   if (!ziele.length) { chatSystem("Der Stein bleibt kalt – er kennt noch keinen Ort. Agnes an der Linde in Weidenhain weiß mehr."); return; }
@@ -430,7 +433,9 @@ function tabZeichnen(): void {
     neu = `<div class="kopf"><b>Skills</b></div><div class="sraster" style="--zeilen:${Math.ceil((SKILLS.length + BERUFE.length) / 7)}">${SKILLS.map((k) => kachel("skill", k)).join("")}${BERUFE.map((b) => kachel("beruf", b.id)).join("")}</div>${fuss}`;
     el.classList.toggle("mitfuss", Boolean(fuss)); setzen(); return; }
   const inv = inventar(), menge = (i: number) => (inv.anzahl || [])[i] || 1;
-  const feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}${tabWahl && tabWahl.wo === wo ? " gewaehlt" : ""}${benutzt() && benutzt()!.wo === wo ? " benutzt" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${g && wo.startsWith("r") && menge(Number(wo.slice(1))) > 1 ? `<em class="menge">${menge(Number(wo.slice(1)))}</em>` : ""}</button>`;
+  const datenVon = (wo: string) => (wo.startsWith("r") ? (inv.daten || [])[Number(wo.slice(1))] : (inv.angelegtD || {})[wo as Platz]); /* #79 */
+  const feld = (g: string | undefined, wo: string, platz?: Platz) => { const d = g ? datenVon(wo) : undefined, gl = geladen(d);
+    return `<button type="button" class="ifeld${g ? " voll" : ""}${tabWahl && tabWahl.wo === wo ? " gewaehlt" : ""}${benutzt() && benutzt()!.wo === wo ? " benutzt" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""}${g ? ` title="${dingTitel(g, d)}"` : ""} aria-label="${g ? anzeigeName(g, d) : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">${gl ? `<span class="iladung" aria-hidden="true"><img src="../img/echtzeit/abzeichen_geladen.webp" alt=""><i>${d!.ladungen}</i></span>` : ""}${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${g && wo.startsWith("r") && menge(Number(wo.slice(1))) > 1 ? `<em class="menge">${menge(Number(wo.slice(1)))}</em>` : ""}</button>`; };
   let wahl = ""; if (tabWahl) { const G = GEGENSTAENDE[tabWahl.g], angelegt = !tabWahl.wo.startsWith("r"), n = angelegt ? 1 : menge(Number(tabWahl.wo.slice(1)));
     wahl = `<div class="twahl"><b>${G ? G.name : ""}${n > 1 ? " ×" + n : ""}</b><span class="reihe"><button type="button" data-t="untersuchen">Untersuchen</button>${angelegt ? `<button type="button" class="haupt" data-t="ablegen">Ablegen</button>` : `${inventarAmServer() ? `<button type="button" data-t="fallen">Fallen lassen</button>` : ""}${G && G.platz ? `<button type="button" class="haupt" data-t="anlegen">Anlegen</button>` : ""}`}<button type="button" data-t="weg" aria-label="Auswahl schließen">✕</button></span></div>`; }
   if (tabJetzt === "rucksack") neu = `<div class="kopf"><b>Rucksack</b><small>${inv.rucksack.length} / ${RUCKSACK_PLAETZE}</small></div><div class="traster">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div>${wahl}`;
@@ -490,7 +495,8 @@ function werteZeichnen(): void {
   const werte = `<dl class="wwerte"><dt>Angriff</dt><dd>${zeile("Geschick", sum.geschick)}${zeile("Stärke", sum.staerke)}${zeile("Fernkampf", sum.fernAngriff)}${sum.fernStaerke ? zeile("Fern-Stärke", sum.fernStaerke) : ""}${zeile("Magie", sum.genau)}${sum.magieStaerke ? zeile("Magie-Stärke", sum.magieStaerke) : ""}</dd>
     <dt>Abwehr</dt><dd>${zeile("Nahkampf", ab.nah)}${zeile("Fernkampf", ab.fern)}${zeile("Magie", ab.magie)}</dd>
     <dt>Waffe</dt><dd>${W ? `<span>Tempo</span><b>${W.ticks} Ticks</b><span>Reichweite</span><b>${W.art === "nah" || !(W.reich > 0) ? 1 : z(W.reich)}</b>` : `<span>Fäuste</span><b class="null">–</b>`}</dd></dl>`;
-  const feld = (g: string | undefined, p: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}" data-wo="${p}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : PLAETZE.find((x) => x.id === p)!.name + " (leer)"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : `<span class="leer">${PLATZBILD[p]}</span>`}</button>`;
+  const feld = (g: string | undefined, p: Platz) => { const d = g ? (inventar().angelegtD || {})[p] : undefined; /* #79: geladen – Abzeichen und Ladungen */
+    return `<button type="button" class="ifeld${g ? " voll" : ""}" data-wo="${p}"${g ? ` data-g="${g}" title="${dingTitel(g, d)}"` : ""} aria-label="${g ? anzeigeName(g, d) : PLAETZE.find((x) => x.id === p)!.name + " (leer)"}">${geladen(d) ? `<span class="iladung" aria-hidden="true"><img src="../img/echtzeit/abzeichen_geladen.webp" alt=""><i>${d!.ladungen}</i></span>` : ""}${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : `<span class="leer">${PLATZBILD[p]}</span>`}</button>`; };
   const html = `<div class="kopf"><b>Werte der Ausrüstung</b><button type="button" class="tzu" data-wzu="1" aria-label="Schließen">✕</button></div>
     <div class="wrumpf"><div class="kreuz">${PLAETZE.map((p) => feld(an[p.id], p.id)).join("")}</div><div class="buehne"><img alt="" hidden><small>Held · Level ${heldenlevel(skillsLesen())}</small></div>${werte}</div>`;
   if ((el as HTMLElement & { _h?: string })._h !== html) { (el as HTMLElement & { _h?: string })._h = html; el.innerHTML = html;

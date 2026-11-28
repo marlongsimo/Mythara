@@ -1118,6 +1118,11 @@
     /* Werte-Balken links neben der Minikarte: Leben breit, Laufenergie schmal */
     body.welt3d #ez-kartenrahmen .ez-werte { position: absolute; z-index: 3; display: flex; gap: 6px; pointer-events: auto; padding-top: 14px; padding-bottom: 8px; box-sizing: border-box; }
     /* Rahmen: Goldfassung wie die Leisten, innen eine dunkle Rinne aus Stein */
+    /* #79: Set aktiv – kleine Marke unter dem Lebensbalken; geladene Waffe – Abzeichen mit Ladungen unten rechts im Fach */
+    body.welt3d #ez-kartenrahmen .ez-werte .ez-setmarke { position: absolute; left: 3px; bottom: -16px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; font: 13px/1 Georgia, serif; color: #2a1d08; background: radial-gradient(#ffe7a8, #c99a3c); box-shadow: 0 0 0 1.5px #3a2a12, 0 0 8px rgba(255,211,106,.7); cursor: help; }
+    body.welt3d #ez-kartenrahmen .ez-werte .ez-setmarke[hidden] { display: none; }
+    .ifeld .iladung { position: absolute !important; z-index: 2; right: 2px; bottom: 2px; display: flex; align-items: center; gap: 1px; pointer-events: none; }
+    .ifeld .iladung img { width: 16px; height: 16px; filter: drop-shadow(0 0 3px rgba(170,110,255,.9)); } .ifeld .iladung i { font: 700 10px Inter, sans-serif; font-style: normal; color: #e7d4ff; text-shadow: 0 1px 2px #000, 0 0 3px #000; }
     body.welt3d #ez-kartenrahmen .ez-werte .bal { position: relative; height: 100%; padding: 3px; border-radius: 12px; box-sizing: border-box;
       background: linear-gradient(90deg, #6a4c18, #f3d58e 30%, #b08a3c 55%, #f0cf78 75%, #5a3e12); box-shadow: 0 0 0 1px #000, 0 4px 10px rgba(0,0,0,.65); }
     body.welt3d #ez-kartenrahmen .ez-werte .leben { width: 26px; } body.welt3d #ez-kartenrahmen .ez-werte .lauf { width: 15px; padding: 2.5px; border-radius: 9px; }

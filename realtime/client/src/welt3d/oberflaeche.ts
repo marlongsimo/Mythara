@@ -7,6 +7,8 @@
  * Die Knöpfe an der Karte selbst (Karte, Sprint) setzt anschluss.ts über rahmen.ts rundeKarte.
  */
 import { RZEICHEN, RBILD, rbild } from "../rahmen";
+import { aktiveSets } from "../../../shared/gegenstaende";
+import { inventar } from "../inventar";
 
 /* ───────── Rechte Leiste (seit 25.11.2026): Karte, Sprint, Teleport, Freunde, Einstellungen – unten rechts hochkant, wie die linke Leiste ───────── */
 let rechtsJetzt: LeistenKnopf[] = [];
@@ -78,6 +80,7 @@ export function boegenAufbauen(): void {
   if (!balken || balken.parentElement !== rahmen) { balken = document.createElement("div"); balken.className = "ez-werte"; balken.setAttribute("aria-hidden", "true");
     balken.innerHTML = `<div class="bal leben" title="Lebenspunkte"><span class="medaille"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.7 2.7 5 6.3 5c2.1 0 3.6 1.2 4.4 2.5h2.6C14.1 6.2 15.6 5 17.7 5c3.6 0 5.4 3.7 3.9 6.9C19.5 16.4 12 21 12 21z"/></svg></span><span class="rinne"><i class="fuell"></i><i class="glanz"></i></span><b class="zahl"></b><i class="stein"></i></div>
       <div class="bal lauf" title="Laufenergie"><span class="medaille"><svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h5.6L9.5 22 19 9.8h-5.7z"/></svg></span><span class="rinne"><i class="fuell"></i><i class="glanz"></i></span><i class="stein"></i></div>`;
+    { const m = document.createElement("span"); m.className = "ez-setmarke"; m.hidden = true; m.textContent = "⚜"; balken.appendChild(m); setZeigen(); addEventListener("ez-inventar", setZeigen); } /* #79: Set aktiv – Marke am Lebensbalken */
     rahmen.appendChild(balken); const rund = rahmen.querySelector(".rund") as HTMLElement | null;
     if (rund && "ResizeObserver" in window) new ResizeObserver(() => balkenLegen()).observe(rund); addEventListener("resize", () => balkenLegen()); }
   requestAnimationFrame(() => balkenLegen());
@@ -88,3 +91,7 @@ export function lebenAnzeigen(lp: number | null, max = 0): void { if (!balken) r
   const text = lp === null || !max ? "" : String(Math.round(lp)); if (text !== lebenText) { lebenText = text; (b.querySelector(".zahl") as HTMLElement).textContent = text; b.title = lp === null || !max ? "Lebenspunkte" : `Lebenspunkte ${Math.round(lp)} / ${max}`; } }
 /** Laufenergie (0–1) */
 export function gelbAnzeigen(anteil: number): void { if (!balken) return; ((balken.querySelector(".lauf .fuell")) as HTMLElement).style.height = (Math.max(0, Math.min(1, anteil)) * 100).toFixed(1) + "%"; }
+
+/** #79: kleines Set-Symbol am Lebensbalken, solange ein Set vollständig angelegt ist (Tooltip „Rabenset 3/3“ mit Wirkung) */
+function setZeigen(): void { const m = balken && balken.querySelector<HTMLElement>(".ez-setmarke"); if (!m) return;
+  const S = aktiveSets(Object.values(inventar().angelegt)); m.hidden = !S.length; if (S.length) { const t = S.map((x) => `${x.name} ${x.teile.length}/${x.teile.length}: ${x.text}`).join("\n"); m.title = t; m.setAttribute("aria-label", t); } }
