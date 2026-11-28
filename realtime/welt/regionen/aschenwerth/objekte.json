@@ -293,10 +293,11 @@
  {"id":"ko_14_0","objekt":"weidenhain_bauernhaus_01","x":40,"y":40},
  {"id":"ko_14_1","objekt":"k_kiste","x":35.22,"y":35.7,"spiegeln":true},
  {"id":"ko_36_0","objekt":"dorf_huette_holz_01","x":86,"y":135},
- {"id":"vd_aschenwerth_k1","objekt":"wegrand_zaun_latten","x":32.95,"y":8.08,"dreh":90},
+ {"id":"vd_aschenwerth_k1","objekt":"wegrand_zaun_latten","x":32.5,"y":8.5},
  {"id":"vd_aschenwerth_k2","objekt":"wegrand_feldstein_1","x":46.5,"y":10.5,"spiegeln":true},
- {"id":"vd_aschenwerth_k3","objekt":"wegrand_zaun_latten","x":10.67,"y":15.87},
- {"id":"vd_aschenwerth_k4","objekt":"wegrand_feldstein_1","x":29.5,"y":16.5,"spiegeln":true},
- {"id":"vd_aschenwerth_k5","objekt":"wegrand_feldstein_1","x":104.5,"y":109.5},
- {"id":"vd_aschenwerth_k6","objekt":"wegrand_feldstein_1","x":94.5,"y":116.5,"spiegeln":true}
+ {"id":"vd_aschenwerth_k3","objekt":"wegrand_zaun_latten","x":10.5,"y":15.5},
+ {"id":"vd_aschenwerth_k4","objekt":"wegrand_zaun_latten","x":31.5,"y":17.5},
+ {"id":"vd_aschenwerth_k5","objekt":"wegrand_feldstein_1","x":20.5,"y":19.5},
+ {"id":"vd_aschenwerth_k6","objekt":"wegrand_feldstein_1","x":105.5,"y":108.5,"spiegeln":true},
+ {"id":"vd_aschenwerth_k7","objekt":"wegrand_feldstein_1","x":98.5,"y":113.5}
 ]

@@ -967,6 +967,6 @@
  {"id":"ko_48_0","objekt":"weidenhain_bauernhaus_01","x":54,"y":13},
  {"id":"ko_58_0","objekt":"k_ruine_mauer","x":6,"y":201},
  {"id":"ko_58_1","objekt":"k_fels_klein","x":8.5,"y":203.23},
- {"id":"vd_osthang_k1","objekt":"wegrand_zaun_latten","x":52.88,"y":101.66},
- {"id":"vd_osthang_k2","objekt":"wegrand_zaun_latten","x":12.1,"y":104.73}
+ {"id":"vd_osthang_k1","objekt":"wegrand_zaun_latten","x":52.5,"y":101.5},
+ {"id":"vd_osthang_k2","objekt":"wegrand_zaun_latten","x":11.5,"y":105.5}
 ]

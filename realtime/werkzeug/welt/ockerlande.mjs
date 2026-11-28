@@ -282,6 +282,93 @@ const OM_U = [374, 300], om = {};
   Object.assign(om, { region: "ockermutter_bau", ursprung: OM_U, feld: [W0[0], W0[1], W0[0] + 31, W0[1] + 31], eingang: "ockermutter_eingang", eingang_xy: [ex, ey], ziel: ZIEL, hinaus: "ockermutter_hinaus",
     boss: [W0[0] + 16, W0[1] + 9], mitte: [W0[0] + M[0], W0[1] + M[1]], radius: R, nischen: NISCHEN.map(([x, y]) => [W0[0] + x, W0[1] + y]), spur_von: start, spur_bis: ziel, spuren: spur.length }); }
 
+/* ───── Kleinorte Schritt 2 (Nutzer 28.11., KANON): fünf neue Siedlungen der Ockerlande – Rotbucht (Hafenstadt), Tonbrenn (Töpferdorf), Schneerast (Dorf am Schneerand),
+   Wacht am Weißen Ende (Ruine), Karawanenlager. Lage aus welt/plaene/kleinorte_schritt2.json (nach dem Augenschein verschoben: Rotbucht ans Ostufer der Bucht, die Wacht auf festen Grund).
+   Bedingung des Nutzers: Block I (I1–I4) bleibt, wie er ist – Quest-Stellen mit 3 Feldern Rand und die drei Questwege (Karawanenstraße, Ziegenweg, Spurenweg) frei. ───── */
+const SIEDLUNG = {}; const SPLAN = existsSync(join(WELT, "plaene", "kleinorte_schritt2.json")) ? JSON.parse(readFileSync(join(WELT, "plaene", "kleinorte_schritt2.json"), "utf8")).siedlungen || [] : [];
+const VERSATZ_S = { "Rotbucht": [7842, 7388], "Wacht am Weißen Ende": [6869, 7793] };
+for (const c of "ST") BODEN.add(c);   /* Schnee und Tundra am Südrand: dort wird auch gebaut (Schneerast) */
+const QUEST_FREI = [[7370, 6759.6], [7142, 6970], [7072, 7185.5], [6796, 7309], [7288, 7408.5], [7386, 6745], [7490, 7520.5], [7114.5, 6698], [6888.5, 7306.5],
+  [7067.5, 7094.5], [6963.5, 7259.5], [6966.5, 7232.5], [7293.5, 7399.5], [7295.5, 7399.5], [7294.5, 7401.5], [7310.5, 7403.5], [7312.5, 7404.5],
+  [7344.5, 7456.5], [7356.5, 7462.5], [7349.5, 7468.5], [7360.5, 7452.5], [7513.5, 7563.5], [7516.5, 7516.5], [7300.5, 7440.5], [7210.5, 7490.5], [7135.5, 7532.5], [7120.5, 7546.5]]
+  .map(([x, y]) => [x - 3, y - 3, x + 3, y + 3]).concat([[6957, 7211, 6987, 7241]]);   /* Kampfstelle am Wagen: ~15 Felder Platz */
+const QUESTWEGE = [PLAN.karawanenstrasse, [[7350, 7460], [7312, 7404]], [[7300, 7440], [7210, 7490], [7135, 7532], [7120, 7546]]];
+const questNah = (x, y, r) => QUEST_FREI.some(([a, b, c, d]) => x > a - r && x < c + r && y > b - r && y < d + r) || QUESTWEGE.some((w) => strecke(x, y, w) < r + 2);
+const naechsterWeg = (x, y) => { let best = null; for (const w of [...alleWege, ...wege.map((q) => q.punkte)]) for (let i = 1; i < w.length; i++) for (let t = 0; t <= 1; t += 0.05) { const px = w[i - 1][0] + (w[i][0] - w[i - 1][0]) * t, py = w[i - 1][1] + (w[i][1] - w[i - 1][1]) * t, d = Math.hypot(px - x, py - y); if (!best || d < best[2]) best = [px, py, d]; } return best; };
+const raeumen = (cx, cy, rx, ry) => { for (let i = objekte.length - 1; i >= 0; i--) if (Math.abs(objekte[i].x - cx) < rx && Math.abs(objekte[i].y - cy) < ry && /^ok_/.test(objekte[i].id)) { const o = objekte.splice(i, 1)[0]; for (let j = koerper.length - 1; j >= 0; j--) if (koerper[j][4] === o.id) koerper.splice(j, 1); } };
+const haeuser = (liste, cx, cy, praefix) => { let n = 0; for (const [o, dx, dy] of liste) { if (questNah(cx + dx, cy + dy, 6)) continue; try { baue(o, cx + dx, cy + dy, { id: `${praefix}_${++n}`, frei: QUEST_FREI }, 6); } catch { n--; } } return n; };
+const anbinden = (cx, cy, r, breite = 1.8) => { const w = naechsterWeg(cx, cy); if (!w || w[2] > 160) return; const a = Math.atan2(w[1] - cy, w[0] - cx); weg([[cx + Math.cos(a) * r * 0.5, cy + Math.sin(a) * r * 0.5], [w[0], w[1]]], breite, "e"); };
+for (const s of SPLAN) { const [cx, cy] = VERSATZ_S[s.name] || [s.x, s.y]; SIEDLUNG[s.name] = [cx, cy]; }
+
+/* Rotbucht: Hafenstadt am Ostufer der Bucht – Hafengasse vom Markt zum Steg, Lehmhäuser und Fischerhäuser, Lagerhaus, Hafenmeisterei, Bank, Stände; ein Segelschiff am Steg (Schiffslinie, Ausgabe 2) */
+if (SIEDLUNG.Rotbucht) { const [cx, cy] = SIEDLUNG.Rotbucht; raeumen(cx, cy, 46, 40); orte.rotbucht = [cx, cy]; namen.push(["Rotbucht", "Stadt", cx, cy]); eben.push([cx - 34, cy - 30, cx + 34, cy + 30]);
+  /* Richtung zum Wasser (Bucht im Westen): erstes Meerfeld auf der Hafengasse */
+  let ux = cx; while (!nass(jetzt(ux - 1, cy)) && ux > cx - 60) ux--;
+  male(cx - 30, cy - 26, cx + 30, cy + 26, (x, y) => (nass(jetzt(x, y)) || jetzt(x, y) === "F" ? null : Math.hypot((x - cx) / 30, (y - cy) / 26) < 1 ? (welle(x, y) > 1.1 ? "L" : "l") : null));
+  weg([[ux + 1, cy], [cx + 28, cy]], 2.4, "p"); weg([[cx, cy - 24], [cx, cy + 24]], 2.2, "p"); weg([[cx - 16, cy - 12], [cx + 22, cy - 12]], 1.8, "e"); weg([[cx - 16, cy + 12], [cx + 22, cy + 12]], 1.8, "e");
+  male(cx - 7, cy - 6, cx + 7, cy + 6, (x, y) => (Math.hypot((x - cx) / 7, (y - cy) / 6) < 1 ? "p" : null));
+  bau("ocker_ziehbrunnen", cx, cy - 0.5, { id: "rotbucht_brunnen" }); bau("moor_menhir_02", cx - 5, cy + 3, { id: "rotbucht_wegstein" });
+  lies("rotbucht", cx + 2.5, cy + 1.6, "Rotbucht. Ein Hafen aus rotem Lehm an der stillen Bucht – hier laden die Schiffe Salz, Ton und Akazienholz.");
+  const bank = baue("waldmark_bank_01", cx + 9, cy - 5, { id: "rotbucht_bank", frei: QUEST_FREI }, 8); lies("rotbucht_bank_tuer", bank.x, bank.y + 0.6, "Die Bank von Rotbucht. Kaufleute und Kapitäne legen hier ihr Gold ab.");
+  banken.push({ id: "rotbucht_bank", ort: "Rotbucht", gebaeude: "rotbucht_bank", schalter: [bank.x, bank.y + 1.4] }); npc.push({ id: "bankier_rotbucht", rolle: "Bank", x: bank.x, y: bank.y + 1.4 });
+  const hm = baue("kielmund_hafenmeisterei_01", ux + 10, cy - 7, { id: "rotbucht_hafenmeisterei", frei: QUEST_FREI }, 8); npc.push({ id: "hafenmeisterin_rotbucht", rolle: "Hafenmeisterin", x: hm.x, y: hm.y + 1.6 });
+  try { baue("kielmund_lagerhaus_01", ux + 10, cy + 8, { id: "rotbucht_lagerhaus", frei: QUEST_FREI }, 8); } catch { }
+  for (const [o, dx] of [["k_stand_rot", -5], ["dorf_marktstand_02", 5]]) { const st = baue(o, cx + dx, cy + 7, { id: `rotbucht_stand_${dx < 0 ? 1 : 2}`, rand: 0 }, 4);
+    laeden.push({ id: st.id, ort: "Rotbucht", art: dx < 0 ? "Salz, Fisch und Seemannsbedarf" : "Töpferwaren und Tuch", x: st.x, y: +(st.y + 1.2).toFixed(1), blick: [0, -1] }); npc.push({ id: `haendler_rotbucht_${dx < 0 ? 1 : 2}`, rolle: "Händler (Laden)", x: st.x, y: st.y + 1.2 }); }
+  const n = haeuser([["ocker_lehmhaus_01", -12, -18], ["ocker_lehmhaus_02", 6, -18], ["ocker_lehmhaus_03", 18, -18], ["ocker_lehmhaus_04", 22, -5], ["ocker_lehmhaus_01", 22, 6], ["ocker_lehmhaus_02", 18, 18],
+    ["ocker_lehmhaus_03", 6, 18], ["ocker_lehmhaus_04", -8, 18], ["kielmund_fischerhaus_01", ux + 6 - cx, cy - 18 - cy], ["kielmund_fischerhaus_03", ux + 6 - cx, 18], ["ocker_lehmfeste_01", 12, 6], ["ocker_lehmhaus_04", -12, -6],
+    ["kielmund_kontor_01", 12, -6], ["ocker_lehmhaus_02", 28, -14], ["ocker_lehmhaus_01", 28, 14]], cx, cy, "rotbucht_haus");
+  /* Steg nach Westen in die Bucht: Stücke 6,4 lang (dorf_bruecke_01), das Segelschiff liegt an der Südseite */
+  const sy = cy - 0.5; let k = 0; for (; k < 4; k++) { const x = ux - 2.6 - 6.4 * k; if (!nass(jetzt(x - 3, sy)) && k) break; bau("dorf_bruecke_01", x + 0.6, sy, { id: "rotbucht_steg_" + (k + 1) }); freigeben.push({ art: "rechteck", x0: +(x - 2.6).toFixed(2), y0: +(sy - 2.6).toFixed(2), x1: +(x + 3.8).toFixed(2), y1: sy }); }
+  const sx = ux - 2.6 - 6.4 * (k - 1); try { bau("kueste_segelschiff", sx - 1, sy + 6, { id: "rotbucht_schiff", dreh: 90 }); } catch { }
+  lies("rotbucht_steg", ux - 1, sy - 1.2, "Der Steg von Rotbucht. Bald legen hier die Schiffe aus Kielmund an.", {}); npc.push({ id: "kapitaen_rotbucht", rolle: "Kapitän (Schiffslinie, Ausgabe 2)", x: +(sx + 1).toFixed(1), y: +(sy - 1.3).toFixed(1) });
+  uferplatz("fischplatz_rotbucht", "hering", 20, ux + 1, cy + 14, "Vom Steg der Rotbucht aus: Heringe ziehen in Schwärmen durch die stille Bucht.");
+  anbinden(cx, cy, 56, 2.2); SIEDLUNG.Rotbucht.push(n); }
+
+/* Tonbrenn: Töpferdorf an der Tongrube – Lehmhäuser, zwei Brennöfen, Tongrube, Stand */
+if (SIEDLUNG.Tonbrenn) { const [cx, cy] = SIEDLUNG.Tonbrenn; raeumen(cx, cy, 30, 26); orte.tonbrenn = [cx, cy]; namen.push(["Tonbrenn", "Dorf", cx, cy]); eben.push([cx - 20, cy - 16, cx + 20, cy + 18]);
+  male(cx - 18, cy - 14, cx + 18, cy + 16, (x, y) => (nass(jetzt(x, y)) || jetzt(x, y) === "F" ? null : Math.hypot((x - cx) / 18, (y - cy) / 15) < 1 ? "l" : null));
+  male(cx + 10, cy - 14, cx + 22, cy - 4, (x, y) => (Math.hypot((x - cx - 16) / 6, (y - cy + 9) / 4.5) < 1 + 0.1 * welle(x, y) ? "L" : null));   /* Tongrube */
+  weg([[cx - 18, cy + 2], [cx + 18, cy + 2]], 2, "e"); weg([[cx + 4, cy + 2], [cx + 14, cy - 6]], 1.6, "e");
+  const n = haeuser([["ocker_lehmhaus_01", -10, -6], ["ocker_lehmhaus_04", -4, -10], ["ocker_lehmhaus_03", -12, 9], ["ocker_lehmhaus_02", 2, 10], ["ocker_lehmhaus_04", 10, 9], ["ocker_lehmhaus_01", 4, -8]], cx, cy, "tonbrenn_haus");
+  for (const [i, dx, dy] of [[1, 8, -3], [2, 12, 4]]) try { baue("steinhag_brennofen", cx + dx, cy + dy, { id: "tonbrenn_brennofen_" + i, rand: 0 }, 4); } catch { }
+  for (const [dx, dy] of [[14, -10], [18, -7], [16, -12]]) try { baue("k_truemmer", cx + dx, cy + dy, { rand: 0 }, 2); } catch { }
+  const st = baue("k_stand_rot", cx - 3, cy + 5, { id: "tonbrenn_stand", rand: 0 }, 4); laeden.push({ id: st.id, ort: "Tonbrenn", art: "Töpferwaren, Krüge, Ziegel", x: st.x, y: +(st.y + 1.2).toFixed(1), blick: [0, -1] });
+  npc.push({ id: "toepferin_tonbrenn", rolle: "Töpferin", x: cx + 9, y: cy - 0.5 }, { id: "haendler_tonbrenn", rolle: "Händler (Laden)", x: st.x, y: st.y + 1.2 });
+  lies("tonbrenn", cx + 1.5, cy + 3.4, "Tonbrenn. Aus der Grube hinter dem Dorf kommt der beste Ton der Ockerlande – Tag und Nacht rauchen die Brennöfen.");
+  anbinden(cx, cy, 36); SIEDLUNG.Tonbrenn.push(n); }
+
+/* Schneerast: Dorf am Rand zum Schneeland – Steinhäuser und Hütten gegen den Wind, Feuer, Bankkiste, Stand für Pelze */
+if (SIEDLUNG.Schneerast) { const [cx, cy] = SIEDLUNG.Schneerast; raeumen(cx, cy, 30, 26); orte.schneerast = [cx, cy]; namen.push(["Schneerast", "Dorf", cx, cy]); eben.push([cx - 18, cy - 16, cx + 18, cy + 16]);
+  male(cx - 16, cy - 13, cx + 16, cy + 14, (x, y) => (nass(jetzt(x, y)) || jetzt(x, y) === "F" ? null : Math.hypot((x - cx) / 16, (y - cy) / 13) < 1 ? (y > cy + 4 && welle(x, y) > 0.3 ? "T" : "g") : null));
+  weg([[cx - 16, cy], [cx + 16, cy]], 2, "e"); weg([[cx, cy], [cx, cy + 14]], 1.6, "e");
+  const n = haeuser([["graufurt_steinhaus_01", -9, -6], ["graufurt_steinhaus_02", 8, -7], ["dorf_huette_holz_01", -10, 8], ["dorf_huette_holz_02", 9, 8], ["graufurt_steinhaus_02", -1, -10]], cx, cy, "schneerast_haus");
+  const fe = baue("dorf_festfeuer_01", cx + 3, cy + 3, { id: "schneerast_feuer", rand: 0 }, 4); stationen.push({ id: "feuer_schneerast", station: "feuer", x: fe.x, y: fe.y + 1.4 });
+  const kiste = baue("steinhag_bankkiste", cx - 4, cy + 3, { id: "schneerast_bankkiste", rand: 0 }, 4); banken.push({ id: "schneerast_bankkiste", ort: "Schneerast", kiste: [kiste.x, kiste.y + 1.4] });
+  lies("schneerast_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste von Schneerast, mit Eisen beschlagen. Was du einlegst, liegt auf deinem Konto.");
+  const st = baue("dorf_marktstand_02", cx + 7, cy + 2, { id: "schneerast_stand", rand: 0 }, 4); laeden.push({ id: st.id, ort: "Schneerast", art: "Pelze, Laternen und Proviant", x: st.x, y: +(st.y + 1.2).toFixed(1), blick: [0, -1] });
+  npc.push({ id: "wirtin_schneerast", rolle: "Wirtin (Feuer)", x: fe.x - 1.5, y: fe.y + 1.6 }, { id: "haendler_schneerast", rolle: "Händler (Laden)", x: st.x, y: st.y + 1.2 });
+  lies("schneerast", cx + 1.5, cy + 1.4, "Schneerast. Hier endet der rote Lehm, dahinter beginnt das Weiß. Wer nach Süden will, wärmt sich vorher am Feuer.");
+  anbinden(cx, cy, 32); SIEDLUNG.Schneerast.push(n); }
+
+/* Wacht am Weißen Ende: verfallene Wacht auf der Westspitze, wo der Schnee beginnt */
+if (SIEDLUNG["Wacht am Weißen Ende"]) { const [cx, cy] = SIEDLUNG["Wacht am Weißen Ende"]; raeumen(cx, cy, 16, 14); orte.wacht_weisses_ende = [cx, cy]; namen.push(["Wacht am Weißen Ende", "Ruine", cx, cy]);
+  let n = 0; for (const [o, dx, dy] of [["k_ruine_turmstumpf", 0, -2], ["k_ruine_mauer", -4, 1], ["k_ruine_mauer", 4, 0], ["k_truemmer", 2, 3], ["k_truemmer", -3, 4], ["moor_feuerkorb_01", 1, 2]]) try { baue(o, cx + dx, cy + dy, { id: "wacht_weiss_" + ++n, rand: 0 }, 3); } catch { n--; }
+  lies("wacht_weisses_ende", cx + 0.5, cy + 4, "Die Wacht am Weißen Ende. Von hier aus hielt die Wacht nach Süden Ausschau, wo das Land unter dem Schnee verschwindet. Im Feuerkorb glimmt noch Glut – jemand war vor kurzem hier.");
+  anbinden(cx, cy, 14, 1.4); }
+
+/* Karawanenlager in der Wüste im Westen: Zelte um ein Feuer und einen Brunnen; Abstand zum Bau der Ockermutter und zum Spurenweg (Quests) */
+if (SIEDLUNG.Karawanenlager) { const [cx, cy] = SIEDLUNG.Karawanenlager; raeumen(cx, cy, 22, 18); orte.karawanenlager = [cx, cy]; namen.push(["Karawanenlager", "Ort", cx, cy]);
+  male(cx - 12, cy - 10, cx + 12, cy + 10, (x, y) => (nass(jetzt(x, y)) || jetzt(x, y) === "F" ? null : Math.hypot((x - cx) / 12, (y - cy) / 10) < 1 ? "y" : null));
+  baue("ocker_ziehbrunnen", cx, cy - 1, { id: "karawanenlager_brunnen", rand: 0 }, 3); const fe = baue("dorf_festfeuer_01", cx + 1, cy + 4, { id: "karawanenlager_feuer", rand: 0 }, 3); stationen.push({ id: "feuer_karawanenlager", station: "feuer", x: fe.x, y: fe.y + 1.4 });
+  const n = haeuser([["ocker_zelt_gross", -8, -3], ["ocker_zelt_rund", 7, -4], ["ocker_zelt_rund", 8, 5], ["ocker_zelt_rund", -7, 6]], cx, cy, "karawanenlager_zelt");
+  for (const [o, dx, dy] of [["k_kiste", 4, 1], ["k_faesser", -4, 1], ["dorf_kiste_01", 3, 7]]) try { baue(o, cx + dx, cy + dy, { rand: 0 }, 2); } catch { }
+  const st = baue("k_stand_rot", cx - 3, cy + 7, { id: "karawanenlager_stand", rand: 0 }, 4); laeden.push({ id: st.id, ort: "Karawanenlager", art: "Gewürze, Datteln und Wasserschläuche", x: st.x, y: +(st.y + 1.2).toFixed(1), blick: [0, -1] });
+  npc.push({ id: "karawanenfuehrer_lager", rolle: "Karawanenführer", x: fe.x - 1.5, y: fe.y + 1.6 }, { id: "haendler_karawanenlager", rolle: "Händler (Laden)", x: st.x, y: st.y + 1.2 });
+  lies("karawanenlager", cx + 1.5, cy + 2, "Ein Karawanenlager um einen alten Brunnen. Die Tiere sind getränkt, die Händler feilschen schon um den Preis für morgen.");
+  anbinden(cx, cy, 22); SIEDLUNG.Karawanenlager.push(n); }
+orte.siedlungen_schritt2 = SIEDLUNG;
+
 /* ───── Fische und Kräuter an den übrigen Wasserlöchern ───── */
 for (const [i, [x, y]] of PLAN.wasserloecher.entries()) { if (Math.hypot(x - DH[0], y - DH[1]) < 30) continue;
   uferplatz("fischplatz_wasserloch_" + (i + 1), i % 2 ? "wels" : "moorhecht", i % 2 ? 45 : 20, x, y, "Ein Wasserloch in der Lehmsteppe. Erstaunlich, was hier im trüben Wasser schwimmt.");

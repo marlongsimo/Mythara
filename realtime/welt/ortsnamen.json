@@ -624,6 +624,36 @@
    "y": 7520
   },
   {
+   "name": "Rotbucht",
+   "art": "Stadt",
+   "x": 7842,
+   "y": 7388
+  },
+  {
+   "name": "Tonbrenn",
+   "art": "Dorf",
+   "x": 7470,
+   "y": 7210
+  },
+  {
+   "name": "Schneerast",
+   "art": "Dorf",
+   "x": 7300,
+   "y": 7715
+  },
+  {
+   "name": "Wacht am Weißen Ende",
+   "art": "Ruine",
+   "x": 6869,
+   "y": 7793
+  },
+  {
+   "name": "Karawanenlager",
+   "art": "Ort",
+   "x": 7039,
+   "y": 7568
+  },
+  {
    "name": "Der Hängende Stein",
    "art": "Ort",
    "x": 6095.0,
@@ -661,8 +691,8 @@
   {
    "name": "Moosschrein",
    "art": "Ort",
-   "x": 6578.7,
-   "y": 6449.6,
+   "x": 6578.1,
+   "y": 6448.9,
    "ko": "ko_6"
   },
   {
@@ -1172,8 +1202,8 @@
   {
    "name": "Lager am Moorgraben",
    "art": "Ort",
-   "x": 6909.9,
-   "y": 6634.0,
+   "x": 6900.0,
+   "y": 6629.0,
    "ko": "ko_79"
   },
   {
@@ -1578,8 +1608,8 @@
   {
    "name": "Hohe Wacht",
    "art": "Ort",
-   "x": 6866.1,
-   "y": 6566.2,
+   "x": 6868.3,
+   "y": 6566.1,
    "ko": "ko_137"
   },
   {
@@ -1753,8 +1783,8 @@
   {
    "name": "Pilgerschrein",
    "art": "Ort",
-   "x": 6797.9,
-   "y": 6494.4,
+   "x": 6800.6,
+   "y": 6492.8,
    "ko": "ko_162"
   },
   {
@@ -1781,8 +1811,8 @@
   {
    "name": "Alte Mühle",
    "art": "Ort",
-   "x": 6604.9,
-   "y": 5927.1,
+   "x": 6605.0,
+   "y": 5927.2,
    "ko": "ko_166"
   },
   {

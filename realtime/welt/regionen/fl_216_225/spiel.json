@@ -469,6 +469,17 @@
    }
   },
   {
+   "id": "karawanenlager",
+   "art": "lesen",
+   "x": 128.5,
+   "y": 370,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Karawanenlager um einen alten Brunnen. Die Tiere sind getränkt, die Händler feilschen schon um den Preis für morgen."
+   }
+  },
+  {
    "id": "fischplatz_wasserloch_3",
    "art": "lesen",
    "x": 322.5,

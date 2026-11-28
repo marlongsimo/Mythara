@@ -1,16 +1,61 @@
 {
  "start": [
   [
-   240.0,
-   240.0
+   240,
+   240
   ]
  ],
  "figuren": [],
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 376,
+    "y0": 51,
+    "x1": 377,
+    "y1": 52
+   },
+   {
+    "art": "rechteck",
+    "x0": 370,
+    "y0": 49,
+    "x1": 371,
+    "y1": 50
+   },
+   {
+    "art": "rechteck",
+    "x0": 375,
+    "y0": 45,
+    "x1": 376,
+    "y1": 46
+   }
+  ],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "schneerast_bankkiste",
+   "art": "lesen",
+   "x": 384,
+   "y": 71.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste von Schneerast, mit Eisen beschlagen. Was du einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "schneerast",
+   "art": "lesen",
+   "x": 389.5,
+   "y": 68.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Schneerast. Hier endet der rote Lehm, dahinter beginnt das Weiß. Wer nach Süden will, wärmt sich vorher am Feuer."
+   }
+  }
+ ]
 }

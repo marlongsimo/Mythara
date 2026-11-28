@@ -2678,6 +2678,60 @@
    ]
   },
   {
+   "name": "Bäume am Weg (Ockerlande 41)",
+   "ort": "okweg_41",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_41_moorweide_1",
+     "art": "moorweide",
+     "x": 7856.5,
+     "y": 7360.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_41_moorweide_2",
+     "art": "moorweide",
+     "x": 7850.5,
+     "y": 7358.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_41_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7855.5,
+     "y": 7354.5,
+     "region": "fl_231_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 43)",
+   "ort": "okweg_43",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_43_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7288.5,
+     "y": 7699.5,
+     "region": "fl_216_239"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_43_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7282.5,
+     "y": 7697.5,
+     "region": "fl_216_239"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_43_moorweide_3",
+     "art": "moorweide",
+     "x": 7287.5,
+     "y": 7693.5,
+     "region": "fl_216_239"
+    }
+   ]
+  },
+  {
    "name": "Bäume vor dem Westtor",
    "ort": "steinhag_westtor",
    "baeume": [
@@ -5846,6 +5900,66 @@
      "x": 6714.5,
      "y": 7331.5,
      "region": "fl_201_225"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Ockerlande 40)",
+   "ort": "okweg_40",
+   "x": 7825.5,
+   "y": 7358.2,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_ockerlande_40_splittereisen_1",
+     "art": "splittereisen",
+     "x": 7827.5,
+     "y": 7359.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "adern_am_weg_ockerlande_40_splittereisen_2",
+     "art": "splittereisen",
+     "x": 7823.5,
+     "y": 7359.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "adern_am_weg_ockerlande_40_sterneisen_3",
+     "art": "sterneisen",
+     "x": 7825.5,
+     "y": 7355.5,
+     "region": "fl_231_225"
+    }
+   ]
+  },
+  {
+   "name": "Adern am Weg (Ockerlande 42)",
+   "ort": "okweg_42",
+   "x": 7436.4,
+   "y": 7208.5,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_ockerlande_42_sterneisen_1",
+     "art": "sterneisen",
+     "x": 7438.5,
+     "y": 7209.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "adern_am_weg_ockerlande_42_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7434.5,
+     "y": 7210.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "adern_am_weg_ockerlande_42_splittereisen_3",
+     "art": "splittereisen",
+     "x": 7436.5,
+     "y": 7205.5,
+     "region": "fl_231_225"
     }
    ]
   },

@@ -1037,13 +1037,13 @@
  {"id":"ko_55_1","objekt":"dorf_holzstapel_01","x":89.32,"y":115.19},
  {"id":"ko_57_0","objekt":"dorf_huette_holz_01","x":53,"y":247},
  {"id":"vd_graufurt_k1","objekt":"wegrand_wegkreuz_holz","x":46.5,"y":9.5,"spiegeln":true},
- {"id":"vd_graufurt_k2","objekt":"wegrand_bildstock","x":47.5,"y":25.5,"spiegeln":true},
- {"id":"vd_graufurt_k3","objekt":"wegrand_bildstock","x":40.5,"y":36.5,"spiegeln":true},
- {"id":"vd_graufurt_k4","objekt":"wegrand_zaun_flecht","x":29.07,"y":92.23,"dreh":90},
- {"id":"vd_graufurt_k5","objekt":"wegrand_bildstock","x":119.5,"y":112.5},
- {"id":"vd_graufurt_k6","objekt":"wegrand_bildstock","x":30.5,"y":132.5},
- {"id":"vd_graufurt_k7","objekt":"wegrand_bildstock","x":37.5,"y":147.5,"spiegeln":true},
- {"id":"vd_graufurt_k8","objekt":"wegrand_bildstock","x":28.5,"y":257.5,"spiegeln":true},
- {"id":"vd_graufurt_k9","objekt":"wegrand_zaun_flecht","x":9.38,"y":253.75},
- {"id":"vd_graufurt_k10","objekt":"wegrand_zaun_flecht","x":30.68,"y":304.29}
+ {"id":"vd_graufurt_k2","objekt":"wegrand_zaun_flecht","x":47.5,"y":24.5},
+ {"id":"vd_graufurt_k3","objekt":"wegrand_zaun_flecht","x":42.5,"y":34.5},
+ {"id":"vd_graufurt_k4","objekt":"wegrand_zaun_flecht","x":29.5,"y":94.5},
+ {"id":"vd_graufurt_k5","objekt":"wegrand_zaun_flecht","x":111.5,"y":111.5},
+ {"id":"vd_graufurt_k6","objekt":"wegrand_zaun_flecht","x":30.5,"y":133.5},
+ {"id":"vd_graufurt_k7","objekt":"wegrand_bildstock","x":38.5,"y":146.5},
+ {"id":"vd_graufurt_k8","objekt":"wegrand_bildstock","x":23.5,"y":258.5},
+ {"id":"vd_graufurt_k9","objekt":"wegrand_zaun_flecht","x":13.5,"y":250.5},
+ {"id":"vd_graufurt_k10","objekt":"wegrand_bildstock","x":34.5,"y":304.5}
 ]

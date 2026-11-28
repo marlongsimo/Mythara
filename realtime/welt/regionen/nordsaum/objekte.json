@@ -1063,5 +1063,6 @@
  {"id":"vd_nordsaum_k3","objekt":"wegrand_wegkreuz_stein","x":211.5,"y":27.5},
  {"id":"vd_nordsaum_k4","objekt":"wegrand_wegkreuz_stein","x":222.5,"y":25.5},
  {"id":"vd_nordsaum_k5","objekt":"wegrand_wegkreuz_stein","x":233.5,"y":34.5,"spiegeln":true},
- {"id":"vd_nordsaum_k6","objekt":"wegrand_feldstein_2","x":42.5,"y":43.5}
+ {"id":"vd_nordsaum_k6","objekt":"wegrand_feldstein_2","x":43.5,"y":43.5,"spiegeln":true},
+ {"id":"vd_nordsaum_k7","objekt":"wegrand_wegkreuz_stein","x":182.5,"y":49.5}
 ]

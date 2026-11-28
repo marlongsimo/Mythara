@@ -69,8 +69,8 @@
    "name": "Moosschrein",
    "art": "schrein",
    "land": "Grenzland",
-   "x": 6578.7,
-   "y": 6449.6,
+   "x": 6578.1,
+   "y": 6448.9,
    "lesestelle": "ko_6_l",
    "besonders": false,
    "abseits": false,
@@ -945,8 +945,8 @@
    "name": "Lager am Moorgraben",
    "art": "jaeger",
    "land": "Fahle Weiten",
-   "x": 6909.9,
-   "y": 6634.0,
+   "x": 6900.0,
+   "y": 6629.0,
    "lesestelle": "ko_79_l",
    "besonders": false,
    "abseits": false,
@@ -1641,8 +1641,8 @@
    "name": "Hohe Wacht",
    "art": "turm",
    "land": "Fahle Weiten",
-   "x": 6866.1,
-   "y": 6566.2,
+   "x": 6868.3,
+   "y": 6566.1,
    "lesestelle": "ko_137_l",
    "besonders": false,
    "abseits": false,
@@ -1941,8 +1941,8 @@
    "name": "Pilgerschrein",
    "art": "schrein",
    "land": "Fahle Weiten",
-   "x": 6797.9,
-   "y": 6494.4,
+   "x": 6800.6,
+   "y": 6492.8,
    "lesestelle": "ko_162_l",
    "besonders": false,
    "abseits": false,
@@ -1989,8 +1989,8 @@
    "name": "Alte Mühle",
    "art": "muehle",
    "land": "Fahle Weiten",
-   "x": 6604.9,
-   "y": 5927.1,
+   "x": 6605.0,
+   "y": 5927.2,
    "lesestelle": "ko_166_l",
    "besonders": false,
    "abseits": false,
@@ -2043,8 +2043,8 @@
   [
    "Moosschrein",
    "Ort",
-   6578.7,
-   6449.6
+   6578.1,
+   6448.9
   ],
   [
    "Rübenkreuz",
@@ -2481,8 +2481,8 @@
   [
    "Lager am Moorgraben",
    "Ort",
-   6909.9,
-   6634.0
+   6900.0,
+   6629.0
   ],
   [
    "Moornest",
@@ -2829,8 +2829,8 @@
   [
    "Hohe Wacht",
    "Ort",
-   6866.1,
-   6566.2
+   6868.3,
+   6566.1
   ],
   [
    "Wacholderwarte",
@@ -2979,8 +2979,8 @@
   [
    "Pilgerschrein",
    "Ort",
-   6797.9,
-   6494.4
+   6800.6,
+   6492.8
   ],
   [
    "Moorschrein",
@@ -3003,8 +3003,8 @@
   [
    "Alte Mühle",
    "Ort",
-   6604.9,
-   5927.1
+   6605.0,
+   5927.2
   ],
   [
    "Aalkate",

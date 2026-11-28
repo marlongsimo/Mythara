@@ -187,7 +187,53 @@
   "tafelrast": [
    7490,
    7520
-  ]
+  ],
+  "rotbucht": [
+   7842,
+   7388
+  ],
+  "tonbrenn": [
+   7470,
+   7210
+  ],
+  "schneerast": [
+   7300,
+   7715
+  ],
+  "wacht_weisses_ende": [
+   6869,
+   7793
+  ],
+  "karawanenlager": [
+   7039,
+   7568
+  ],
+  "siedlungen_schritt2": {
+   "Rotbucht": [
+    7842,
+    7388,
+    13
+   ],
+   "Tonbrenn": [
+    7470,
+    7210,
+    6
+   ],
+   "Schneerast": [
+    7300,
+    7715,
+    5
+   ],
+   "Wacht am Weißen Ende": [
+    6869,
+    7793
+   ],
+   "Karawanenlager": [
+    7039,
+    7568,
+    4
+   ]
+  }
  },
  "namen": [
   [
@@ -213,6 +259,36 @@
    "Dorf",
    7490,
    7520
+  ],
+  [
+   "Rotbucht",
+   "Stadt",
+   7842,
+   7388
+  ],
+  [
+   "Tonbrenn",
+   "Dorf",
+   7470,
+   7210
+  ],
+  [
+   "Schneerast",
+   "Dorf",
+   7300,
+   7715
+  ],
+  [
+   "Wacht am Weißen Ende",
+   "Ruine",
+   6869,
+   7793
+  ],
+  [
+   "Karawanenlager",
+   "Ort",
+   7039,
+   7568
   ]
  ],
  "npc": [
@@ -335,6 +411,72 @@
    "rolle": "Händler (Laden)",
    "x": 7484,
    "y": 7524.2
+  },
+  {
+   "id": "bankier_rotbucht",
+   "rolle": "Bank",
+   "x": 7851,
+   "y": 7384.4
+  },
+  {
+   "id": "hafenmeisterin_rotbucht",
+   "rolle": "Hafenmeisterin",
+   "x": 7831.5,
+   "y": 7384.6
+  },
+  {
+   "id": "haendler_rotbucht_1",
+   "rolle": "Händler (Laden)",
+   "x": 7837.5,
+   "y": 7397.2
+  },
+  {
+   "id": "haendler_rotbucht_2",
+   "rolle": "Händler (Laden)",
+   "x": 7847,
+   "y": 7396.2
+  },
+  {
+   "id": "kapitaen_rotbucht",
+   "rolle": "Kapitän (Schiffslinie, Ausgabe 2)",
+   "x": 7800.2,
+   "y": 7386.2
+  },
+  {
+   "id": "toepferin_tonbrenn",
+   "rolle": "Töpferin",
+   "x": 7479,
+   "y": 7209.5
+  },
+  {
+   "id": "haendler_tonbrenn",
+   "rolle": "Händler (Laden)",
+   "x": 7466.5,
+   "y": 7217.7
+  },
+  {
+   "id": "wirtin_schneerast",
+   "rolle": "Wirtin (Feuer)",
+   "x": 7301.5,
+   "y": 7719.6
+  },
+  {
+   "id": "haendler_schneerast",
+   "rolle": "Händler (Laden)",
+   "x": 7307.5,
+   "y": 7718.2
+  },
+  {
+   "id": "karawanenfuehrer_lager",
+   "rolle": "Karawanenführer",
+   "x": 7038.5,
+   "y": 7573.6
+  },
+  {
+   "id": "haendler_karawanenlager",
+   "rolle": "Händler (Laden)",
+   "x": 7037,
+   "y": 7577.2
   }
  ],
  "banken": [
@@ -362,6 +504,23 @@
    "kiste": [
     7492,
     7523.4
+   ]
+  },
+  {
+   "id": "rotbucht_bank",
+   "ort": "Rotbucht",
+   "gebaeude": "rotbucht_bank",
+   "schalter": [
+    7851,
+    7384.4
+   ]
+  },
+  {
+   "id": "schneerast_bankkiste",
+   "ort": "Schneerast",
+   "kiste": [
+    7296,
+    7719.4
    ]
   }
  ],
@@ -475,6 +634,61 @@
     0,
     -1
    ]
+  },
+  {
+   "id": "rotbucht_stand_1",
+   "ort": "Rotbucht",
+   "art": "Salz, Fisch und Seemannsbedarf",
+   "x": 7837.5,
+   "y": 7397.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "rotbucht_stand_2",
+   "ort": "Rotbucht",
+   "art": "Töpferwaren und Tuch",
+   "x": 7847,
+   "y": 7396.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "tonbrenn_stand",
+   "ort": "Tonbrenn",
+   "art": "Töpferwaren, Krüge, Ziegel",
+   "x": 7466.5,
+   "y": 7217.7,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "schneerast_stand",
+   "ort": "Schneerast",
+   "art": "Pelze, Laternen und Proviant",
+   "x": 7307.5,
+   "y": 7718.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "karawanenlager_stand",
+   "ort": "Karawanenlager",
+   "art": "Gewürze, Datteln und Wasserschläuche",
+   "x": 7037,
+   "y": 7577.2,
+   "blick": [
+    0,
+    -1
+   ]
   }
  ],
  "stationen": [
@@ -531,6 +745,18 @@
    "station": "amboss",
    "x": 7491,
    "y": 7519.4
+  },
+  {
+   "id": "feuer_schneerast",
+   "station": "feuer",
+   "x": 7303,
+   "y": 7719.4
+  },
+  {
+   "id": "feuer_karawanenlager",
+   "station": "feuer",
+   "x": 7040,
+   "y": 7573.4
   }
  ],
  "fischplaetze": [
@@ -565,6 +791,17 @@
    "stehplatz": [
     7292.5,
     7383.5
+   ]
+  },
+  {
+   "id": "fischplatz_rotbucht",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 7817.5,
+   "y": 7399.5,
+   "stehplatz": [
+    7818.5,
+    7399.5
    ]
   },
   {
@@ -1046,6 +1283,174 @@
     ]
    ],
    "breite": 1.6,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7822,
+     7388
+    ],
+    [
+     7870,
+     7388
+    ]
+   ],
+   "breite": 2.4,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     7842,
+     7364
+    ],
+    [
+     7842,
+     7412
+    ]
+   ],
+   "breite": 2.2,
+   "zeichen": "p"
+  },
+  {
+   "punkte": [
+    [
+     7826,
+     7376
+    ],
+    [
+     7864,
+     7376
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7826,
+     7400
+    ],
+    [
+     7864,
+     7400
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7870,
+     7388
+    ],
+    [
+     7842,
+     7388
+    ]
+   ],
+   "breite": 2.2,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7452,
+     7212
+    ],
+    [
+     7488,
+     7212
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7474,
+     7212
+    ],
+    [
+     7484,
+     7204
+    ]
+   ],
+   "breite": 1.6,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7470,
+     7228
+    ],
+    [
+     7470,
+     7212
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7284,
+     7715
+    ],
+    [
+     7316,
+     7715
+    ]
+   ],
+   "breite": 2,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7300,
+     7715
+    ],
+    [
+     7300,
+     7729
+    ]
+   ],
+   "breite": 1.6,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7316,
+     7715
+    ],
+    [
+     7300,
+     7715
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     7031.613286327873,
+     7576.150856465796
+    ],
+    [
+     7010,
+     7600
+    ]
+   ],
+   "breite": 1.8,
    "zeichen": "e"
   },
   {

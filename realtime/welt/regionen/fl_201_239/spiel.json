@@ -14,6 +14,17 @@
  },
  "interaktionen": [
   {
+   "id": "wacht_weisses_ende",
+   "art": "lesen",
+   "x": 437.5,
+   "y": 149,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Wacht am Weißen Ende. Von hier aus hielt die Wacht nach Süden Ausschau, wo das Land unter dem Schnee verschwindet. Im Feuerkorb glimmt noch Glut – jemand war vor kurzem hier."
+   }
+  },
+  {
    "id": "fischplatz_ockerstrom_muendung",
    "art": "lesen",
    "x": 362.5,

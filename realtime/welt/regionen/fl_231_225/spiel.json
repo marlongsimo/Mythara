@@ -75,6 +75,27 @@
    },
    {
     "art": "rechteck",
+    "x0": 464,
+    "y0": 160,
+    "x1": 465,
+    "y1": 161
+   },
+   {
+    "art": "rechteck",
+    "x0": 458,
+    "y0": 158,
+    "x1": 459,
+    "y1": 159
+   },
+   {
+    "art": "rechteck",
+    "x0": 463,
+    "y0": 154,
+    "x1": 464,
+    "y1": 155
+   },
+   {
+    "art": "rechteck",
     "x0": 123,
     "y0": 316,
     "x1": 124,
@@ -121,9 +142,80 @@
     "y0": 279,
     "x1": 50,
     "y1": 280
+   },
+   {
+    "art": "rechteck",
+    "x0": 435,
+    "y0": 159,
+    "x1": 436,
+    "y1": 160
+   },
+   {
+    "art": "rechteck",
+    "x0": 431,
+    "y0": 159,
+    "x1": 432,
+    "y1": 160
+   },
+   {
+    "art": "rechteck",
+    "x0": 433,
+    "y0": 155,
+    "x1": 434,
+    "y1": 156
+   },
+   {
+    "art": "rechteck",
+    "x0": 46,
+    "y0": 9,
+    "x1": 47,
+    "y1": 10
+   },
+   {
+    "art": "rechteck",
+    "x0": 42,
+    "y0": 10,
+    "x1": 43,
+    "y1": 11
+   },
+   {
+    "art": "rechteck",
+    "x0": 44,
+    "y0": 5,
+    "x1": 45,
+    "y1": 6
    }
   ],
-  "freigeben": []
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 423.8,
+    "y0": 184.9,
+    "x1": 430.2,
+    "y1": 187.5
+   },
+   {
+    "art": "rechteck",
+    "x0": 417.4,
+    "y0": 184.9,
+    "x1": 423.8,
+    "y1": 187.5
+   },
+   {
+    "art": "rechteck",
+    "x0": 411,
+    "y0": 184.9,
+    "x1": 417.4,
+    "y1": 187.5
+   },
+   {
+    "art": "rechteck",
+    "x0": 404.6,
+    "y0": 184.9,
+    "x1": 411,
+    "y1": 187.5
+   }
+  ]
  },
  "interaktionen": [
   {
@@ -188,6 +280,63 @@
    }
   },
   {
+   "id": "rotbucht",
+   "art": "lesen",
+   "x": 452.5,
+   "y": 189.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Rotbucht. Ein Hafen aus rotem Lehm an der stillen Bucht – hier laden die Schiffe Salz, Ton und Akazienholz."
+   }
+  },
+  {
+   "id": "rotbucht_bank_tuer",
+   "art": "lesen",
+   "x": 459,
+   "y": 183.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Rotbucht. Kaufleute und Kapitäne legen hier ihr Gold ab."
+   }
+  },
+  {
+   "id": "rotbucht_steg",
+   "art": "lesen",
+   "x": 428,
+   "y": 186.3,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Steg von Rotbucht. Bald legen hier die Schiffe aus Kielmund an."
+   }
+  },
+  {
+   "id": "fischplatz_rotbucht",
+   "art": "lesen",
+   "x": 426.5,
+   "y": 199.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Steg der Rotbucht aus: Heringe ziehen in Schwärmen durch die stille Bucht.",
+    "fisch": "hering",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "tonbrenn",
+   "art": "lesen",
+   "x": 79.5,
+   "y": 13.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Tonbrenn. Aus der Grube hinter dem Dorf kommt der beste Ton der Ockerlande – Tag und Nacht rauchen die Brennöfen."
+   }
+  },
+  {
    "id": "fischplatz_wasserloch_4",
    "art": "lesen",
    "x": 172.5,
@@ -211,6 +360,18 @@
   {
    "x": 49.7,
    "y": 281.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 433.5,
+   "y": 158.2,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 44.4,
+   "y": 8.5,
    "r": 5,
    "tiefe": 1.1
   }
