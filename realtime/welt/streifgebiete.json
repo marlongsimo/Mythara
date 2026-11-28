@@ -178,27 +178,33 @@
    "land": "Die Fahlen Weiten",
    "region": "fl_186_183",
    "mitte": [
-    6280,
-    6175
+    6300,
+    6155
    ],
    "rechteck": [
-    6220,
-    6115,
-    6339,
-    6234
+    6240,
+    6095,
+    6359,
+    6214
    ],
    "meiden": [
     {
-     "x": 6320,
-     "y": 6232,
-     "r": 12,
-     "grund": "Ruine Alte Wachruine"
+     "x": 6329.5,
+     "y": 6088.8,
+     "r": 10,
+     "grund": "Sammelstelle Bäume am Weg (Fahle Weiten 41)"
     },
     {
-     "x": 6320,
-     "y": 6232.8,
-     "r": 8,
-     "grund": "Questort/Lesestelle ruine"
+     "x": 6350.8,
+     "y": 6218.8,
+     "r": 10,
+     "grund": "Sammelstelle Adern am Weg (Fahle Weiten 38)"
+    },
+    {
+     "x": 6241.8,
+     "y": 6102.8,
+     "r": 10,
+     "grund": "Sammelstelle Adern am Weg (Fahle Weiten 44)"
     }
    ],
    "modell": "vorhanden"

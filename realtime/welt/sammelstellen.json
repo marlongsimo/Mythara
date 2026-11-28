@@ -2112,7 +2112,7 @@
   },
   {
    "name": "Bäume am Weg (Fahle Weiten 31)",
-   "ort": "fwweg_31",
+   "ort": "fwweg_alt_31",
    "baeume": [
     {
      "id": "baume_am_weg_fahle_weiten_31_tanne_1",
@@ -2139,7 +2139,7 @@
   },
   {
    "name": "Bäume am Weg (Fahle Weiten 33)",
-   "ort": "fwweg_33",
+   "ort": "fwweg_alt_33",
    "baeume": [
     {
      "id": "baume_am_weg_fahle_weiten_33_eiche_1",
@@ -2166,7 +2166,7 @@
   },
   {
    "name": "Bäume am Weg (Fahle Weiten 35)",
-   "ort": "fwweg_35",
+   "ort": "fwweg_alt_35",
    "baeume": [
     {
      "id": "baume_am_weg_fahle_weiten_35_tanne_1",
@@ -2193,7 +2193,7 @@
   },
   {
    "name": "Bäume am Weg (Fahle Weiten 37)",
-   "ort": "fwweg_37",
+   "ort": "fwweg_alt_37",
    "baeume": [
     {
      "id": "baume_am_weg_fahle_weiten_37_eiche_1",
@@ -2220,7 +2220,7 @@
   },
   {
    "name": "Bäume am Weg (Fahle Weiten 39)",
-   "ort": "fwweg_39",
+   "ort": "fwweg_alt_39",
    "baeume": [
     {
      "id": "baume_am_weg_fahle_weiten_39_tanne_1",
@@ -2247,7 +2247,7 @@
   },
   {
    "name": "Bäume am Weg (Fahle Weiten 41)",
-   "ort": "fwweg_41",
+   "ort": "fwweg_alt_41",
    "baeume": [
     {
      "id": "baume_am_weg_fahle_weiten_41_eiche_1",
@@ -2274,7 +2274,7 @@
   },
   {
    "name": "Bäume am Weg (Fahle Weiten 43)",
-   "ort": "fwweg_43",
+   "ort": "fwweg_alt_43",
    "baeume": [
     {
      "id": "baume_am_weg_fahle_weiten_43_tanne_1",
@@ -2295,6 +2295,33 @@
      "art": "eibe",
      "x": 6254.5,
      "y": 6067.5,
+     "region": "fl_186_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 45)",
+   "ort": "fwweg_45",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_45_eiche_1",
+     "art": "eiche",
+     "x": 6221.5,
+     "y": 6123.5,
+     "region": "fl_186_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_45_eiche_2",
+     "art": "eiche",
+     "x": 6216.5,
+     "y": 6121.5,
+     "region": "fl_186_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_45_tanne_3",
+     "art": "tanne",
+     "x": 6220.5,
+     "y": 6117.5,
      "region": "fl_186_183"
     }
    ]
@@ -5194,7 +5221,7 @@
   },
   {
    "name": "Adern am Weg (Fahle Weiten 30)",
-   "ort": "fwweg_30",
+   "ort": "fwweg_alt_30",
    "x": 6534.7,
    "y": 6084.7,
    "r": 5,
@@ -5224,7 +5251,7 @@
   },
   {
    "name": "Adern am Weg (Fahle Weiten 32)",
-   "ort": "fwweg_32",
+   "ort": "fwweg_alt_32",
    "x": 6506.7,
    "y": 6051.9,
    "r": 5,
@@ -5254,7 +5281,7 @@
   },
   {
    "name": "Adern am Weg (Fahle Weiten 34)",
-   "ort": "fwweg_34",
+   "ort": "fwweg_alt_34",
    "x": 6570.9,
    "y": 5984.3,
    "r": 5,
@@ -5284,7 +5311,7 @@
   },
   {
    "name": "Adern am Weg (Fahle Weiten 36)",
-   "ort": "fwweg_36",
+   "ort": "fwweg_alt_36",
    "x": 6422.1,
    "y": 6143.9,
    "r": 5,
@@ -5314,7 +5341,7 @@
   },
   {
    "name": "Adern am Weg (Fahle Weiten 38)",
-   "ort": "fwweg_38",
+   "ort": "fwweg_alt_38",
    "x": 6350.7,
    "y": 6218.9,
    "r": 5,
@@ -5344,7 +5371,7 @@
   },
   {
    "name": "Adern am Weg (Fahle Weiten 40)",
-   "ort": "fwweg_40",
+   "ort": "fwweg_alt_40",
    "x": 6374.7,
    "y": 6096.7,
    "r": 5,
@@ -5374,7 +5401,7 @@
   },
   {
    "name": "Adern am Weg (Fahle Weiten 42)",
-   "ort": "fwweg_42",
+   "ort": "fwweg_alt_42",
    "x": 6209.1,
    "y": 6046.8,
    "r": 5,
@@ -5404,7 +5431,7 @@
   },
   {
    "name": "Adern am Weg (Fahle Weiten 44)",
-   "ort": "fwweg_44",
+   "ort": "fwweg_alt_44",
    "x": 6241.7,
    "y": 6102.9,
    "r": 5,
