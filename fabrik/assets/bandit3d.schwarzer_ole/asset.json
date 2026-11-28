@@ -1,0 +1,8 @@
+{
+  "id": "bandit3d.schwarzer_ole",
+  "name": "Schwarzer Ole",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "status": "v001: ruhe, gehen, laufen, hieb2h, rundumschlag (angezeigt, zum Ausweichen), ruf, block, treffer, tod – img/figuren-echt3d/bandit3d_schwarzer_ole.glb (+ .mobil.glb), #190",
+  "herkunft": "banditenboss3d"
+}

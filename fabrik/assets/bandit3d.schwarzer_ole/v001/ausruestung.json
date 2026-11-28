@@ -1,0 +1,33 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "bandit3d.schwarzer_ole – Schwarzer Ole (#190 Ankerholm, Mini-Boss der Plünderer): Banditenanführer, Crimson-Rot zu Schwarz umgefärbt; Zweihänder, angezeigter Rundumschlag zum Ausweichen.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "hieb2h",
+    "rundumschlag",
+    "ruf",
+    "block",
+    "treffer",
+    "tod"
+  ],
+  "block": "waffe",
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.zweihaender.warlord",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffen/zweihand/waffe.zweihaender.warlord/v001/quelle/zweihaender.glb",
+      "griff": 0.12,
+      "griff2": 0.05,
+      "angriff": "hieb2h"
+    }
+  ]
+}
