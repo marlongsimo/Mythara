@@ -357,11 +357,9 @@
  {"id":"vd_westried_k10","objekt":"wegrand_zaun_stein","x":68.8,"y":191.24,"dreh":90},
  {"id":"vd_westried_k11","objekt":"wegrand_feldstein_2","x":98.5,"y":188.5,"spiegeln":true},
  {"id":"vd_westried_k12","objekt":"wegrand_bildstock","x":111.5,"y":192.5,"spiegeln":true},
- {"id":"vd_westried_k13","objekt":"wegrand_bildstock","x":124.5,"y":198.5},
- {"id":"vd_westried_k14","objekt":"wegrand_bildstock","x":58.5,"y":199.5},
- {"id":"vd_westried_k15","objekt":"wegrand_karren_heu","x":55,"y":211,"dreh":90,"spiegeln":true},
- {"id":"vd_westried_k16","objekt":"wegrand_feldstein_2","x":58.5,"y":222.5},
- {"id":"vd_westried_k17","objekt":"wegrand_feldstein_2","x":49.5,"y":227.5,"spiegeln":true},
- {"id":"vd_westried_k18","objekt":"wegrand_feldstein_2","x":47.5,"y":237.5,"spiegeln":true},
- {"id":"vd_westried_k19","objekt":"wegrand_feldstein_2","x":44.5,"y":245.5,"spiegeln":true}
+ {"id":"vd_westried_k13","objekt":"wegrand_bildstock","x":58.5,"y":199.5},
+ {"id":"vd_westried_k14","objekt":"wegrand_karren_heu","x":55,"y":211,"dreh":90,"spiegeln":true},
+ {"id":"vd_westried_k15","objekt":"wegrand_feldstein_2","x":58.5,"y":222.5},
+ {"id":"vd_westried_k16","objekt":"wegrand_feldstein_2","x":49.5,"y":227.5,"spiegeln":true},
+ {"id":"vd_westried_k17","objekt":"wegrand_feldstein_2","x":47.5,"y":237.5,"spiegeln":true}
 ]

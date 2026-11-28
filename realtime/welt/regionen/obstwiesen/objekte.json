@@ -207,5 +207,5 @@
  {"id":"naht_562","objekt":"stil_tanne_01","x":63.5,"y":90.5,"s":0.97,"spiegeln":true},
  {"id":"naht_563","objekt":"stil_tanne_02","x":60.5,"y":91.5,"s":1.04},
  {"id":"naht_564","objekt":"stil_eiche_01","x":62.5,"y":93.5,"s":0.88,"spiegeln":true},
- {"id":"vd_obstwiesen_k1","objekt":"wegrand_feldstein_1","x":6.5,"y":27.5}
+ {"id":"vd_obstwiesen_k1","objekt":"wegrand_feldstein_1","x":11.5,"y":27.5}
 ]
