@@ -91,8 +91,13 @@ export async function starte({ sb: SB, srv: SRV, helden, env = {} }) {
     while (!bis(siege) && Date.now() - t0 < ms) { const ich = z.w.find((w) => w[1] === 1), jetzt = Date.now(), lebt = z.w.filter((w) => arten.includes(w[2]) && !w[10] && nur(w) && !((aus.get(w[0]) || 0) > jetzt));
       if (!ich || !lebt.length) { await schlaf(300); continue; } const ziel = lebt.sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
       const ab = z.ev.length; z.ws.send(JSON.stringify({ t: "ziel", id: ziel[0] })); let fiel = false, gebunden = false;
-      for (let i = 0; i < 250; i++) { await schlaf(100); const neu = z.ev.slice(ab); if (neu.some((e) => e.a === "tot" && e.id === ziel[0])) { siege++; fiel = true; break; } if (bis(siege)) break;
-        if (neu.some((e) => e.a === "text" && e.id === ziel[0] && /Kämpft schon/.test(e.t || ""))) { gebunden = true; break; } }
+      /* unter Last (6 Tests gleichzeitig, CI) dauern Bosskämpfe länger: weiterkämpfen, solange das Ziel in den letzten 10 s Leben verloren hat (höchstens 2 min je Ziel) */
+      let lpZuletzt = ziel[7], getroffen = Date.now();
+      for (let i = 0; i < 1200; i++) { await schlaf(100); const neu = z.ev.slice(ab); if (neu.some((e) => e.a === "tot" && e.id === ziel[0])) { siege++; fiel = true; break; } if (bis(siege)) break;
+        if (neu.some((e) => e.a === "text" && e.id === ziel[0] && /Kämpft schon/.test(e.t || ""))) { gebunden = true; break; }
+        const jetztW = z.w.find((w) => w[0] === ziel[0]); if (jetztW && jetztW[7] < lpZuletzt) { lpZuletzt = jetztW[7]; getroffen = Date.now(); }
+        if (i >= 250 && Date.now() - getroffen > 10000) break; }
+      if (fiel) for (let i = 0; i < 50 && !bis(siege); i++) await schlaf(100); /* der Questschritt kommt über die Weltverbindung, unter Last etwas später als der Tod im Kampf */
       if (gebunden) { await binderBekaempfen(z, ziel[0], aus); continue; } /* #154: ein anderer Gegner (oft ein Fernkämpfer) bindet den Helden im Einzelkampf */
       if (!fiel) aus.set(ziel[0], Date.now() + 20000); }
     return siege; }
@@ -110,7 +115,7 @@ export async function starte({ sb: SB, srv: SRV, helden, env = {} }) {
     z.ws.close(); await schlaf(2500); return { z, siege }; }
   /** einen Gegenstand vom Boden aufheben (in der Nähe) */
   const aufheben = async (s, g, wx, wy) => { sende(s, { t: "pos", x: 0, y: 0, wx, wy }); await schlaf(1500); const d = s.boden.find((b) => b.g === g); if (!d) return false;
-    await stelle(s, d.x, d.y); sende(s, { t: "aufheben", id: d.i }); await warte(s, (m) => m.t === "inventar", 2500); await schlaf(300); return anzahl(s, g) > 0; };
+    const vor = anzahl(s, g); for (let v = 0; v < 2 && anzahl(s, g) <= vor; v++) { await stelle(s, d.x, d.y); await schlaf(400 + v * 800); sende(s, { t: "aufheben", id: d.i }); await warte(s, (m) => m.t === "inventar", 3000); await schlaf(300); } return anzahl(s, g) > 0; }; /* unter Last kam „aufheben“ vor der neuen Stelle an */
   /** sammeln (Holz „holz“, Bergbau „berg“, Pflanze „pflanze“, Kraut „kraut“, Licht „licht“) an der Stelle id, bis n Stück von g da sind */
   async function sammeln(s, art, id, x, y, g, n, ms = 120000) { await stelle(s, x + 1.2, y); const t0 = Date.now(); s.msgs[art] = []; sende(s, { t: art, tat: "start", id });
     while (anzahl(s, g) < n && Date.now() - t0 < ms) { await schlaf(300); if ((s.msgs[art] || []).some((m) => m.tat === "stop" || m.tat === "nein")) { s.msgs[art] = []; await schlaf(500); sende(s, { t: art, tat: "start", id }); } }
