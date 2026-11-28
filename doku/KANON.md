@@ -154,5 +154,7 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - **Einsteiger-Insel „Ankerholm“** (28.11., abgesegnet; `doku/konzepte/einsteiger-insel.md`): Ablauf für neue Accounts: Registrierung → Heldeneditor **nur Aussehen** (die Waffenwahl entfällt) → Quest „Gestrandet auf Ankerholm“ (~12 min, 8 Schritte: Holz, Erz/Schmelzen/Schmieden, Fischen/Kochen, drei Übungspuppen je eine Kampfart, Plünderer + Mini-Boss „Schwarzer Ole“) → im Abschlussfenster einen **Trainingssatz wählen** (Nah/Fern/Magie; die anderen verkauft Brann Hackebeil günstig) → **sofortige Ankunft am Anleger der Waldmark**, dort beginnt Quest 1. Die Insel ist **gemeinsam** für alle, der Fortschritt zählt je Spieler. **Pflicht nur für neue Figuren**; bestehende Figuren besuchen sie vorerst nicht. Die Insel ist **nicht** Teil der Schiffslinien.
 
+- **Kleinorte Schritt 2 – Ockerlande** (28.11., Skizze `welt/plaene/kleinorte_schritt2.png`, Welt 440f3504): freigegeben, wie skizziert. Es gibt 5 Siedlungen (Rotbucht als Hafenstadt, die Dörfer Tonbrenn und Schneerast, die Ruine Wacht am Weißen Ende, ein Karawanenlager) und 126 Kleinorte im Abstand von 44–70 Feldern. **Die Siedlungen kommen zuerst.** Bedingung: Die bestehenden Ockerlande-Quests (Block I) müssen danach weiter passen, also Wege, Stellen, Figuren und Tests.
+
 ## Offen (Fragen an den Nutzer)
 
