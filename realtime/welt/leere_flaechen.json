@@ -1,0 +1,1462 @@
+{
+ "hinweis": "Leere Flächen (leere_flaechen.py): begehbares, offenes Land, auf dem im Umkreis von 30 Feldern kein Objekt steht – man läuft dort mehr als 60 Felder, ohne etwas zu sehen. Weltfelder.",
+ "radius": 30,
+ "flaechen": [
+  {
+   "mitte": [
+    6421,
+    6017
+   ],
+   "felder": 300258,
+   "ausdehnung": [
+    941,
+    966
+   ],
+   "gebiet": "fl_201_183",
+   "land": "Fahle Weiten"
+  },
+  {
+   "mitte": [
+    6641,
+    7215
+   ],
+   "felder": 220452,
+   "ausdehnung": [
+    676,
+    1019
+   ],
+   "gebiet": "fl_201_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7783,
+    5794
+   ],
+   "felder": 117110,
+   "ausdehnung": [
+    565,
+    738
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7247,
+    5388
+   ],
+   "felder": 76727,
+   "ausdehnung": [
+    644,
+    492
+   ],
+   "gebiet": "fl_216_155",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7329,
+    7867
+   ],
+   "felder": 72542,
+   "ausdehnung": [
+    460,
+    500
+   ],
+   "gebiet": "fl_216_239",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7402,
+    7747
+   ],
+   "felder": 55113,
+   "ausdehnung": [
+    1107,
+    724
+   ],
+   "gebiet": "fl_216_239",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    6575,
+    5705
+   ],
+   "felder": 16224,
+   "ausdehnung": [
+    323,
+    300
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Fahle Weiten"
+  },
+  {
+   "mitte": [
+    6873,
+    5673
+   ],
+   "felder": 16062,
+   "ausdehnung": [
+    337,
+    411
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6825,
+    7553
+   ],
+   "felder": 14576,
+   "ausdehnung": [
+    268,
+    367
+   ],
+   "gebiet": "fl_201_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7792,
+    7356
+   ],
+   "felder": 14188,
+   "ausdehnung": [
+    430,
+    288
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7354,
+    7171
+   ],
+   "felder": 11403,
+   "ausdehnung": [
+    285,
+    326
+   ],
+   "gebiet": "fl_216_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7027,
+    6083
+   ],
+   "felder": 11394,
+   "ausdehnung": [
+    232,
+    204
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7505,
+    7133
+   ],
+   "felder": 8881,
+   "ausdehnung": [
+    293,
+    189
+   ],
+   "gebiet": "fl_231_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6832,
+    6851
+   ],
+   "felder": 7979,
+   "ausdehnung": [
+    253,
+    188
+   ],
+   "gebiet": "fl_201_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7543,
+    6880
+   ],
+   "felder": 6609,
+   "ausdehnung": [
+    228,
+    178
+   ],
+   "gebiet": "fl_231_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7235,
+    7197
+   ],
+   "felder": 4928,
+   "ausdehnung": [
+    169,
+    179
+   ],
+   "gebiet": "fl_216_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6995,
+    6514
+   ],
+   "felder": 4922,
+   "ausdehnung": [
+    172,
+    141
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7602,
+    7592
+   ],
+   "felder": 4198,
+   "ausdehnung": [
+    127,
+    266
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7664,
+    7769
+   ],
+   "felder": 4135,
+   "ausdehnung": [
+    139,
+    191
+   ],
+   "gebiet": "fl_231_239",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    6972,
+    7643
+   ],
+   "felder": 3414,
+   "ausdehnung": [
+    177,
+    166
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7568,
+    7351
+   ],
+   "felder": 3167,
+   "ausdehnung": [
+    160,
+    145
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7412,
+    7515
+   ],
+   "felder": 2920,
+   "ausdehnung": [
+    145,
+    131
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7055,
+    6988
+   ],
+   "felder": 2826,
+   "ausdehnung": [
+    257,
+    154
+   ],
+   "gebiet": "fl_216_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7529,
+    6136
+   ],
+   "felder": 2821,
+   "ausdehnung": [
+    171,
+    126
+   ],
+   "gebiet": "fl_231_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7287,
+    7655
+   ],
+   "felder": 2812,
+   "ausdehnung": [
+    124,
+    165
+   ],
+   "gebiet": "fl_216_239",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7084,
+    7293
+   ],
+   "felder": 2502,
+   "ausdehnung": [
+    202,
+    131
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6914,
+    6154
+   ],
+   "felder": 2369,
+   "ausdehnung": [
+    148,
+    139
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6948,
+    5699
+   ],
+   "felder": 2162,
+   "ausdehnung": [
+    155,
+    153
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7278,
+    5756
+   ],
+   "felder": 2027,
+   "ausdehnung": [
+    165,
+    155
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7441,
+    7029
+   ],
+   "felder": 1956,
+   "ausdehnung": [
+    133,
+    125
+   ],
+   "gebiet": "fl_231_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7327,
+    7338
+   ],
+   "felder": 1955,
+   "ausdehnung": [
+    133,
+    150
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7502,
+    6487
+   ],
+   "felder": 1805,
+   "ausdehnung": [
+    158,
+    128
+   ],
+   "gebiet": "fl_231_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7505,
+    5451
+   ],
+   "felder": 1770,
+   "ausdehnung": [
+    138,
+    125
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7604,
+    7061
+   ],
+   "felder": 1736,
+   "ausdehnung": [
+    163,
+    104
+   ],
+   "gebiet": "fl_231_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7500,
+    7442
+   ],
+   "felder": 1658,
+   "ausdehnung": [
+    123,
+    115
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7378,
+    6492
+   ],
+   "felder": 1608,
+   "ausdehnung": [
+    147,
+    123
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7244,
+    7488
+   ],
+   "felder": 1605,
+   "ausdehnung": [
+    142,
+    124
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    6946,
+    7390
+   ],
+   "felder": 1467,
+   "ausdehnung": [
+    133,
+    132
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7068,
+    6950
+   ],
+   "felder": 1346,
+   "ausdehnung": [
+    135,
+    115
+   ],
+   "gebiet": "fl_216_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7157,
+    7591
+   ],
+   "felder": 1311,
+   "ausdehnung": [
+    106,
+    115
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7111,
+    7481
+   ],
+   "felder": 1302,
+   "ausdehnung": [
+    107,
+    110
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7299,
+    7034
+   ],
+   "felder": 1287,
+   "ausdehnung": [
+    185,
+    99
+   ],
+   "gebiet": "fl_216_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7430,
+    5614
+   ],
+   "felder": 1152,
+   "ausdehnung": [
+    146,
+    108
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7139,
+    7206
+   ],
+   "felder": 1095,
+   "ausdehnung": [
+    103,
+    125
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7512,
+    5346
+   ],
+   "felder": 1050,
+   "ausdehnung": [
+    272,
+    197
+   ],
+   "gebiet": "fl_231_155",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7572,
+    7553
+   ],
+   "felder": 1027,
+   "ausdehnung": [
+    108,
+    97
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7091,
+    5664
+   ],
+   "felder": 988,
+   "ausdehnung": [
+    110,
+    95
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7159,
+    5778
+   ],
+   "felder": 964,
+   "ausdehnung": [
+    104,
+    103
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7194,
+    7403
+   ],
+   "felder": 928,
+   "ausdehnung": [
+    104,
+    102
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    6989,
+    6627
+   ],
+   "felder": 886,
+   "ausdehnung": [
+    99,
+    95
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7561,
+    5518
+   ],
+   "felder": 789,
+   "ausdehnung": [
+    114,
+    120
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7214,
+    5959
+   ],
+   "felder": 775,
+   "ausdehnung": [
+    103,
+    99
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7385,
+    5507
+   ],
+   "felder": 714,
+   "ausdehnung": [
+    110,
+    90
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7501,
+    5755
+   ],
+   "felder": 675,
+   "ausdehnung": [
+    99,
+    123
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7401,
+    6809
+   ],
+   "felder": 673,
+   "ausdehnung": [
+    91,
+    102
+   ],
+   "gebiet": "fl_231_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7318,
+    6003
+   ],
+   "felder": 671,
+   "ausdehnung": [
+    105,
+    103
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7196,
+    6500
+   ],
+   "felder": 627,
+   "ausdehnung": [
+    121,
+    79
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7287,
+    6181
+   ],
+   "felder": 564,
+   "ausdehnung": [
+    112,
+    83
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7460,
+    7579
+   ],
+   "felder": 516,
+   "ausdehnung": [
+    111,
+    105
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7084,
+    6470
+   ],
+   "felder": 501,
+   "ausdehnung": [
+    93,
+    91
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7334,
+    5889
+   ],
+   "felder": 475,
+   "ausdehnung": [
+    94,
+    100
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7211,
+    6075
+   ],
+   "felder": 469,
+   "ausdehnung": [
+    86,
+    94
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7525,
+    7645
+   ],
+   "felder": 469,
+   "ausdehnung": [
+    91,
+    106
+   ],
+   "gebiet": "fl_231_239",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7404,
+    6129
+   ],
+   "felder": 442,
+   "ausdehnung": [
+    82,
+    99
+   ],
+   "gebiet": "fl_231_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7518,
+    7239
+   ],
+   "felder": 437,
+   "ausdehnung": [
+    90,
+    101
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7157,
+    7708
+   ],
+   "felder": 404,
+   "ausdehnung": [
+    85,
+    106
+   ],
+   "gebiet": "fl_216_239",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    6748,
+    7280
+   ],
+   "felder": 390,
+   "ausdehnung": [
+    81,
+    118
+   ],
+   "gebiet": "fl_201_225",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7118,
+    7519
+   ],
+   "felder": 386,
+   "ausdehnung": [
+    92,
+    89
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7412,
+    5688
+   ],
+   "felder": 361,
+   "ausdehnung": [
+    101,
+    87
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6891,
+    5874
+   ],
+   "felder": 355,
+   "ausdehnung": [
+    92,
+    81
+   ],
+   "gebiet": "fl_201_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7858,
+    7519
+   ],
+   "felder": 338,
+   "ausdehnung": [
+    84,
+    105
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7340,
+    6661
+   ],
+   "felder": 334,
+   "ausdehnung": [
+    93,
+    92
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7330,
+    6834
+   ],
+   "felder": 322,
+   "ausdehnung": [
+    80,
+    86
+   ],
+   "gebiet": "fl_216_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6942,
+    7223
+   ],
+   "felder": 315,
+   "ausdehnung": [
+    86,
+    87
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7342,
+    5573
+   ],
+   "felder": 290,
+   "ausdehnung": [
+    80,
+    89
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7021,
+    7403
+   ],
+   "felder": 283,
+   "ausdehnung": [
+    77,
+    85
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7161,
+    5889
+   ],
+   "felder": 279,
+   "ausdehnung": [
+    82,
+    82
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7259,
+    6517
+   ],
+   "felder": 263,
+   "ausdehnung": [
+    86,
+    95
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7199,
+    7033
+   ],
+   "felder": 229,
+   "ausdehnung": [
+    103,
+    82
+   ],
+   "gebiet": "fl_216_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7010,
+    6708
+   ],
+   "felder": 223,
+   "ausdehnung": [
+    87,
+    79
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7286,
+    7555
+   ],
+   "felder": 222,
+   "ausdehnung": [
+    84,
+    86
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7260,
+    5644
+   ],
+   "felder": 211,
+   "ausdehnung": [
+    89,
+    72
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7295,
+    5847
+   ],
+   "felder": 204,
+   "ausdehnung": [
+    86,
+    79
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7909,
+    7500
+   ],
+   "felder": 204,
+   "ausdehnung": [
+    85,
+    81
+   ],
+   "gebiet": "fl_246_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    6826,
+    7722
+   ],
+   "felder": 201,
+   "ausdehnung": [
+    112,
+    79
+   ],
+   "gebiet": "fl_201_239",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7403,
+    6216
+   ],
+   "felder": 190,
+   "ausdehnung": [
+    75,
+    78
+   ],
+   "gebiet": "fl_231_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6118,
+    7050
+   ],
+   "felder": 181,
+   "ausdehnung": [
+    74,
+    86
+   ],
+   "gebiet": "fl_186_211",
+   "land": "Süden/Küste"
+  },
+  {
+   "mitte": [
+    6991,
+    6927
+   ],
+   "felder": 180,
+   "ausdehnung": [
+    102,
+    74
+   ],
+   "gebiet": "fl_216_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7319,
+    7244
+   ],
+   "felder": 172,
+   "ausdehnung": [
+    82,
+    85
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6996,
+    7431
+   ],
+   "felder": 161,
+   "ausdehnung": [
+    80,
+    73
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7463,
+    5500
+   ],
+   "felder": 152,
+   "ausdehnung": [
+    75,
+    85
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7147,
+    5888
+   ],
+   "felder": 135,
+   "ausdehnung": [
+    70,
+    82
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7894,
+    7471
+   ],
+   "felder": 119,
+   "ausdehnung": [
+    92,
+    74
+   ],
+   "gebiet": "fl_246_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7532,
+    5666
+   ],
+   "felder": 104,
+   "ausdehnung": [
+    83,
+    71
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7430,
+    5553
+   ],
+   "felder": 94,
+   "ausdehnung": [
+    73,
+    73
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7216,
+    5730
+   ],
+   "felder": 89,
+   "ausdehnung": [
+    77,
+    69
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6858,
+    5714
+   ],
+   "felder": 87,
+   "ausdehnung": [
+    67,
+    75
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7167,
+    6141
+   ],
+   "felder": 83,
+   "ausdehnung": [
+    66,
+    78
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7232,
+    7339
+   ],
+   "felder": 81,
+   "ausdehnung": [
+    72,
+    67
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7441,
+    6573
+   ],
+   "felder": 80,
+   "ausdehnung": [
+    71,
+    72
+   ],
+   "gebiet": "fl_231_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7445,
+    5904
+   ],
+   "felder": 77,
+   "ausdehnung": [
+    74,
+    67
+   ],
+   "gebiet": "fl_231_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7491,
+    7331
+   ],
+   "felder": 68,
+   "ausdehnung": [
+    68,
+    71
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7511,
+    6987
+   ],
+   "felder": 55,
+   "ausdehnung": [
+    74,
+    66
+   ],
+   "gebiet": "fl_231_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7569,
+    5454
+   ],
+   "felder": 52,
+   "ausdehnung": [
+    68,
+    69
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7093,
+    7588
+   ],
+   "felder": 50,
+   "ausdehnung": [
+    70,
+    68
+   ],
+   "gebiet": "fl_216_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    6785,
+    7262
+   ],
+   "felder": 49,
+   "ausdehnung": [
+    71,
+    67
+   ],
+   "gebiet": "fl_201_225",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7443,
+    7342
+   ],
+   "felder": 46,
+   "ausdehnung": [
+    66,
+    71
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7662,
+    7502
+   ],
+   "felder": 42,
+   "ausdehnung": [
+    78,
+    63
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    6928,
+    5654
+   ],
+   "felder": 31,
+   "ausdehnung": [
+    67,
+    67
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7113,
+    7102
+   ],
+   "felder": 31,
+   "ausdehnung": [
+    67,
+    67
+   ],
+   "gebiet": "fl_216_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7591,
+    6991
+   ],
+   "felder": 26,
+   "ausdehnung": [
+    64,
+    68
+   ],
+   "gebiet": "fl_231_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7445,
+    6538
+   ],
+   "felder": 22,
+   "ausdehnung": [
+    66,
+    65
+   ],
+   "gebiet": "fl_231_198",
+   "land": "Glutsande"
+  }
+ ]
+}

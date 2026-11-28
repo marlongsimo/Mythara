@@ -340,6 +340,5 @@
  {"id":"naht_1200","objekt":"stil_tanne_01","x":0.5,"y":92.5,"s":0.99,"spiegeln":true},
  {"id":"naht_1201","objekt":"stil_eiche_02","x":125.5,"y":93.5,"s":0.92},
  {"id":"naht_1202","objekt":"stil_eiche_02","x":127.5,"y":93.5,"s":0.91,"spiegeln":true},
- {"id":"naht_1203","objekt":"stil_tanne_02","x":0.5,"y":95.5,"s":0.85},
- {"id":"vd_weidenhain_k1","objekt":"wegrand_feldstein_1","x":47.5,"y":91.5,"spiegeln":true}
+ {"id":"naht_1203","objekt":"stil_tanne_02","x":0.5,"y":95.5,"s":0.85}
 ]

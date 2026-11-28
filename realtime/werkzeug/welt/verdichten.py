@@ -21,6 +21,8 @@ ARTEN = {a['zeichen']: a for a in lies(W, 'bibliothek', 'gelaende.json')['arten'
 BIB = {o['id']: o for o in lies(W, 'bibliothek', 'objekte.json')['objekte']}
 SCHRITTE = {   # Reihenfolge des Nutzers: Grenzland, dann Waldland, dann Westmark
     'grenzland': ['fl_186_198', 'westried', 'nordwald', 'nordsaum', 'osthof', 'obstwiesen', 'osthang', 'weidenhain'],
+    'waldland': ['waldweg', 'waldmark'],
+    'westmark': ['westmark'],
 }
 ZIEL_LEER, WEG_ABSTAND = 0.12, 12   # je Gebiet höchstens 4 + 3 Arten von Kleinigkeiten (Handy)
 schritte = [a for a in sys.argv[1:] if a in SCHRITTE] or list(SCHRITTE)
@@ -139,13 +141,23 @@ for schritt in schritte:
             dk[a:b, c:e] = np.minimum(dk[a:b, c:e], np.hypot(xx[a:b, c:e] + 0.5 - x, yy[a:b, c:e] + 0.5 - y))
         for x, y in klein: merke(x, y)
         erledigt = np.zeros((H, B), bool); dekor = 0; tiere = []
+        def rahmen(o):   # Bildrechteck in Feldern (wie test/welt-waldmark.test.mjs „Sichtbarkeit“)
+            d = BIB[o['objekt']]; s_ = o.get('s', 1) * d.get('massstab', 1); bb, hh = d['groesse'][0] * s_ / 48, d['groesse'][1] * s_ / 48; ax = 1 - d['anker'][0] if o.get('spiegeln') else d['anker'][0]
+            if d.get('sichtbar'): fx, fy = d['anker'][0] * d['groesse'][0], d['anker'][1] * d['groesse'][1]; return (o['x'] + (d['sichtbar'][0] - fx) * s_ / 48, o['y'] + (d['sichtbar'][1] - fy) * s_ / 48, o['x'] + (d['sichtbar'][2] - fx) * s_ / 48, o['y'] + (d['sichtbar'][3] - fy) * s_ / 48)
+            return (o['x'] - ax * bb, o['y'] - d['anker'][1] * hh, o['x'] + (1 - ax) * bb, o['y'] + (1 - d['anker'][1]) * hh)
+        kronen = [(o['y'], rahmen(o)) for o in obj + neu if BIB.get(o['objekt'], {}).get('kategorie') == 'bewuchs']
+        def verdeckt(o):   # Baumkronen davor (südlich) bedecken mehr als 5 % des Bildes: man sähe die Kleinigkeit nicht
+            r = rahmen(o); f = (r[2] - r[0]) * (r[3] - r[1]); su = 0
+            for y_, k in kronen:
+                if y_ > o['y'] - 0.6: su += max(0, min(r[2], k[2] + 0.6) - max(r[0], k[0] - 0.6)) * max(0, min(r[3], k[3] + 0.6) - max(r[1], k[1] - 0.6))   # Spielraum: bauen.mjs richtet noch auf Felder aus
+            return su > 0.05 * f
         for _ in range(3000):
             offen = weg & ~erledigt & (dk > WEG_ABSTAND) & rand
             if not offen.any(): break
             wy, wx = np.argwhere(offen)[0]; erledigt[wy, wx] = True
             best = None
-            for _v in range(40):
-                a, rr = rng.random() * 6.283, 2.5 + rng.random() * 3
+            for _v in range(60):
+                a, rr = (3.3 + rng.random() * 2.8 if _v < 30 else rng.random() * 6.283), 2.5 + rng.random() * 3   # zuerst nördlich des Wegs: davor liegt der Weg, kein Baum verdeckt
                 x, y = wx + 0.5 + math.cos(a) * rr, wy + 0.5 + math.sin(a) * rr; i, j = int(x), int(y)
                 if not (0 <= i < B and 0 <= j < H) or not rand[j, i] or not geh[j, i] or weg[j, i] or verboten[j, i] or G[j, i] == 'p': continue
                 wiese = G[j, i] in WIESE; art = gewichtet(rng, DW if wiese else DWA)
@@ -155,7 +167,7 @@ for schritt in schritte:
                     a0, b0, c0, e0 = max(0, wy - 4), min(H, wy + 5), max(0, wx - 4), min(B, wx + 5); py, px = np.nonzero(weg[a0:b0, c0:e0])
                     if len(py) > 3 and np.ptp(py) > np.ptp(px): o['dreh'] = 90
                 rad = objekt_radius(o)
-                if dweg[j, i] < rad + 1.0 or not frei(x, y, rad, 1.0): continue
+                if dweg[j, i] < rad + 1.0 or not frei(x, y, rad, 1.0) or verdeckt(o): continue
                 if rng.random() < 0.5 and 'zaun' not in art and 'brunnen' not in art: o['spiegeln'] = True
                 best = o; break
             if not best: continue

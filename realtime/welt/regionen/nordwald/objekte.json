@@ -731,10 +731,6 @@
  {"id":"naht_520","objekt":"stil_eiche_02","x":13.5,"y":127.5,"s":1.13},
  {"id":"naht_521","objekt":"stil_tanne_01","x":17.5,"y":127.5,"s":1.03,"spiegeln":true},
  {"id":"naht_522","objekt":"stil_tanne_01","x":22.5,"y":127.5,"s":0.91},
- {"id":"vd_nordwald_k1","objekt":"wegrand_feldstein_2","x":103.5,"y":6.5,"spiegeln":true},
- {"id":"vd_nordwald_k2","objekt":"wegrand_feldstein_2","x":79.5,"y":60.5},
- {"id":"vd_nordwald_k3","objekt":"wegrand_feldstein_2","x":89.5,"y":75.5,"spiegeln":true},
- {"id":"vd_nordwald_k4","objekt":"wegrand_zaun_flecht","x":102.65,"y":97.45},
- {"id":"vd_nordwald_k5","objekt":"wegrand_feldstein_1","x":90.5,"y":109.5},
- {"id":"vd_nordwald_k6","objekt":"wegrand_zaun_flecht","x":90.91,"y":119.64,"dreh":90}
+ {"id":"vd_nordwald_k1","objekt":"wegrand_zaun_stein","x":97.59,"y":111.48},
+ {"id":"vd_nordwald_k2","objekt":"wegrand_zaun_flecht","x":82.67,"y":115.79,"dreh":90}
 ]

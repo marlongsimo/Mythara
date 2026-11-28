@@ -12,21 +12,21 @@
    "schritt": "grenzland",
    "bewuchs": 193,
    "gruppen": 80,
-   "kleinigkeiten": 17,
+   "kleinigkeiten": 19,
    "tiere": 1
   },
   "nordwald": {
    "schritt": "grenzland",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 6,
-   "tiere": 2
+   "kleinigkeiten": 2,
+   "tiere": 0
   },
   "nordsaum": {
    "schritt": "grenzland",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 30,
+   "kleinigkeiten": 6,
    "tiere": 0
   },
   "osthof": {
@@ -48,37 +48,86 @@
    "bewuchs": 0,
    "gruppen": 0,
    "kleinigkeiten": 3,
-   "tiere": 0
+   "tiere": 1
   },
   "weidenhain": {
    "schritt": "grenzland",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 1,
+   "kleinigkeiten": 0,
    "tiere": 0
+  },
+  "waldweg": {
+   "schritt": "waldland",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 38,
+   "tiere": 4
+  },
+  "waldmark": {
+   "schritt": "waldland",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "westmark": {
+   "schritt": "westmark",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 14,
+   "tiere": 1
   }
  },
  "tiere": [
   {
    "id": "vd_tier_westried_1",
-   "tier": "Ziege",
-   "x": 6189.4,
-   "y": 6488.9,
+   "tier": "Huhn",
+   "x": 6256.0,
+   "y": 6527.5,
    "region": "westried"
   },
   {
-   "id": "vd_tier_nordwald_1",
-   "tier": "Ziege",
-   "x": 6378.0,
-   "y": 6430.2,
-   "region": "nordwald"
+   "id": "vd_tier_osthang_1",
+   "tier": "Huhn",
+   "x": 6599.1,
+   "y": 6502.3,
+   "region": "osthang"
   },
   {
-   "id": "vd_tier_nordwald_2",
-   "tier": "Schaf",
-   "x": 6363.6,
-   "y": 6451.0,
-   "region": "nordwald"
+   "id": "vd_tier_waldweg_1",
+   "tier": "Huhn",
+   "x": 6438.9,
+   "y": 6499.3,
+   "region": "waldweg"
+  },
+  {
+   "id": "vd_tier_waldweg_2",
+   "tier": "Ziege",
+   "x": 6557.6,
+   "y": 6500.7,
+   "region": "waldweg"
+  },
+  {
+   "id": "vd_tier_waldweg_3",
+   "tier": "Rind",
+   "x": 6481.9,
+   "y": 6500.7,
+   "region": "waldweg"
+  },
+  {
+   "id": "vd_tier_waldweg_4",
+   "tier": "Ziege",
+   "x": 6345.7,
+   "y": 6558.8,
+   "region": "waldweg"
+  },
+  {
+   "id": "vd_tier_westmark_1",
+   "tier": "Ziege",
+   "x": 6303.1,
+   "y": 6563.5,
+   "region": "westmark"
   }
  ]
 }
