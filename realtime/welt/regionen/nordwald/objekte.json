@@ -731,6 +731,7 @@
  {"id":"naht_520","objekt":"stil_eiche_02","x":13.5,"y":127.5,"s":1.13},
  {"id":"naht_521","objekt":"stil_tanne_01","x":17.5,"y":127.5,"s":1.03,"spiegeln":true},
  {"id":"naht_522","objekt":"stil_tanne_01","x":22.5,"y":127.5,"s":0.91},
- {"id":"vd_nordwald_k1","objekt":"wegrand_zaun_stein","x":97.59,"y":111.48},
- {"id":"vd_nordwald_k2","objekt":"wegrand_zaun_flecht","x":82.67,"y":115.79,"dreh":90}
+ {"id":"vd_nordwald_k1","objekt":"wegrand_wegkreuz_stein","x":100.5,"y":100.5},
+ {"id":"vd_nordwald_k2","objekt":"wegrand_zaun_latten","x":82.33,"y":109.37,"dreh":90},
+ {"id":"vd_nordwald_k3","objekt":"wegrand_feldstein_1","x":90.5,"y":118.5,"spiegeln":true}
 ]

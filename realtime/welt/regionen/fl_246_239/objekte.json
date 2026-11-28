@@ -1,2 +1,12 @@
 [
+ {"id":"vd_fl_246_239_b1","objekt":"stil_busch_01","x":8.5,"y":44.5,"s":1.08},
+ {"id":"vd_fl_246_239_b2","objekt":"stil_birke_01","x":4.5,"y":46.5,"s":0.93,"spiegeln":true},
+ {"id":"vd_fl_246_239_b3","objekt":"stil_busch_01","x":5.5,"y":49.5,"s":1.04,"spiegeln":true},
+ {"id":"vd_fl_246_239_b4","objekt":"stil_tanne_02","x":4.5,"y":40.5,"s":1.15},
+ {"id":"vd_fl_246_239_b5","objekt":"stil_busch_01","x":5.5,"y":36.5,"s":0.93},
+ {"id":"vd_fl_246_239_b6","objekt":"stil_birke_01","x":6.5,"y":33.5,"s":1.08,"spiegeln":true},
+ {"id":"vd_fl_246_239_b7","objekt":"stil_busch_02","x":3.5,"y":58.5,"s":0.86,"spiegeln":true},
+ {"id":"vd_fl_246_239_b8","objekt":"stil_birke_01","x":9.5,"y":38.5,"s":1.09},
+ {"id":"vd_fl_246_239_b9","objekt":"stil_busch_01","x":4.5,"y":52.5,"s":0.87},
+ {"id":"vd_fl_246_239_b10","objekt":"stil_busch_01","x":4.5,"y":56,"s":0.92}
 ]

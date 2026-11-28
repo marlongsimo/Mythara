@@ -3,8 +3,8 @@
  "gebiete": {
   "fl_186_198": {
    "schritt": "grenzland",
-   "bewuchs": 205,
-   "gruppen": 100,
+   "bewuchs": 81,
+   "gruppen": 38,
    "kleinigkeiten": 0,
    "tiere": 0
   },
@@ -13,14 +13,14 @@
    "bewuchs": 193,
    "gruppen": 80,
    "kleinigkeiten": 19,
-   "tiere": 1
+   "tiere": 2
   },
   "nordwald": {
    "schritt": "grenzland",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 2,
-   "tiere": 0
+   "kleinigkeiten": 3,
+   "tiere": 1
   },
   "nordsaum": {
    "schritt": "grenzland",
@@ -48,7 +48,7 @@
    "bewuchs": 0,
    "gruppen": 0,
    "kleinigkeiten": 3,
-   "tiere": 1
+   "tiere": 0
   },
   "weidenhain": {
    "schritt": "grenzland",
@@ -61,8 +61,8 @@
    "schritt": "waldland",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 38,
-   "tiere": 4
+   "kleinigkeiten": 37,
+   "tiere": 1
   },
   "waldmark": {
    "schritt": "waldland",
@@ -76,58 +76,583 @@
    "bewuchs": 0,
    "gruppen": 0,
    "kleinigkeiten": 14,
+   "tiere": 2
+  },
+  "rabenmoor": {
+   "schritt": "moor",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 2,
+   "tiere": 0
+  },
+  "aschenwerth": {
+   "schritt": "moor",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 4,
    "tiere": 1
+  },
+  "ostufer": {
+   "schritt": "moor",
+   "bewuchs": 17,
+   "gruppen": 10,
+   "kleinigkeiten": 19,
+   "tiere": 6
+  },
+  "graufurt": {
+   "schritt": "moor",
+   "bewuchs": 0,
+   "gruppen": 0,
+   "kleinigkeiten": 16,
+   "tiere": 0
+  },
+  "fl_186_169": {
+   "schritt": "fahleweiten",
+   "bewuchs": 543,
+   "gruppen": 257,
+   "kleinigkeiten": 37,
+   "tiere": 1
+  },
+  "fl_186_183": {
+   "schritt": "fahleweiten",
+   "bewuchs": 764,
+   "gruppen": 359,
+   "kleinigkeiten": 24,
+   "tiere": 5
+  },
+  "fl_201_183": {
+   "schritt": "fahleweiten",
+   "bewuchs": 1254,
+   "gruppen": 544,
+   "kleinigkeiten": 63,
+   "tiere": 3
+  },
+  "fl_201_169": {
+   "schritt": "fahleweiten",
+   "bewuchs": 1045,
+   "gruppen": 466,
+   "kleinigkeiten": 44,
+   "tiere": 4
+  },
+  "fl_201_211": {
+   "schritt": "glutsande",
+   "bewuchs": 1448,
+   "gruppen": 642,
+   "kleinigkeiten": 79,
+   "tiere": 1
+  },
+  "fl_216_198": {
+   "schritt": "glutsande",
+   "bewuchs": 520,
+   "gruppen": 240,
+   "kleinigkeiten": 26,
+   "tiere": 0
+  },
+  "fl_216_211": {
+   "schritt": "glutsande",
+   "bewuchs": 995,
+   "gruppen": 480,
+   "kleinigkeiten": 95,
+   "tiere": 0
+  },
+  "fl_231_198": {
+   "schritt": "glutsande",
+   "bewuchs": 261,
+   "gruppen": 123,
+   "kleinigkeiten": 21,
+   "tiere": 1
+  },
+  "fl_201_225": {
+   "schritt": "glutsande",
+   "bewuchs": 1348,
+   "gruppen": 593,
+   "kleinigkeiten": 33,
+   "tiere": 2
+  },
+  "fl_186_211": {
+   "schritt": "kueste",
+   "bewuchs": 167,
+   "gruppen": 78,
+   "kleinigkeiten": 58,
+   "tiere": 4
+  },
+  "fl_186_225": {
+   "schritt": "kueste",
+   "bewuchs": 91,
+   "gruppen": 40,
+   "kleinigkeiten": 19,
+   "tiere": 7
+  },
+  "fl_212_198": {
+   "schritt": "kueste",
+   "bewuchs": 2,
+   "gruppen": 3,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_216_169": {
+   "schritt": "hochlande",
+   "bewuchs": 1220,
+   "gruppen": 540,
+   "kleinigkeiten": 84,
+   "tiere": 9
+  },
+  "fl_216_183": {
+   "schritt": "hochlande",
+   "bewuchs": 877,
+   "gruppen": 382,
+   "kleinigkeiten": 29,
+   "tiere": 0
+  },
+  "fl_231_169": {
+   "schritt": "hochlande",
+   "bewuchs": 1100,
+   "gruppen": 460,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_231_183": {
+   "schritt": "hochlande",
+   "bewuchs": 541,
+   "gruppen": 238,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_231_155": {
+   "schritt": "hochlande",
+   "bewuchs": 123,
+   "gruppen": 60,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_216_155": {
+   "schritt": "hochlande",
+   "bewuchs": 687,
+   "gruppen": 421,
+   "kleinigkeiten": 11,
+   "tiere": 0
+  },
+  "fl_246_169": {
+   "schritt": "hochlande",
+   "bewuchs": 96,
+   "gruppen": 60,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_246_183": {
+   "schritt": "hochlande",
+   "bewuchs": 477,
+   "gruppen": 247,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_216_225": {
+   "schritt": "ockerlande",
+   "bewuchs": 1209,
+   "gruppen": 560,
+   "kleinigkeiten": 57,
+   "tiere": 0
+  },
+  "fl_231_225": {
+   "schritt": "ockerlande",
+   "bewuchs": 1070,
+   "gruppen": 480,
+   "kleinigkeiten": 14,
+   "tiere": 0
+  },
+  "fl_231_211": {
+   "schritt": "ockerlande",
+   "bewuchs": 761,
+   "gruppen": 363,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_201_239": {
+   "schritt": "ockerlande",
+   "bewuchs": 226,
+   "gruppen": 119,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_216_239": {
+   "schritt": "ockerlande",
+   "bewuchs": 1125,
+   "gruppen": 629,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_231_239": {
+   "schritt": "ockerlande",
+   "bewuchs": 555,
+   "gruppen": 300,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_246_225": {
+   "schritt": "ockerlande",
+   "bewuchs": 113,
+   "gruppen": 60,
+   "kleinigkeiten": 0,
+   "tiere": 0
+  },
+  "fl_246_239": {
+   "schritt": "ockerlande",
+   "bewuchs": 10,
+   "gruppen": 20,
+   "kleinigkeiten": 0,
+   "tiere": 0
   }
  },
  "tiere": [
   {
    "id": "vd_tier_westried_1",
-   "tier": "Huhn",
-   "x": 6256.0,
-   "y": 6527.5,
+   "tier": "Ziege",
+   "x": 6172.6,
+   "y": 6479.4,
    "region": "westried"
   },
   {
-   "id": "vd_tier_osthang_1",
-   "tier": "Huhn",
-   "x": 6599.1,
-   "y": 6502.3,
-   "region": "osthang"
+   "id": "vd_tier_westried_2",
+   "tier": "Rind",
+   "x": 6214.9,
+   "y": 6524.6,
+   "region": "westried"
+  },
+  {
+   "id": "vd_tier_nordwald_1",
+   "tier": "Rind",
+   "x": 6354.7,
+   "y": 6449.7,
+   "region": "nordwald"
   },
   {
    "id": "vd_tier_waldweg_1",
    "tier": "Huhn",
-   "x": 6438.9,
-   "y": 6499.3,
-   "region": "waldweg"
-  },
-  {
-   "id": "vd_tier_waldweg_2",
-   "tier": "Ziege",
-   "x": 6557.6,
-   "y": 6500.7,
-   "region": "waldweg"
-  },
-  {
-   "id": "vd_tier_waldweg_3",
-   "tier": "Rind",
-   "x": 6481.9,
-   "y": 6500.7,
-   "region": "waldweg"
-  },
-  {
-   "id": "vd_tier_waldweg_4",
-   "tier": "Ziege",
-   "x": 6345.7,
-   "y": 6558.8,
+   "x": 6396.3,
+   "y": 6500.6,
    "region": "waldweg"
   },
   {
    "id": "vd_tier_westmark_1",
-   "tier": "Ziege",
-   "x": 6303.1,
-   "y": 6563.5,
+   "tier": "Schaf",
+   "x": 6307.1,
+   "y": 6564.8,
    "region": "westmark"
+  },
+  {
+   "id": "vd_tier_westmark_2",
+   "tier": "Huhn",
+   "x": 6301.3,
+   "y": 6600.2,
+   "region": "westmark"
+  },
+  {
+   "id": "vd_tier_aschenwerth_1",
+   "tier": "Ziege",
+   "x": 6241.9,
+   "y": 6700.9,
+   "region": "aschenwerth"
+  },
+  {
+   "id": "vd_tier_ostufer_1",
+   "tier": "Rind",
+   "x": 6831.3,
+   "y": 6529.9,
+   "region": "ostufer"
+  },
+  {
+   "id": "vd_tier_ostufer_2",
+   "tier": "Schaf",
+   "x": 6820.9,
+   "y": 6539.4,
+   "region": "ostufer"
+  },
+  {
+   "id": "vd_tier_ostufer_3",
+   "tier": "Rind",
+   "x": 6855.3,
+   "y": 6604.8,
+   "region": "ostufer"
+  },
+  {
+   "id": "vd_tier_ostufer_4",
+   "tier": "Huhn",
+   "x": 6848.7,
+   "y": 6623.4,
+   "region": "ostufer"
+  },
+  {
+   "id": "vd_tier_ostufer_5",
+   "tier": "Huhn",
+   "x": 6863.0,
+   "y": 6647.4,
+   "region": "ostufer"
+  },
+  {
+   "id": "vd_tier_ostufer_6",
+   "tier": "Schaf",
+   "x": 6907.8,
+   "y": 6724.3,
+   "region": "ostufer"
+  },
+  {
+   "id": "vd_tier_fl_186_169_1",
+   "tier": "Schaf",
+   "x": 6257.8,
+   "y": 5777.2,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "vd_tier_fl_186_183_1",
+   "tier": "Huhn",
+   "x": 6313.1,
+   "y": 6241.7,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "vd_tier_fl_186_183_2",
+   "tier": "Schaf",
+   "x": 6258.5,
+   "y": 6255.6,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "vd_tier_fl_186_183_3",
+   "tier": "Schaf",
+   "x": 6240.9,
+   "y": 6260.0,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "vd_tier_fl_186_183_4",
+   "tier": "Huhn",
+   "x": 6351.8,
+   "y": 6260.4,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "vd_tier_fl_186_183_5",
+   "tier": "Rind",
+   "x": 6393.6,
+   "y": 6285.9,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "vd_tier_fl_201_183_1",
+   "tier": "Ziege",
+   "x": 6553.3,
+   "y": 5869.2,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "vd_tier_fl_201_183_2",
+   "tier": "Ziege",
+   "x": 6449.1,
+   "y": 5886.5,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "vd_tier_fl_201_183_3",
+   "tier": "Rind",
+   "x": 6684.3,
+   "y": 6176.3,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "vd_tier_fl_201_169_1",
+   "tier": "Rind",
+   "x": 6861.8,
+   "y": 5805.4,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "vd_tier_fl_201_169_2",
+   "tier": "Huhn",
+   "x": 6864.1,
+   "y": 5811.2,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "vd_tier_fl_201_169_3",
+   "tier": "Huhn",
+   "x": 6885.2,
+   "y": 5816.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "vd_tier_fl_201_169_4",
+   "tier": "Rind",
+   "x": 6552.3,
+   "y": 5847.8,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "vd_tier_fl_201_211_1",
+   "tier": "Ziege",
+   "x": 6438.0,
+   "y": 7074.1,
+   "region": "fl_201_211"
+  },
+  {
+   "id": "vd_tier_fl_231_198_1",
+   "tier": "Ziege",
+   "x": 7437.3,
+   "y": 6532.3,
+   "region": "fl_231_198"
+  },
+  {
+   "id": "vd_tier_fl_201_225_1",
+   "tier": "Schaf",
+   "x": 6457.5,
+   "y": 7204.5,
+   "region": "fl_201_225"
+  },
+  {
+   "id": "vd_tier_fl_201_225_2",
+   "tier": "Huhn",
+   "x": 6469.0,
+   "y": 7221.1,
+   "region": "fl_201_225"
+  },
+  {
+   "id": "vd_tier_fl_186_211_1",
+   "tier": "Rind",
+   "x": 6285.1,
+   "y": 6984.2,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "vd_tier_fl_186_211_2",
+   "tier": "Rind",
+   "x": 6421.8,
+   "y": 6999.6,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "vd_tier_fl_186_211_3",
+   "tier": "Ziege",
+   "x": 6202.6,
+   "y": 7011.4,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "vd_tier_fl_186_211_4",
+   "tier": "Schaf",
+   "x": 6200.6,
+   "y": 7070.7,
+   "region": "fl_186_211"
+  },
+  {
+   "id": "vd_tier_fl_186_225_1",
+   "tier": "Huhn",
+   "x": 6285.9,
+   "y": 7235.3,
+   "region": "fl_186_225"
+  },
+  {
+   "id": "vd_tier_fl_186_225_2",
+   "tier": "Schaf",
+   "x": 6308.1,
+   "y": 7231.5,
+   "region": "fl_186_225"
+  },
+  {
+   "id": "vd_tier_fl_186_225_3",
+   "tier": "Rind",
+   "x": 6291.7,
+   "y": 7245.5,
+   "region": "fl_186_225"
+  },
+  {
+   "id": "vd_tier_fl_186_225_4",
+   "tier": "Rind",
+   "x": 6378.6,
+   "y": 7250.0,
+   "region": "fl_186_225"
+  },
+  {
+   "id": "vd_tier_fl_186_225_5",
+   "tier": "Schaf",
+   "x": 6279.0,
+   "y": 7248.5,
+   "region": "fl_186_225"
+  },
+  {
+   "id": "vd_tier_fl_186_225_6",
+   "tier": "Schaf",
+   "x": 6327.6,
+   "y": 7254.8,
+   "region": "fl_186_225"
+  },
+  {
+   "id": "vd_tier_fl_186_225_7",
+   "tier": "Rind",
+   "x": 6353.4,
+   "y": 7272.1,
+   "region": "fl_186_225"
+  },
+  {
+   "id": "vd_tier_fl_216_169_1",
+   "tier": "Ziege",
+   "x": 7255.8,
+   "y": 5590.3,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "vd_tier_fl_216_169_2",
+   "tier": "Huhn",
+   "x": 7247.0,
+   "y": 5618.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "vd_tier_fl_216_169_3",
+   "tier": "Schaf",
+   "x": 7209.6,
+   "y": 5720.0,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "vd_tier_fl_216_169_4",
+   "tier": "Ziege",
+   "x": 6961.1,
+   "y": 5742.7,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "vd_tier_fl_216_169_5",
+   "tier": "Huhn",
+   "x": 6940.0,
+   "y": 5796.2,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "vd_tier_fl_216_169_6",
+   "tier": "Schaf",
+   "x": 6983.5,
+   "y": 5799.8,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "vd_tier_fl_216_169_7",
+   "tier": "Schaf",
+   "x": 6952.5,
+   "y": 5796.7,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "vd_tier_fl_216_169_8",
+   "tier": "Ziege",
+   "x": 6936.6,
+   "y": 5809.8,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "vd_tier_fl_216_169_9",
+   "tier": "Schaf",
+   "x": 7099.4,
+   "y": 5844.7,
+   "region": "fl_216_169"
   }
  ]
 }

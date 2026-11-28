@@ -35,14 +35,15 @@ for k in ('drachenarm', 'frostkrone'):
     for x, y in SP[k]['kette']:
         zu[max(0, y - Y0 - 2):y - Y0 + 3, max(0, x - X0 - 2):x - X0 + 3] = False
 lab, _ = ndimage.label(zu); offen = lab == lab[5901 - Y0, 6990 - X0]
-leer = offen & (d > RAD)
+leer = offen & (d > RAD) & ~np.isin(G, list('ftj'))   # Waldboden zählt als Wald (baumdichte.mjs lichtet das Innere bewusst)
 L, n = ndimage.label(leer); liste = []
 LAND = lambda x, y: ('Grenzland' if 6144 <= x < 6784 and 6336 <= y < 6784 else 'Fahle Weiten' if y < 6300 and x < 6760 else 'Hochlande' if y < 6300 else 'Ockerlande' if y > 7300 and x >= 6640 else 'Glutsande' if x >= 6640 else 'Süden/Küste')
 for i in range(1, n + 1):
     ys, xs = np.nonzero(L == i)
     if len(xs) < 20: continue
     cx, cy = int(xs.mean()) + X0, int(ys.mean()) + Y0; j = len(xs) // 2
-    liste.append({'mitte': [cx, cy], 'felder': int(len(xs)), 'ausdehnung': [int(xs.max() - xs.min() + 2 * RAD), int(ys.max() - ys.min() + 2 * RAD)], 'gebiet': REG[ys[j], xs[j]], 'land': LAND(cx, cy)})
+    k = int(np.argmin((xs + X0 - cx) ** 2 + (ys + Y0 - cy) ** 2))   # ein Feld der Fläche nahe der Mitte (zum Hinlaufen)
+    liste.append({'mitte': [cx, cy], 'punkt': [int(xs[k]) + X0, int(ys[k]) + Y0], 'felder': int(len(xs)), 'ausdehnung': [int(xs.max() - xs.min() + 2 * RAD), int(ys.max() - ys.min() + 2 * RAD)], 'gebiet': REG[ys[j], xs[j]], 'land': LAND(cx, cy)})
 liste.sort(key=lambda q: -q['felder'])
 json.dump({'hinweis': f'Leere Flächen (leere_flaechen.py): begehbares, offenes Land, auf dem im Umkreis von {RAD:g} Feldern kein Objekt steht – man läuft dort mehr als {2 * RAD:g} Felder, ohne etwas zu sehen. Weltfelder.', 'radius': RAD, 'flaechen': liste},
           open(os.path.join(W, 'leere_flaechen.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)

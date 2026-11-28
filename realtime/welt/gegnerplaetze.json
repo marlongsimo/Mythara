@@ -49893,6 +49893,120 @@
    "grund": "Sammelstelle Bäume am Weg (Fahle Weiten 27)"
   },
   {
+   "x": 6449.5,
+   "y": 5716.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Bäume am Reifbach"
+  },
+  {
+   "x": 6888.5,
+   "y": 7276.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Weiden am Ockerstrom"
+  },
+  {
+   "x": 7095.833333333333,
+   "y": 7168.833333333333,
+   "r": 9.726779962499513,
+   "grund": "Sammelstelle Akazien am Brunnenkreis"
+  },
+  {
+   "x": 7328.5,
+   "y": 7447.166666666667,
+   "r": 9.073181485764065,
+   "grund": "Sammelstelle Akazienhain bei Dornhag"
+  },
+  {
+   "x": 7487.5,
+   "y": 7493.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Akazien unter dem Roten Tisch"
+  },
+  {
+   "x": 6497.5,
+   "y": 5726.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Bäume am Weg (Fahle Weiten 29)"
+  },
+  {
+   "x": 7111.166666666667,
+   "y": 6973.5,
+   "r": 9.800584750330273,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 1)"
+  },
+  {
+   "x": 7080.5,
+   "y": 7066.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 3)"
+  },
+  {
+   "x": 7008.5,
+   "y": 7590.5,
+   "r": 9.60555127546399,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 19)"
+  },
+  {
+   "x": 7028.833333333333,
+   "y": 7189.833333333333,
+   "r": 9.726779962499513,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 21)"
+  },
+  {
+   "x": 6949.5,
+   "y": 7272.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 23)"
+  },
+  {
+   "x": 7172.5,
+   "y": 7251.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 25)"
+  },
+  {
+   "x": 7248.5,
+   "y": 7332.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 27)"
+  },
+  {
+   "x": 7382.166666666667,
+   "y": 7448.166666666667,
+   "r": 9.681787005729362,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 29)"
+  },
+  {
+   "x": 6882.5,
+   "y": 7419.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 31)"
+  },
+  {
+   "x": 6934.5,
+   "y": 7503.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 33)"
+  },
+  {
+   "x": 7071.5,
+   "y": 7631.833333333333,
+   "r": 9.48010216963656,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 35)"
+  },
+  {
+   "x": 7511.833333333333,
+   "y": 7559.166666666667,
+   "r": 9.349958540373297,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 37)"
+  },
+  {
+   "x": 7564.166666666667,
+   "y": 7575.833333333333,
+   "r": 9.726779962500002,
+   "grund": "Sammelstelle Bäume am Weg (Ockerlande 39)"
+  },
+  {
    "x": 6438.5,
    "y": 6474.5,
    "r": 9.16227766016838,
@@ -50365,6 +50479,120 @@
    "y": 5873.7,
    "r": 8.912043955712432,
    "grund": "Sammelstelle Adern am Weg (Hochlande 32)"
+  },
+  {
+   "x": 7052.1,
+   "y": 7122.7,
+   "r": 8.529822128134416,
+   "grund": "Sammelstelle Adern am Kleinen Tisch"
+  },
+  {
+   "x": 6404.5,
+   "y": 5736,
+   "r": 8.5,
+   "grund": "Sammelstelle Adern an der Bucht"
+  },
+  {
+   "x": 6857,
+   "y": 7260.5,
+   "r": 9.201562118716424,
+   "grund": "Sammelstelle Ockerbruch bei Rotlehm"
+  },
+  {
+   "x": 7319.4,
+   "y": 7398.2,
+   "r": 8.70185121722109,
+   "grund": "Sammelstelle Adern an der Ockerkanzel"
+  },
+  {
+   "x": 7513.6,
+   "y": 7515.4,
+   "r": 9.03644529013734,
+   "grund": "Sammelstelle Steinbruch am Roten Tisch"
+  },
+  {
+   "x": 11952.5,
+   "y": 9608.3,
+   "r": 15.551963149007886,
+   "grund": "Sammelstelle Adern in der Höhle im Roten Tisch"
+  },
+  {
+   "x": 7071.9,
+   "y": 6994.1,
+   "r": 8.952964612046827,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 2)"
+  },
+  {
+   "x": 7050.3,
+   "y": 7105.6,
+   "r": 8.61725046566034,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 4)"
+  },
+  {
+   "x": 7000.7,
+   "y": 7574.4,
+   "r": 9.008321791298567,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 18)"
+  },
+  {
+   "x": 7027.6,
+   "y": 7590.1,
+   "r": 8.601922366251916,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 20)"
+  },
+  {
+   "x": 6995.7,
+   "y": 7236.9,
+   "r": 8.863564212655525,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 22)"
+  },
+  {
+   "x": 7127.7,
+   "y": 7208.9,
+   "r": 8.863564212655525,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 24)"
+  },
+  {
+   "x": 7205.7,
+   "y": 7288.9,
+   "r": 8.863564212655525,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 26)"
+  },
+  {
+   "x": 7356.7,
+   "y": 7428.9,
+   "r": 8.863564212655525,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 28)"
+  },
+  {
+   "x": 7441.7,
+   "y": 7481.9,
+   "r": 8.863564212655525,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 30)"
+  },
+  {
+   "x": 6895.7,
+   "y": 7456.9,
+   "r": 8.863564212655525,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 32)"
+  },
+  {
+   "x": 6970.7,
+   "y": 7550.9,
+   "r": 8.863564212655525,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 34)"
+  },
+  {
+   "x": 6738.2,
+   "y": 7326.3,
+   "r": 8.886173937932494,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 36)"
+  },
+  {
+   "x": 6714.7,
+   "y": 7333.7,
+   "r": 8.912043955712432,
+   "grund": "Sammelstelle Adern am Weg (Ockerlande 38)"
   },
   {
    "x": 8018.5,

@@ -23,8 +23,21 @@ SCHRITTE = {   # Reihenfolge des Nutzers: Grenzland, dann Waldland, dann Westmar
     'grenzland': ['fl_186_198', 'westried', 'nordwald', 'nordsaum', 'osthof', 'obstwiesen', 'osthang', 'weidenhain'],
     'waldland': ['waldweg', 'waldmark'],
     'westmark': ['westmark'],
+    'moor': ['rabenmoor', 'aschenwerth', 'ostufer', 'graufurt'],
+    'fahleweiten': ['fl_186_169', 'fl_186_183', 'fl_201_183', 'fl_201_169'],
+    'glutsande': ['fl_201_211', 'fl_216_198', 'fl_216_211', 'fl_231_198', 'fl_201_225'],
+    'kueste': ['fl_186_211', 'fl_186_225', 'fl_212_198'],
+    'hochlande': ['fl_216_169', 'fl_216_183', 'fl_231_169', 'fl_231_183', 'fl_231_155', 'fl_216_155', 'fl_246_169', 'fl_246_183'],   # fl_246_*: Wurzel des Drachenarms (offen); hinter dem Bergsturz schadet Bewuchs nicht
+    'ockerlande': ['fl_216_225', 'fl_231_225', 'fl_231_211', 'fl_201_239', 'fl_216_239', 'fl_231_239', 'fl_246_225', 'fl_246_239'],
 }
-ZIEL_LEER, WEG_ABSTAND = 0.12, 12   # je Gebiet höchstens 4 + 3 Arten von Kleinigkeiten (Handy)
+REGLER = lies(W, 'verdichten_regler.json') if os.path.exists(os.path.join(W, 'verdichten_regler.json')) else {}
+def regler(n):
+    """Stellschraube (welt/verdichten_regler.json): staerke wirkt auf alles – weniger leeres Land, Kleinigkeiten enger, mehr Arten und Tiere;
+    „gross“ gewichtet Karren, Hütten, Ruinen und Brunnen; je Gebiet überschreibbar"""
+    r = {'staerke': 1.0, 'leer_ziel': 0.12, 'weg_abstand': 12, 'arten_wiese': 4, 'arten_wald': 3, 'tiere': 0.45, 'gross': 1.0}
+    r.update({k: v for k, v in REGLER.items() if k in r}); r.update(REGLER.get('gebiete', {}).get(n, {})); st = r['staerke']
+    return {'leer': r['leer_ziel'] / st, 'abstand': r['weg_abstand'] / st, 'wiese': max(1, min(10, round(r['arten_wiese'] * st))), 'wald': max(1, min(10, round(r['arten_wald'] * st))),
+            'tiere': min(1.0, r['tiere'] * st), 'gross': r['gross'] * st}
 schritte = [a for a in sys.argv[1:] if a in SCHRITTE] or list(SCHRITTE)
 
 # ───── was frei bleiben muss (Weltfelder) ─────
@@ -45,6 +58,14 @@ for g in on['gebiete']:
     if g['art'] in RAD: ORTE.append((g['schrift'][0], g['schrift'][1], RAD[g['art']]))
 for o in on['orte']:
     if o['art'] in RAD: ORTE.append((o['x'], o['y'], RAD[o['art']]))
+MAUERN = []   # Stadtmauern (…_orte.json → mauer [x0, y0, x1, y1]): drinnen kein Bewuchs
+def _mauern(o):
+    if isinstance(o, dict):
+        for k, v in o.items():
+            if k == 'mauer' and isinstance(v, list) and len(v) == 4 and all(isinstance(t, (int, float)) for t in v): MAUERN.append(v)
+            else: _mauern(v)
+for f in os.listdir(W):
+    if f.endswith('_orte.json'): _mauern(lies(W, f))
 
 def objekt_radius(o):
     k = o.get('kollision', BIB.get(o['objekt'], {}).get('kollision')); s = o.get('s', 1)
@@ -54,7 +75,12 @@ def objekt_radius(o):
     return max(math.hypot(b['x1'] - b['x0'], b['y1'] - b['y0']) / 2 for b in k['koerper']) * s + 0.5
 
 WIESE, WALD = set('.,v'), set('ftj')
-BEWUCHS_BODEN = WIESE | WALD
+# Bewuchs nach Boden: auf Wiese die Arten des Gebiets, sonst feste Listen (Steppe/Sand, Lehm, Tundra/Geröll). Waldboden bleibt, wie baumdichte.mjs ihn gelichtet hat (Handy, #91)
+BODEN_PAL = {**{c: [('stil_busch_01', 3), ('stil_busch_02', 3), ('stil_erle_tot_02', 1), ('stil_laub_oliv', 2), ('ocker_akazie', 1), ('k_fels_klein', 1)] for c in 'uy'},
+             **{c: [('ocker_akazie', 4), ('stil_laub_gold', 2), ('stil_busch_02', 2), ('k_fels_klein', 1)] for c in 'lL'},
+             **{c: [('stil_birke_01', 3), ('stil_busch_01', 3), ('stil_busch_02', 2), ('stil_tanne_02', 2), ('wegrand_feldstein_3', 1)] for c in 'Tg'}}
+BEWUCHS_BODEN = WIESE | WALD | set(BODEN_PAL)
+klasse = lambda c: 'wiese' if c in WIESE else 'uy' if c in 'uy' else 'lL' if c in 'lL' else 'Tg' if c in 'Tg' else None
 DEKOR_WIESE = [('wegrand_feldstein_1', 3), ('wegrand_feldstein_2', 2), ('wegrand_lesesteinhaufen', 2), ('wegrand_zaun_latten', 2), ('wegrand_zaun_flecht', 2), ('wegrand_zaun_stein', 1),
                ('wegrand_heuhaufen', 2), ('wegrand_heuballen_rund', 1), ('wegrand_karren_heu', 1), ('wegrand_wegkreuz_holz', 1), ('wegrand_bildstock', 1), ('wegrand_brunnen_feld', 0.4),
                ('wegrand_huette_feld', 0.4), ('wegrand_ruine_ecke', 0.3)]
@@ -72,6 +98,7 @@ def gewichtet(rng, l):
 ergebnis = {'hinweis': 'Verdichtung (verdichten.py): je Gebiet Bewuchs, Kleinigkeiten am Weg, Tierplätze. Weltfelder.', 'gebiete': {}, 'tiere': []}
 for schritt in schritte:
     for n in SCHRITTE[schritt]:
+        RG = regler(n); ZIEL_LEER, WEG_ABSTAND = RG['leer'], RG['abstand']
         d = os.path.join(W, 'regionen', n); r = lies(d, 'region.json'); ux, uy = r['ursprung'][0] * C, r['ursprung'][1] * C
         G = np.array([list(l) for l in open(os.path.join(d, 'gelaende.txt'), encoding='utf8').read().split('\n') if l]); H, B = G.shape
         obj = [o for o in lies(d, 'objekte.json') if not str(o.get('id', '')).startswith('vd_')]
@@ -88,10 +115,17 @@ for schritt in schritte:
         for x, y, rr in ORTE:
             x, y = x - ux, y - uy
             if -rr < x < B + rr and -rr < y < H + rr: imOrt |= (xx + 0.5 - x) ** 2 + (yy + 0.5 - y) ** 2 < rr * rr
-        belegt = [(o['x'], o['y'], objekt_radius(o)) for o in obj]
-        def frei(x, y, r, abst=0.8):
-            for (a, b, rr) in belegt:
-                if abs(a - x) < r + rr + abst and abs(b - y) < r + rr + abst and math.hypot(a - x, b - y) < r + rr + abst: return False
+        for m in MAUERN: imOrt |= (xx + ux >= m[0] - 4) & (xx + ux <= m[2] + 4) & (yy + uy >= m[1] - 4) & (yy + uy <= m[3] + 4)
+        RASTER = {}; belegt = []
+        def belege(a, b, rr):
+            belegt.append((a, b, rr)); RASTER.setdefault((int(a) // 8, int(b) // 8), []).append((a, b, rr))
+        for o in obj: belege(o['x'], o['y'], objekt_radius(o))
+        def frei(x, y, r, abst=0.8):   # Raster 8 Felder: nur die Nachbarzellen prüfen (Objekte sind höchstens ~6 Felder groß)
+            gx, gy = int(x) // 8, int(y) // 8
+            for i in (-1, 0, 1):
+                for j in (-1, 0, 1):
+                    for (a, b, rr) in RASTER.get((gx + i, gy + j), ()):
+                        if abs(a - x) < r + rr + abst and abs(b - y) < r + rr + abst and math.hypot(a - x, b - y) < r + rr + abst: return False
             return True
         neu = []
         # ── 1. Bewuchs ──
@@ -119,21 +153,25 @@ for schritt in schritte:
             for _ in range(min(20, len(kand))):
                 cy, cx = kand[rng.randrange(len(kand))]
                 if dl[cy, cx] <= 10: continue
+                kl = klasse(G[cy, cx]); PALG = PAL if kl == 'wiese' else BODEN_PAL.get(G[cy, cx])
+                if not PALG: continue
                 for k in range(rng.randint(3, 7)):
                     a, rr = rng.random() * 6.283, rng.random() * 4.5
                     x, y = cx + 0.5 + math.cos(a) * rr, cy + 0.5 + math.sin(a) * rr; i, j = int(x), int(y)
-                    if not (0 <= i < B and 0 <= j < H) or not rand[j, i] or verboten[j, i] or imOrt[j, i] or G[j, i] not in BEWUCHS_BODEN or dweg[j, i] < 2.5: continue
-                    art = gewichtet(rng, PAL); o = {'id': f'vd_{n}_b{len(neu) + 1}', 'objekt': art, 'x': round(x, 2), 'y': round(y, 2), 's': round(0.85 + rng.random() * 0.3, 2)}
+                    if not (0 <= i < B and 0 <= j < H) or not rand[j, i] or verboten[j, i] or imOrt[j, i] or klasse(G[j, i]) != kl or dweg[j, i] < 2.5: continue
+                    art = gewichtet(rng, PALG); o = {'id': f'vd_{n}_b{len(neu) + 1}', 'objekt': art, 'x': round(x, 2), 'y': round(y, 2), 's': round(0.85 + rng.random() * 0.3, 2)}
                     if rng.random() < 0.5: o['spiegeln'] = True
                     rad = objekt_radius(o)
                     if not frei(x, y, rad, 1.4): continue
-                    neu.append(o); belegt.append((x, y, rad)); gesetzt += 1
+                    neu.append(o); belege(x, y, rad); gesetzt += 1
                 gruppen += 1
             if not gesetzt: break
         bewuchs = len(neu)
         # ── 2. Kleinigkeiten am Weg ──
         # je Gebiet nur wenige Arten (jede Art kostet auf dem Handy einen eigenen Zeichenaufruf): 4 für Wiesen, 3 für Wald, fest je Gebiet
-        DW = sorted(rng.sample(DEKOR_WIESE[:10], 4)); DWA = sorted(rng.sample(DEKOR_WALD, 3))
+        GROSS = ('karren', 'huette', 'ruine', 'brunnen')   # „gross“ in verdichten_regler.json: diese öfter
+        gw = lambda l: [(o, w * (RG['gross'] if any(g in o for g in GROSS) else 1)) for o, w in l]
+        DW = sorted(rng.sample(gw(DEKOR_WIESE), min(RG['wiese'], len(DEKOR_WIESE)))); DWA = sorted(rng.sample(gw(DEKOR_WALD), min(RG['wald'], len(DEKOR_WALD))))
         klein = [(o['x'], o['y']) for o in obj if BIB.get(o['objekt'], {}).get('kategorie') not in ('bewuchs', None)]
         dk = np.full((H, B), 999.0)
         def merke(x, y):
@@ -171,12 +209,12 @@ for schritt in schritte:
                 if rng.random() < 0.5 and 'zaun' not in art and 'brunnen' not in art: o['spiegeln'] = True
                 best = o; break
             if not best: continue
-            neu.append(best); belegt.append((best['x'], best['y'], objekt_radius(best))); merke(best['x'], best['y']); dekor += 1
-            if G[int(best['y']), int(best['x'])] in WIESE and any(s in best['objekt'] for s in ('zaun', 'heu', 'karren_heu')) and rng.random() < 0.45:
+            neu.append(best); belege(best['x'], best['y'], objekt_radius(best)); merke(best['x'], best['y']); dekor += 1
+            if G[int(best['y']), int(best['x'])] in WIESE and any(s in best['objekt'] for s in ('zaun', 'heu', 'karren_heu')) and rng.random() < RG['tiere']:
                 for _v in range(12):
                     a, rr = rng.random() * 6.283, 3 + rng.random() * 3; x, y = best['x'] + math.cos(a) * rr, best['y'] + math.sin(a) * rr; i, j = int(x), int(y)
                     if 0 <= i < B and 0 <= j < H and rand[j, i] and G[j, i] in WIESE and dweg[j, i] > 2.5 and not verboten[j, i] and frei(x, y, 0.5, 0.5):
-                        tiere.append({'id': f'vd_tier_{n}_{len(tiere) + 1}', 'tier': rng.choice(TIERE), 'x': round(x + ux, 1), 'y': round(y + uy, 1), 'region': n}); belegt.append((x, y, 0.6)); break
+                        tiere.append({'id': f'vd_tier_{n}_{len(tiere) + 1}', 'tier': rng.choice(TIERE), 'x': round(x + ux, 1), 'y': round(y + uy, 1), 'region': n}); belege(x, y, 0.6); break
         with open(os.path.join(d, 'objekte.json'), 'w', encoding='utf8') as f:
             f.write('[\n' + ',\n'.join(' ' + json.dumps(q, ensure_ascii=False, separators=(',', ':')) for q in obj + neu) + ('\n' if obj or neu else '') + ']\n')
         ergebnis['gebiete'][n] = {'schritt': schritt, 'bewuchs': bewuchs, 'gruppen': gruppen, 'kleinigkeiten': dekor, 'tiere': len(tiere)}; ergebnis['tiere'] += tiere
