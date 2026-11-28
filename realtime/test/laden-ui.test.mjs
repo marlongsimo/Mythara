@@ -52,7 +52,7 @@ try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6448.5, 6444.5, "waldmark"]);
   await anna.goto(B + S); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && i.rucksack && i.rucksack.includes("splitter"); }, null, { timeout: 30000 }).catch(() => {}); await anna.waitForTimeout(2500);
-  const H = await anna.evaluate(() => window.EZW.welt3d.haendler && window.EZW.welt3d.haendler.liste.filter((h) => !String(h.id).startsWith("troedler_"))); /* die Trödler (#88) stehen nicht am Marktplatz */
+  const H = await anna.evaluate(() => window.EZW.welt3d.haendler && window.EZW.welt3d.haendler.liste.filter((h) => !String(h.id).startsWith("troedler_") && !String(h.id).startsWith("zunft_") && Math.hypot(h.x - 6448, h.y - 6444) < 30)); /* die Trödler (#88) stehen nicht am Marktplatz; nur der Marktplatz der Waldmark (Läden der anderen Städte sind weit weg) */
   check(H && H.length === 3, `Drei Händler am Marktplatz: ${JSON.stringify(H)}`);
   /* Kamera über den Markt */
   await anna.evaluate(() => { const W = window.EZW.welt3d; W.versetzen(6448.5, 6444.5); const M = W.motor; M.gieren = 0; M.neigen = 0.9; M.abstand = 18; }); await anna.waitForTimeout(3000);
