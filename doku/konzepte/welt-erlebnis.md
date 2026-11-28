@@ -51,7 +51,7 @@ Das passt zum Kanon (Gegner alle ~25 Felder, Arbeitsstellen nah an den Orten, St
 
 ### Vorgehen
 Region für Region in der offenen Karte. Je Region: Bewuchs verdichten, Kleinigkeiten an die Wege, Dörfer mit Tätigkeit dort, wo Lücken sind.
-Reihenfolge (Vorschlag): Grenzland, Waldland und Westmark zuerst (dort sind die meisten Spieler), dann Moor und Ostufer, Glutsande, Smaragdküste, Hochlande. Die Fahlen Weiten sind schon dran (`fahle-weiten.md`).
+Reihenfolge (**vom Nutzer bestätigt, 28.11.**): Grenzland, Waldland und Westmark zuerst (dort sind die meisten Spieler), dann Moor und Ostufer, Glutsande, Smaragdküste, Hochlande. Die Fahlen Weiten sind schon dran (`fahle-weiten.md`).
 
 ## Wer was macht (wenn freigegeben)
 | Rolle | Aufgabe |
@@ -64,6 +64,5 @@ Reihenfolge (Vorschlag): Grenzland, Waldland und Westmark zuerst (dort sind die 
 | Integration | Preise, Läden der Dörfer, Einbau |
 
 ## Offen
-- Mit welcher Region beginnen (Vorschlag: Grenzland, Waldland, Westmark)?
 - Welche Häfen genau (Welt prüft die Lage).
 - Freischalt-Quests für Drachenarm und Frostkrone (später).
