@@ -23,6 +23,7 @@ import { wegZiel, WEGSTEIN_PAUSE_MS, HEIM } from "../../shared/wegstein";
 import { wegzielFrei } from "../../shared/quests";
 import { faehreAnfrage } from "./faehre";
 import { schiffAnfrage } from "./schiffe";
+import { KENNUNG_MAX } from "../../shared/questbau";
 import { merkerHat, merkerDazu, bezahlen } from "./inventar";
 import { bossWahlSetzen } from "./bosse";
 import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen, reisekarteFrei, reisekarteNutzen , petAktiv, petAktivSetzen } from "./inventar";
@@ -275,7 +276,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt }); s.boden = ""; }
     else if (e.t === "rede" || e.t === "antwort") { /* Quests: Gespräche nur mit dem, der spricht */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Aufträge gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
-      const npc = String(e.npc || "").slice(0, 16), aw = e.t === "rede" ? reden(s.nutzer, npc, s.wx, s.wy) : await antworten(H.sb, s.nutzer, npc, String(e.a || ""), { x: s.wx, y: s.wy });
+      const npc = String(e.npc || "").slice(0, KENNUNG_MAX), aw = e.t === "rede" ? reden(s.nutzer, npc, s.wx, s.wy) : await antworten(H.sb, s.nutzer, npc, String(e.a || ""), { x: s.wx, y: s.wy });
       if (aw.fehler) { senden(s, { t: "chat", kanal: "system", text: aw.fehler, zeit: jetzt }); senden(s, { t: "dialog", npc, ende: true }); return; }
       senden(s, { t: "dialog", npc, ...aw }); }
     else if (e.t === "teleport") { /* fragt vor dem Teleport: erlaubt (und ab jetzt 5 Minuten Pause) oder die Restzeit */
@@ -290,7 +291,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     else if (e.t === "qding" || e.t === "untersucht") { /* Questobjekt benutzen (Bruchstelle, Rutenbündel …), Gegner untersuchen – der Server prüft Ort und Entfernung */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Aufträge gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
       { const x = e.x as number, y = e.y as number; if (zahl(x, 1e6) && zahl(y, 1e6) && s.wx !== undefined && s.wy !== undefined && Math.hypot(x - s.wx, y - s.wy) < 3) { s.wx = x; s.wy = y; } } /* die Stelle jetzt (die letzte „pos“ kann einen Schritt alt sein) */
-      if (e.t === "qding") senden(s, { t: "qtext", text: await dingTat(H.sb, s.nutzer, s.ort, String(e.id || "").slice(0, 16), s.wx, s.wy) });
+      if (e.t === "qding") senden(s, { t: "qtext", text: await dingTat(H.sb, s.nutzer, s.ort, String(e.id || "").slice(0, KENNUNG_MAX), s.wx, s.wy) });
       else if (typeof e.typ === "string" && /^[a-z0-9_]{1,32}$/.test(e.typ)) await untersucht(H.sb, s.nutzer, e.typ, s.wx, s.wy); }
     else if (e.t === "leben") { if (!zahl(e.lp, 1e6) || !zahl(e.max, 1e6)) return; s.lp = Math.max(0, Math.round(e.lp as number)); s.max = Math.max(0, Math.round(e.max as number)); s.geaendert = true; }
     else if (e.t === "freunde") { if (s.gast) { senden(s, { t: "freunde", liste: [] }); return; }

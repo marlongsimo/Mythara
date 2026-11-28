@@ -88,6 +88,7 @@ TESTS=(
   gegner-stufe
   gefahr
   sperren
+  kennungen
   schiffe
   schiffe-welt
   midgame-bosse
