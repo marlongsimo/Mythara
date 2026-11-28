@@ -7,7 +7,7 @@ Diese Datei liest jede Sitzung beim Start. Ausführlich: `doku/ARBEITSWEISE.md`.
 1. Klären, welche Rolle diese Sitzung hat (steht in der ersten Nachricht des Nutzers; sonst nachfragen).
 2. `doku/STAND.md` lesen (wo stehen wir im Fahrplan) und `doku/KANON.md` (Namen, Entscheidungen).
 3. Offene GitHub-Issues mit dem Label der eigenen Rolle ansehen (`rolle:spiel`, `rolle:systeme`, `rolle:bugs`, `rolle:ui`, `rolle:quests`, `rolle:figuren`, `rolle:welt`, `rolle:review`).
-4. Den eigenen Zweig auf den neuesten Stand bringen: `git fetch origin feature/realtime-engine && git merge origin/feature/realtime-engine`.
+4. Den eigenen Zweig auf den neuesten Stand bringen: `git fetch origin ausgabe/naechste && git merge origin/ausgabe/naechste` (Sammelstand der nächsten Ausgabe; `feature/realtime-engine` ist der Live-Stand).
 
 ## Wer was ändern darf
 | Rolle | Ändert | Ändert nicht |
@@ -23,7 +23,7 @@ Diese Datei liest jede Sitzung beim Start. Ausführlich: `doku/ARBEITSWEISE.md`.
 
 Braucht eine Rolle etwas aus einem fremden Bereich (z. B. Gegnerwerte für ein neues Modell, ein neues Quest-Ereignis):
 **nicht selbst ändern**, sondern ein GitHub-Issue mit dem Label der zuständigen Rolle anlegen.
-Systeme und Integration teilen sich `realtime/shared` und den Client: **Systeme baut Strukturen** (Felder, Funktionen, Ereignisse), **Integration trägt Inhalte ein**, **Oberfläche baut die Fenster und das HUD** (Systeme liefert dafür Daten und Ereignisse). Beide holen mindestens täglich `feature/realtime-engine` in ihren Zweig.
+Systeme und Integration teilen sich `realtime/shared` und den Client: **Systeme baut Strukturen** (Felder, Funktionen, Ereignisse), **Integration trägt Inhalte ein**, **Oberfläche baut die Fenster und das HUD** (Systeme liefert dafür Daten und Ereignisse). Beide holen mindestens täglich `ausgabe/naechste` in ihren Zweig.
 
 ## Erzeugte Dateien
 `echtzeit/spiel.js`, `echtzeit/index.html`, `echtzeit/figurentest.*`, `realtime/shared/weltzonen.ts`, `realtime/server/dist/`,
@@ -31,7 +31,8 @@ Systeme und Integration teilen sich `realtime/shared` und den Client: **Systeme 
 Sie werden von der Integration bzw. der Pipeline „Welt live“ neu gebaut (`.github/scripts/welt-live.sh`).
 
 ## Arbeiten und Abgeben
-- Auf dem **eigenen Zweig** arbeiten (`claude/…`), nie direkt auf `feature/realtime-engine` oder `main` – außer als Integration.
+- Auf dem **eigenen Zweig** arbeiten (`claude/…`), nie direkt auf `feature/realtime-engine`, `ausgabe/naechste` oder `main` – außer als Integration.
+- **Live geht nur in Ausgaben** (Entscheidung des Nutzers 27.11.): Integration sammelt fertige Arbeit in `ausgabe/naechste` und stellt eine Ausgabe gesammelt live. **Nur Bugfixes** gehen sofort und einzeln live (Zweig `claude/hotfix-<nr>` ab `feature/realtime-engine`). Nichts wartet auf eine andere Rolle halb fertig auf dem eigenen Zweig, ohne dass es harmlos ist (Entwurf/abgeschaltet).
 - Kleine Commits, Nachricht auf Deutsch: was und warum.
 - Vor dem Push die Tests des eigenen Bereichs laufen lassen (siehe `doku/ARBEITSWEISE.md`). GitHub prüft nach jedem Push zusätzlich die Server-Tests (Workflow „Tests“).
 - Ein Issue ist erledigt, wenn der Commit gepusht ist: im Issue kurz schreiben, was gemacht wurde, mit Commit-Kennung.
