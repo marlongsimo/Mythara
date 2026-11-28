@@ -23,7 +23,7 @@ import { wegZiel, WEGSTEIN_PAUSE_MS, HEIM } from "../../shared/wegstein";
 import { wegzielFrei } from "../../shared/quests";
 import { faehreAnfrage } from "./faehre";
 import { schiffAnfrage } from "./schiffe";
-import { KENNUNG_MAX } from "../../shared/questbau";
+import { KENNUNG_MAX, TYP_MAX } from "../../shared/questbau";
 import { merkerHat, merkerDazu, bezahlen } from "./inventar";
 import { bossWahlSetzen } from "./bosse";
 import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen, reisekarteFrei, reisekarteNutzen , petAktiv, petAktivSetzen } from "./inventar";
@@ -286,13 +286,13 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     else if (e.t === "dialogzu") gespraechEnde(s.nutzer);
     else if (e.t === "handel") handelNachricht(H.sb, s, e as Record<string, unknown>); /* #65: Handel zwischen Spielern (handel.ts) */
     else if (e.t === "abholen") { /* #77: „Okay“ im Abschlussfenster – der Server bucht den Lohn genau einmal */
-      if (s.gast) return; const r = await abholen(H.sb, s.nutzer, String((e as { id?: unknown }).id || "").slice(0, 40), { x: s.wx, y: s.wy }, String((e as { wahl?: unknown }).wahl || "").slice(0, 40)); /* #146: { t: "abholen", id, wahl: g } */
+      if (s.gast) return; const r = await abholen(H.sb, s.nutzer, String((e as { id?: unknown }).id || "").slice(0, KENNUNG_MAX), { x: s.wx, y: s.wy }, String((e as { wahl?: unknown }).wahl || "").slice(0, 40)); /* #146: { t: "abholen", id, wahl: g } */
       if (r.fehler) senden(s, { t: "chat", kanal: "system", text: r.fehler, zeit: jetzt }); senden(s, { t: "abgeholt", ...r }); }
     else if (e.t === "qding" || e.t === "untersucht") { /* Questobjekt benutzen (Bruchstelle, Rutenbündel …), Gegner untersuchen – der Server prüft Ort und Entfernung */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Aufträge gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
       { const x = e.x as number, y = e.y as number; if (zahl(x, 1e6) && zahl(y, 1e6) && s.wx !== undefined && s.wy !== undefined && Math.hypot(x - s.wx, y - s.wy) < 3) { s.wx = x; s.wy = y; } } /* die Stelle jetzt (die letzte „pos“ kann einen Schritt alt sein) */
       if (e.t === "qding") senden(s, { t: "qtext", text: await dingTat(H.sb, s.nutzer, s.ort, String(e.id || "").slice(0, KENNUNG_MAX), s.wx, s.wy) });
-      else if (typeof e.typ === "string" && /^[a-z0-9_]{1,32}$/.test(e.typ)) await untersucht(H.sb, s.nutzer, e.typ, s.wx, s.wy); }
+      else if (typeof e.typ === "string" && new RegExp(`^[a-z0-9_]{1,${TYP_MAX}}$`).test(e.typ)) await untersucht(H.sb, s.nutzer, e.typ, s.wx, s.wy); }
     else if (e.t === "leben") { if (!zahl(e.lp, 1e6) || !zahl(e.max, 1e6)) return; s.lp = Math.max(0, Math.round(e.lp as number)); s.max = Math.max(0, Math.round(e.max as number)); s.geaendert = true; }
     else if (e.t === "freunde") { if (s.gast) { senden(s, { t: "freunde", liste: [] }); return; }
       const liste = await freundeVon(H, s.nutzer, true); if (!s) return;

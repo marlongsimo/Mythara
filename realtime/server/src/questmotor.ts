@@ -105,7 +105,7 @@ function geben(sb: Sb, nutzer: string, L: QB.Geben[], k: QB.Kontext, rein: (g: s
 /** wo: Stelle des Spielers (Weltfelder) – dort landet Lohn, der nicht mehr in den Rucksack passt */
 export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: string, wo?: { x?: number; y?: number }): Promise<MotorAntwort> {
   const o = offen.get(nutzer), q = o && questDef(o.q); if (!o || !q || o.npc !== id) return { fehler: "Das Gespräch ist vorbei." };
-  const k = kontext(nutzer), s = qStand(nutzer, q.id), f = QB.antwort(q, o.npc, s, String(a || "").slice(0, 24), k);
+  const k = kontext(nutzer), s = qStand(nutzer, q.id), f = QB.antwort(q, o.npc, s, String(a || "").slice(0, QB.ANTWORT_MAX), k);
   if (!f) return { fehler: "Darauf weiß niemand eine Antwort." };
   /* Gegenstände nehmen: erst prüfen, dann alle auf einmal */
   for (const N of f.nehmen || []) if (anzahlVon(nutzer, N.g) < (N.n || 1)) return { fehler: "Dafür fehlt dir noch etwas." };
