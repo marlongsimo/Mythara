@@ -38,16 +38,20 @@ export const dingBildUrl = (G: { bild?: string }): string => (G.bild ? "../" + G
  *  neu gesetzt (src mit ?r=n). Zustand je Bild in data-status (offen · ok · fehler) – für „Bilder prüfen“ in den Einstellungen. */
 export const dingBildAbs = (G: { bild?: string }): string => (G.bild ? new URL("../" + G.bild, location.href).href : ERSATZ);
 /** #190 Diagnose „Bilder prüfen“: alle Gegenstandsbilder im Spiel (Rucksack, Ausrüstung, Bank …) nach Zustand zählen + erste gescheiterte URL */
-export function bilderPruefen(): { ok: number; fehler: number; offen: number; leinwand: number; ersteFehler: string } {
-  const r = { ok: 0, fehler: 0, offen: 0, leinwand: document.querySelectorAll("canvas[data-bild]").length, ersteFehler: "" };
+export function bilderPruefen(): { ok: number; fehler: number; offen: number; leinwand: number; ersteFehler: string; erstes: string } {
+  const r = { ok: 0, fehler: 0, offen: 0, leinwand: document.querySelectorAll("canvas[data-bild]").length, ersteFehler: "", erstes: "" };
   document.querySelectorAll<HTMLImageElement>("img.dbild").forEach((im) => {
     const st = im.complete && im.naturalWidth > 0 ? "ok" : im.dataset.status === "fehler" || (im.complete && im.naturalWidth === 0) ? "fehler" : "offen";
     r[st]++; if (st === "fehler" && !r.ersteFehler) r.ersteFehler = im.currentSrc || im.src || im.dataset.url || ""; });
+  /* erstes Rucksackbild genauer: Größe, Stil, ob es oben liegt (#188: geladen, aber nicht zu sehen) */
+  const im = document.querySelector<HTMLImageElement>("#ez-rucksacktab img.dbild") || document.querySelector<HTMLImageElement>("img.dbild");
+  if (im) { const b = im.getBoundingClientRect(), cs = getComputedStyle(im), f = (im.parentElement || im).getBoundingClientRect(), oben = document.elementFromPoint(f.x + f.width / 2, f.y + f.height / 2);
+    r.erstes = `Erstes Bild: ${im.naturalWidth}×${im.naturalHeight} natürlich, ${Math.round(b.width)}×${Math.round(b.height)} gezeigt (Fach ${Math.round(f.width)}×${Math.round(f.height)}), opacity ${cs.opacity}, ${cs.visibility}, ${cs.display}, z ${cs.zIndex}, im DOM ${im.isConnected ? "ja" : "nein"}, sichtbar ${im.offsetParent ? "ja" : "nein"}, oben in der Fachmitte: ${oben ? oben.tagName.toLowerCase() + (oben.className && typeof oben.className === "string" ? "." + oben.className.trim().split(/\s+/).join(".") : "") : "–"}`; }
   return r; }
 const WIEDER = [1000, 3000, 8000];
 export function dingImg(G: { bild?: string }, klasse = "", w = 96, h = w): HTMLImageElement {
   const im = document.createElement("img"), url = dingBildAbs(G); let n = 0;
-  im.className = ("dbild " + klasse).trim(); im.alt = ""; im.draggable = false; im.width = w; im.height = h; im.loading = "eager"; im.decoding = "sync";
+  im.className = ("dbild " + klasse).trim(); im.alt = ""; im.draggable = false; im.width = w; im.height = h; im.loading = "eager"; im.decoding = "async";
   im.dataset.url = url; im.dataset.status = "offen";
   im.onload = () => { im.dataset.status = "ok"; };
   im.onerror = () => { im.dataset.status = "fehler"; const warte = WIEDER[n]; if (warte === undefined) return; const k = ++n;

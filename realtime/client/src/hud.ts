@@ -192,7 +192,7 @@ export function menueTafel(zu: () => void) {
     if (w === "welt") { weltenFenster(f.querySelector(".tafel") as HTMLElement); return; }
     if (w === "bilder") { const r = bilderPruefen(); (t.querySelector("b") as HTMLElement).textContent = `${r.ok} ok · ${r.fehler} Fehler · ${r.offen} offen`;
       let p = f.querySelector<HTMLElement>(".bilderbericht"); if (!p) { p = document.createElement("p"); p.className = "klein bilderbericht"; t.after(p); }
-      p.textContent = (r.ok + r.fehler + r.offen === 0 ? "Noch keine Bilder geladen – erst den Rucksack öffnen. " : "") + (r.leinwand ? `${r.leinwand} Fächer ohne Bild. ` : "") + (r.ersteFehler ? `Erste fehlerhafte Adresse: ${r.ersteFehler}` : r.fehler ? "" : "Alle Bilder geladen.");
+      p.textContent = (r.ok + r.fehler + r.offen === 0 ? "Noch keine Bilder geladen – erst den Rucksack öffnen. " : "") + (r.leinwand ? `${r.leinwand} Fächer ohne Bild. ` : "") + (r.ersteFehler ? `Erste fehlerhafte Adresse: ${r.ersteFehler}` : r.fehler ? "" : "Alle Bilder geladen.") + (r.erstes ? " " + r.erstes : "");
       p.style.wordBreak = "break-all"; return; }
     if (w === "blockiert") { blockiertFenster(f.querySelector(".tafel") as HTMLElement); return; }
     if (w === "daecher") { daecherAusSetzen(!daecherAus()); t.classList.toggle("an", daecherAus()); t.setAttribute("aria-checked", String(daecherAus())); return; }
