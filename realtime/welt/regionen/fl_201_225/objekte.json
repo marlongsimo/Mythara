@@ -1,7 +1,7 @@
 [
- {"id":"bl_linde_1091","objekt":"stil_linde_01","x":3.5,"y":51.5,"s":1},
- {"id":"bl_linde_1095","objekt":"stil_linde_01","x":0.5,"y":56.5,"s":1.04,"spiegeln":true},
- {"id":"bl_busch_1443","objekt":"stil_busch_02","x":460.5,"y":238.5},
+ {"id":"bl_linde_1122","objekt":"stil_linde_01","x":0.5,"y":56.5,"s":1.04,"spiegeln":true},
+ {"id":"bl_busch_1458","objekt":"stil_busch_02","x":460.5,"y":238.5},
+ {"id":"bl_busch_1867","objekt":"stil_busch_02","x":470.5,"y":91.5},
  {"id":"taverne_ankerkraut","objekt":"dorf_taverne_01","x":4.5,"y":96},
  {"id":"kielmund_bank","objekt":"waldmark_bank_01","x":20,"y":96},
  {"id":"kielmund_schmiede","objekt":"dorf_schmiede_01","x":17,"y":124},

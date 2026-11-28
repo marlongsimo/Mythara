@@ -9,7 +9,7 @@ World Pipeline – Welt verdichten (Welt-Erlebnis, KANON 27.11.): die offene Wel
 Frei bleiben Wege, Wasser, Orte (Stadt/Dorf/Gehöft), Lesestellen, NPC-, Gegner-, Sammel-, Kräuter- und Fischplätze; 3 Felder Abstand zum Gebietsrand.
 Eigene Objekte heißen „vd_…“ und werden bei jedem Lauf zuerst entfernt (wiederholbar, fester Zufall je Gebiet).
 Läuft in der Kette nach baumdichte.mjs und vor bauen.mjs. Schreibt die Gebiete und welt/verdichten.json.
-Aufruf (im Ordner realtime): python3 werkzeug/welt/verdichten.py [schritt …]   (ohne Angabe: alle fertigen Schritte)
+Aufruf (im Ordner realtime): python3 werkzeug/welt/verdichten.py [schritt …]   ·   am Anfang der Kette: --entfernen   (ohne Angabe: alle fertigen Schritte)
 """
 import json, os, sys, math, random
 import numpy as np
@@ -39,6 +39,7 @@ def regler(n):
     return {'leer': r['leer_ziel'] / st, 'abstand': r['weg_abstand'] / st, 'wiese': max(1, min(10, round(r['arten_wiese'] * st))), 'wald': max(1, min(10, round(r['arten_wald'] * st))),
             'tiere': min(1.0, r['tiere'] * st), 'gross': r['gross'] * st}
 _R = json.load(open(os.path.join(W, 'verdichten_regler.json'), encoding='utf8')) if os.path.exists(os.path.join(W, 'verdichten_regler.json')) else {}
+ENTFERNEN = '--entfernen' in sys.argv   # am Anfang der Kette: alle eigenen Objekte weg, damit die Generatoren eine Welt ohne Verdichtung sehen (sonst Rückkopplung, z. B. beleben.mjs)
 schritte = [a for a in sys.argv[1:] if a in SCHRITTE] or [k for k in SCHRITTE if k in _R.get('schritte', list(SCHRITTE))]   # aktive Schritte aus dem Regler (Freigabe des Nutzers)
 
 # ───── was frei bleiben muss (Weltfelder) ─────
@@ -101,12 +102,13 @@ def gewichtet(rng, l):
 
 # Gebiete inaktiver Schritte: eigene Objekte früherer Läufe entfernen (die Festland-Gebiete schreibt festland.py ohnehin neu)
 for k, gebiete in SCHRITTE.items():
-    if k in schritte: continue
+    if k in schritte and not ENTFERNEN: continue
     for n in gebiete:
         d = os.path.join(W, 'regionen', n); obj = lies(d, 'objekte.json'); rest = [o for o in obj if not str(o.get('id', '')).startswith('vd_')]
         if len(rest) != len(obj):
             with open(os.path.join(d, 'objekte.json'), 'w', encoding='utf8') as f: f.write('[\n' + ',\n'.join(' ' + json.dumps(q, ensure_ascii=False, separators=(',', ':')) for q in rest) + ('\n' if rest else '') + ']\n')
-            print(f'{n}: {len(obj) - len(rest)} Objekte der Verdichtung entfernt (Schritt {k} nicht aktiv)')
+            print(f'{n}: {len(obj) - len(rest)} Objekte der Verdichtung entfernt' + ('' if ENTFERNEN else f' (Schritt {k} nicht aktiv)'))
+if ENTFERNEN: sys.exit(0)
 ergebnis = {'hinweis': 'Verdichtung (verdichten.py): je Gebiet Bewuchs, Kleinigkeiten am Weg, Tierplätze. Weltfelder.', 'gebiete': {}, 'tiere': []}
 for schritt in schritte:
     for n in SCHRITTE[schritt]:
