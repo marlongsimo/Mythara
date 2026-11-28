@@ -40,7 +40,7 @@ Jede Rolle schaut **zuerst, was es schon gibt** (Modelle, Orte, Gegenstände, Ba
 1. **Konzept** (Rolle Konzept & Review): PDF in `doku/quests/`, daraus ein oder mehrere **Issues** mit Rollen-Label und Phase-Label (`phase-3` …).
 2. **Umsetzung** (zuständige Rolle): eigenen Zweig aktualisieren, umsetzen, Tests, Commit, Push. Im Issue: was gemacht wurde, Commit-Kennung, ob der Nutzer etwas tun muss.
 3. **Prüfung** (automatisch): Workflow „Tests“ läuft nach jedem Push. Rot = erst reparieren.
-4. **Zusammenführen und live** (Integration): Zweig nach `feature/realtime-engine`, alle Tests, Pipeline stellt live. Issue schließen.
+4. **Zusammenführen** (Integration): Zweig nach `ausgabe/naechste`, alle Tests. **Live** geht eine ganze Ausgabe gesammelt (`welt-live` mit `quellen=ausgabe/naechste`), mit Newsfeed-Eintrag; Bugfixes einzeln über `claude/hotfix-<nr>` ab `feature/realtime-engine`, danach `feature` zurück in `ausgabe/naechste`. Issue schließen.
 5. **Review** (Konzept & Review, nach Bedarf): Commit gegen Konzept und Kanon prüfen, Befunde als neues Issue.
 6. **Stand nachführen** (Konzept & Review): `doku/STAND.md`.
 
@@ -99,7 +99,7 @@ Jede Sitzung bekommt **einmal vom Nutzer** ihre Rolle und ihren Dauerauftrag. Da
 **Systeme**
 > Du bist die Sitzung **Systeme** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md` und die Konzepte in `doku/konzepte/`.
 > Dauerauftrag: Arbeite offene Issues mit `rolle:systeme` selbstständig ab (Reihenfolge nach Phase, dann Abhängigkeiten). Baue neue Mechaniken Ende-zu-Ende mit Tests auf `claude/systeme`;
-> Inhalte (Gegnerwerte, Beute, Figuren-Einbau, Karten) trägt die Integration ein – lege dafür ein Issue `rolle:spiel` an. Hole mindestens täglich `feature/realtime-engine` in deinen Zweig.
+> Inhalte (Gegnerwerte, Beute, Figuren-Einbau, Karten) trägt die Integration ein – lege dafür ein Issue `rolle:spiel` an. Hole mindestens täglich `ausgabe/naechste` in deinen Zweig.
 > Push nur mit grünen Tests; die Integration führt zusammen und stellt live. Neue Migrationen immer mit Rückbau und Test; das Einspielen ist ein Issue `für-dich`.
 
 **Leitstelle (Konzept, Quests & Fahrplan)**
@@ -113,14 +113,14 @@ Jede Sitzung bekommt **einmal vom Nutzer** ihre Rolle und ihren Dauerauftrag. Da
 > Du bist die Sitzung **Oberfläche** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`, `doku/konzepte/hud.md`.
 > Dauerauftrag: Arbeite offene Issues mit `rolle:ui` selbstständig ab. HUD und Fenster nach `doku/konzepte/hud.md`: kompakt, einfach, ohne Scrollen, Handy zuerst.
 > **Nichts einfach so ändern:** jede Änderung (auch kleine) zuerst als Vorschau (Bilder, vorher/nachher) zeigen und mit mir zusammen ausarbeiten; erst nach meinem Okay auf `claude/oberflaeche` committen, mit Tests und Bildschirmfotos im Issue.
-> Daten und Ereignisse für neue Fenster liefert Systeme (Issue `rolle:systeme`), Symbole Figuren (Issue `rolle:figuren`). Hole mindestens täglich `feature/realtime-engine` in deinen Zweig.
+> Daten und Ereignisse für neue Fenster liefert Systeme (Issue `rolle:systeme`), Symbole Figuren (Issue `rolle:figuren`). Hole mindestens täglich `ausgabe/naechste` in deinen Zweig.
 
 **Bugs** (Chat „Riftmere · Bugs“, seit 26.11.)
 > Du bist die Sitzung **Bugs** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`.
 > Dauerauftrag: Arbeite offene Issues mit `rolle:bugs` selbstständig ab (Live-Fehler zuerst, dann nach Alter). Fehler nachstellen, Ursache finden, **gezielt beheben**
 > (Client, Server, Shared – nur so viel wie für den Fehler nötig) und für jeden Fehler einen Test, der ihn künftig fängt. Arbeitszweig `claude/bugs`, Push nur mit grünen Tests;
 > die Integration führt zusammen und stellt live. Ist ein „Fehler“ in Wahrheit eine neue Funktion oder ein Umbau: Issue an `rolle:systeme` oder `rolle:spiel`.
-> Fehler in Welt- oder Figurendaten: Issue an `rolle:welt` bzw. `rolle:figuren`. Hole mindestens täglich `feature/realtime-engine` in deinen Zweig.
+> Fehler in Welt- oder Figurendaten: Issue an `rolle:welt` bzw. `rolle:figuren`. Hole mindestens täglich `ausgabe/naechste` in deinen Zweig.
 
 Rollen und Labels: Integration & Inhalte (`rolle:spiel`), Systeme (`rolle:systeme`), Bugs (`rolle:bugs`), Oberfläche (`rolle:ui`), Quest-Autor (`rolle:quests`), Figuren & 3D (`rolle:figuren`), Worldbuilding (`rolle:welt`), Leitstelle / Konzept & Review (`rolle:review`).
 
