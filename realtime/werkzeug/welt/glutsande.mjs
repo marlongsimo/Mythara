@@ -123,7 +123,7 @@ const GB = { platz: [7160, 6950], markt: [7140, 6940], brunnen: [7172, 6946] };
   lies("glutbrunn", px, py + 2, "Glutbrunn. Palmen, Lehm und Stein, und über allem der Geruch von Fisch und Gewürzen.");
   /* Hafenmole in den Strom, Fischplatz */
   const my = Math.floor(sm) - 25; let ufer = my; while (ufer < sm && !nass(7160.5, ufer + 0.5)) ufer++;
-  ding("dorf_bruecke_01", 7160, ufer + 2.6, { id: "hafenmole_1" }); ding("dorf_bruecke_01", 7166.6, ufer + 2.6, { id: "hafenmole_2" });
+  ding("dorf_bruecke_01", 7160, ufer + 2.6, { id: "hafenmole_1", s: 1.03 }); ding("dorf_bruecke_01", 7166.6, ufer + 2.6, { id: "hafenmole_2", s: 1.03 });   /* #187: lückenlos (6,6 Abstand) */
   freigeben.push({ art: "rechteck", x0: 7155.1, y0: ufer, x1: 7169.6, y1: ufer + 2.6 }); lies("hafenmole", 7161, ufer - 0.8, "Die Hafenmole. Flache Boote liegen im Schlamm; stromab geht es zum Meer – irgendwann.");
   let fu = Math.floor(stromY(7112)) - 25; while (!nass(7112.5, fu + 1.5)) fu++;
   lies("fischplatz_strom", 7112.5, fu + 0.6, "Ein Fischplatz am Strom. Im braunen Wasser zieht ein Glutwels seine Kreise."); vorschlag.fischplatz = { id: "fischplatz_strom", x: 7112.5, y: fu + 1.5, stehplatz: [7112.5, fu + 0.3] };

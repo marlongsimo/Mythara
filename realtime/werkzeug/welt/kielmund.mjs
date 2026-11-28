@@ -49,7 +49,7 @@ const ding = (objekt, x, y, mehr = {}) => { const b = BIB.get(objekt); if (!b) t
 const lies = (id, x, y, text, mehr = {}) => interaktionen.push({ id, art: "lesen", x: +x.toFixed(2), y: +y.toFixed(2), radius: 1.8, abgleich: "keiner", daten: { text, ...mehr } });
 const weg = (punkte, breite = 1.8, zeichen = "p") => { const xs = punkte.map((p) => p[0]), ys = punkte.map((p) => p[1]);
   male(Math.min(...xs) - 3, Math.min(...ys) - 3, Math.max(...xs) + 3, Math.max(...ys) + 3, (x, y) => (strecke(x, y, punkte) < breite / 2 + 0.12 * welle(x, y) && !nass(jetzt(x, y)) && jetzt(x, y) !== "F" ? zeichen : null)); };
-const steg = (x, y, id) => { ding("dorf_bruecke_01", x, y, { id }); freigeben.push({ art: "rechteck", x0: +(x - 4.9).toFixed(2), y0: +(y - 2.6).toFixed(2), x1: +(x + 3.0).toFixed(2), y1: y }); };
+const steg = (x, y, id, s = 1) => { ding("dorf_bruecke_01", x, y, { id, ...(s !== 1 ? { s } : {}) });   /* s: Stück auf den Abstand der Reihe strecken (#187) */ freigeben.push({ art: "rechteck", x0: +(x - 4.9).toFixed(2), y0: +(y - 2.6).toFixed(2), x1: +(x + 3.0).toFixed(2), y1: y }); };
 const BODEN = new Set([..."., fTagsv"].filter((c) => c !== " "));
 const imKoerper = (x, y, m = 0) => koerper.some((q) => x > q[0] - m && x < q[2] + m && y > q[1] - m && y < q[3] + m);
 const passt = (objekt, x, y, s = 1, mehr = {}) => { const rs = koerperVon({ objekt, x, y, s }); if (!rs.length) return true; return rs.every((r) => passt1(r, mehr)); };
@@ -92,7 +92,7 @@ for (const g of GASSEN) weg(g, 2.2, "p");
 /* ═══════ Leuchtturm-Mole: drei Stegstücke vom Strand ins Meer, am Ende eine Plattform mit dem Leuchtturm ═══════ */
 { const Y = 7338.3; let land = 6400; while (land > 6340 && !nass(jetzt(land - 0.5, Y - 1.3))) land--;
   male(land - 2, Y - 3, land + 6, Y + 1, (x, y) => (nass(jetzt(x, y)) ? null : "p"));   /* Molenkopf am Strand */
-  for (let i = 0; i < 4; i++) steg(land + 4.9 - i * 6.8, Y, "kielmund_mole_" + (i + 1));   /* 6,8 Felder: die Stege stoßen ohne Lücke aneinander */
+  for (let i = 0; i < 4; i++) steg(land + 4.9 - i * 6.8, Y, "kielmund_mole_" + (i + 1), 1.0625);   /* 6,8 Felder: die Stege stoßen ohne Lücke aneinander */
   const ex = land - 22.4; freigeben.push({ art: "rechteck", x0: +(ex - 4).toFixed(2), y0: +(Y - 5).toFixed(2), x1: +(ex + 4.6).toFixed(2), y1: +(Y + 2).toFixed(2) });   /* Plattform am Ende (Meer bleibt Meer, festland.py) */
   ding("kueste_leuchtturm", ex - 1.5, Y + 0.6, { id: "kielmund_leuchtturm" });   /* Modell von Figuren (#174) */
   for (const [o, dx, dy, s] of [["k_fels_gross", -4.6, -3.4, 0.9], ["k_fels_breit", -4.2, 1.6, 0.8], ["k_fels_klein", 0.8, -5.2, 0.8], ["k_fels_klein", -1.2, 2.6, 0.7]]) ding(o, ex + dx, Y + dy, { s });   /* Felsen am Fuß des Leuchtturms */

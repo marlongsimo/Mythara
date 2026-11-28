@@ -68,6 +68,20 @@ for (const E of ebenen) {
   if (!unten && !innen) for (const r of E.regs) { const f = join(WELT, "regionen", r.region.id, "hoehen.json"); if (!existsSync(f)) continue;
     const q = JSON.parse(readFileSync(f, "utf8")), bw = r.region.chunks[0] * C + 1, ox = r.region.ursprung[0] * C - X0, oy = r.region.ursprung[1] * C - Y0;
     for (let y = 0; y < r.region.chunks[1] * C + 1; y++) for (let x = 0; x < bw; x++) { const v = q.werte[y * bw + x]; if (v) hoehe[(oy + y) * W + ox + x] += v; } }
+  /* #187 Brücken: Die 3D-Welt setzt jedes Brückenstück auf die Bodenhöhe an seinem Fußpunkt – im Fluss ist der Grund verschieden tief, die Stücke
+     einer Brücke stünden treppenartig. Stücke, die aneinanderstoßen, bilden eine Reihe; die vier Eckpunkte um jeden Fußpunkt bekommen die tiefste Höhe
+     der Reihe (L ist die tiefste Fußpunkthöhe, also höchstens so hoch wie die höchste Ecke ringsum – der Wasserspiegel richtet sich danach und bleibt, wie er ist). */
+  if (!unten && !innen) { const ST = { dorf_bruecke_01: [-3.2, -2.7, 3.2, 0.1], moor_bruecke_alt_01: [-3.2, -2.7, 3.2, 0.1], moor_bruecke_alt_02: [-3.2, -2.7, 3.2, 0.1], moor_bruecke_alt_03: [-3.2, -2.7, 3.2, 0.1], moor_bruecke_morsch_01: [-3.2, -2.7, 3.2, 0.1], dorf_bruecke_02: [-1.4, -5.2, 1.4, 0.1],
+    /* Steinbrücken der Hochlande (3D-Modelle um den Fußpunkt zentriert, Stücke im Abstand 6,6) */ hochland_bruecke_kopf_w: [-3.3, -1.4, 3.3, 1.4], hochland_bruecke_mitte_ow: [-3.3, -1.4, 3.3, 1.4], hochland_bruecke_kopf_o: [-3.3, -1.4, 3.3, 1.4], hochland_steinbruecke_ow: [-3.3, -1.4, 3.3, 1.4], hochland_steinbruecke: [-1.6, -6.4, 1.6, 0.1] };
+    const stuecke = []; for (const r of E.regs) for (const p of r.objekte) { const st = ST[p.objekt]; if (!st) continue; const x = p.x + r.region.ursprung[0] * C - X0, y = p.y + r.region.ursprung[1] * C - Y0, k = p.s || 1;
+      const ecken = [[st[0], st[1]], [st[2], st[3]]].map(([a, b]) => { const d = ((p.dreh || 0) % 360 + 360) % 360; const [u, v] = d === 90 ? [-b, a] : d === 180 ? [-a, -b] : d === 270 ? [b, -a] : [a, b]; return [x + u * k, y + v * k]; });
+      stuecke.push({ x, y, r: [Math.min(ecken[0][0], ecken[1][0]), Math.min(ecken[0][1], ecken[1][1]), Math.max(ecken[0][0], ecken[1][0]), Math.max(ecken[0][1], ecken[1][1])], g: -1 }); }
+    const beruehrt = (a, b) => a.r[0] < b.r[2] + 0.6 && b.r[0] < a.r[2] + 0.6 && a.r[1] < b.r[3] + 0.6 && b.r[1] < a.r[3] + 0.6;
+    let ng = 0; for (const s0 of stuecke) { if (s0.g >= 0) continue; s0.g = ng; const q = [s0]; while (q.length) { const a = q.pop(); for (const b of stuecke) if (b.g < 0 && beruehrt(a, b)) { b.g = ng; q.push(b); } } ng++; }
+    const hAn = (x, y) => { const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi, H_ = (a, b) => hoehe[Math.max(0, Math.min(Hh - 1, b)) * W + Math.max(0, Math.min(W - 1, a))];
+      const a = H_(xi, yi), b = H_(xi + 1, yi), c = H_(xi, yi + 1), e = H_(xi + 1, yi + 1); return fx + fy < 1 ? a + (b - a) * fx + (c - a) * fy : e + (c - e) * (1 - fx) + (b - e) * (1 - fy); };
+    for (let g = 0; g < ng; g++) { const reihe = stuecke.filter((s0) => s0.g === g); if (reihe.length < 2) continue; const L = Math.round(Math.min(...reihe.map((s0) => hAn(s0.x, s0.y))));
+      for (const s0 of reihe) for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) { const xx = Math.floor(s0.x) + dx, yy = Math.floor(s0.y) + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < Hh) hoehe[yy * W + xx] = L; } } }   /* genau L: jedes Stück der Reihe steht gleich hoch */
   /* je Chunk schreiben */
   const geh = new Map(); for (let cy = cy0; cy < cy1; cy++) for (let cx = cx0; cx < cx1; cx++) { const f = join(ECHTZEIT, `${cx}_${cy}.json`); if (existsSync(f)) geh.set(`${cx}_${cy}`, JSON.parse(readFileSync(f, "utf8"))); }
   for (let cy = cy0; cy < cy1; cy++) for (let cx = cx0; cx < cx1; cx++) { const d2 = geh.get(`${cx}_${cy}`); if (!d2) continue;
