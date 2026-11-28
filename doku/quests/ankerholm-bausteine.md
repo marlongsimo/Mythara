@@ -8,7 +8,7 @@ Rolle Quests, 28.11.2026. Grundlage: `doku/konzepte/einsteiger-insel.md`, vom Nu
 - **Hilfetexte:** `ANKERHOLM_HILFE`, je ein Satz Bedienung pro Abschnitt, am Rechner und am Handy. Die Oberfläche zeigt ihn unter dem Zielpfeil.
 - **Zielpfeil:** Jeder Schritt hat `wo` (Stelle oder Figur).
 
-## Ablauf: acht Abschnitte, 16 Schritte
+## Ablauf: acht Abschnitte, 15 Schritte
 
 | Abschnitt | Schritte | Figur |
 |---|---|---|
@@ -19,15 +19,15 @@ Rolle Quests, 28.11.2026. Grundlage: `doku/konzepte/einsteiger-insel.md`, vom Nu
 | 5. Haukes Lehre | bei Hauke Schwert, Schild, Bogen und Stab leihen; rote Puppe mit Nahkampf, grüne mit Fernkampf, blaue mit Magie treffen | Hauke Morn |
 | 6. Die Plünderer | 3 Plünderer, dann der Schwarze Ole | – |
 | 7. Die Wahl | Hauke die Übungswaffen zurückgeben und einen Weg wählen; er gibt den Satz (Nahkampf: Schwert, Schild, Lederpanzer · Fernkampf: Bogen, Lederpanzer · Magie: Stab, Robe) | Hauke |
-| 8. Ablegen | Telse die Beschläge geben, ablegen; Ankunft am Steg der Waldmark, dort Abschluss bei Hagan Voss | Telse, Hagan Voss |
+| 8. Ablegen | Telse die Beschläge geben, ablegen = **Abschluss der Quest auf der Insel**. Telse sagt klar: Die Seeschwalbe bringt dich in die Waldmark, um die Welt zu erkunden. | Telse |
 
 **Lohn:** je 100 XP in Stärke, Defense, Fernkampf, Magie, Holzfällerei, Bergbau, Schmieden, Fischen und Kochen, 50 Splitter, 1 Questpunkt. Werte nach Wunsch von Integration.
 
-**Übergang zu Quest 1:** Hagan Voss (`hagan_steg`) steht am Steg, solange man ihn nach dem Ablegen noch nicht gesprochen hat. Er schließt die Quest ab und kündigt Jori an. Danach steht er wie immer am Rathaus (`hagan`, Quest 1).
+**Ankunft (Nutzer, KANON d484b2d46, #191):** Nach dem Abschluss folgt ein Bildwechsel, dann steht man direkt an einem festen Ankunftspunkt in der Waldmark. Es gibt keinen Steg, keine Begrüßung und keine Erklärung dort. Quest 1 spricht einen an wie heute (Jori kommt gelaufen).
 
 ## Abweichung vom Konzept: die Ausrüstungswahl
 
-Das Konzept sieht die Wahl im Abschlussfenster vor. `belohnung.wahl` kann dort aber nur **einen** Gegenstand wählen lassen, keinen Satz. Außerdem liegt der Abschluss erst bei Hagan, nach Schritt 8. Deshalb wählt man im Gespräch mit Hauke:
+Das Konzept sieht die Wahl im Abschlussfenster vor. `belohnung.wahl` kann dort aber nur **einen** Gegenstand wählen lassen, keinen Satz. Deshalb wählt man im Gespräch mit Hauke:
 - Drei Antworten, je mit den Teilen des Satzes im Text.
 - Hauke gibt den Satz mit „(Du bekommst: …)“.
 
@@ -41,7 +41,7 @@ Das Konzept sieht die Wahl im Abschlussfenster vor. `belohnung.wahl` kann dort a
 - 2 Kupferadern
 - Ofen und Amboss, Steg mit Fischstelle für Bachlinge, Feuer
 - Übungsplatz mit drei Puppen, Bucht der Plünderer
-- Steg der Waldmark
+- fester Ankunftspunkt in der Waldmark (kein Steg)
 
 **Figuren:**
 - Seeschwalbe (Wrack und geflickt)
@@ -51,7 +51,7 @@ Das Konzept sieht die Wahl im Abschlussfenster vor. `belohnung.wahl` kann dort a
 **Systeme:**
 - Neue Figuren starten auf der Insel mit laufender Quest.
 - Übungspuppen `puppe_nah`, `puppe_fern`, `puppe_magie` sind nur mit ihrer Kampfart zu treffen und melden „treffen“.
-- Sobald der Schritt „ablegen“ erledigt ist, fährt die Seeschwalbe sofort zum Steg der Waldmark.
+- Nach dem Abschluss der Quest (Antwort „ablegen“ bei Telse) kommt ein Bildwechsel, dann steht man am Ankunftspunkt der Waldmark.
 - Wer stirbt, erwacht am Feuer.
 - Wunsch: `nehmen` sollte auch angelegte Gegenstände nehmen. Bis dahin müssen Neue Haukes Waffen erst ablegen; der Hilfetext sagt es.
 

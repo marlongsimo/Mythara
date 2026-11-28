@@ -1,9 +1,10 @@
 /*
  * Riftmere – die Einsteiger-Insel „Ankerholm“ (#190, Ausgabe 2, doku/konzepte/einsteiger-insel.md): Quest „Gestrandet auf Ankerholm“, Daten für den Quest-Baukasten (shared/questbau.ts).
  * Die Auswanderer-Seeschwalbe läuft im Splittersturm vor Ankerholm auf Grund. Man flickt sie (Mast, Beschläge, Proviant), lernt bei Hauke Morn kämpfen,
- * vertreibt die Plünderer des „Schwarzen Ole“, wählt seinen Weg und segelt mit zur Waldmark. Dort wartet Bürgermeister Hagan Voss am Steg (Übergang zu Quest 1).
- * Acht Abschnitte (im Questlog je ein Satz, Gruppen), etwa 12 Minuten. Jeder Abschnitt erklärt die Bedienung in einem Satz (HILFE, für die Oberfläche).
- * ENTWURF (shared/quest_entwuerfe.ts), bis die Insel steht: Welt (Insel, Steg der Waldmark), Figuren, Systeme (Start auf der Insel, Übungspuppen, Überfahrt),
+ * vertreibt die Plünderer des „Schwarzen Ole“, wählt seinen Weg und legt mit Telse ab (Abschluss auf der Insel). Nach einem Bildwechsel steht man in der Waldmark,
+ * ohne Begrüßung – Quest 1 spricht einen an wie heute (KANON d484b2d46, #191).
+ * Acht Abschnitte (der achte ist der Abschluss bei Telse; im Questlog je ein Satz, Gruppen), etwa 12 Minuten. Jeder Abschnitt erklärt die Bedienung in einem Satz (HILFE, für die Oberfläche).
+ * ENTWURF (shared/quest_entwuerfe.ts), bis die Insel steht: Welt (Insel, Steg der Waldmark), Figuren, Systeme (Start auf der Insel, Übungspuppen, Überfahrt nach dem Abschluss),
  * Integration (Kiefer und Kiefernstamm, Schiffsbeschläge, Plünderer und Schwarzer Ole). Die Stellen unten sind PLATZHALTER, bis Welt die Insel baut.
  */
 import type { QuestDef, Bed, QuestFigur, Geben } from "./questbau";
@@ -20,7 +21,6 @@ export const ANKERHOLM = {
   adern: A(100, 48), schmiede: A(106, 44),                                      /* Felsen im Osten: Kupferadern, Behelfsschmiede (Ofen, Amboss) */
   leuchtfeuer: A(60, 10), puppen: A(66, 14),                                    /* Nordspitze: Leuchtfeuer der Wacht, Übungsplatz */
   bucht: A(22, 14),                                                             /* Bucht der Plünderer */
-  stegWaldmark: [6436.5, 6440.5] as Feld,                                       /* Steg der Waldmark (Ankunft), Platzhalter bei Hagans Haus */
 };
 const O = ANKERHOLM;
 
@@ -29,9 +29,6 @@ const TELSE: QuestFigur = { id: "telse", name: "Kapitänin Telse Brack", modell:
 const ARVID: QuestFigur = { id: "arvid", name: "Arvid Thorn", modell: "npc.schmied", x: O.schmiede[0], y: O.schmiede[1] + 1.5, blick: [0, 1] };
 const MERLE: QuestFigur = { id: "merle", name: "Merle Haff", modell: "npc.moewen_fischerin", x: O.kochplatz[0], y: O.kochplatz[1] - 1.5, blick: [0, 1] };
 const HAUKE: QuestFigur = { id: "hauke", name: "Hauke Morn", modell: "npc.passwaechter", x: O.leuchtfeuer[0] + 2, y: O.leuchtfeuer[1] + 2, blick: [0, 1] };
-/* Hagan Voss steht für die Ankommenden am Steg der Waldmark, bis man ihn dort gesprochen hat; sonst ist er wie immer am Rathaus (Quest 1, id „hagan“). */
-const HAGAN_STEG: QuestFigur = { id: "hagan_steg", name: "Hagan Voss", modell: "npc.buergermeister_waldmark", x: O.stegWaldmark[0], y: O.stegWaldmark[1] - 1.5, blick: [0, 1],
-  sichtbar: { ...LAEUFT, erledigt: ["ablegen"] } };
 
 /* ───── Gegenstände ───── */
 const G = (g: string, name: string): Geben => ({ g, name, fehlt: true });
@@ -61,19 +58,19 @@ export const ANKERHOLM_HILFE: Record<string, { pc: string; handy: string }> = {
     handy: "Tippe einen Gegner an, um ihn anzugreifen. Leuchtet der Boden rot, lauf aus dem Kreis. Tippe Beute am Boden an, um sie aufzuheben." },
   wahl: { pc: "Leg Haukes Übungswaffen ab (im Fenster der Ausrüstung anklicken), dann gib sie ihm zurück und wähle deinen Weg.",
     handy: "Leg Haukes Übungswaffen ab (im Fenster der Ausrüstung antippen), dann gib sie ihm zurück und wähle deinen Weg." },
-  ablegen: { pc: "Sprich mit Telse, wenn du bereit bist. Auf dem Festland kommst du nicht mehr hierher zurück.", handy: "Sprich mit Telse, wenn du bereit bist. Auf dem Festland kommst du nicht mehr hierher zurück." },
+  ablegen: { pc: "Sprich mit Telse, wenn du bereit bist. Sie bringt dich in die Waldmark; nach Ankerholm kommst du nicht zurück.", handy: "Sprich mit Telse, wenn du bereit bist. Sie bringt dich in die Waldmark; nach Ankerholm kommst du nicht zurück." },
 };
 
 /* Telse: rau, knapp, Seemannsflüche ohne Fluchworte, im Grunde fürsorglich. Arvid: ruhig, spricht über Werkstücke wie über Menschen.
- * Merle: fröhlich, redet beim Arbeiten, Küstenkind. Hauke: alt, langsam, einsam, freut sich über Gesellschaft, mehr als er zeigt. Hagan: Bürgermeister, freundlich, in Sorge. */
+ * Merle: fröhlich, redet beim Arbeiten, Küstenkind. Hauke: alt, langsam, einsam, freut sich über Gesellschaft, mehr als er zeigt. */
 export const QUEST_ANKERHOLM: QuestDef = {
   id: ANKERHOLM_QUEST, titel: "Gestrandet auf Ankerholm", ort: "Ankerholm · Waldmark", start: "Sprich mit Kapitänin Telse Brack am Feuer der Mannschaft.",
   logNeu: "Du erwachst im nassen Sand. Hinter dir liegt die Seeschwalbe schief auf dem Riff, der Mast gebrochen.",
   logAngeboten: "Kapitänin Telse Brack sitzt am Feuer der Mannschaft.",
-  logAbgabe: "Die Seeschwalbe hat am Steg der Waldmark angelegt. Sprich mit Bürgermeister Hagan Voss.",
-  logFertig: "Ankerholm liegt hinter dir. Du bist in den Splitterlanden angekommen, in der Waldmark.",
-  geber: "telse", abgabe: "hagan_steg",
-  figuren: [TELSE, ARVID, MERLE, HAUKE, HAGAN_STEG],
+  logAbgabe: "Die Seeschwalbe ist geflickt. Bring Telse die Beschläge und leg mit ihr ab: Sie bringt dich in die Waldmark.",
+  logFertig: "Ankerholm liegt hinter dir. Die Seeschwalbe hat dich in die Waldmark gebracht, um die Splitterlande zu erkunden.",
+  geber: "telse",
+  figuren: [TELSE, ARVID, MERLE, HAUKE],
   schritte: [
     /* 1. Gestrandet */
     { id: "telse", text: "Telse am Feuer der Mannschaft finden", ereignis: { art: "antwort" }, gruppe: "gestrandet", bei: "telse", wo: "telse",
@@ -111,10 +108,7 @@ export const QUEST_ANKERHOLM: QuestDef = {
       log: "Ihr Anführer, der Schwarze Ole, stellt sich dir. Wenn der Boden um ihn rot leuchtet, geh aus dem Kreis!" },
     /* 7. Die Wahl */
     { id: "wahl", text: "Bei Hauke den eigenen Weg wählen", ereignis: { art: "antwort" }, nach: ["ole"], gruppe: "wahl", bei: "hauke", wo: "hauke",
-      log: "Gib Hauke seine Übungswaffen zurück (erst ablegen) und wähle deinen Weg: Schwert, Bogen oder Stab." },
-    /* 8. Ablegen */
-    { id: "ablegen", text: "Mit der Seeschwalbe ablegen", ereignis: { art: "antwort" }, nach: ["wahl"], gruppe: "ablegen", bei: "telse", wo: "telse",
-      log: "Die Seeschwalbe ist geflickt. Bring Telse die Beschläge und leg mit ihr ab zum Festland." },
+      log: "Leg Haukes Übungswaffen ab, gib sie ihm zurück und wähle deinen Weg: Schwert, Bogen oder Stab." },
   ],
   dialoge: {
     telse: {
@@ -124,9 +118,9 @@ export const QUEST_ANKERHOLM: QuestDef = {
         { wenn: L(["telse"]), zeilen: ["Gut, du stehst. Das ist mehr, als ich vom Mast sagen kann."], antworten: ["telse_auftrag"] },
         { wenn: L(["mast"], ["kiefern"]), zeilen: ["Riecht nach Harz. Du warst im Hain."], antworten: ["staemme", "tschuess"] },
         { wenn: L(["kiefern"]), zeilen: ["Drei Kiefern aus dem Hain, gerade gewachsen. Mehr brauch ich nicht. Erstmal."], antworten: ["beil_neu", "tschuess"] },
-        { wenn: L(["ablegen"], ["wahl"]), zeilen: ["Mast steht, Beschläge sitzen, die Leute sind satt. Und du siehst aus, als wüsstest du jetzt, wohin."], antworten: ["ablegen", "noch_nicht"] },
-        { wenn: L(["ablegen"], ["mast"]), zeilen: ["Arvid sagt, ohne Beschläge hält mir der Mast keine halbe Stunde. Hilf ihm. Und dann hilf, wem du sonst begegnest. So geht das auf See."], antworten: ["tschuess"] },
-        { wenn: { ...LAEUFT, erledigt: ["ablegen"] }, zeilen: ["Wir haben angelegt. Mach's gut. Und besuch mich im Hafen, wenn du mal ein Schiff brauchst."], antworten: ["tschuess"] },
+        { wenn: { ...LAEUFT, alle: true }, zeilen: ["Der Mast steht, die Leute sind satt. Und du siehst aus, als wüsstest du jetzt, wohin.",
+          "Gib mir die Beschläge, dann legen wir ab. Wir bringen dich zum Festland, in die Waldmark. Dort fangen alle an, die neu in die Splitterlande kommen. Von da an gehört die Welt dir: erkunde sie."], antworten: ["ablegen", "noch_nicht"] },
+        { wenn: L(["wahl"], ["mast"]), zeilen: ["Arvid sagt, ohne Beschläge hält mir der Mast keine halbe Stunde. Hilf ihm. Und dann hilf, wem du sonst begegnest. So geht das auf See."], antworten: ["tschuess"] },
         { wenn: FERTIG, zeilen: ["Na, Landratte? Ist das Festland so, wie du dachtest?"], antworten: ["tschuess"] },
         { zeilen: ["Was ist?"], antworten: ["tschuess"] },
       ],
@@ -140,9 +134,10 @@ export const QUEST_ANKERHOLM: QuestDef = {
           nichtsZuGeben: ["Du hast doch eins. Sieh in deinen Rucksack."] } }] },
         { id: "staemme", text: "Hier sind drei Kiefernstämme.", folge: [{ f: { erledige: ["mast"], nehmen: [{ g: "stamm_kiefer", n: 3 }],
           zeilen: ["Telse wiegt einen Stamm in der Hand. „Gut. Gerade und zäh.“", "Aber ein Mast ohne Beschläge ist ein Baum mit Ehrgeiz. Arvid hat in den Felsen im Osten eine Schmiede gebaut. Geh ihm zur Hand."] } }] },
-        { id: "ablegen", text: "Ich bin bereit. Legen wir ab.", folge: [{ f: { erledige: ["ablegen"], nehmen: [{ g: "schiffsbeschlaege" }],
+        { id: "ablegen", text: "Hier sind die Beschläge. Ich bin bereit, legen wir ab.", folge: [{ f: { abschluss: true, nehmen: [{ g: "schiffsbeschlaege" }],
           zeilen: ["Telse schlägt die Beschläge selbst an den Mast. „Alle Mann an Bord! Wir segeln!“",
-            "Die Seeschwalbe gleitet vom Riff. Ankerholm wird klein, dann ist es nur noch ein Licht hinter euch.", "Am Morgen liegt der Steg der Waldmark vor dem Bug."] } }] },
+            "Die Seeschwalbe gleitet vom Riff. Ankerholm wird klein, dann ist es nur noch ein Licht hinter euch.",
+            "„Wir legen an der Küste an. Von dort bringt dich ein Fuhrwerk in die Waldmark. Sieh dich um, hilf, wo du kannst – die Splitterlande warten auf dich.“"] } }] },
         { id: "noch_nicht", text: "Noch nicht.", folge: [{ f: { zeilen: ["Dann beeil dich. Der Wind wartet nicht ewig."] } }] },
         { id: "tschuess", text: "Bis später.", folge: [{ f: { zeilen: ["Mhm."] } }] },
       ],
@@ -209,22 +204,8 @@ export const QUEST_ANKERHOLM: QuestDef = {
         { id: "tschuess", text: "Bis später.", folge: [{ f: { zeilen: ["Geh mit dem Wind."] } }] },
       ],
     },
-    hagan_steg: {
-      reden: [
-        { wenn: { ...LAEUFT, alle: true }, zeilen: ["Ein Mann mit Amtskette kommt den Steg entlang. „Die Seeschwalbe! Wir dachten, ihr wärt im Sturm geblieben.“",
-          "Hagan Voss, Bürgermeister der Waldmark. Willkommen in den Splitterlanden. Ihr kommt in unruhigen Tagen."], antworten: ["ankommen"] },
-        { zeilen: ["Willkommen in der Waldmark."], antworten: ["tschuess"] },
-      ],
-      optionen: [
-        { id: "ankommen", text: "Was ist hier los?", folge: [{ f: { abschluss: true,
-          zeilen: ["Banditen. Sie haben die Straße nach Weidenhain gesperrt, und die Wagen kommen nicht mehr durch.",
-            "Aber erst mal bist du angekommen. Ruh dich aus, sieh dich um. Die kleine Jori läuft dir bestimmt gleich über den Weg, sie spricht jeden Neuen an.",
-            "Und wenn du helfen willst: Ich bin im Rathaus."] } }] },
-        { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Viel Glück in der Waldmark."] } }] },
-      ],
-    },
   },
-  glueckwunsch: "Willkommen in den Splitterlanden! Die Waldmark ist dein erster Hafen.",
+  glueckwunsch: "Gute Fahrt! Die Waldmark wartet – und mit ihr die ganzen Splitterlande.",
   belohnungText: "Belohnung: kleine XP in allen gelernten Berufen und Kampfarten, 50 Splitter",
   belohnung: { xp: { staerke: 100, defense: 100, fernkampf: 100, magie: 100 }, berufe: { holzfaellerei: 100, bergbau: 100, schmieden: 100, fischen: 100, kochen: 100 }, splitter: 50 },
   punkte: 1,
