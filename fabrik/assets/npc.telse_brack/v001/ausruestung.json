@@ -1,0 +1,90 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.telse_brack – Kapitänin Telse Brack: führt die Seeschwalbe: dunkelblauer Rock, Dreispitz (#190 Ankerholm).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "kleidung.kopf.dreispitz",
+      "platz": "kopf",
+      "art": "kopf",
+      "glb": "kleidung.kopf.dreispitz/v001/quelle/dreispitz.glb",
+      "sitz": 0.3
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.gewand",
+      "platz": "kutte",
+      "farbe": "#22324e",
+      "dicke": 0.03,
+      "unten": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberarm.L",
+          0,
+          1
+        ],
+        [
+          "oberarm.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0,
+          0.8
+        ],
+        [
+          "unterarm.R",
+          0,
+          0.8
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.95
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.95
+        ]
+      ]
+    }
+  ],
+  "teilnetze": [],
+  "arme_eng": 6
+}
