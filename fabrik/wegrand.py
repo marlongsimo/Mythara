@@ -18,6 +18,7 @@ ruine_bogen       Torbogen-Ruine aus Bruchstein, Efeu
 ruine_ecke        Mauerecke einer Ruine, Stufen gebrochen
 huette_feld       kleine Feldhütte aus Brettern mit Grasdach
 brunnen_feld      Feldbrunnen: Steintrog mit Schwengelpumpe
+uebungspuppe_rot / _gruen / _blau  Übungspuppen (#190 Ankerholm): rot = Nahkampf (Schwert), grün = Fernkampf (Pfeil), blau = Magie (Stern), ≈ 2,1 m
 """
 import math, os, random, sys
 import bpy
@@ -178,6 +179,25 @@ elif ART == "brunnen_feld":
     rohr((-1.15, 0, 1.2), (-1.15, 0, 1.6), 0.07, EISEN, 8); rohr((-1.15, 0, 1.55), (-0.5, 0, 1.75), 0.03, EISEN, 6)   # Schwengel
     rohr((-1.0, 0, 1.1), (-0.6, 0, 0.95), 0.04, EISEN, 6); kugel((-0.55, 0, 0.92), 0.05, EISEN, n=8)
     moos((0.6, -0.4, 0.72), 0.3, 3); moos((0, 0.45, 0.05), 0.6, 4)
+elif ART.startswith("uebungspuppe_"):                                                          # #190 Ankerholm: Übungspuppe – Pfahl, Strohkörper, Querholz-Arme, Sackkopf, farbiges Wams mit Zeichen der Kampfart
+    F = {"uebungspuppe_rot": ((176, 44, 38), "schwert"), "uebungspuppe_gruen": ((60, 140, 64), "bogen"), "uebungspuppe_blau": ((52, 92, 196), "stern")}[ART]
+    WAMS = mat("wams_" + ART, F[0], 0.85); ZEICHEN = mat("zeichen_hell", (236, 226, 196), 0.7); SACK = mat("sack", (200, 176, 130), 0.95)
+    wuerfel((0, 0, 0.08), (0.7, 0.7, 0.16), HOLZ2, fase=0.1); rohr((0, 0, 0.1), (0, 0, 1.95), 0.06, HOLZ2, 8)
+    kugel((0, 0, 1.15), 0.26, HEU, (1.0, 0.75, 1.6), 14)                                          # Strohkörper
+    for k in range(24): a_ = random.uniform(0, 6.3); rohr((0.24 * math.cos(a_), 0.18 * math.sin(a_), random.uniform(0.8, 1.5)), (0.3 * math.cos(a_), 0.24 * math.sin(a_), random.uniform(0.75, 1.5)), 0.008, HEU2, 4)
+    rohr((-0.55, 0, 1.45), (0.55, 0, 1.45), 0.05, HOLZ2, 6)                                         # Querholz als Arme
+    for sx in (-1, 1): kugel((sx * 0.55, 0, 1.45), 0.08, HEU, (1.3, 1, 1), 8)
+    wuerfel((0, -0.01, 1.2), (0.5, 0.42, 0.62), WAMS, fase=0.25)                                    # Wams
+    if F[1] == "schwert":                                                                       # Zeichen vorn (-y): Schwert / Pfeil / Stern
+        wuerfel((0, -0.23, 1.22), (0.05, 0.01, 0.38), ZEICHEN, fase=0); wuerfel((0, -0.23, 1.32), (0.2, 0.01, 0.05), ZEICHEN, fase=0)
+    elif F[1] == "bogen":
+        wuerfel((0, -0.23, 1.2), (0.05, 0.01, 0.36), ZEICHEN, fase=0)
+        for sx in (-1, 1): wuerfel((sx * 0.06, -0.23, 1.33), (0.04, 0.01, 0.14), ZEICHEN, (0, sx * 0.7, 0), 0)
+    else:
+        for k in range(4): wuerfel((0, -0.23, 1.22), (0.05, 0.01, 0.34), ZEICHEN, (0, k * math.pi / 4, 0), 0)
+    kugel((0, 0, 1.78), 0.17, SACK, (1, 0.9, 1.1), 12); ring((0, 0, 1.64), 0.1, 0.02, mat("schnur", (120, 90, 60)), seg=(12, 4))
+    for sx in (-1, 1): kugel((sx * 0.06, -0.15, 1.8), 0.025, mat("knopf", (40, 30, 24), 0.6), n=6)   # aufgenähte Augen
+    wuerfel((0, -0.08, 2.0), (0.22, 0.22, 0.1), WAMS, fase=0.3)                                    # Mütze in derselben Farbe (von weitem erkennbar)
 for o in list(bpy.context.scene.objects):
     bpy.context.view_layer.objects.active = o
     for m in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=m.name)

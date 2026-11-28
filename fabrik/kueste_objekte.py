@@ -11,6 +11,9 @@ netze            – zwei Pfähle mit aufgehängtem Fischernetz und Korkschwimme
 wrackkiste       – Kiste aus dem Wrack: nasses dunkles Holz, Eisenbänder, Seepocken, schwarzes Wachssiegel mit Rabe (G3); auch Rucksackbild
 #174 Hafen: kran (Holzkran mit Ausleger und Tretrad) · poller · taurolle · fischkisten · ruderboot (≈ 4 m) · leuchtturm (≈ 12 m, weiß-rot) ·
                    kaimauer_gerade / kaimauer_ecke (Baukasten 4 m, 2,2 m hoch; Wasser bei -y, Ecke auch bei +x)
+seeschwalbe_wrack / seeschwalbe_geflickt – die Seeschwalbe (#190 Ankerholm): Rumpf des Segelschiffs mit Namensbrett am Heck;
+                   Wrack: Mast abgebrochen und quer auf Deck, Segel zerrissen auf Deck, Kisten umgestürzt, Splitter, Loch im Rumpf, auf Grund (gekrängt, Ursprung Mitte unten);
+                   geflickt: neuer heller Mast mit Eisenbeschlägen, Flicken im Segel, neue Planken; Ursprung auf der Wasserlinie wie das Segelschiff
 segelschiff      – Einmaster für die Schiffslinien (Ausgabe 2), ≈ 12 m (+ Bugspriet), Bug nach -y; Ursprung auf der Wasserlinie (z = 0, Kiel −1,1 m),
                    ebenes Deck auf 1,3 m, Achterkastell (Deck 2,8 m) mit Steuerrad, Reling mit Gangway-Lücke mittschiffs an Steuerbord (+x)
 dreispitz        – Dreispitz des Wrackkapitäns (Kopfteil, art "kopf"): schwarzer Filz, goldene Tresse am Rand, Spitze vorn (-y)
@@ -225,10 +228,12 @@ elif ART in ("kaimauer_gerade", "kaimauer_ecke"):                               
         for k in range(6): wa = 0.62 * (1 if quer else -1); kugel(P(u0 + 0.3 + (u1 - u0 - 0.6) * k / 5, wa, 0.3 + random.uniform(0, 0.4)), 0.12, ALGE, G(1.6, 0.3, 0.8), 8)
     if ART == "kaimauer_gerade": mauer(-2.0, 2.0, False)
     else: mauer(-2.0, 0.6, False); mauer(-0.6, 2.0, True)                                       # Ecke: Kai biegt um 90° landeinwärts ab (Wasser vorn -y und rechts +x)
-elif ART == "segelschiff":                                                                    # Ausgabe 2 Schiffslinien: Einmaster ≈ 12 m, Bug nach -y, begehbares Deck (eben) auf 1,3 m über der Wasserlinie (z = 0)
+elif ART in ("segelschiff", "seeschwalbe_wrack", "seeschwalbe_geflickt"):                                                                    # Ausgabe 2 Schiffslinien: Einmaster ≈ 12 m, Bug nach -y, begehbares Deck (eben) auf 1,3 m über der Wasserlinie (z = 0)
     L_, B_, DECK, KIEL = 12.0, 4.0, 1.3, -1.1
     RUMPF = mat("rumpf", (110, 76, 46), 0.75); RUMPF2 = mat("rumpf_dunkel", (64, 44, 30), 0.8); DIELE = mat("deck", (176, 136, 92), 0.85); TUCH = mat("segel", (232, 222, 196), 0.9)
     BAND = mat("rumpfband", (40, 70, 110), 0.6); TAU = mat("tau", (176, 150, 104), 0.85)
+    if ART != "segelschiff":                                                                   # Seeschwalbe (#190 Ankerholm): verwittertes Holz, rotes Band
+        RUMPF = mat("rumpf_alt", (96, 72, 50), 0.85); BAND = mat("rumpfband_rot", (130, 40, 34), 0.7)
     me = bpy.data.meshes.new("rumpf"); vs, fs = [], []; NU, NV = 24, 12
     for i in range(NU + 1):                                                                   # Spanten von Heck (+y) bis Bug (-y): Breite rund, zum Bug spitz, Heck abgeschnitten
         t = i / NU; y = L_ / 2 - L_ * t
@@ -255,29 +260,60 @@ elif ART == "segelschiff":                                                      
         rohr((sx * B_ * 0.43, -4.6, DECK + 0.95), (sx * B_ * 0.43, -0.6 if sx > 0 else 5.2, DECK + 0.95), 0.05, RUMPF, 6)
         if sx > 0: rohr((sx * B_ * 0.43, 0.8, DECK + 0.95), (sx * B_ * 0.43, 5.2, DECK + 0.95), 0.05, RUMPF, 6)
         wuerfel((sx * (B_ / 2 - 0.02), 0.0, DECK - 0.15), (0.06, L_ * 0.8, 0.16), BAND, fase=0)       # farbiges Band außen
-    rohr((0, -0.8, DECK), (0, -0.8, DECK + 9.5), 0.16, RUMPF2, 10, 0.1)                                # Mast
-    rohr((-2.0, -0.8, DECK + 8.2), (2.0, -0.8, DECK + 8.2), 0.07, RUMPF2, 6); rohr((-2.2, -0.8, DECK + 2.4), (2.2, -0.8, DECK + 2.4), 0.08, RUMPF2, 6)
+    WRACK, GEFLICKT = ART == "seeschwalbe_wrack", ART == "seeschwalbe_geflickt"
+    if WRACK:                                                                                 # Mast auf 3,5 m abgebrochen, Oberteil liegt quer über Deck und Reling
+        rohr((0, -0.8, DECK), (0, -0.8, DECK + 3.5), 0.16, RUMPF2, 10, 0.14); kristall((0, -0.8, DECK + 3.6), 0.17, 0.4, RUMPF2)
+        rohr((0.2, -0.4, DECK + 0.3), (2.6, 3.2, DECK + 1.3), 0.12, RUMPF2, 10, 0.09); rohr((1.2, 1.0, DECK + 0.6), (2.9, 1.6, DECK + 1.0), 0.06, RUMPF2, 6)
+    else:
+        MAST = mat("mast_neu", (190, 150, 100), 0.7) if GEFLICKT else RUMPF2                      # geflickt: neuer, heller Kiefernmast
+        rohr((0, -0.8, DECK), (0, -0.8, DECK + 9.5), 0.16, MAST, 10, 0.1)
+        rohr((-2.0, -0.8, DECK + 8.2), (2.0, -0.8, DECK + 8.2), 0.07, MAST, 6); rohr((-2.2, -0.8, DECK + 2.4), (2.2, -0.8, DECK + 2.4), 0.08, MAST, 6)
+        if GEFLICKT:
+            for z in (DECK + 1.2, DECK + 4.5, DECK + 7.0): ring((0, -0.8, z), 0.15, 0.03, EIS, seg=(12, 4))   # Eisenbeschläge (aus Arvids Schmiede) um den Mast
     me = bpy.data.meshes.new("segel"); vs = []; fs = []
     for i in range(9):
         for j in range(7):
-            u, v = i / 8, j / 6; vs.append((-2.0 + 4.0 * u + 0.2 * v * (u - 0.5), -0.8 - 0.55 * math.sin(math.pi * u) * math.sin(math.pi * v) - 0.1, DECK + 2.5 + 5.6 * (1 - v)))
+            u, v = i / 8, j / 6
+            if WRACK: vs.append((0.4 + 2.0 * u, 0.2 + 2.6 * v + 0.15 * math.sin(7 * u), DECK + 0.15 + 0.35 * math.sin(math.pi * u) * math.sin(math.pi * v) + 0.9 * v * 0.3))   # Segel liegt zerknüllt auf Deck
+            else: vs.append((-2.0 + 4.0 * u + 0.2 * v * (u - 0.5), -0.8 - 0.55 * math.sin(math.pi * u) * math.sin(math.pi * v) - 0.1, DECK + 2.5 + 5.6 * (1 - v)))
     for i in range(8):
-        for j in range(6): a0 = i * 7 + j; fs.append((a0, a0 + 1, a0 + 8, a0 + 7))
+        for j in range(6):
+            a0 = i * 7 + j
+            if WRACK and (i + j * 3) % 5 == 0: continue                                          # Risse im Segel
+            fs.append((a0, a0 + 1, a0 + 8, a0 + 7))
     me.from_pydata(vs, [], fs); me.update(); o = bpy.data.objects.new("segel", me); bpy.context.collection.objects.link(o); o.data.materials.append(TUCH); s_ = o.modifiers.new("d", "SOLIDIFY"); s_.thickness = 0.03; glatt(o)
     rohr((0, -L_ / 2 + 0.4, DECK + 0.6), (0, -L_ / 2 - 2.2, DECK + 1.6), 0.08, RUMPF2, 6)                 # Bugspriet
-    rohr((0, -L_ / 2 - 2.1, DECK + 1.6), (0, -0.8, DECK + 9.4), 0.02, TAU, 4)                              # Stag
-    for sx in (-1, 1):
-        for y in (-1.6, 0.0): rohr((sx * B_ * 0.45, y, DECK + 0.3), (0, -0.8, DECK + 8.8), 0.015, TAU, 4)  # Wanten
-    rohr((0, -0.8, DECK + 9.5), (0, -0.8, DECK + 10.3), 0.015, EIS, 4); wuerfel((0.3, -0.8, DECK + 10.1), (0.6, 0.02, 0.35), BAND, fase=0)   # Wimpel
+    if not WRACK:
+        rohr((0, -L_ / 2 - 2.1, DECK + 1.6), (0, -0.8, DECK + 9.4), 0.02, TAU, 4)                          # Stag
+        for sx in (-1, 1):
+            for y in (-1.6, 0.0): rohr((sx * B_ * 0.45, y, DECK + 0.3), (0, -0.8, DECK + 8.8), 0.015, TAU, 4)  # Wanten
+        rohr((0, -0.8, DECK + 9.5), (0, -0.8, DECK + 10.3), 0.015, EIS, 4); wuerfel((0.3, -0.8, DECK + 10.1), (0.6, 0.02, 0.35), BAND, fase=0)   # Wimpel
+    else:
+        for sx in (-1, 1): rohr((sx * B_ * 0.45, -0.6, DECK + 0.3), (sx * 0.6, 0.6, DECK + 0.05), 0.015, TAU, 4)   # lose Wanten auf Deck
+    if GEFLICKT:                                                                              # Flicken: helle Segelstücke, neue Planken am Rumpf
+        FL = mat("segel_flicken", (214, 190, 140), 0.9); BR = mat("planke_neu", (190, 150, 100), 0.7)
+        for (x, z) in ((-1.0, DECK + 6.5), (0.8, DECK + 4.2), (1.3, DECK + 7.2)): wuerfel((x, -1.42, z), (0.7, 0.03, 0.6), FL, fase=0)
+        for (y, z) in ((-2.0, 0.7), (1.5, 0.3)): wuerfel((B_ / 2 - 0.02, y, z), (0.05, 1.6, 0.35), BR, fase=0.1)
+    if ART != "segelschiff":                                                                  # Name am Heck
+        wuerfel((0, L_ / 2 + 0.02, DECK + 0.25), (2.0, 0.03, 0.3), mat("namensbrett", (40, 34, 30), 0.8), fase=0)
+        for k in range(10): wuerfel((-0.8 + k * 0.18, L_ / 2 + 0.04, DECK + 0.25), (0.09, 0.01, 0.14), mat("schrift_gold", (214, 176, 80), 0.3, 0.8), fase=0)
+    if WRACK:                                                                                 # Splitter vom Sturm, Kisten umgestürzt, ein Loch im Rumpf
+        GL_ = mat("splitter_blau", (90, 160, 255), 0.2, 0, 2.2)
+        for k in range(6): kristall((random.uniform(-1.3, 1.3), random.uniform(-4, 3), DECK + 0.12), 0.06, random.uniform(0.15, 0.3), GL_, (random.uniform(-.5, .5), random.uniform(-.5, .5), 0))
+        wuerfel((-B_ / 2 + 0.03, -1.5, 0.4), (0.06, 1.2, 0.6), mat("loch", (20, 16, 14), 0.9), fase=0.2)
     wuerfel((0, 5.6, DECK + 1.9), (0.1, 0.1, 0.9), RUMPF2, fase=0.1); rad((0, 5.6, DECK + 2.25), 0.4, RUMPF2, 8, "y")   # Steuerrad auf dem Achterdeck
-    for k, (x, y) in enumerate(((-1.2, 1.6), (1.1, 1.8), (-1.3, -3.2))): wuerfel((x, y, DECK + 0.35), (0.6, 0.6, 0.6), HOLZ if k % 2 else NASS, fase=0.06)   # Fracht
+    for k, (x, y) in enumerate(((-1.2, 1.6), (1.1, 1.8), (-1.3, -3.2))): wuerfel((x, y, DECK + 0.35), (0.6, 0.6, 0.6), HOLZ if k % 2 else NASS, (0.0, 0.0, 0.0) if not WRACK else (0.4 * k, 0.3, k), 0.06)   # Fracht
     for x in (-0.9, 0.9): ring((x, -3.6, DECK + 0.1), 0.3, 0.05, TAU, seg=(16, 4))
 for o in list(bpy.context.scene.objects):
     bpy.context.view_layer.objects.active = o
     for m in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=m.name)
 for o in bpy.context.scene.objects: o.select_set(True)
 bpy.context.view_layer.objects.active = bpy.context.scene.objects[0]; bpy.ops.object.join(); bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-o = bpy.context.object; lo = 0.0 if ART == "segelschiff" else min(v.co.z for v in o.data.vertices)   # Schiff: Ursprung bleibt auf der Wasserlinie 
+o = bpy.context.object
+if ART == "seeschwalbe_wrack":                                                                # auf Grund gelaufen: Krängung 14° nach Backbord, Bug leicht höher
+    from mathutils import Matrix
+    o.data.transform(Matrix.Rotation(math.radians(-20), 4, "Y") @ Matrix.Rotation(math.radians(-5), 4, "X")); o.data.update()
+lo = 0.0 if ART in ("segelschiff", "seeschwalbe_geflickt") else min(v.co.z for v in o.data.vertices)   # Schiff: Ursprung bleibt auf der Wasserlinie 
 for v in o.data.vertices: v.co.z -= lo
 bpy.ops.export_scene.gltf(filepath=os.path.abspath(ZIEL), export_format="GLB", use_selection=True)
 print("Objekt:", ART, len(o.data.polygons), "Flächen ·", os.path.getsize(ZIEL) // 1024, "KB")
