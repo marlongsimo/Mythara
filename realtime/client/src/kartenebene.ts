@@ -16,6 +16,7 @@ const ARTEN: { id: string; text: string; ab: number; sym: string[] }[] = [
   { id: "dungeon", text: "Dungeon · Boss", ab: 0, sym: ["dungeon"] },
   { id: "laden", text: "Läden", ab: 1, sym: ["handwerkshaendler", "waffenhaendler", "ausruestungshaendler", "traenkehaendler", "friseur", "taverne", "faehre"] },
   { id: "handwerk", text: "Handwerk", ab: 1, sym: ["amboss", "ofen", "werkbank", "bindestein"] },
+  { id: "kochen", text: "Kochstellen", ab: 1, sym: ["kochstelle"] }, /* Wunsch des Nutzers (28.11.): Feuerstellen und Herde – Daten trägt Integration ein ({ s: "kochstelle", x, y }) */
   { id: "rohstoff", text: "Holz · Erz · Fisch", ab: 2, sym: ["holzfaellerei", "mine", "fanggrund"] },
 ];
 const ART_VON = (s: string) => ARTEN.find((a) => a.sym.includes(s)) || ARTEN.find((a) => a.id === "laden")!;
@@ -71,6 +72,7 @@ export function kartenEbene(k: KartenZugang): void {
   const bauen = (immer = false) => { const st = k.stufe(); if (st < 0) return; const A = k.ansicht();
     if (!immer && gebaut && gebaut.st === st && gebaut.z === A.z && Math.abs(gebaut.vx - A.vx) < A.W * 0.35 && Math.abs(gebaut.vy - A.vy) < A.H * 0.35) return;
     gebaut = { vx: A.vx, vy: A.vy, z: A.z, st }; legende();
+    const m = [0.55, 0.75, 1][st] ?? 1; ebene.style.setProperty("--wkm", String(m)); /* Wunsch des Nutzers (28.11.): herausgezoomt auch kleiner – Nah 100 %, Gegend 75 %, Welt 55 % */
     const sch = (x: number, y: number) => { const p = k.px(x, y); return { cx: p.x, cy: p.y, sx: A.vx + p.x * A.z, sy: A.vy + p.y * A.z }; };
     const sichtbar = (sx: number, sy: number) => sx > -A.W * 0.6 && sx < A.W * 1.6 && sy > -A.H * 0.6 && sy < A.H * 1.6;
     const teile: string[] = []; ebene.style.transform = "";
@@ -78,7 +80,7 @@ export function kartenEbene(k: KartenZugang): void {
     if (st >= 1 && !aus.has("orte")) for (const g of gebiete) if (g.grenze && /Stadt|Dorf|Gehöft/.test(g.art)) { const a = sch(g.grenze[0], g.grenze[1]), b = sch(g.grenze[2], g.grenze[3]);
       if (b.sx < -50 || a.sx > A.W * 1.6 || b.sy < -50 || a.sy > A.H * 1.6) continue; teile.push(`<div class="wk-umriss" style="left:${a.sx}px;top:${a.sy}px;width:${b.sx - a.sx}px;height:${b.sy - a.sy}px"></div>`); }
     /* Symbole: je Art ab ihrer Stufe; auf dem Bildschirm näher als R px → eines mit „+n“ */
-    const R = st === 2 ? 26 : 34, gruppen: { sx: number; sy: number; cx: number; cy: number; s: string[]; n: number; name: string }[] = [];
+    const R = (st === 2 ? 26 : 34) * m, gruppen: { sx: number; sy: number; cx: number; cy: number; s: string[]; n: number; name: string }[] = [];
     for (const q of symbole) { const A2 = ART_VON(q.s); if (A2.ab > st || aus.has(A2.id)) continue; const p = sch(q.x, q.y); if (!sichtbar(p.sx, p.sy)) continue;
       const g = gruppen.find((x) => Math.hypot(x.sx - p.sx, x.sy - p.sy) < R); if (g) { g.n++; if (!g.s.includes(q.s)) g.s.push(q.s); } else gruppen.push({ ...p, s: [q.s], n: 1, name: (o.symbolNamen || {})[q.s] || q.s }); }
     for (const g of gruppen) teile.push(`<div class="wk-sym${st === 0 ? " gross" : ""}" style="left:${g.sx}px;top:${g.sy}px" title="${esc(g.name)}"><img src="${o.symbolBild || ""}${g.s[0]}.webp" alt="" draggable="false">${g.s.length > 1 ? `<b>+${g.s.length - 1}</b>` : ""}</div>`);
@@ -102,7 +104,7 @@ export function kartenEbene(k: KartenZugang): void {
 let stilDa = false;
 function stil(): void { if (stilDa) return; stilDa = true; const s = document.createElement("style"); s.textContent = `
 #ez-uebersicht .wk-oben{position:absolute;inset:0;pointer-events:none;transition:opacity .15s}
-#ez-uebersicht .wk-sym,#ez-uebersicht .wk-n,#ez-uebersicht .wk-ortpunkt{transform:translate(-50%,-50%)}
+#ez-uebersicht .wk-sym,#ez-uebersicht .wk-n,#ez-uebersicht .wk-ortpunkt{transform:translate(-50%,-50%) scale(var(--wkm,1))}
 #ez-uebersicht .wk-sym{position:absolute;width:24px;height:24px;margin:0;border-radius:50%;background:radial-gradient(#3a2a14,#140e08);box-shadow:0 0 0 1.5px #d9ad55,0 0 0 3px rgba(0,0,0,.45);display:grid;place-items:center;pointer-events:none}
 #ez-uebersicht .wk-sym img{width:18px;height:18px} #ez-uebersicht .wk-sym.gross{width:30px;height:30px} #ez-uebersicht .wk-sym.gross img{width:22px;height:22px}
 #ez-uebersicht .wk-sym b{position:absolute;right:-7px;top:-6px;font:700 9.5px Inter,sans-serif;color:#1a1208;background:#ffd36a;border-radius:6px;padding:0 3px}
