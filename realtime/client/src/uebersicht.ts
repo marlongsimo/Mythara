@@ -16,6 +16,9 @@ export interface WeltkarteOpts {
   stand?: string;                                // Kennung des Weltbaus (gegen veraltete Bilder im Browser)
   regionen: KartenRegion[];                      // alle sichtbaren Regionen (gesperrte schon herausgenommen)
   chunkFelder: number;                           // Felder je Chunk
+  /** #183 (Welt, welt.json „karte“): vorhandene Auflösungen der Regionsbilder (px je Feld: 2 → karte2-<id>.webp, 4 → karte-<id>.webp)
+   *  und ein einzelnes Bild der Oberwelt für die Stufe „Welt“ (Lage in Weltfeldern, Größe in Bildpunkten) */
+  karte?: { stufen?: number[]; welt?: { bild: string; pxJeFeld: number; ursprung: number[]; groesse: number[] } };
   ich: () => { x: number; y: number } | null;    // eigene Stelle in Feldern (Welt)
   hier?: () => string;                           // Region, in der man steht (für die Überschrift)
   orte?: { x: number; y: number; zeichen: string; name: string }[]; // besondere Stellen (Läden) als kleines Symbol
@@ -28,10 +31,12 @@ export interface WeltkarteOpts {
 const STUFE = (art: string, gebiet: boolean): "gross" | "mittel" | "land" | "klein" =>
   art === "Stadt" ? "gross" : art === "Dorf" || (gebiet && (art === "Gehöft" || art === "Ruineninsel")) ? "mittel" : art === "Landschaft" || art === "Wald" ? "land" : "klein";
 
-const PX = 4; /* Bildpunkte je Feld bei Zoom 1 */
+/** Bildpunkte je Feld auf der Leinwand. #183: die Leinwand wird gleich in Bildschirmgröße aufgebaut (Breite / SICHT_FELDER, Zoom ≈ 1) –
+ *  vorher 4 px je Feld mit scale(0,13): WebKit (iPhone) rasterte dafür eine Ebene von 9600×12672 px */
+let PX = 4;
 /** So viele Felder zeigt die Karte in der Breite (fester Zoom, #11: von den Riedwiesen bis Graufurt) */
 export const SICHT_FELDER = 750;
-/** #183: feste Zoomstufen als Anteil der Leinwand (PX je Feld): Welt · Gegend · Nah – geöffnet wird mit „Gegend“ */
+/** #183: feste Zoomstufen als Anteil von 4 px je Feld (0,4 / 1,2 / 4 CSS-px je Feld): Welt · Gegend · Nah – geöffnet wird mit „Gegend“ */
 export const STUFEN = [0.1, 0.3, 1.0];
 const optionen = { eigeneSymbole: true };
 let stufeJetzt = -1, ebeneJetzt: HTMLElement | null = null, umrechnen: ((x: number, y: number) => { x: number; y: number }) | null = null;
@@ -54,7 +59,7 @@ export function uebersicht(o: WeltkarteOpts): void {
   if (offen) { offen(); return; }
   if (!o.regionen.length) return;
   stil();
-  const C = o.chunkFelder;
+  const C = o.chunkFelder; PX = 4 * STUFEN[1]; /* #183: Leinwand in der Dichte von „Gegend“ aufgebaut (Zoom 1), die anderen Stufen skalieren davon aus – kein riesiges scale(0,1…0,3) für WebKit */
   /* Umriss der ganzen Welt in Feldern */
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const r of o.regionen) { x0 = Math.min(x0, r.ursprung[0] * C); y0 = Math.min(y0, r.ursprung[1] * C); x1 = Math.max(x1, (r.ursprung[0] + r.chunks[0]) * C); y1 = Math.max(y1, (r.ursprung[1] + r.chunks[1]) * C); }
@@ -70,11 +75,24 @@ export function uebersicht(o: WeltkarteOpts): void {
   /* #183: Bilder erst laden, wenn sie in die Nähe des Sichtbereichs kommen (nachladen() unten) – sonst lägen alle Regionen dekodiert im Speicher (73 MPx) */
   const kacheln: { im: HTMLImageElement; x: number; y: number; w: number; h: number; an: boolean }[] = [];
   for (const r of o.regionen) {
-    const im = document.createElement("img"); im.alt = ""; im.draggable = false; im.decoding = "async"; im.dataset.src = `${o.daten}karte-${r.id}.webp${o.stand ? "?v=" + o.stand : ""}`; im.dataset.region = r.id;
-    const k = { im, x: (r.ursprung[0] * C - x0) * PX, y: (r.ursprung[1] * C - y0) * PX, w: r.chunks[0] * C * PX, h: r.chunks[1] * C * PX, an: false };
+    const im = document.createElement("img"); im.alt = ""; im.draggable = false; im.decoding = "async"; im.dataset.region = r.id; im.hidden = true; /* ohne Bild unsichtbar (sonst Rahmen eines fehlenden Bildes) */
+    /* Kanten auf ganze Pixel: bei Bruchteil-Pixeln je Feld blieben zwischen benachbarten Regionen feine Nähte */
+    const l = Math.round((r.ursprung[0] * C - x0) * PX), t = Math.round((r.ursprung[1] * C - y0) * PX), rr = Math.round(((r.ursprung[0] + r.chunks[0]) * C - x0) * PX), u = Math.round(((r.ursprung[1] + r.chunks[1]) * C - y0) * PX);
+    const k = { im, x: l, y: t, w: rr - l, h: u - t, an: false };
     Object.assign(im.style, { left: k.x + "px", top: k.y + "px", width: k.w + "px", height: k.h + "px" });
     lw.appendChild(im); kacheln.push(k);
   }
+  /* #183: je Stufe das passende Bild – Welt: ein Bild der Oberwelt (0,5 px je Feld), Gegend: karte2 (2 px je Feld), Nah: karte (4 px je Feld); fehlt eines, das nächstgrößere */
+  const v = o.stand ? "?v=" + o.stand : "", mit2 = Boolean(o.karte && o.karte.stufen && o.karte.stufen.includes(2)), WB = o.karte && o.karte.welt;
+  const quelle = (id: string) => `${o.daten}${stufeJetzt < 2 && mit2 ? "karte2-" : "karte-"}${id}.webp${v}`;
+  let weltBild: HTMLImageElement | null = null;
+  if (WB && WB.bild && WB.pxJeFeld > 0) { weltBild = document.createElement("img"); weltBild.className = "wk-weltbild"; weltBild.alt = ""; weltBild.draggable = false; weltBild.decoding = "async"; weltBild.hidden = true;
+    Object.assign(weltBild.style, { left: Math.round((WB.ursprung[0] - x0) * PX) + "px", top: Math.round((WB.ursprung[1] - y0) * PX) + "px", width: Math.round((WB.groesse[0] / WB.pxJeFeld) * PX) + "px", height: Math.round((WB.groesse[1] / WB.pxJeFeld) * PX) + "px" });
+    lw.insertBefore(weltBild, lw.firstChild); }
+  /* Regionen, die ganz im Bild der Oberwelt liegen – nur die entfallen auf der Stufe „Welt“ (Inseln und Gebiete außerhalb behalten ihr eigenes Bild) */
+  const imWeltbild = new Set<HTMLImageElement>();
+  if (weltBild) { const wx = parseFloat(weltBild.style.left), wy = parseFloat(weltBild.style.top), ww = parseFloat(weltBild.style.width), wh = parseFloat(weltBild.style.height);
+    for (const k of kacheln) if (k.x >= wx - 1 && k.y >= wy - 1 && k.x + k.w <= wx + ww + 1 && k.y + k.h <= wy + wh + 1) imWeltbild.add(k.im); }
   /* Namen nach den Bildern, damit sie oben liegen. Ein Land aus mehreren Regionen (das Festland ist in Kacheln geschnitten) bekommt seinen Namen
      nur einmal, in der flächengewichteten Mitte seiner Regionen. */
   const namen = new Map<string, { x: number; y: number; f: number }>();
@@ -116,8 +134,11 @@ export function uebersicht(o: WeltkarteOpts): void {
   const nachladen = () => { const W = flaeche.clientWidth, Hh = flaeche.clientHeight;
     const box = (rand: number) => [(-vx - W * rand) / z, (-vy - Hh * rand) / z, (W * (1 + rand) - vx) / z, (Hh * (1 + rand) - vy) / z];
     const [ax, ay, bx, by] = box(0.5), [fx, fy, gx, gy] = box(1.5);
-    for (const k of kacheln) { if (!k.an) { if (k.x < bx && k.x + k.w > ax && k.y < by && k.y + k.h > ay) { k.an = true; k.im.src = k.im.dataset.src!; } }
-      else if (!(k.x < gx && k.x + k.w > fx && k.y < gy && k.y + k.h > fy)) { k.an = false; k.im.removeAttribute("src"); } } };
+    const nurWelt = Boolean(weltBild) && stufeJetzt === 0; /* Stufe „Welt“ mit eigenem Bild: keine Regionsbilder, die darin liegen */
+    if (weltBild) { if (nurWelt && !weltBild.getAttribute("src")) weltBild.src = `${o.daten}${WB!.bild}${v}`; if (weltBild.hidden === nurWelt) weltBild.hidden = !nurWelt; }
+    for (const k of kacheln) { const soll = k.x < bx && k.x + k.w > ax && k.y < by && k.y + k.h > ay, weit = !(k.x < gx && k.x + k.w > fx && k.y < gy && k.y + k.h > fy);
+      if ((nurWelt && imWeltbild.has(k.im)) || (k.an && weit)) { if (k.an) { k.an = false; k.im.hidden = true; k.im.removeAttribute("src"); delete k.im.dataset.src; } continue; }
+      if (soll || k.an) { const q = quelle(k.im.dataset.region!); if (k.im.dataset.src !== q) { k.im.dataset.src = q; k.im.src = q; } k.an = true; k.im.hidden = false; } } };
   const setzen = () => { /* nicht weiter hinaus schieben, als die Welt reicht (ein Rest bleibt sichtbar) */
     const W = flaeche.clientWidth, Hh = flaeche.clientHeight, b = B * z, h = H * z;
     vx = b <= W ? (W - b) / 2 : Math.min(W * 0.4, Math.max(W * 0.6 - b, vx)); vy = h <= Hh ? (Hh - h) / 2 : Math.min(Hh * 0.4, Math.max(Hh * 0.6 - h, vy));
@@ -127,10 +148,10 @@ export function uebersicht(o: WeltkarteOpts): void {
   const melden = () => window.dispatchEvent(new CustomEvent("ez-karte-zoom", { detail: { stufe: stufeJetzt, z } }));
   let gleitT = 0;
   const zoomen = (s: number, px = flaeche.clientWidth / 2, py = flaeche.clientHeight / 2) => { s = Math.max(0, Math.min(STUFEN.length - 1, s)); if (s === stufeJetzt) return;
-    const n = STUFEN[s]; vx = px - (px - vx) * (n / z); vy = py - (py - vy) * (n / z); z = n; stufeJetzt = s; lw.classList.add("gleitet"); setzen(); melden();
+    const n = (STUFEN[s] * 4) / PX; vx = px - (px - vx) * (n / z); vy = py - (py - vy) * (n / z); z = n; stufeJetzt = s; lw.classList.add("gleitet"); setzen(); melden();
     clearTimeout(gleitT); gleitT = window.setTimeout(() => { lw.classList.remove("gleitet"); namenZ = -1; ordnen(); lw.style.willChange = "auto"; requestAnimationFrame(() => { lw.style.willChange = ""; }); }, 260); };
   const zuMir = () => { const i = o.ich(); if (!i) return; vx = flaeche.clientWidth / 2 - (i.x - x0) * PX * z; vy = flaeche.clientHeight / 2 - (i.y - y0) * PX * z; setzen(); };
-  stufeJetzt = 1; z = STUFEN[1]; zuMir(); if (!o.ich()) setzen(); melden();
+  stufeJetzt = 1; z = (STUFEN[1] * 4) / PX; zuMir(); if (!o.ich()) setzen(); melden();
 
   /* eigene Stelle laufend nachführen (der Held läuft weiter, auch während die Karte offen ist) */
   let lauf = 0;
@@ -175,9 +196,11 @@ function stil() {
 #ez-uebersicht .wk-flaeche.zieht{cursor:grabbing}
 #ez-uebersicht .wk-leinwand{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
 #ez-uebersicht .wk-leinwand.gleitet{transition:transform .22s ease-out}
+#ez-uebersicht .wk-weltbild{position:absolute;image-rendering:auto}
 #ez-uebersicht .wk-ebene{position:absolute;left:0;top:0;width:0;height:0}
 #ez-uebersicht .wk-symbol{position:absolute;width:30px;height:auto;transform:translate(-50%,-58%) scale(calc(1 / var(--wkz,1)));transform-origin:50% 58%;filter:drop-shadow(0 1px 3px rgba(0,0,0,.85))}
 #ez-uebersicht .wk-leinwand img{position:absolute;display:block;pointer-events:none;image-rendering:auto}
+#ez-uebersicht .wk-leinwand img[hidden]{display:none}
 #ez-uebersicht .wk-name{position:absolute;transform:translate(-50%,-50%) scale(calc(1 / var(--wkz,1)));white-space:nowrap;pointer-events:none;font-size:15px;letter-spacing:.08em;color:#ffe9b0;text-shadow:0 0 4px #000,0 0 8px #000,0 1px 2px #000;opacity:.92}
 #ez-uebersicht .wk-name{z-index:3}
 #ez-uebersicht .wk-name.gross{transform:translate(-50%,-210%) scale(calc(1 / var(--wkz,1)));transform-origin:50% 210%;font-size:19px;font-weight:700;letter-spacing:.1em;color:#ffd36a;opacity:1;text-shadow:0 0 4px #000,0 0 10px #000,0 2px 2px #000}
@@ -198,6 +221,10 @@ function stil() {
 #ez-uebersicht button:hover{background:rgba(60,46,26,.95)}
 #ez-uebersicht .wk-zu{position:absolute;right:max(14px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));font-size:18px}
 #ez-uebersicht .wk-hilfe{position:absolute;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;font:12px/1.3 Georgia,serif;color:#cbb88a;opacity:.8;text-align:center;pointer-events:none;max-width:calc(100% - 140px)}
+/* #183: leichtere Schatten (WebKit malt drop-shadow und mehrfache text-shadow teuer); beim Ziehen ganz ohne – die Ebene wird dann nur verschoben */
+#ez-uebersicht .wk-leinwand .wk-name{text-shadow:0 0 3px #000,0 1px 1px #000}
+#ez-uebersicht .wk-flaeche.zieht .wk-symbol{filter:none}
+#ez-uebersicht .wk-flaeche.zieht .wk-name{text-shadow:none}
 @media (max-width:600px){#ez-uebersicht .wk-hilfe{display:none}}`;
   document.head.appendChild(s);
 }

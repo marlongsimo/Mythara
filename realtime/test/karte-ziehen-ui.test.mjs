@@ -79,19 +79,29 @@ try {
   check(logik > 0 && logik <= Math.ceil(dt * 14) + 2, `Hinter der Karte läuft die Spiellogik gedrosselt weiter (${logik}× in ${dt.toFixed(1)} s, etwa 10-mal je Sekunde)`);
   check(g1 - g0 === 0, `Hinter der offenen Karte zeichnet die 3D-Welt nicht (${g1 - g0} Bilder)`);
   /* Ausgabe 1 (#183): feste Zoomstufen Welt · Gegend · Nah (Lupe, Doppeltipp), Regionsbilder nach Sichtbereich, Ebene für die Oberfläche */
-  const stand = () => anna.evaluate(() => { const lw = document.querySelector("#ez-uebersicht .wk-leinwand"), alle = [...lw.querySelectorAll("img[data-region]")], an = alle.filter((i) => i.getAttribute("src"));
-    return { z: Number((/scale\(([\d.]+)\)/.exec(lw.style.transform) || [])[1]), an: an.length, alle: alle.length, mpx: an.reduce((q, i) => q + i.naturalWidth * i.naturalHeight, 0) / 1e6, ebene: Boolean(lw.querySelector(".wk-ebene")) }; });
+  const stand = () => anna.evaluate(() => { const lw = document.querySelector("#ez-uebersicht .wk-leinwand"), alle = [...lw.querySelectorAll("img[data-region]")], an = alle.filter((i) => i.getAttribute("src")), kaputt = alle.filter((i) => !i.getAttribute("src") && getComputedStyle(i).display !== "none").length;
+    const wb = lw.querySelector(".wk-weltbild");
+    return { z: Number((/scale\(([\d.]+)\)/.exec(lw.style.transform) || [])[1]), an: an.length, alle: alle.length, mpx: an.reduce((q, i) => q + i.naturalWidth * i.naturalHeight, 0) / 1e6, ebene: Boolean(lw.querySelector(".wk-ebene")), kaputt,
+      zwei: an.filter((i) => /karte2-/.test(i.src)).length, weltbild: wb ? { sichtbar: !wb.hidden, geladen: wb.complete && wb.naturalWidth > 0 } : null }; });
+  const mitBildern = await anna.evaluate(async () => { try { const j = await (await fetch("../echtzeit/welt/welt.json")).json(); return Boolean(j.karte && j.karte.welt); } catch { return false; } });
   await anna.evaluate(() => { window.__zoom = []; addEventListener("ez-karte-zoom", (e) => window.__zoom.push(e.detail.stufe)); });
   const s1 = await stand();
-  check(Math.abs(s1.z - 0.3) < 1e-3 && s1.an > 0 && s1.an < s1.alle, `Geöffnet in „Gegend“ (Zoom ${s1.z}), geladen sind nur die nahen Regionsbilder (${s1.an} von ${s1.alle}, ${s1.mpx.toFixed(1)} MPx statt 73)`);
+  check(Math.abs(s1.z - 1) < 1e-3 && s1.an > 0 && s1.an < s1.alle, `Geöffnet in „Gegend“ (Leinwand-Zoom ${s1.z}), geladen sind nur die nahen Regionsbilder (${s1.an} von ${s1.alle}, ${s1.mpx.toFixed(1)} MPx statt 73)`);
+  { const st = await anna.evaluate(() => { const lw = document.querySelector("#ez-uebersicht .wk-leinwand"), n = lw.querySelector(".wk-name"); return { b: parseFloat(lw.style.width), h: parseFloat(lw.style.height), schatten: n ? getComputedStyle(n).textShadow : "" }; });
+    check(st.b < 4000, `Leinwand in der Dichte von „Gegend“ statt 9600×12672 px mit scale (${Math.round(st.b)}×${Math.round(st.h)} px)`);
+    check((st.schatten.match(/rgb/g) || []).length <= 2, `Namen mit leichtem Schatten (${st.schatten})`); }
   check(s1.ebene, "Ebene für die Symbole der Oberfläche liegt auf der Leinwand (karteEbene)");
   await anna.click('#ez-uebersicht [data-k="rein"]'); await anna.waitForTimeout(800); const s2 = await stand();
-  check(Math.abs(s2.z - 1) < 1e-3 && s2.an >= 1 && s2.an <= s1.an, `Lupe +: „Nah“ (Zoom ${s2.z}), ${s2.an} Regionsbilder geladen`);
+  check(Math.abs(s2.z - 10 / 3) < 1e-3 && s2.an >= 1 && s2.an <= s1.an, `Lupe +: „Nah“ (Zoom ${s2.z}), ${s2.an} Regionsbilder geladen`);
   await anna.click('#ez-uebersicht [data-k="raus"]'); await anna.waitForTimeout(500); await anna.click('#ez-uebersicht [data-k="raus"]'); await anna.waitForTimeout(800); const s3 = await stand();
-  check(Math.abs(s3.z - 0.1) < 1e-3, `Lupe − zweimal: „Welt“ (Zoom ${s3.z}), ${s3.an} Regionsbilder geladen`);
-  await anna.click('#ez-uebersicht [data-k="raus"]'); await anna.waitForTimeout(400); check(Math.abs((await stand()).z - 0.1) < 1e-3, "Weiter hinaus als „Welt“ geht es nicht");
+  check([s1, s2, s3].every((x) => x.kaputt === 0), `Regionsbilder ohne geladenes Bild bleiben unsichtbar (keine Rahmen fehlender Bilder: ${[s1, s2, s3].map((x) => x.kaputt).join("/")})`);
+  if (mitBildern) { check(Boolean(s3.weltbild && s3.weltbild.sichtbar && s3.weltbild.geladen) && s3.an < s1.an, `„Welt“ zeigt das eine Bild der Oberwelt statt der Regionsbilder darin (${JSON.stringify(s3.weltbild)}, ${s3.an} Regionsbilder außerhalb)`);
+    check(s1.zwei === s1.an && s1.an > 0 && s2.zwei === 0, `„Gegend“ lädt die Bilder mit 2 px je Feld (${s1.zwei} von ${s1.an}), „Nah“ die vollen (${s2.zwei} halbe von ${s2.an})`); }
+  else console.log("  (welt.json ohne „karte“: überall die vollen Regionsbilder)");
+  check(Math.abs(s3.z - 1 / 3) < 1e-3, `Lupe − zweimal: „Welt“ (Zoom ${s3.z}), ${s3.an} Regionsbilder geladen`);
+  await anna.click('#ez-uebersicht [data-k="raus"]'); await anna.waitForTimeout(400); check(Math.abs((await stand()).z - 1 / 3) < 1e-3, "Weiter hinaus als „Welt“ geht es nicht");
   { const cdp2 = await anna.context().newCDPSession(anna), tipp = async () => { await cdp2.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 420, y: 200, id: 2 }] }); await cdp2.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] }); };
-    await tipp(); await anna.waitForTimeout(120); await tipp(); await anna.waitForTimeout(800); const s4 = await stand(); check(Math.abs(s4.z - 0.3) < 1e-3, `Doppeltipp: eine Stufe näher (Zoom ${s4.z})`); }
+    await tipp(); await anna.waitForTimeout(120); await tipp(); await anna.waitForTimeout(800); const s4 = await stand(); check(Math.abs(s4.z - 1) < 1e-3, `Doppeltipp: eine Stufe näher (Zoom ${s4.z})`); }
   const zs = await anna.evaluate(() => window.__zoom); check(JSON.stringify(zs) === "[2,1,0,1]", `Ereignis ez-karte-zoom meldet jede Stufe (${JSON.stringify(zs)})`);
   await anna.keyboard.press("Escape"); await anna.waitForTimeout(1500); const g2 = await bilder3d(); await anna.waitForTimeout(2000); const g3 = await bilder3d();
   check(!(await anna.$("#ez-uebersicht")) && g3 > g2, `Nach dem Schließen zeichnet die 3D-Welt wieder (${g3 - g2} Bilder in 2 s)`);

@@ -14,7 +14,7 @@ import { eigenesLevel } from "../skills";
 import { WELT, Welt, weltDatei } from "./welt";
 import { heldenhalle } from "../halle";
 import { weltkarte } from "../weltkarte";
-import { uebersicht } from "../uebersicht";
+import { uebersicht, type WeltkarteOpts } from "../uebersicht";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "../hud";
 import { wecken } from "../netz";
 import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, baldTafel, stilTab, seitenTab, skillTafel, ladenTafel, RKnopf } from "../rahmen";
@@ -211,7 +211,7 @@ function regionBetreten(s: WeltKern, id: string, ux: number, uy: number, b: numb
 /** Die Übersichtskarte öffnen: Regionen aus dem Weltindex (gesperrte sind dort schon entfernt), die eigene Stelle läuft mit */
 function karteZeigen(s: WeltKern) {
   const idx = (s as unknown as { index?: { chunkFelder: number; regionen: Record<string, { region: { id: string; name: string; ursprung: number[]; chunks: number[] } }> } }).index; if (!idx) return;
-  uebersicht({ daten: WELT.daten, stand: WELT.stand, chunkFelder: idx.chunkFelder || 32, symbolNamen: { ...SPIEL_SYMBOL_NAMEN, ...((idx as unknown as { kartensymbole?: Record<string, string> }).kartensymbole || {}) }, symbolBild: WELT.bild + "img/karte/symbole/", regionen: Object.values(idx.regionen).map((r) => ({ ...r.region, symbole: [...((r as unknown as { symbole?: { s: string; x: number; y: number }[] }).symbole || []), ...SPIEL_SYMBOLE.filter((q) => q.region === r.region.id)] })).filter((R) => !WELT.gesperrteRegionen.includes(R.id) && !(R as { ebene?: string }).ebene),
+  uebersicht({ daten: WELT.daten, stand: WELT.stand, chunkFelder: idx.chunkFelder || 32, karte: (idx as unknown as { karte?: WeltkarteOpts["karte"] }).karte, symbolNamen: { ...SPIEL_SYMBOL_NAMEN, ...((idx as unknown as { kartensymbole?: Record<string, string> }).kartensymbole || {}) }, symbolBild: WELT.bild + "img/karte/symbole/", regionen: Object.values(idx.regionen).map((r) => ({ ...r.region, symbole: [...((r as unknown as { symbole?: { s: string; x: number; y: number }[] }).symbole || []), ...SPIEL_SYMBOLE.filter((q) => q.region === r.region.id)] })).filter((R) => !WELT.gesperrteRegionen.includes(R.id) && !(R as { ebene?: string }).ebene),
     ich: () => (s.ort ? { x: s.ort.x, y: s.ort.y } : null), hier: () => s.hier, namen: ORTSNAMEN });
 }
 
