@@ -419,6 +419,56 @@
    }
   },
   {
+   "id": "ockermutter_eingang",
+   "art": "lesen",
+   "x": 238,
+   "y": 306.7,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Schlund im Fuß der Ockerkanzel. Der Lehm davor ist zertrampelt, es riecht nach Aas. Von drinnen kommt ein Lachen, das kein Mensch lacht.",
+    "tat": "ockermutter_hoehle",
+    "knopf": "Hineingehen",
+    "ziel": [
+     11984,
+     9627
+    ]
+   }
+  },
+  {
+   "id": "ockermutter_reste_1",
+   "art": "lesen",
+   "x": 343.5,
+   "y": 214.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Dornenhecke ist hier niedergedrückt, Wolle hängt in den Dornen. Die Herde ist nicht hinausgelaufen – sie wurde hinausgetrieben."
+   }
+  },
+  {
+   "id": "ockermutter_reste_2",
+   "art": "lesen",
+   "x": 299.2,
+   "y": 261.1,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rind, oder was davon übrig ist. Die Bisse sind groß wie ein Brotlaib, und um die Reste herum Spuren von einem Dutzend Hyänen."
+   }
+  },
+  {
+   "id": "ockermutter_reste_3",
+   "art": "lesen",
+   "x": 263.7,
+   "y": 293.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Schleifspuren im Lehm, alle in eine Richtung: zum Fuß der Ockerkanzel. Was hier getötet wurde, wurde nicht hier gefressen."
+   }
+  },
+  {
    "id": "fischplatz_wasserloch_3",
    "art": "lesen",
    "x": 322.5,

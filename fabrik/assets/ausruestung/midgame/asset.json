@@ -1,0 +1,8 @@
+{
+  "id": "ausruestung.midgame",
+  "name": "Seltene Drops der Midgame-Bosse (#178)",
+  "kategorie": "ausruestung",
+  "aktuell": "v001",
+  "status": "Rotmantels Umhang (ruestung.umhang.rotmantel, fabrik/umhang.py rot/Goldsaum) und Grauer Wachtmantel (ruestung.umhang.wacht_grau, grau/Eisensaum) als Umhang-Teile an der Brust; Rabenfokus (waffe.rabenfokus, fabrik/midgame_drops.py, 0,5 m, linke Hand, Schädel nach oben) – Teile an basemann3d/basefrau3d über ein Probe-Rig ausgelagert; Federamulett, Kompass der „Morgenstern“, Söldnerring nur als Modell und Rucksackbild (img/objekte3d/beute/)",
+  "herkunft": "Fabrik"
+}

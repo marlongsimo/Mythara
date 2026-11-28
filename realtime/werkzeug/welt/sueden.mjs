@@ -88,8 +88,9 @@ export const ORTE = { heckenhof: [6490, 6812], summweide: [6418, 6904], schilfse
   ding("lehmfurt_schmiede", "dorf_schmiede_01", x + 2, y - 2); ding("lehmfurt_kate", "moor_kate_02", x - 7, y - 4); ding("lehmfurt_holz", "dorf_holzstapel_01", x + 8, y);
   lies("lehmfurt_schmiede", x + 3.5, y - 1.4, "Die kleine Schmiede von Lehmfurt: Esse und Amboss, Erz aus dem Steinbruch nebenan.", { station: "esse_amboss" });
   /* Furt: wo die Kiel am nächsten ist, ein Streifen Schlamm (begehbar) mit Sperre bis zur Quest S5 */
-  let fy = y + 2, fx = x; while (!"~".includes(zeichen(fx, fy)) && fx > x - 40) fx--; let fx0 = fx; while ("~".includes(zeichen(fx0 - 1, fy))) fx0--;
-  for (let u = fx0 - 1; u <= fx + 1; u++) for (let v = fy - 1; v <= fy + 1; v++) if ("~".includes(zeichen(u, v))) setze(u, v, "m");
+  /* fest (27.11.): die Suche las den Schlamm des vorigen Laufs mit und sprang bei jedem Lauf um ein Feld; die Lage passt zu TUEREN lehmfurt_furt in shared/bosse.ts */
+  const fy = y + 2, fx = 6426, fx0 = 6426;
+  for (let u = fx0 - 1; u <= fx + 1; u++) for (let v = fy - 1; v <= fy + 1; v++) if ("~m".includes(zeichen(u, v))) setze(u, v, "m");
   sperren.push({ art: "rechteck", x0: fx0 - 1, y0: fy - 1.5, x1: fx + 2, y1: fy + 2.5, schalter: "lehmfurt_trittsteine" });
   lies("furt", fx + 2.5, fy + 0.5, "Eine Furt durch die Kiel. Mit ein paar Trittsteinen käme man trocken hinüber.", { questobjekt: "trittsteine" }); V.furt = { x: (fx0 + fx) / 2, y: fy, schalter: "lehmfurt_trittsteine" };
   /* Steinbruch östlich: Felskante, Geröllboden, Erzadern (gesperrte Felder) */

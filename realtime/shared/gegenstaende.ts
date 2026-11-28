@@ -8,6 +8,7 @@
 import { Startwaffe } from "./aussehen";
 import { NAMEN_AUS_DATENBLAETTERN } from "./gegenstand_namen";
 import { BILDER_AUS_FABRIK } from "./gegenstand_bilder";
+import { PETS, petGegenstand } from "./pets";
 
 export type Seltenheit = "anfaenger" | "gewoehnlich" | "set" | "selten" | "episch" | "legendaer" | "mythisch";
 /** Seltenheitsstufen: Name und Farbe (Rahmen im Ausrüstungsfenster) */
@@ -665,6 +666,15 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
   GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
     anforderung: { skill: "geschick", level: 40 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 33, staerke: 34 } /* Balancing 27.11.: zwischen Stufe 35 und 45, nur Lohn aus E4 */,
     text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }
+/* Ausgabe 1: zwei Quest-Waffen (Entscheidung des Nutzers, Quests 9d3174ba2, doku/quests/waffen-bausteine.md; Bilder und Handteile von Figuren) –
+   Questlohn, nicht handelbar; gegen: Schaden gegen eine Gegnerfamilie (config.ts → familie) wie beim Waldsäbel */
+{ const B = "img/objekte3d/ausruestung/bilder/";
+  GEGENSTAENDE.eibenbogen_hartwig = { id: "eibenbogen_hartwig", name: "Hartwigs Eibenbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.bogen.hartwig"], bild: B + "hartwigs_eibenbogen.webp",
+    anforderung: { skill: "fernkampf", level: 30 }, waffe: { art: "fern", ticks: 5, reich: 7, flug: 18, fernAngriff: 27, fernStaerke: 29, gegen: { wild: 0.15 } },
+    text: "Hartwigs alter Jagdbogen aus Kreuzwald-Eibe. Wolf, Bär und Widder kennen sein Lied – +15 % gegen Wildtiere." };
+  GEGENSTAENDE.lindenstab = { id: "lindenstab", name: "Lindenstab", platz: "waffe", art: "Stab", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.lindenstab"], bild: B + "lindenstab.webp",
+    anforderung: { skill: "magie", level: 30 }, waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 14, magieStaerke: 182, gegen: { untot: 0.15 } },
+    text: "Der Stab der Linde, aus dem Holz des alten Baums geschnitten. Was nicht mehr leben sollte, weicht vor ihm – +15 % gegen Untote und den Rabenkult." }; }
 
 /* ───────── Phase 9 (#86): Glutsande und Glutbrunn – Bilder img/objekte3d/glutsande/symbole/, Glutwels img/objekte3d/skilling/angeln/symbole/ (Figuren #75) ───────── */
 { const G9 = "img/objekte3d/glutsande/symbole/", A9 = "img/objekte3d/skilling/angeln/symbole/", R = ["I", "II", "III", "IV", "V"];
@@ -859,3 +869,6 @@ const RUCKSACKBILDER: Record<string, string> = {
   tempelabschrift: "img/objekte3d/schriften/symbole/tempelabschrift.webp",
 };
 for (const [id, b] of Object.entries(RUCKSACKBILDER)) if (GEGENSTAENDE[id]) { GEGENSTAENDE[id].bild = b; delete GEGENSTAENDE[id].symbol; }
+/* ───────── #170 Pets als Gegenstände (KANON fd1014fd0): im Rucksack, „Folgen lassen“ oder „Wegschicken“, in die Bank – gebunden, festes Bild ───────── */
+for (const P of Object.values(PETS)) GEGENSTAENDE[petGegenstand(P.id)] = { id: petGegenstand(P.id), name: P.name, art: "Begleiter", seltenheit: "legendaer", untauschbar: true, bild: P.bild,
+  text: `Ein kleiner Begleiter, gefunden ${P.tat}. Aus dem Rucksack heraus folgt er dir – alle sehen ihn. Gebunden: nicht handelbar.` };

@@ -225,5 +225,7 @@
  {"id":"naht_756","objekt":"stil_tanne_02","x":56.5,"y":63.5,"s":0.98},
  {"id":"naht_757","objekt":"stil_eiche_01","x":68.5,"y":63.5,"s":1.15,"spiegeln":true},
  {"id":"naht_758","objekt":"stil_tanne_01","x":78.5,"y":63.5,"s":1.23,"spiegeln":true},
- {"id":"naht_759","objekt":"stil_linde_01","x":84.5,"y":63.5,"s":1.07,"spiegeln":true}
+ {"id":"naht_759","objekt":"stil_linde_01","x":84.5,"y":63.5,"s":1.07,"spiegeln":true},
+ {"id":"vd_osthof_k1","objekt":"wegrand_huette_feld","x":19,"y":40.5,"dreh":90},
+ {"id":"vd_osthof_k2","objekt":"wegrand_zaun_flecht","x":16.5,"y":51.41,"dreh":90}
 ]

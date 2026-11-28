@@ -832,6 +832,28 @@
    }
   },
   {
+   "id": "schneesturm_hinweis_4",
+   "art": "lesen",
+   "x": 474.67,
+   "y": 127.27,
+   "radius": 2.2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Schneesturm tobt über der Frostkrone. Man sieht die eigene Hand nicht mehr – wer hier weitergeht, kommt nicht wieder. Kehr um."
+   }
+  },
+  {
+   "id": "schneesturm_hinweis_5",
+   "art": "lesen",
+   "x": 414.67,
+   "y": 187.27,
+   "radius": 2.2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Schneesturm tobt über der Frostkrone. Man sieht die eigene Hand nicht mehr – wer hier weitergeht, kommt nicht wieder. Kehr um."
+   }
+  },
+  {
    "id": "rast_heidrast_grauwacht",
    "art": "lesen",
    "x": 228,
