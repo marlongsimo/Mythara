@@ -66,16 +66,16 @@ try {
   await anna.click('#ez-leiste [data-l="rucksack"]');
   /* #166 (Nutzer): Rucksack öffnen, während die Bilder noch laden – danach müssen sie ohne weitere Aktion erscheinen (vorher blieben die Fächer leer, bis man etwas anlegte) */
   const fertig = new Set(); anna.on("requestfinished", (q) => fertig.add(q.url())); /* Bild beim Browser angekommen (performance-Puffer ist bei dieser Seite längst voll) */
-  const geladen = async () => (await anna.evaluate(() => [...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].map((c) => ({ g: c.dataset.bild, u: c.dataset.url ? new URL(c.dataset.url, location.href).href : "", bg: /url\(/.test(c.style.backgroundImage) }))))
-    .map((x) => ({ ...x, da: Boolean(x.u) && x.bg && fertig.has(x.u) }));
+  /* #190: jedes Fach ist ein echtes <img> – geladen heißt: complete und naturalWidth > 0 */
+  const geladen = () => anna.evaluate(() => [...document.querySelectorAll("#ez-rucksacktab [data-bild]")].map((c) => ({ g: c.dataset.bild, img: c.tagName === "IMG", da: c.tagName === "IMG" && c.complete && c.naturalWidth > 0 })));
   const frueh = await geladen(); await anna.waitForTimeout(12000); const spaet = await geladen(); langsam = false;
   check(frueh.length >= 8 && frueh.filter((x) => x.da).length < frueh.length, `Beim Öffnen laden die Bilder noch (${frueh.filter((x) => x.da).length}/${frueh.length} da)`);
   check(spaet.length >= 8 && spaet.every((x) => x.da), `Ohne weitere Aktion erscheinen danach alle Bilder im Rucksack (${spaet.filter((x) => !x.da).map((x) => x.g).join(", ") || spaet.length + " Fächer"})`);
-  await anna.waitForFunction(() => [...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].every((c) => c.dataset.url), null, { timeout: 30000, polling: 500 }).catch(() => {});
-  /* #166: je Gegenstand ein festes Bild mit echtem Pfad (kein Zeichnen zur Laufzeit, kein WebGL); es lädt */
-  const r = await anna.evaluate(async () => Promise.all([...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].map(async (c) => { const u = c.dataset.url || "";
-    const ok = /^\.\.\/img\/.+\.(webp|png)$/.test(u) && /url\(/.test(c.style.backgroundImage) ? await new Promise((fertig) => { const i = new Image(); i.onload = () => fertig(i.naturalWidth > 0); i.onerror = () => fertig(false); i.src = u; }) : false;
-    return c.dataset.bild + ":" + (ok ? 1 : 0) + ":" + u; })));
+  check(spaet.every((x) => x.img), `Jedes Rucksackfach ist ein echtes <img> (keine Leinwand, kein Hintergrundbild)`);
+  /* #166/#190: je Gegenstand ein festes Bild mit absoluter Adresse, eager + sync (kein Zeichnen zur Laufzeit, kein WebGL); es lädt */
+  const r = await anna.evaluate(() => [...document.querySelectorAll("#ez-rucksacktab img.dbild")].map((c) => { const u = c.dataset.url || "";
+    const ok = /^https?:\/\/[^/]+\/img\/.+\.(webp|png)$/.test(u) && c.src.startsWith(u) && c.loading === "eager" && c.decoding === "sync" && !c.style.backgroundImage && c.complete && c.naturalWidth > 0;
+    return c.dataset.bild + ":" + (ok ? 1 : 0) + ":" + u; }));
   const gl1 = await anna.evaluate(() => window.__gl || 0);
   const leer = r.filter((x) => x.split(":")[1] !== "1");
   check(gl1 === gl0, `Der Rucksack legt keine WebGL-Fläche an (${gl0} → ${gl1})`);
@@ -88,10 +88,21 @@ try {
     await ben.goto(B + S + "&vorwaermen=0"); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
     await ben.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && i.rucksack && i.rucksack.length; }, null, { timeout: 30000 }).catch(() => {});
     await ben.click('#ez-leiste [data-l="rucksack"]'); await ben.waitForTimeout(3000); zu = false;
-    const zeigt = async () => (await ben.evaluate(() => [...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].map((c) => ({ g: c.dataset.bild, bg: ((/url\("?([^")]+)"?\)/.exec(c.style.backgroundImage) || [])[1] || "") }))))
-      .map((x) => ({ ...x, da: Boolean(x.bg) && (x.bg.startsWith("data:") || [...fertigB].some((u) => u.endsWith(x.bg.replace(/^\.\.\//, "")))) }));
+    const zeigt = () => ben.evaluate(() => [...document.querySelectorAll("#ez-rucksacktab [data-bild]")].map((c) => ({ g: c.dataset.bild, da: c.tagName === "IMG" && c.complete && c.naturalWidth > 0, r: /[?&]r=\d/.test(c.src || "") })));
+    const vorher = await zeigt(); check(vorher.length >= 8 && vorher.every((x) => !x.da), `Solange das Netz die Bilder abweist, ist kein Fach geladen (${vorher.filter((x) => x.da).length}/${vorher.length})`);
     let f = await zeigt(); for (let i = 0; i < 30 && !(f.length && f.every((x) => x.da)); i++) { await ben.waitForTimeout(1000); f = await zeigt(); }
-    check(f.length >= 8 && f.every((x) => x.da), `Frisch angemeldet, Rucksack offen während die Bilder scheitern: danach erscheinen alle ohne weitere Aktion (${f.filter((x) => !x.da).map((x) => x.g).join(", ") || f.length + " Fächer"})`); }
+    check(f.length >= 8 && f.every((x) => x.da), `Frisch angemeldet, Rucksack offen während die Bilder scheitern: danach erscheinen alle ohne weitere Aktion (${f.filter((x) => !x.da).map((x) => x.g).join(", ") || f.length + " Fächer"})`);
+    check(f.some((x) => x.r), `Gescheiterte Bilder werden neu gesetzt (src mit ?r=n)`);
+    /* #190: Diagnose in den Einstellungen – „Bilder prüfen“ zählt geladene, gescheiterte und offene Bilder */
+    await ben.click('#ez-leiste-r [data-l="einstellungen"]'); await ben.click('#ez-konto [data-t="bilder"]');
+    const bericht = await ben.evaluate(() => ({ b: document.querySelector('#ez-konto [data-t="bilder"] b').textContent, p: (document.querySelector("#ez-konto .bilderbericht") || {}).textContent || "" }));
+    const zahl = /(\d+) ok · (\d+) Fehler · (\d+) offen/.exec(bericht.b) || [];
+    check(+zahl[1] >= 8 && zahl[2] === "0" && zahl[3] === "0" && /Alle Bilder geladen/.test(bericht.p), `„Bilder prüfen“ meldet alle Rucksackbilder geladen (${bericht.b} – ${bericht.p})`);
+    /* und nennt die erste gescheiterte Adresse */
+    await ben.evaluate(() => { const i = document.createElement("img"); i.className = "dbild"; i.dataset.status = "fehler"; i.src = location.origin + "/img/gibtsnicht.webp"; i.hidden = true; document.body.append(i); });
+    await ben.waitForTimeout(500); await ben.click('#ez-konto [data-t="bilder"]');
+    const b2 = await ben.evaluate(() => document.querySelector("#ez-konto .bilderbericht").textContent);
+    check(/1 Fehler/.test(await ben.evaluate(() => document.querySelector('#ez-konto [data-t="bilder"] b').textContent)) && /gibtsnicht\.webp/.test(b2), `„Bilder prüfen“ nennt die erste fehlerhafte Adresse (${b2})`); }
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));
 console.log(fehler ? fehler + " Fehler" : "Rucksackbilder: alles in Ordnung"); process.exit(fehler ? 1 : 0);
