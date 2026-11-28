@@ -9,7 +9,7 @@ const C1 = QUESTS.find((q) => q.id === "rabenmoor_schwarze_federn"), C2 = QUESTS
 const W = await starte({ sb: SB, srv: SRV, helden: {
   ute: starkerHeld({ fertig: FERTIG, berufe: { holzfaellerei: 40, handwerk: 30 }, rucksack: ["holzbeil_einfach", "hammer", ...Array(5).fill("stamm_tanne")] }),
   bea: starkerHeld({}) } });
-const { check, schlaf, anzahl, stelle, rede, sprich, objekt, stand, erl, fertig, kampf, kaempfen, aufheben, sammeln, herstellen, sende } = W;
+const { check, schlaf, anzahl, stelle, rede, sprich, objekt, stand, erl, fertig, kampf, kaempfen, aufheben, sammeln, herstellen, sende, warte } = W;
 const K0 = { hat: () => false, verloren: () => false };
 const an = (q, s, name) => [].concat(q.schalter[name]).some((b) => QB.gilt(q, s.b[q.id] || "", b, K0));
 /** Region wechseln (wie der Browser beim Laufen über eine Grenze) */
@@ -26,7 +26,8 @@ try {
   check(erl(ute, C2, "lauschen_moor") && erl(ute, C2, "lauschen_insel"), "An beiden Steinkreisen gelauscht");
   { let ueber = ""; const t0 = Date.now(); await stelle(ute, 6213, 6716); const z = await kampf("ute", 6213, 6716); const AK = ["rabenpriester_akoluth", "rabenpriester_akoluth_speer"];
     while (!(erl(ute, C2, "siegel") && anzahl(ute, "federsiegel") >= 3) && Date.now() - t0 < 200000) { await kaempfen(z, AK, (n) => n >= 1, 60000); await schlaf(800);
-      for (const b of ute.boden.filter((x) => x.g === "federsiegel")) { await stelle(ute, b.x, b.y); sende(ute, { t: "aufheben", id: b.i }); await schlaf(500);
+      for (const b of ute.boden.filter((x) => x.g === "federsiegel")) { /* unter Last kam „aufheben“ vor der neuen Stelle an (zu weit): kurz warten, ein zweiter Versuch */
+        for (let v = 0; v < 2 && ute.boden.some((x) => x.i === b.i); v++) { await stelle(ute, b.x, b.y); await schlaf(400 + v * 800); sende(ute, { t: "aufheben", id: b.i }); await warte(ute, (m) => m.t === "inventar", 3000); await schlaf(300); }
         const z = QB.zaehler(C2, ute.b[C2.id] || "", "siegel"), n = anzahl(ute, "federsiegel"); if (!erl(ute, C2, "siegel") && z > n || erl(ute, C2, "siegel") && n < 3 && !ueber) ueber = `Zähler ${z}${erl(ute, C2, "siegel") ? " (erledigt)" : ""} bei ${n} Siegeln im Rucksack`; } } /* #158: je aufgehobenem Siegel genau eins weiter */
     z && z.ws.close(); await schlaf(2500);
     check(!ueber, "Jedes aufgehobene Federsiegel zählt genau einmal (#158)" + (ueber ? ": " + ueber : ""));
