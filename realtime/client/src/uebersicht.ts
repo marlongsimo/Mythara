@@ -10,6 +10,7 @@
  * Die Regionen stoßen ohne Rahmen aneinander; nur ihre Namen stehen klein darüber.
  */
 import { symboleOrdnen } from "./symbolordnung";
+import { kartenEbene } from "./kartenebene";
 export interface KartenRegion { id: string; name: string; ursprung: number[]; chunks: number[]; /** Kartensymbole in Weltfeldern (aus welt.json) */ symbole?: { s: string; x: number; y: number }[] }
 export interface WeltkarteOpts {
   daten: string;                                 // Ordner mit karte-<id>.webp
@@ -38,7 +39,7 @@ let PX = 4;
 export const SICHT_FELDER = 750;
 /** #183: feste Zoomstufen als Anteil von 4 px je Feld (0,4 / 1,2 / 4 CSS-px je Feld): Welt · Gegend · Nah – geöffnet wird mit „Gegend“ */
 export const STUFEN = [0.1, 0.3, 1.0];
-const optionen = { eigeneSymbole: true };
+const optionen = { eigeneSymbole: false }; /* #183: Symbole und Namen zeichnet die Ebene der Oberfläche (kartenebene.ts) – nach Stufe ausgedünnt, mit Legende */
 let stufeJetzt = -1, ebeneJetzt: HTMLElement | null = null, umrechnen: ((x: number, y: number) => { x: number; y: number }) | null = null;
 /** Einstellungen der Karte (Oberfläche): eigeneSymbole false = die heutigen Symbole und Namen nicht zeichnen (eigene Ebene über karteEbene()) */
 export function karteOptionen(o: Partial<typeof optionen>): void { Object.assign(optionen, o); }
@@ -152,6 +153,9 @@ export function uebersicht(o: WeltkarteOpts): void {
     clearTimeout(gleitT); gleitT = window.setTimeout(() => { lw.classList.remove("gleitet"); namenZ = -1; ordnen(); lw.style.willChange = "auto"; requestAnimationFrame(() => { lw.style.willChange = ""; }); }, 260); };
   const zuMir = () => { const i = o.ich(); if (!i) return; vx = flaeche.clientWidth / 2 - (i.x - x0) * PX * z; vy = flaeche.clientHeight / 2 - (i.y - y0) * PX * z; setzen(); };
   stufeJetzt = 1; z = (STUFEN[1] * 4) / PX; zuMir(); if (!o.ich()) setzen(); melden();
+  kartenEbene({ o, huelle: hülle, ebene, punkt, px: (x, y) => ({ x: (x - x0) * PX, y: (y - y0) * PX }), stufe: () => stufeJetzt,
+    ansicht: () => ({ vx, vy, z, W: flaeche.clientWidth, H: flaeche.clientHeight }),
+    hin: (x, y) => { vx = flaeche.clientWidth / 2 - (x - x0) * PX * z; vy = flaeche.clientHeight / 2 - (y - y0) * PX * z; setzen(); setTimeout(() => flaeche.dispatchEvent(new PointerEvent("pointerup")), 0); } });
 
   /* eigene Stelle laufend nachführen (der Held läuft weiter, auch während die Karte offen ist) */
   let lauf = 0;
