@@ -50,6 +50,10 @@ TESTS=(
   welt-fahleweiten
   welt-kielmund
   steinhag-welt
+  kielmund-welt
+  ockerlande-welt
+  drops-selten
+  waffen-welt
   phase5
   phase8-10
   abholen
@@ -87,6 +91,7 @@ TESTS=(
   hueter
   gegner-stufe
   gefahr
+  sperren
   zunft-rohstoffe
   zunft
   bank-orte

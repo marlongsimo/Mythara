@@ -9,6 +9,7 @@ schoepfrad       – Schöpfrad am Kanal: Holzgestell mit Achse auf 1,8 m, Rad (
 schoepfrad_gestell / schoepfrad_rad – dasselbe getrennt: Gestell mit Rinne (Ursprung Mitte unten) und das Rad allein (Ursprung in der Achse, Achse = x),
                    damit das Spiel das Rad drehen kann (Rad auf die Höhe 1,8 m über das Gestell setzen).
 """
+#172 Ockerlande: zelt_gross (Karawanenzelt 5 × 4 m, Vordach) · zelt_rund (Rundzelt Ø 4 m) · ziehbrunnen · akazie (Schirmakazie ≈ 5 m) · dornenhecke (Zaunstück 3 m, entlang x)
 import math, os, random, sys
 import bpy
 from mathutils import Vector
@@ -99,6 +100,53 @@ elif ART in ("schoepfrad", "schoepfrad_gestell", "schoepfrad_rad"):
         for sy in (-1, 1): wuerfel((BR / 2 + 1.3, 0.35 + sy * 0.17, AH + R - 0.02), (2.4, 0.04, 0.16), HOLZ, fase=0.05)
         wuerfel((BR / 2 + 1.3, 0.35, AH + R - 0.045), (2.36, 0.3, 0.01), WASSER, fase=0)
         for x in (BR / 2 + 0.6, BR / 2 + 2.3): rohr((x, 0.35, 0), (x, 0.35, AH + R - 0.14), 0.06, HOLZ2, 8)
+elif ART in ("zelt_gross", "zelt_rund"):                                                         # #172 Ockerlande: Karawanenzelt (gestreift, Vordach auf Stangen) / Rundzelt der Hirten
+    STOFF = mat("zeltstoff", (214, 190, 146), 0.85); STREIF = mat("zeltstreifen", (166, 70, 44), 0.8); TEPPICH = mat("teppich", (140, 50, 40), 0.9)
+    if ART == "zelt_gross":                                                                    # 5 × 4 m, Firsthöhe 3 m, offene Front nach -y mit Vordach
+        for k, x in enumerate((-2.5, -1.5, -0.5, 0.5, 1.5)):
+            m_ = STREIF if k % 2 else STOFF
+            me = bpy.data.meshes.new("bahn"); me.from_pydata([(x, -2.0, 1.4), (x + 1, -2.0, 1.4), (x + 1, 0.0, 3.0), (x, 0.0, 3.0), (x, 2.0, 1.4), (x + 1, 2.0, 1.4)], [], [(0, 1, 2, 3), (3, 2, 5, 4)])
+            o = bpy.data.objects.new("bahn", me); bpy.context.collection.objects.link(o); o.data.materials.append(m_); sd = o.modifiers.new("d", "SOLIDIFY"); sd.thickness = 0.03
+        for sx in (-2.5, 2.5):                                                                 # Giebel und Seitenwände
+            me = bpy.data.meshes.new("giebel"); me.from_pydata([(sx, -2.0, 0.0), (sx, 2.0, 0.0), (sx, 2.0, 1.4), (sx, 0.0, 3.0), (sx, -2.0, 1.4)], [], [(0, 1, 2, 3, 4)])
+            o = bpy.data.objects.new("g", me); bpy.context.collection.objects.link(o); o.data.materials.append(STOFF); sd = o.modifiers.new("d", "SOLIDIFY"); sd.thickness = 0.03
+        wuerfel((0, 1.98, 0.7), (5.0, 0.04, 1.4), STOFF, fase=0)
+        for x in (-2.5, 0.0, 2.5):
+            for y in (-2.0, 2.0): rohr((x, y, 0), (x, y, 1.45), 0.05, HOLZ2, 6)
+            rohr((x, 0, 0), (x, 0, 3.05), 0.06, HOLZ2, 6)
+        me = bpy.data.meshes.new("vordach"); me.from_pydata([(-2.5, -2.0, 1.4), (2.5, -2.0, 1.4), (2.5, -3.4, 1.9), (-2.5, -3.4, 1.9)], [], [(0, 1, 2, 3)])
+        o = bpy.data.objects.new("vd", me); bpy.context.collection.objects.link(o); o.data.materials.append(STREIF); sd = o.modifiers.new("d", "SOLIDIFY"); sd.thickness = 0.03
+        for x in (-2.4, 2.4): rohr((x, -3.4, 0), (x, -3.4, 1.95), 0.04, HOLZ2, 6)
+        wuerfel((0, -0.6, 0.02), (3.0, 2.0, 0.04), TEPPICH, fase=0); wuerfel((-1.6, 1.2, 0.3), (0.8, 0.6, 0.6), HOLZ, fase=0.08); kugel((1.5, 1.2, 0.35), 0.35, TON, (1, 1, 1.2), 12)
+    else:                                                                                      # Rundzelt: Ø 4 m, Kegeldach auf Mittelstange, Eingang -y
+        dreh([(2.0, 0.0), (2.0, 1.5), (0.25, 3.0), (0.0, 3.0)], STOFF, 32)
+        for k in range(8): a_ = k * math.pi / 4; rohr((2.02 * math.cos(a_), 2.02 * math.sin(a_), 0.3), (2.02 * math.cos(a_), 2.02 * math.sin(a_), 1.5), 0.06, STREIF, 4)
+        ring((0, 0, 1.5), 2.02, 0.05, STREIF, seg=(32, 4)); rohr((0, 0, 3.0), (0, 0, 3.5), 0.05, HOLZ2, 6)
+        wuerfel((0, -2.02, 0.75), (1.0, 0.06, 1.5), mat("eingang", (60, 40, 30), 0.9), fase=0)
+        kugel((0.0, 0.0, 3.55), 0.08, BRONZE, n=8)
+elif ART == "ziehbrunnen":                                                                     # #172 Ziehbrunnen: Lehmziegel-Rund, Holzgalgen mit Rolle, Seil und Eimer, Tröge
+    dreh([(0.0, 0.0), (1.0, 0.0), (1.0, 0.85), (0.8, 0.85), (0.8, 0.2), (0.0, 0.2)], LEHM, 24); ring((0, 0, 0.86), 0.9, 0.08, SAND2, seg=(24, 6))
+    dreh([(0.0, 0.25), (0.78, 0.25)], WASSER, 20)
+    for sx in (-0.95, 0.95): rohr((sx, 0, 0.85), (sx, 0, 2.6), 0.08, HOLZ2, 6)
+    rohr((-1.05, 0, 2.55), (1.05, 0, 2.55), 0.07, HOLZ, 8); ring((0, 0, 2.45), 0.14, 0.03, HOLZ2, (0, math.radians(90), 0))
+    rohr((0, 0, 2.35), (0, 0, 1.3), 0.012, mat("seil", (176, 150, 104), 0.85), 4)
+    dreh([(0.0, 1.0), (0.14, 1.0), (0.17, 1.28), (0.0, 1.28)], HOLZ, 12); ring((0, 0, 1.28), 0.17, 0.015, mat("eisen", (96, 96, 102), 0.45, 0.6), seg=(16, 4))
+    wuerfel((1.7, 0.4, 0.2), (1.4, 0.5, 0.4), HOLZ2, fase=0.05); wuerfel((1.7, 0.4, 0.36), (1.25, 0.38, 0.06), WASSER, fase=0)
+elif ART == "akazie":                                                                          # #172 Akazie (Schirmakazie): geteilter Stamm, flache breite Krone (≈ 5 m hoch, 7 m breit)
+    RINDE = mat("rinde", (96, 78, 60), 0.9); LAUB = mat("akazienlaub", (110, 130, 60), 0.85); LAUB2 = mat("akazienlaub_hell", (138, 150, 70), 0.85)
+    rohr((0, 0, 0), (0.1, 0, 2.0), 0.22, RINDE, 10, 0.16)
+    for a_, l in ((0.6, 2.6), (2.4, 2.4), (4.2, 2.2)):
+        e = (0.1 + l * 0.6 * math.cos(a_), l * 0.6 * math.sin(a_), 4.2); rohr((0.1, 0, 2.0), e, 0.14, RINDE, 8, 0.08)
+    for k in range(26):                                                                        # flache Schirmkrone aus Laubpolstern
+        a_ = random.uniform(0, 2 * math.pi); r = random.uniform(0.3, 3.2)
+        kugel((r * math.cos(a_), r * math.sin(a_), 4.4 + random.uniform(-0.15, 0.25)), random.uniform(0.7, 1.1), LAUB if k % 3 else LAUB2, (1.4, 1.4, 0.35), 10)
+elif ART == "dornenhecke":                                                                     # #172 Dornenhecke als Zaunstück: 3 m lang, 1,3 m hoch, dürre Zweige mit Dornen, entlang x
+    DORN = mat("dornzweig", (110, 88, 64), 0.9); GRAU = mat("dornzweig_grau", (140, 128, 110), 0.9); BLATT = mat("dornblatt", (100, 116, 60), 0.85)
+    for k in range(70):
+        x = random.uniform(-1.5, 1.5); a_ = random.uniform(0, 2 * math.pi); l = random.uniform(0.6, 1.4); p0 = (x, random.uniform(-0.25, 0.25), 0)
+        p1 = (x + 0.5 * l * math.cos(a_), p0[1] + 0.3 * l * math.sin(a_), l * random.uniform(0.6, 1.0)); rohr(p0, p1, 0.018, DORN if k % 2 else GRAU, 4)
+        for j in range(3): t = random.uniform(0.3, 0.9); q = tuple(p0[i] + (p1[i] - p0[i]) * t for i in range(3)); kristall(q, 0.008, 0.06, GRAU, (random.uniform(0, 3), random.uniform(0, 3), 0))
+    for k in range(18): kugel((random.uniform(-1.4, 1.4), random.uniform(-0.2, 0.2), random.uniform(0.4, 1.1)), 0.08, BLATT, (1.4, 1, 0.6), 6)
 for o in list(bpy.context.scene.objects):
     bpy.context.view_layer.objects.active = o
     for m in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=m.name)

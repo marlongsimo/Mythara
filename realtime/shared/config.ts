@@ -456,7 +456,7 @@ Object.assign(MONSTER, {
     angriff: { name: "Kieferbiss", art: "nah", schaden: [1, 16], takt: 2.5, reich: 2.2, aushol: 0 },
     v2: { staerke: 110, geschick: 75, defense: 70, magie: 20, staerkeBonus: 30, ticks: 5, abwehr: { nah: 30, fern: 20, magie: 0 } },
     info: "Die Mutter aller Sandkriecher. Sie schläft in der Kammer unter dem Tempel – bis jemand das Auge öffnet.",
-    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [300, 600] }] }, { wurf: [{ g: "chitin", chance: 100, anzahl: [3, 6] }] }, { wurf: [{ g: "erz_ureisen", chance: 25, anzahl: [2, 4] }] }, { wurf: [{ g: "stamm_weltenbaum", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 10 }, { g: "@episch", chance: 100 / 40 }, { g: "@legendaer", chance: 100 / 400 }] }, { stark: true, wurf: [{ g: "glutsteinschild", chance: 1 }] } /* Glutsteinschild: nur in der starken Fassung, 1 : 100 je Sieg (Entscheidung des Nutzers) */] },
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [300, 600] }] }, { wurf: [{ g: "chitin", chance: 100, anzahl: [3, 6] }] }, { wurf: [{ g: "erz_ureisen", chance: 25, anzahl: [2, 4] }] }, { wurf: [{ g: "stamm_weltenbaum", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 10 }, { g: "@episch", chance: 100 / 40 }, { g: "@legendaer", chance: 100 / 400 }] }, { stark: true, wurf: [{ g: "glutsteinschild", chance: 100 / 60 }] } /* Glutsteinschild: nur in der starken Fassung, 1 : 100 je Sieg (Entscheidung des Nutzers) */] },
   /* ───── Phase 10 (#92): Smaragdküste, Kielmund, Klippenhöhlen (doku/konzepte/phase-10.md; Beute nach den Vorschlägen, beute.md folgt) ───── */
   /** Strandkrabbe: Stufe 22, Panzer (stark gegen Nahkampf), Strände und Wrack */
   strandkrabbe: { name: "Strandkrabbe", stufe: 22, bild: "img/echtzeit/bandit.webp", hoehe: 55, lp: 32, tempo: 2.8, angriffswert: { nah: 22, fern: 0, magie: 0 }, abwehr: { nah: 30, fern: 15, magie: 10 }, r: 0.4,
@@ -667,3 +667,23 @@ export const trefferchance = (a: number, d: number) => (a > d ? 1 - (d + 2) / (2
 export const stufeVon = (art: string, lp?: number): number => { const M = MONSTER[art]; if (!M) return 1; return M.v2 ? gegnerStufe(M.v2, lp ?? M.lp) : M.stufe ?? 1; };
 /* die gesetzte Stufe bleibt als planStufe (Stufe des Gebiets im Konzept, für die Planung und die Inhaltstests) */
 for (const art of Object.keys(MONSTER)) { const M = MONSTER[art]; if (M.v2) { M.planStufe = M.stufe; M.stufe = stufeVon(art); } }
+/* ───── Ausgabe 1: Gegnerfamilien für die Quest-Waffen (gegen: wild / untot, Quests 9d3174ba2). Hier gesetzt und nicht im Eintrag selbst –
+   Werkzeuge der Welt (gegnerplaetze) und Tests lesen die Einträge als Text und erwarten „name:“ vorn. ───── */
+const FAMILIEN_AUSGABE1: Record<string, string[]> = {
+  wild: ["heidewolf", "steppenwolf", "rudelfuehrer", "hochlandbaer", "hochlandwidder", "ockerhyaene", "frostwolf"],
+  untot: ["wiedergaenger", "grabwaechter", "grauer_hauptmann", "rabenpriester_akoluth", "rabenpriester_akoluth_speer", "oberster_rabenpriester"],
+};
+for (const [familie, arten] of Object.entries(FAMILIEN_AUSGABE1)) for (const art of arten) { const M = MONSTER[art] as { familie?: string } | undefined;
+  if (!M) throw new Error("FAMILIEN_AUSGABE1: unbekannter Gegner " + art); M.familie = familie; }
+/* ───── Ausgabe 1 (Entscheidung des Nutzers, 27.11.): Legendär und Mythisch als seltene Drops – je Kill ein eigener Wurf zusätzlich zu den bestehenden.
+   Starke Gegner (Kampfstufe ≥ 100) Legendär 1:400, die drei stärksten zusätzlich Mythisch 1:1.500; mittlere (80–99) Legendär 1:600;
+   Bosse (starke Fassung): die sechs mit Legendär zusätzlich Mythisch 1:400, Tjark, Wrackkapitän und Federmutter neu Legendär 1:150. Unter 80 nichts. ───── */
+const LEGENDAER_DROPS: [string[], string, number, boolean?][] = [
+  [["eisgolem", "bergtroll", "tundraelch", "frostwolf", "drakling", "turmwaechter", "hochlandbaer"], "@legendaer", 400],
+  [["eisgolem", "bergtroll", "tundraelch"], "@mythisch", 1500],
+  [["kerkermeister", "grabwaechter", "karawanenraeuber_saebel", "karawanenraeuber_bogen", "hochlandwidder", "klippenadler", "glutskorpion", "ockerhyaene", "glutgeist", "eissplitter_waechter"], "@legendaer", 600],
+  [["grumhold", "sturmschwinge", "frostwitwe", "sandmutter", "oberster_rabenpriester", "grauer_hauptmann"], "@mythisch", 400, true],
+  [["tjark", "wrackkapitaen", "federmutter"], "@legendaer", 150, true],
+];
+for (const [arten, g, eins, stark] of LEGENDAER_DROPS) for (const art of arten) { const M = MONSTER[art]; if (!M) throw new Error("LEGENDAER_DROPS: unbekannter Gegner " + art);
+  (M.drops ??= []).push({ ...(stark ? { stark: true } : {}), wurf: [{ g, chance: 100 / eins }] }); }

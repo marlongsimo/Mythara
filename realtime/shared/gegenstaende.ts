@@ -612,7 +612,7 @@ GEGENSTAENDE.glutsteinschild = { id: "glutsteinschild", name: "Glutsteinschild",
 { const E = "img/objekte3d/skilling/erzeugnisse/", K = "img/objekte3d/skilling/kochen/symbole/", P = (g: string, f: string) => (GEGENSTAENDE[g] && GEGENSTAENDE[g].bild) || f;
   GEGENSTAENDE.ziegenmilch = { id: "ziegenmilch", name: "Ziegenmilch", art: "Rohstoff", seltenheit: "gewoehnlich", bild: P("krug_wasser", K + "krug_wasser.webp"), wert: 5,
     text: "Ein Krug frischer Milch von den Ziegen der Hohen Alm. Mit Lab am Herd wird daraus Käse." };
-  GEGENSTAENDE.lab = { id: "lab", name: "Lab", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P("leeres_flaeschchen", E + "leeres_flaeschchen.webp"),
+  GEGENSTAENDE.lab = { id: "lab", name: "Lab", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/kraeuterkunde/symbole/leeres_flaeschchen.webp" /* wie leeres_flaeschchen (#188) */,
     text: "Ein Fläschchen Lab von Mette Heider. Ein paar Tropfen, und die Milch wird dick." };
   GEGENSTAENDE.kaeselaib = { id: "kaeselaib", name: "Käselaib", art: "Essen", seltenheit: "selten", bild: P("bauerneintopf", K + "bauerneintopf.webp"), trank: "kaeselaib", wert: 30,
     text: "Ein Laib Käse von der Hohen Alm, würzig und fest. Die Passwacht schwört darauf. Heilt 15 Lebenspunkte." };
@@ -622,7 +622,7 @@ GEGENSTAENDE.glutsteinschild = { id: "glutsteinschild", name: "Glutsteinschild",
     text: "Ein zugeschnittener Stempel aus Kernbaum. Er hält einen Stollen, wenn der Berg drückt." };
   GEGENSTAENDE.erzprobe_leuchtend = { id: "erzprobe_leuchtend", name: "Leuchtende Erzprobe", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: E + "erz_splittereisen.webp",
     text: "Ein Brocken aus der Tiefe des Erzbergs. Im Dunkeln glimmt er – Hedda wird wissen, was das bedeutet." };
-  GEGENSTAENDE.eisrunen_abschrift = { id: "eisrunen_abschrift", name: "Abschrift der Eisrunen", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P("hinweispergament", E + "pergament.webp"),
+  GEGENSTAENDE.eisrunen_abschrift = { id: "eisrunen_abschrift", name: "Abschrift der Eisrunen", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/schriften/symbole/hinweispergament.webp" /* wie hinweispergament (#188) */,
     text: "Die Runen vom Höhlenmund am Hochpass, mit klammen Fingern abgezeichnet. Der Einsiedler kann sie lesen." }; }
 
 /** Vorbereitet für das Minispiel Rissgrube (später): Würfe je Waffe 1 : 100 – noch nicht eingetragen, bleibt inaktiv, bis die Rissgrube gebaut wird (nicht beim Mini-Boss der Hochlande) */
@@ -666,6 +666,15 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
   GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
     anforderung: { skill: "geschick", level: 40 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 33, staerke: 34 } /* Balancing 27.11.: zwischen Stufe 35 und 45, nur Lohn aus E4 */,
     text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }
+/* Ausgabe 1: zwei Quest-Waffen (Entscheidung des Nutzers, Quests 9d3174ba2, doku/quests/waffen-bausteine.md; Bilder und Handteile von Figuren) –
+   Questlohn, nicht handelbar; gegen: Schaden gegen eine Gegnerfamilie (config.ts → familie) wie beim Waldsäbel */
+{ const B = "img/objekte3d/ausruestung/bilder/";
+  GEGENSTAENDE.eibenbogen_hartwig = { id: "eibenbogen_hartwig", name: "Hartwigs Eibenbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.bogen.hartwig"], bild: B + "hartwigs_eibenbogen.webp",
+    anforderung: { skill: "fernkampf", level: 30 }, waffe: { art: "fern", ticks: 5, reich: 7, flug: 18, fernAngriff: 27, fernStaerke: 29, gegen: { wild: 0.15 } },
+    text: "Hartwigs alter Jagdbogen aus Kreuzwald-Eibe. Wolf, Bär und Widder kennen sein Lied – +15 % gegen Wildtiere." };
+  GEGENSTAENDE.lindenstab = { id: "lindenstab", name: "Lindenstab", platz: "waffe", art: "Stab", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.lindenstab"], bild: B + "lindenstab.webp",
+    anforderung: { skill: "magie", level: 30 }, waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 14, magieStaerke: 182, gegen: { untot: 0.15 } },
+    text: "Der Stab der Linde, aus dem Holz des alten Baums geschnitten. Was nicht mehr leben sollte, weicht vor ihm – +15 % gegen Untote und den Rabenkult." }; }
 
 /* ───────── Phase 9 (#86): Glutsande und Glutbrunn – Bilder img/objekte3d/glutsande/symbole/, Glutwels img/objekte3d/skilling/angeln/symbole/ (Figuren #75) ───────── */
 { const G9 = "img/objekte3d/glutsande/symbole/", A9 = "img/objekte3d/skilling/angeln/symbole/", R = ["I", "II", "III", "IV", "V"];

@@ -1,6 +1,6 @@
 # Stand – wo wir im Fahrplan stehen
 
-Gepflegt von der Rolle Konzept & Review. Zuletzt aktualisiert: **27.11.2026, 18:00 UTC**.
+Gepflegt von der Rolle Konzept & Review. Zuletzt aktualisiert: **27.11.2026, 22:30 UTC**.
 Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzept.pdf` · Arbeitsweise: `doku/ARBEITSWEISE.md`
 
 ## Fahrplan (Grenzland)
@@ -71,3 +71,11 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | Quests | Entwürfe B2, Schilf und Schnur, Taverne (#5, #6) |
 
 - **27.11.:** Neue Startseite riftmere.de live, Würfelspiel entfernt (main 8abfbb68).
+
+## Ausgaben (ab 27.11.: gesammelt live, nur Bugfixes einzeln)
+
+| Ausgabe | Inhalt | Stand |
+|---|---|---|
+| **1 – App-Start** | Ockerlande (Orte, Läden, I1/I2), Kielmund-Stadtquests, Gegnerstufe + Gefahrenfarbe, Reifbach, Figuren-Gebäude, Sperren Drachenarm/Frostkrone (#185/#186), Pets als Gegenstände, Händler-Staffel (Episch in Rotlehm), Legendär-/Mythisch-Drops, Glutsteinschild 1:60, Waffen-Quests Eibenbogen/Lindenstab, Verdichtung Grenzland/Waldland/Westmark, Weltkarte flüssig (#183, Detailstufen) | 🟡 zusammengebaut auf claude/welt3d (Tests laufen) – wartet auf Freigabe Grenzland-Verdichtung; #183 Hotfix 1–3 live (main 5ecbe93ab); App-Screenshots fertig |
+| **2** | 2–3 Midgame-Bosse (#178), Schiffslinien (Schiff + Kapitän fertig) | 🟡 vorbereitet |
+| später | übrige Midgame-Bosse, Block I I3/I4 (Ockermutter), Gegnerbeute #180, weitere Verdichtung | ⏳ |

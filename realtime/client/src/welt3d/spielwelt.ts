@@ -14,6 +14,8 @@ import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch, qu
 import { markeDa, stufenSchluessel } from "../../../shared/stadtstufen";
 import { schalterAn } from "../../../shared/quests";
 import { SPRUENGE } from "../../../shared/bosse";
+import { WELT_SPERREN, sperrAbstand } from "../../../shared/sperren";
+import { Schneesturm } from "./wetter3d";
 /** Stadtstufen: Schalter dieses Spielers (vor dem Laden der Quests: die erste Stufe) */
 const stufenAn = (s: string): boolean => questGeladen() && schalterAn((id) => questStandB(id), s);
 /** eigenes Heldenlevel (für die Levelfarbe der Gegner im Menü) */
@@ -133,6 +135,7 @@ export class Spielwelt3D implements WeltKern {
     { /* nach dem Drehen (hoch ↔ quer) die Seite auf null zurück und die 3D-Ansicht neu messen – iOS meldet die neue Größe verzögert */
       const neu = () => { scrollTo(0, 0); this.motor.groesse(); }, spaeter = () => { neu(); for (const t of [120, 350, 800]) setTimeout(neu, t); };
       addEventListener("orientationchange", spaeter); addEventListener("resize", spaeter); if (window.visualViewport) window.visualViewport.addEventListener("resize", spaeter); }
+    { const sturm = new Schneesturm(this.motor); this.motor.nachNebel = (dt, fog) => { sturm.schritt(dt, this.ort.x, this.ort.y, this.motor.hoehe(this.ort.x, this.ort.y), stufenAn("frostkrone_frei"), fog); this.sperrHinweis(); }; } /* #186 Schneesturm vor der Frostkrone */
     this.eingaben(); this.motor.beimBild = (dt) => this.bild(dt); this.motor.beimKlick = (x, z) => { if (!this.gesperrt) this.gehe(x, z); };
     /* erst die ersten Bilder zeichnen (dabei übersetzt der Browser die Shader – das hält die Seite kurz an), dann mit dem Server verbinden:
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
@@ -210,6 +213,10 @@ export class Spielwelt3D implements WeltKern {
   private ausbauSperren(): number[][] { const aus: number[][] = []; for (const d of this.daten.values()) if (d !== "holt" && d.ausbau) for (const A of d.ausbau) if (markeDa(A.m, stufenAn)) for (const [i, j] of A.f) aus.push([i, j, i + 1, j + 1]); return aus; }
   private stufenSchl = "";
   /** Queststand geändert: hat sich eine Stadtstufe geändert, Dinge und Gehraster neu */
+  /** #186: nahe einer noch geschlossenen Weltsperre (Drachenarm, Frostkrone) ein Hinweis im Chat, höchstens alle 30 Sekunden */
+  private sperrZuletzt = 0;
+  private sperrHinweis() { const t = performance.now(); if (t - this.sperrZuletzt < 30000) return;
+    for (const S of WELT_SPERREN) if (!stufenAn(S.schalter) && sperrAbstand(S, this.ort.x, this.ort.y) <= 4) { this.sperrZuletzt = t; chatSystem(S.text); return; } }
   private stufenPruefen() { const k = stufenSchluessel(stufenAn); if (k === this.stufenSchl) return; const erst = !this.stufenSchl; this.stufenSchl = k; if (erst && k === stufenSchluessel(() => false)) return; this.motor.ausbauNeu(); this.sperrenNeu(); }
   /** Sperren haben sich geändert (die Wachen lassen den Spieler durch): Gehraster der geladenen Chunks neu aufbauen */
   sperrenNeu() { for (const d of this.daten.values()) if (d !== "holt") this.raster.dazu(d); for (const [x0, y0, x1, y1] of this.alleSperren()) this.raster.sperren(x0, y0, x1, y1); }

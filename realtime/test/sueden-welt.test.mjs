@@ -176,7 +176,9 @@ try {
     check(voll === 24 && anzahl(ute, "moorgloeckchen_ableger") === 0 && amBoden && /am Boden/.test(zeilen), `Voller Rucksack (${voll}): Heddas Ableger liegt am Boden neben Ute, mit Hinweis (${amBoden ? "am Boden" : "fehlt"}; „${zeilen.slice(-80)}“)`);
     for (const g of ["brot", "barren_kupfer", "stamm_eiche", "fisch_muehlbarsch_gebraten"]) { const i = (ute.inv.rucksack || []).findIndex((x) => (typeof x === "string" ? x : x.g) === g); if (i < 0) continue;
       sende(ute, { t: "inv", tat: "fallen", i }); await warte(ute, (m) => m.t === "inventar"); }
-    if (amBoden) { await stelle(ute, amBoden.x, amBoden.y); sende(ute, { t: "aufheben", id: amBoden.i }); await warte(ute, (m) => m.t === "inventar", 2500); await schlaf(300); }
+    if ((ute.inv.rucksack || []).length >= 24) await warte(ute, () => (ute.inv.rucksack || []).length < 24, 5000); /* Platz ist erst da, wenn der Server das Fallenlassen bestätigt hat */
+    /* aufheben: unter Last (CI) kam „aufheben“ vor der neuen Stelle an und wurde als zu weit abgewiesen – nach dem Hinstellen kurz warten, bis zu dreimal versuchen */
+    for (let v = 0; amBoden && v < 3 && anzahl(ute, "moorgloeckchen_ableger") === 0; v++) { await stelle(ute, amBoden.x, amBoden.y); await schlaf(400 + v * 600); sende(ute, { t: "aufheben", id: amBoden.i }); await warte(ute, (m) => m.t === "inventar", 3000); await schlaf(300); }
     check(anzahl(ute, "ringelblumensamen") === 1 && anzahl(ute, "moorgloeckchen_ableger") === 1, "Samen von Mira, Ableger von Hedda");
     for (const id of ["kh_beet_1", "kh_beet_2"]) { const o = kob(id); await stelle(ute, o.x, o.y - 1); await ding(ute, id); }
     check(QB.erledigt(K, ute.b[K.id], "beet_1") && QB.erledigt(K, ute.b[K.id], "beet_2"), "Beide Beete angelegt");

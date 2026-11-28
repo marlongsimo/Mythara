@@ -1,2 +1,11 @@
 [
+ {"id":"bergsturz_fels_1","objekt":"k_fels_gross","x":146,"y":159.98,"ausbau_bis":"drachenarm_frei","kollision":{"art":"rechteck","x":-2,"y":-3.98,"b":4,"h":4},"spiegeln":false},
+ {"id":"bergsturz_fels_2","objekt":"k_fels_breit","x":144,"y":162.04,"ausbau_bis":"drachenarm_frei","kollision":{"art":"rechteck","x":-2,"y":-3.98,"b":4,"h":4},"spiegeln":true},
+ {"id":"bergsturz_fels_3","objekt":"k_fels_klein","x":128,"y":173.73,"ausbau_bis":"drachenarm_frei","kollision":{"art":"rechteck","x":-2,"y":-3.98,"b":4,"h":4},"spiegeln":false},
+ {"id":"bergsturz_fels_4","objekt":"k_fels_gross","x":126,"y":175.98,"ausbau_bis":"drachenarm_frei","kollision":{"art":"rechteck","x":-2,"y":-3.98,"b":4,"h":4},"spiegeln":true},
+ {"id":"bergsturz_fels_5","objekt":"k_fels_breit","x":124,"y":178.04,"ausbau_bis":"drachenarm_frei","kollision":{"art":"rechteck","x":-2,"y":-3.98,"b":4,"h":4},"spiegeln":false},
+ {"id":"bergsturz_truemmer_1","objekt":"k_truemmer","x":139.11,"y":158.38,"ausbau_bis":"drachenarm_frei","kollision":null},
+ {"id":"bergsturz_truemmer_2","objekt":"k_truemmer","x":133.36,"y":163.13,"ausbau_bis":"drachenarm_frei","kollision":null},
+ {"id":"bergsturz_truemmer_3","objekt":"k_truemmer","x":126.46,"y":168.83,"ausbau_bis":"drachenarm_frei","kollision":null},
+ {"id":"bergsturz_truemmer_4","objekt":"k_truemmer","x":120.71,"y":173.58,"ausbau_bis":"drachenarm_frei","kollision":null}
 ]

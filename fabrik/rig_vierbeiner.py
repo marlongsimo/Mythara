@@ -3,7 +3,7 @@
   python3 fabrik/rig_vierbeiner.py -- <meshy.blend> <ziel.blend> [hoehe=0.9] [bein=0.42] [hals=1] [schwanz=1] [bewegungen=ruhe,laufen]
 
 Optionen: bein = Hüfthöhe als Anteil der Höhe (Kuh: 0,5); hals = eigener Halsknochen zwischen Rumpf und Kopf (Kopf zum Boden senken);
-schwanz = Schwanzknochen hinten; fluegel = Flügelknochen an den Schultern (Boden-Drache: angelegt, beim Angriff zum Drohen gespreizt); bewegungen aus: ruhe (wiegen), laufen, fressen (als ruhe: Kopf runter, kauen), gehen, angriff (Kopfstoß), treffer (zuckt zurück, 0,4 s), tod (kippt zur Seite), freude (Pet beim Fund: zwei Hüpfer, 1 s, einmal).
+schwanz = Schwanzknochen hinten; fluegel = Flügelknochen an den Schultern (Boden-Drache: angelegt, beim Angriff zum Drohen gespreizt); bewegungen aus: ruhe (wiegen), laufen, fressen (als ruhe: Kopf runter, kauen), gehen, angriff (Kopfstoß), treffer (zuckt zurück, 0,4 s), tod (kippt zur Seite), freude (Pet beim Fund: zwei Hüpfer, 1 s, einmal); Boss: heulen (2 s), sprung (Satz nach vorn, Treffer Bild 14), benommen (Schwächefenster, Schleife).
 
 Erwartet: Kopf vorn (-y), Länge entlang y, vier Füße am Boden.
 Knochen: wurzel – rumpf – kopf; wurzel – bein.VL/VR/HL/HR (vorn/hinten, links/rechts; je Bein ein steifer Knochen von der Hüfte zum Fuß).
@@ -135,6 +135,24 @@ def tod(t):                                                                     
     dreh("wurzel", ((0, 1, 0), 86 * u)); hoch(0.17 * H * u); kopf_runter(-10 * u + 20 * d)
     for n in ("VL", "HL"): dreh("bein." + n, ((0, 1, 0), -12 * u))
     for n in ("VR", "HR"): dreh("bein." + n, ((0, 1, 0), 10 * u))
+def heulen(t):                                                                                  # Boss: setzt sich halb, Kopf hoch in den Himmel, heult (Hals zittert) – 2 s, einmal
+    u = math.sin(math.pi * min(1.0, t / 0.9)) ** 0.8; z = 2 * math.sin(2 * math.pi * 9 * t) * (0.3 < t < 0.85)
+    kopf_runter(-50 * u + z); dreh("rumpf", ((1, 0, 0), -12 * u)); hoch(-0.04 * H * u)
+    for n in ("HL", "HR"): dreh("bein." + n, ((1, 0, 0), -28 * u))
+    for n in ("VL", "VR"): dreh("bein." + n, ((1, 0, 0), 6 * u))
+    if SCHWANZ: dreh("schwanz", ((1, 0, 0), 20 * u))
+def sprung(t):                                                                                  # Boss: duckt sich, springt weit nach vorn (Treffer bei der Landung, Bild 14 von 24), federt nach
+    k = [(0, 0, 0, 0, 0), (0.25, -0.12, 0, 8, -25), (0.4, 0.35, 0.6, -14, 30), (0.58, 0.15, 1.1, 10, -10), (0.7, -0.05, 1.2, 6, -20), (1, 0, 0, 0, 0)]
+    for (t0, *a0), (t1, *a1) in zip(k, k[1:]):
+        if t0 <= t <= t1: u = (t - t0) / (t1 - t0); u = u * u * (3 - 2 * u); h, v, r, b = (p + (q - p) * u for p, q in zip(a0, a1)); break
+    hoch(h * H); vor(v * H * 0.6); dreh("rumpf", ((1, 0, 0), r)); kopf_runter(-r)
+    for n in ("VL", "VR"): dreh("bein." + n, ((1, 0, 0), -b))
+    for n in ("HL", "HR"): dreh("bein." + n, ((1, 0, 0), b))
+def benommen(t):                                                                                # Boss-Schwächefenster: Kopf hängt, schwankt seitlich, Beine knicken leicht ein – Schleife
+    s = math.sin(2 * math.pi * t); hoch(-0.06 * H); kopf_runter(25 + 6 * math.sin(4 * math.pi * t)); dreh("kopf", ((0, 0, 1), 12 * s)) if HALS else None
+    dreh("rumpf", ((0, 1, 0), 9 * s), ((1, 0, 0), 4))
+    for n in ("VL", "VR", "HL", "HR"): dreh("bein." + n, ((0, 1, 0), (5 if n[1] == "L" else -5) * s))
+    if SCHWANZ: dreh("schwanz", ((1, 0, 0), -30))
 def freude(t):                                                                                  # Freude (Pet beim Fund): zwei kleine Hüpfer, Kopf hoch, Schwanz wedelt – einmal, 1 s
     u = math.sin(math.pi * t); h = abs(math.sin(2 * math.pi * t)); hoch(0.09 * H * h * u)
     kopf_runter(-14 * u); dreh("rumpf", ((1, 0, 0), -6 * h * u), ((0, 1, 0), 4 * math.sin(4 * math.pi * t) * u))
@@ -148,7 +166,7 @@ def mit_fluegeln(fn, f_fn):
     def g(t): fn(t); flug(*f_fn(t))
     return g
 ALLE = {"ruhe": (ruhe, 48, True, {}), "laufen": (laufen, 16, True, {}), "fressen": (fressen, 72, True, {}), "gehen": (gehen, 32, True, {}),
-        "angriff": (angriff, 20, False, {"treffer": 10}), "treffer": (treffer, 10, False, {}), "tod": (tod, 30, False, {"halten": 30}), "freude": (freude, 24, False, {})}
+        "angriff": (angriff, 20, False, {"treffer": 10}), "treffer": (treffer, 10, False, {}), "tod": (tod, 30, False, {"halten": 30}), "freude": (freude, 24, False, {}), "heulen": (heulen, 48, False, {}), "sprung": (sprung, 24, False, {"treffer": 14}), "benommen": (benommen, 36, True, {})}
 if FLUEGEL:                                                                                      # angelegt beim Ruhen/Gehen/Laufen/Treffer/Tod, beim Angriff gespreizt und drohend geschlagen
     for n_, ff in (("ruhe", lambda t: (1.0, 4 * math.sin(2 * math.pi * t))), ("gehen", lambda t: (1.0, 0)), ("laufen", lambda t: (0.9, 6 * math.sin(4 * math.pi * t))),
                    ("angriff", lambda t: (max(0.0, 1 - 2.5 * math.sin(math.pi * t)), 25 * math.sin(3 * math.pi * t) * math.sin(math.pi * t))), ("treffer", lambda t: (1.0, -10 * math.sin(math.pi * t))), ("tod", lambda t: (1.0 - 0.6 * t, 0))):

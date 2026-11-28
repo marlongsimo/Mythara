@@ -12,5 +12,17 @@
   "sperren": [],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "bergsturz_drachenarm",
+   "art": "lesen",
+   "x": 126.5,
+   "y": 161.5,
+   "radius": 2.2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Bergsturz hat den Hals des Drachenarms verschüttet. Felsen, so hoch wie ein Haus – dahinter geht es nicht weiter."
+   }
+  }
+ ]
 }

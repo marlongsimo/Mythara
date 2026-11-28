@@ -1,5 +1,16 @@
 [
- {"id":"bl_busch_1826","objekt":"stil_busch_02","x":100.5,"y":0.5},
- {"id":"bl_busch_1928","objekt":"stil_busch_02","x":106.5,"y":6},
- {"id":"bl_busch_1968","objekt":"stil_busch_02","x":82.5,"y":1.5}
+ {"id":"bl_busch_1794","objekt":"stil_busch_02","x":100.5,"y":0.5},
+ {"id":"bl_busch_1864","objekt":"stil_busch_02","x":82.5,"y":1.5},
+ {"id":"ok_fels_klein_76","objekt":"k_fels_klein","x":432,"y":52.33,"s":0.77},
+ {"id":"ok_fels_klein_114","objekt":"k_fels_klein","x":281.5,"y":22.9,"s":1.1},
+ {"id":"ok_ocker_akazie_135","objekt":"ocker_akazie","x":249.5,"y":73.5,"s":0.94},
+ {"id":"ok_fels_klein_156","objekt":"k_fels_klein","x":341,"y":45.05,"s":0.9},
+ {"id":"ok_fels_breit_164","objekt":"k_fels_breit","x":255.5,"y":12.66,"s":1.06},
+ {"id":"ok_ocker_akazie_176","objekt":"ocker_akazie","x":162.5,"y":33.5,"s":0.98},
+ {"id":"ok_laub_gold_215","objekt":"stil_laub_gold","x":109.5,"y":37.5,"s":0.77},
+ {"id":"ok_laub_gold_219","objekt":"stil_laub_gold","x":65.5,"y":24.5,"s":0.97},
+ {"id":"ok_fels_klein_234","objekt":"k_fels_klein","x":224.5,"y":41.1,"s":0.93},
+ {"id":"ok_ocker_akazie_268","objekt":"ocker_akazie","x":12.5,"y":73.5,"s":0.93},
+ {"id":"ok_ocker_akazie_291","objekt":"ocker_akazie","x":320.5,"y":65.5,"s":0.84},
+ {"id":"ok_fels_breit_309","objekt":"k_fels_breit","x":1.5,"y":42.18,"s":1.07}
 ]

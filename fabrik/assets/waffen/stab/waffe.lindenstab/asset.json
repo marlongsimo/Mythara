@@ -1,0 +1,8 @@
+{
+  "id": "waffe.lindenstab",
+  "name": "Lindenstab",
+  "kategorie": "waffe",
+  "aktuell": "v001",
+  "status": "v001: Quest-Waffe (Ausgabe 1) – Hirtenstab hell umgefärbt (textur_ton ton=40 hell=1.45), Lindenblätter und Splitterglanz am Kopf (fabrik/waffe_zusatz.py); Rucksackbild img/objekte3d/ausruestung/bilder/lindenstab.webp",
+  "herkunft": "Fabrik (aus Bestand)"
+}

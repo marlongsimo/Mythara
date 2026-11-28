@@ -1,0 +1,74 @@
+[
+ {
+  "ort": "Fahle Weiten",
+  "bereit_ms": 2645,
+  "erstes_bild_ms": 2843,
+  "daten_mb": 17.4,
+  "anfragen": 298,
+  "fps_ruhig": 21.1,
+  "fps_gehen": 20.6,
+  "max_bild_ms": 83,
+  "ruckler": 0,
+  "info": "22 FPS · 8 Aufrufe · 25 Chunks",
+  "weg": [
+   6421,
+   6017,
+   6448,
+   6017
+  ]
+ },
+ {
+  "ort": "Glutsande",
+  "bereit_ms": 2777,
+  "erstes_bild_ms": 2952,
+  "daten_mb": 17.4,
+  "anfragen": 295,
+  "fps_ruhig": 22.2,
+  "fps_gehen": 21.1,
+  "max_bild_ms": 83,
+  "ruckler": 0,
+  "info": "22 FPS · 6 Aufrufe · 25 Chunks",
+  "weg": [
+   6641,
+   7215,
+   6667,
+   7215
+  ]
+ },
+ {
+  "ort": "Hochlande",
+  "bereit_ms": 2755,
+  "erstes_bild_ms": 2989,
+  "daten_mb": 17.4,
+  "anfragen": 296,
+  "fps_ruhig": 22.5,
+  "fps_gehen": 21.2,
+  "max_bild_ms": 83,
+  "ruckler": 0,
+  "info": "23 FPS · 9 Aufrufe · 25 Chunks",
+  "weg": [
+   7783,
+   5794,
+   7809,
+   5794
+  ]
+ },
+ {
+  "ort": "Ockerlande",
+  "bereit_ms": 2807,
+  "erstes_bild_ms": 3070,
+  "daten_mb": 17.3,
+  "anfragen": 287,
+  "fps_ruhig": 20.2,
+  "fps_gehen": 19.8,
+  "max_bild_ms": 83,
+  "ruckler": 0,
+  "info": "20 FPS · 9 Aufrufe · 25 Chunks",
+  "weg": [
+   7329,
+   7867,
+   7355,
+   7867
+  ]
+ }
+]

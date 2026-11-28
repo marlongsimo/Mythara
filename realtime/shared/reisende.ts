@@ -12,7 +12,7 @@ const HALBER_WEG = 4;
 export const ERZWEG: [number, number][] = [[6990, 5901], [7040, 5901], [7077, 5901], [7090, 5880], [7100, 5850], [7122.5, 5815.5]]; /* Welt da1ea577: welt/hochlande_orte.json → reisende, Boden frei geräumt (Markt → Osttor → Erzweg → Stollen) */
 /** #174 Kielmund: am Kai entlang (Lagerhäuser im Norden, Hafenbank im Süden) und die Streife der Stadtwache vom Nordtor über den Markt zum Hafen */
 export const KIELMUND_KAI: [number, number][] = [[6409.5, 7310.5], [6409.5, 7338.5]];
-export const KIELMUND_STREIFE: [number, number][] = [[6448.5, 7266.5], [6437.5, 7284.5], [6409.5, 7309.5], [6410.5, 7333.5], [6412.5, 7336.5]]; /* Wegsuche auf dem Gehraster der Stadt */
+export const KIELMUND_STREIFE: [number, number][] = [[6448.5, 7266.5], [6442.5, 7296.5], [6409.5, 7326.5], [6410.5, 7334.5], [6412.5, 7336.5]]; /* Wegsuche auf dem Gehraster der Stadt */
 export const REISENDE: Reise[] = [
   /* der Händler mit seinem Karren: steht lange am Rastplatz „Halber Weg“ (Trödler-Platz) */
   { id: "haendler_sued", datei: "npc.haendler_sued", punkte: SUEDSTRASSE, halte: { 0: 30, [HALBER_WEG]: 240, [SUEDSTRASSE.length - 1]: 30 }, tempo: 0.9, versatz: 0, karren: "img/objekte3d/troedler/karren.glb" /* der Karren des Trödlers (#88) */ },

@@ -984,5 +984,7 @@
  {"id":"naht_644","objekt":"stil_linde_01","x":55.5,"y":197.5,"s":0.87},
  {"id":"naht_645","objekt":"stil_eiche_01","x":0.5,"y":258.5,"s":1.07,"spiegeln":true},
  {"id":"naht_646","objekt":"stil_tanne_01","x":0.5,"y":287.5,"s":1.25,"spiegeln":true},
- {"id":"naht_647","objekt":"stil_eiche_02","x":0.5,"y":289.5,"s":1.18,"spiegeln":true}
+ {"id":"naht_647","objekt":"stil_eiche_02","x":0.5,"y":289.5,"s":1.18,"spiegeln":true},
+ {"id":"vd_osthang_k1","objekt":"wegrand_karren_heu","x":52,"y":101.5,"spiegeln":true},
+ {"id":"vd_osthang_k2","objekt":"wegrand_zaun_latten","x":12.1,"y":104.73}
 ]

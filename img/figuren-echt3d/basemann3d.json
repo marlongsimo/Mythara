@@ -715,6 +715,61 @@
     "dolchwurf"
    ],
    "datei": "basemann3d.teile/schild.glutstein.glb"
+  },
+  "ruestung.umhang.rotmantel": {
+   "art": "starr",
+   "platz": "umhang",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.umhang.rotmantel.glb"
+  },
+  "ruestung.umhang.wacht_grau": {
+   "art": "starr",
+   "platz": "umhang",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.umhang.wacht_grau.glb"
+  },
+  "waffe.rabenfokus": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab",
+    "stich"
+   ],
+   "datei": "basemann3d.teile/waffe.rabenfokus.glb"
+  },
+  "kopf.helm.fellhaube": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.fellhaube.glb"
+  },
+  "waffe.bogen.hartwig": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ],
+   "datei": "basemann3d.teile/waffe.bogen.hartwig.glb"
+  },
+  "waffe.lindenstab": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab"
+   ],
+   "datei": "basemann3d.teile/waffe.lindenstab.glb"
   }
  },
  "aktionen": {
