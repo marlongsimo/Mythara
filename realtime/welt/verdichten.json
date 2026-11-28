@@ -62,7 +62,7 @@
    "bewuchs": 0,
    "gruppen": 0,
    "kleinigkeiten": 37,
-   "tiere": 1
+   "tiere": 2
   },
   "waldmark": {
    "schritt": "waldland",
@@ -136,52 +136,52 @@
   },
   "fl_201_211": {
    "schritt": "glutsande",
-   "bewuchs": 1448,
-   "gruppen": 642,
-   "kleinigkeiten": 79,
-   "tiere": 1
+   "bewuchs": 1453,
+   "gruppen": 631,
+   "kleinigkeiten": 78,
+   "tiere": 3
   },
   "fl_216_198": {
    "schritt": "glutsande",
-   "bewuchs": 520,
-   "gruppen": 240,
-   "kleinigkeiten": 26,
+   "bewuchs": 525,
+   "gruppen": 242,
+   "kleinigkeiten": 29,
    "tiere": 0
   },
   "fl_216_211": {
    "schritt": "glutsande",
-   "bewuchs": 995,
-   "gruppen": 480,
-   "kleinigkeiten": 95,
+   "bewuchs": 992,
+   "gruppen": 460,
+   "kleinigkeiten": 89,
    "tiere": 0
   },
   "fl_231_198": {
    "schritt": "glutsande",
-   "bewuchs": 261,
+   "bewuchs": 233,
    "gruppen": 123,
    "kleinigkeiten": 21,
    "tiere": 1
   },
   "fl_201_225": {
    "schritt": "glutsande",
-   "bewuchs": 1348,
-   "gruppen": 593,
-   "kleinigkeiten": 33,
-   "tiere": 2
+   "bewuchs": 1304,
+   "gruppen": 584,
+   "kleinigkeiten": 32,
+   "tiere": 1
   },
   "fl_186_211": {
    "schritt": "kueste",
-   "bewuchs": 167,
-   "gruppen": 78,
-   "kleinigkeiten": 58,
-   "tiere": 4
+   "bewuchs": 150,
+   "gruppen": 79,
+   "kleinigkeiten": 61,
+   "tiere": 0
   },
   "fl_186_225": {
    "schritt": "kueste",
-   "bewuchs": 91,
-   "gruppen": 40,
+   "bewuchs": 120,
+   "gruppen": 60,
    "kleinigkeiten": 19,
-   "tiere": 7
+   "tiere": 1
   },
   "fl_212_198": {
    "schritt": "kueste",
@@ -248,22 +248,22 @@
   },
   "fl_216_225": {
    "schritt": "ockerlande",
-   "bewuchs": 1209,
+   "bewuchs": 1208,
    "gruppen": 560,
-   "kleinigkeiten": 57,
+   "kleinigkeiten": 58,
    "tiere": 0
   },
   "fl_231_225": {
    "schritt": "ockerlande",
-   "bewuchs": 1070,
-   "gruppen": 480,
-   "kleinigkeiten": 14,
+   "bewuchs": 1095,
+   "gruppen": 500,
+   "kleinigkeiten": 13,
    "tiere": 0
   },
   "fl_231_211": {
    "schritt": "ockerlande",
-   "bewuchs": 761,
-   "gruppen": 363,
+   "bewuchs": 760,
+   "gruppen": 359,
    "kleinigkeiten": 0,
    "tiere": 0
   },
@@ -330,6 +330,13 @@
    "tier": "Huhn",
    "x": 6396.3,
    "y": 6500.6,
+   "region": "waldweg"
+  },
+  {
+   "id": "vd_tier_waldweg_2",
+   "tier": "Rind",
+   "x": 6506.7,
+   "y": 6525.2,
    "region": "waldweg"
   },
   {
@@ -488,107 +495,44 @@
   },
   {
    "id": "vd_tier_fl_201_211_1",
-   "tier": "Ziege",
-   "x": 6438.0,
-   "y": 7074.1,
+   "tier": "Rind",
+   "x": 6465.6,
+   "y": 6947.3,
+   "region": "fl_201_211"
+  },
+  {
+   "id": "vd_tier_fl_201_211_2",
+   "tier": "Huhn",
+   "x": 6455.4,
+   "y": 6955.4,
+   "region": "fl_201_211"
+  },
+  {
+   "id": "vd_tier_fl_201_211_3",
+   "tier": "Rind",
+   "x": 6456.9,
+   "y": 7160.4,
    "region": "fl_201_211"
   },
   {
    "id": "vd_tier_fl_231_198_1",
-   "tier": "Ziege",
-   "x": 7437.3,
-   "y": 6532.3,
+   "tier": "Huhn",
+   "x": 7436.9,
+   "y": 6534.9,
    "region": "fl_231_198"
   },
   {
    "id": "vd_tier_fl_201_225_1",
    "tier": "Schaf",
-   "x": 6457.5,
-   "y": 7204.5,
+   "x": 6466.0,
+   "y": 7219.2,
    "region": "fl_201_225"
-  },
-  {
-   "id": "vd_tier_fl_201_225_2",
-   "tier": "Huhn",
-   "x": 6469.0,
-   "y": 7221.1,
-   "region": "fl_201_225"
-  },
-  {
-   "id": "vd_tier_fl_186_211_1",
-   "tier": "Rind",
-   "x": 6285.1,
-   "y": 6984.2,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "vd_tier_fl_186_211_2",
-   "tier": "Rind",
-   "x": 6421.8,
-   "y": 6999.6,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "vd_tier_fl_186_211_3",
-   "tier": "Ziege",
-   "x": 6202.6,
-   "y": 7011.4,
-   "region": "fl_186_211"
-  },
-  {
-   "id": "vd_tier_fl_186_211_4",
-   "tier": "Schaf",
-   "x": 6200.6,
-   "y": 7070.7,
-   "region": "fl_186_211"
   },
   {
    "id": "vd_tier_fl_186_225_1",
-   "tier": "Huhn",
-   "x": 6285.9,
-   "y": 7235.3,
-   "region": "fl_186_225"
-  },
-  {
-   "id": "vd_tier_fl_186_225_2",
-   "tier": "Schaf",
-   "x": 6308.1,
-   "y": 7231.5,
-   "region": "fl_186_225"
-  },
-  {
-   "id": "vd_tier_fl_186_225_3",
-   "tier": "Rind",
-   "x": 6291.7,
-   "y": 7245.5,
-   "region": "fl_186_225"
-  },
-  {
-   "id": "vd_tier_fl_186_225_4",
-   "tier": "Rind",
-   "x": 6378.6,
-   "y": 7250.0,
-   "region": "fl_186_225"
-  },
-  {
-   "id": "vd_tier_fl_186_225_5",
-   "tier": "Schaf",
-   "x": 6279.0,
-   "y": 7248.5,
-   "region": "fl_186_225"
-  },
-  {
-   "id": "vd_tier_fl_186_225_6",
-   "tier": "Schaf",
-   "x": 6327.6,
-   "y": 7254.8,
-   "region": "fl_186_225"
-  },
-  {
-   "id": "vd_tier_fl_186_225_7",
-   "tier": "Rind",
-   "x": 6353.4,
-   "y": 7272.1,
+   "tier": "Ziege",
+   "x": 6354.0,
+   "y": 7267.1,
    "region": "fl_186_225"
   },
   {
