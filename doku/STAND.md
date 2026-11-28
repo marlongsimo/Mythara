@@ -76,6 +76,6 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 
 | Ausgabe | Inhalt | Stand |
 |---|---|---|
-| **1 – App-Start** | Ockerlande (Orte, Läden, I1/I2), Kielmund-Stadtquests, Gegnerstufe + Gefahrenfarbe, Reifbach, Figuren-Gebäude, Sperren Drachenarm/Frostkrone (#185/#186), Pets als Gegenstände, Händler-Staffel (Episch in Rotlehm), Legendär-/Mythisch-Drops, Glutsteinschild 1:60, Waffen-Quests Eibenbogen/Lindenstab, Verdichtung Grenzland/Waldland/Westmark, Weltkarte flüssig (#183, Detailstufen) | 🟡 in Arbeit – #183 Teil 1 live (main 7274eb3f); App-Screenshots 1. Fassung fertig |
+| **1 – App-Start** | Ockerlande (Orte, Läden, I1/I2), Kielmund-Stadtquests, Gegnerstufe + Gefahrenfarbe, Reifbach, Figuren-Gebäude, Sperren Drachenarm/Frostkrone (#185/#186), Pets als Gegenstände, Händler-Staffel (Episch in Rotlehm), Legendär-/Mythisch-Drops, Glutsteinschild 1:60, Waffen-Quests Eibenbogen/Lindenstab, Verdichtung Grenzland/Waldland/Westmark, Weltkarte flüssig (#183, Detailstufen) | 🟡 zusammengebaut auf claude/welt3d (Tests laufen) – wartet auf Freigabe Grenzland-Verdichtung; #183 Hotfix 1–3 live (main 5ecbe93ab); App-Screenshots fertig |
 | **2** | 2–3 Midgame-Bosse (#178), Schiffslinien (Schiff + Kapitän fertig) | 🟡 vorbereitet |
 | später | übrige Midgame-Bosse, Block I I3/I4 (Ockermutter), Gegnerbeute #180, weitere Verdichtung | ⏳ |
