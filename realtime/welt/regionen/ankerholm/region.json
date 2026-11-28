@@ -1,0 +1,17 @@
+{
+ "id": "ankerholm",
+ "name": "Ankerholm",
+ "untertitel": "Die Insel der Gestrandeten",
+ "ursprung": [
+  380,
+  300
+ ],
+ "chunks": [
+  5,
+  4
+ ],
+ "biom": "kueste",
+ "stufe": 1,
+ "ebene": "draussen",
+ "entwurf": true
+}

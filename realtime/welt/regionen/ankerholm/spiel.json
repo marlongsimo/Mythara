@@ -1,0 +1,67 @@
+{
+ "start": [
+  [
+   72,
+   106
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "interaktionen": [
+  {
+   "id": "ankerholm_namensbrett",
+   "art": "lesen",
+   "x": 70.5,
+   "y": 103.0,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "„Seeschwalbe“ steht auf dem Brett am Heck. Der Rumpf ist leck, der Mast gebrochen – so kommt hier niemand fort."
+   }
+  },
+  {
+   "id": "ankerholm_felsen",
+   "art": "lesen",
+   "x": 120,
+   "y": 62,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Grünliche Adern im Fels: Kupfer. Arvid sagt, daraus werden Beschläge für den neuen Mast."
+   }
+  },
+  {
+   "id": "ankerholm_leuchtfeuer_tafel",
+   "art": "lesen",
+   "x": 86.5,
+   "y": 27,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein altes Leuchtfeuer der Wacht. Seit Jahren hält Hauke Morn es allein am Brennen."
+   }
+  }
+ ],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 58,
+    "y0": 103.25,
+    "x1": 70,
+    "y1": 107.75,
+    "quelle": "ankerholm_wrack"
+   }
+  ],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 103.2,
+    "y0": 101.4,
+    "x1": 105.8,
+    "y1": 116.9
+   }
+  ]
+ }
+}

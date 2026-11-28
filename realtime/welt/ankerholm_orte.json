@@ -1,0 +1,383 @@
+{
+ "hinweis": "Einsteiger-Insel Ankerholm (#190, ankerholm.py). Stellen in Feldern der Region (lokal) und in Weltfeldern (welt). Für Quests (Stellen statt der Platzhalter ANKERHOLM), Systeme (Start, Puppen, Überfahrt) und Integration (Bäume, Adern, Fischstellen, Stationen, Gegner).",
+ "region": "ankerholm",
+ "ursprung_welt": [
+  12160,
+  9600
+ ],
+ "entwurf": true,
+ "start": {
+  "lokal": [
+   72,
+   106
+  ],
+  "welt": [
+   12232,
+   9706
+  ]
+ },
+ "figuren": {
+  "telse_brack": {
+   "lokal": [
+    77,
+    103
+   ],
+   "welt": [
+    12237,
+    9703
+   ]
+  },
+  "arvid_thorn": {
+   "lokal": [
+    113,
+    76.5
+   ],
+   "welt": [
+    12273,
+    9676.5
+   ]
+  },
+  "merle_haff": {
+   "lokal": [
+    88,
+    102.5
+   ],
+   "welt": [
+    12248,
+    9702.5
+   ]
+  },
+  "hauke_morn": {
+   "lokal": [
+    87,
+    33
+   ],
+   "welt": [
+    12247,
+    9633
+   ]
+  }
+ },
+ "orte": {
+  "lager": {
+   "lokal": [
+    80,
+    100
+   ],
+   "welt": [
+    12240,
+    9700
+   ]
+  },
+  "wrack": {
+   "lokal": [
+    64,
+    105.5
+   ],
+   "welt": [
+    12224,
+    9705.5
+   ]
+  },
+  "kiefernhain": {
+   "lokal": [
+    78,
+    62
+   ],
+   "welt": [
+    12238,
+    9662
+   ]
+  },
+  "schmiede": {
+   "lokal": [
+    116,
+    74
+   ],
+   "welt": [
+    12276,
+    9674
+   ]
+  },
+  "leuchtfeuer": {
+   "lokal": [
+    84,
+    24
+   ],
+   "welt": [
+    12244,
+    9624
+   ]
+  },
+  "uebungsplatz": {
+   "lokal": [
+    84,
+    36.5
+   ],
+   "welt": [
+    12244,
+    9636.5
+   ]
+  },
+  "bucht": {
+   "lokal": [
+    52,
+    42
+   ],
+   "welt": [
+    12212,
+    9642
+   ]
+  },
+  "steg": {
+   "lokal": [
+    104.5,
+    116.9
+   ],
+   "welt": [
+    12264.5,
+    9716.9
+   ]
+  }
+ },
+ "kiefern": [
+  {
+   "id": "ankerholm_kiefer_1",
+   "x": 68.7,
+   "y": 58.3,
+   "welt": [
+    12228.7,
+    9658.3
+   ]
+  },
+  {
+   "id": "ankerholm_kiefer_2",
+   "x": 75.0,
+   "y": 54.3,
+   "welt": [
+    12235.0,
+    9654.3
+   ]
+  },
+  {
+   "id": "ankerholm_kiefer_3",
+   "x": 80.7,
+   "y": 56.6,
+   "welt": [
+    12240.7,
+    9656.6
+   ]
+  },
+  {
+   "id": "ankerholm_kiefer_4",
+   "x": 86.5,
+   "y": 59.1,
+   "welt": [
+    12246.5,
+    9659.1
+   ]
+  },
+  {
+   "id": "ankerholm_kiefer_5",
+   "x": 68.6,
+   "y": 65.3,
+   "welt": [
+    12228.6,
+    9665.3
+   ]
+  },
+  {
+   "id": "ankerholm_kiefer_6",
+   "x": 74.0,
+   "y": 66.9,
+   "welt": [
+    12234.0,
+    9666.9
+   ]
+  },
+  {
+   "id": "ankerholm_kiefer_7",
+   "x": 83.3,
+   "y": 66.9,
+   "welt": [
+    12243.3,
+    9666.9
+   ]
+  },
+  {
+   "id": "ankerholm_kiefer_8",
+   "x": 88.1,
+   "y": 63.2,
+   "welt": [
+    12248.1,
+    9663.2
+   ]
+  }
+ ],
+ "kupferadern": [
+  {
+   "id": "ankerholm_kupfer_1",
+   "erz": "kupfer",
+   "x": 123.5,
+   "y": 57,
+   "welt": [
+    12283.5,
+    9657
+   ]
+  },
+  {
+   "id": "ankerholm_kupfer_2",
+   "erz": "kupfer",
+   "x": 124.5,
+   "y": 67,
+   "welt": [
+    12284.5,
+    9667
+   ]
+  }
+ ],
+ "stationen": {
+  "feuer": {
+   "lokal": [
+    80,
+    100
+   ],
+   "welt": [
+    12240,
+    9700
+   ],
+   "objekt": "ankerholm_feuer"
+  },
+  "kochplatz": {
+   "lokal": [
+    88,
+    100
+   ],
+   "welt": [
+    12248,
+    9700
+   ],
+   "objekt": "ankerholm_kochplatz"
+  },
+  "esse_und_amboss": {
+   "gebaeude": "ankerholm_schmiede",
+   "bauplan": "dorf_schmiede_01",
+   "hinweis": "Esse und Amboss stehen im Bauplan; die genaue Lage schreibt bedienstellen.mjs (nach dem Bau)"
+  }
+ },
+ "fischstellen": [
+  {
+   "id": "ankerholm_fisch_1",
+   "fisch": "bachling",
+   "stehplatz": [
+    103.8,
+    116.1
+   ],
+   "wasser": [
+    102.3,
+    116.1
+   ],
+   "welt_wasser": [
+    12262.3,
+    9716.1
+   ],
+   "welt_stehplatz": [
+    12263.8,
+    9716.1
+   ]
+  },
+  {
+   "id": "ankerholm_fisch_2",
+   "fisch": "bachling",
+   "stehplatz": [
+    105.2,
+    116.1
+   ],
+   "wasser": [
+    106.7,
+    116.1
+   ],
+   "welt_wasser": [
+    12266.7,
+    9716.1
+   ],
+   "welt_stehplatz": [
+    12265.2,
+    9716.1
+   ]
+  }
+ ],
+ "puppen": [
+  {
+   "id": "puppe_nah",
+   "farbe": "rot",
+   "kampfart": "nah",
+   "x": 78,
+   "y": 36.5,
+   "welt": [
+    12238,
+    9636.5
+   ]
+  },
+  {
+   "id": "puppe_fern",
+   "farbe": "gruen",
+   "kampfart": "fern",
+   "x": 84,
+   "y": 36.5,
+   "welt": [
+    12244,
+    9636.5
+   ]
+  },
+  {
+   "id": "puppe_magie",
+   "farbe": "blau",
+   "kampfart": "magie",
+   "x": 90,
+   "y": 36.5,
+   "welt": [
+    12250,
+    9636.5
+   ]
+  }
+ ],
+ "pluenderer": [
+  {
+   "id": "pluenderer_1",
+   "x": 46,
+   "y": 48,
+   "welt": [
+    12206,
+    9648
+   ]
+  },
+  {
+   "id": "pluenderer_2",
+   "x": 59,
+   "y": 48,
+   "welt": [
+    12219,
+    9648
+   ]
+  },
+  {
+   "id": "pluenderer_3",
+   "x": 52,
+   "y": 51,
+   "welt": [
+    12212,
+    9651
+   ]
+  }
+ ],
+ "schwarzer_ole": {
+  "id": "schwarzer_ole",
+  "x": 53,
+  "y": 43,
+  "welt": [
+   12213,
+   9643
+  ]
+ }
+}
