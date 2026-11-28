@@ -66,7 +66,10 @@ for (const { q, wartet } of [...QUESTS.map((q) => ({ q })), ...ENTWUERFE]) {
   const dinge = [...new Set(JSON.stringify(q).match(/"(hat|verloren)":"([a-z0-9_]+)"/g)?.map((m) => m.split(":")[1].replace(/"/g, "")) || [])];
   /* alle Stände: jede Bitmaske, dazu jeder Zählerstand der noch nicht erledigten Zähl-Schritte */
   const zs = q.schritte.map((x, i) => [x, i]).filter(([x]) => x.anzahl), staende = ["", "angeboten", "fertig"];
-  for (let b = 0; b < 1 << q.schritte.length; b++) { let varianten = [[]]; for (const [x, i] of zs) varianten = varianten.flatMap((v) => (b >> i & 1 ? [x.anzahl] : Array.from({ length: x.anzahl }, (_, n) => n)).map((n) => [...v, n]));
+  /* lange Quests (mehr als 14 Schritte, z. B. die Einsteiger-Insel): nur Bitmasken, in denen jeder erledigte Schritt seine „nach“-Schritte erledigt hat – sonst sprengt 2^n den Speicher */
+  const nachIdx = q.schritte.map((x) => (x.nach || []).map((id) => q.schritte.findIndex((y) => y.id === id))), lang = q.schritte.length > 14;
+  const passt = (b) => !lang || nachIdx.every((N, i) => !(b >> i & 1) || N.every((j) => b >> j & 1));
+  for (let b = 0; b < 1 << q.schritte.length; b++) { if (!passt(b)) continue; let varianten = [[]]; for (const [x, i] of zs) varianten = varianten.flatMap((v) => (b >> i & 1 ? [x.anzahl] : Array.from({ length: x.anzahl }, (_, n) => n)).map((n) => [...v, n]));
     for (const v of varianten) staende.push(QB.stand({ phase: "laeuft", bits: b, z: v, angeboten: true })); }
   check(staende.every((s) => QB.gueltig(q, s) === s), `Alle ${staende.length} Stände lesen sich zurück`);
   /* Voraussetzungen (Skills, andere Quests, Heldenlevel) gelten als erfüllt – geprüft werden Dialog und Ablauf */
