@@ -92,6 +92,7 @@ TESTS=(
   gegner-stufe
   gefahr
   sperren
+  kennungen
   zunft-rohstoffe
   zunft
   bank-orte
