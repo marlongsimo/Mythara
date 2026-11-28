@@ -1,6 +1,6 @@
 # Die Einsteiger-Insel „Ankerholm“
 
-*Entwurf Konzept-Chat, 28.11.2026, noch nicht abgesegnet.* Eigener Riftmere-Entwurf, keine Nachbildung eines anderen Spiels.
+*Konzept-Chat, 28.11.2026. **Vom Nutzer abgesegnet (28.11.).*** Eigener Riftmere-Entwurf, keine Nachbildung eines anderen Spiels.
 Kanon (28.11.): eigene Ankunftsinsel als Quest, etwa 10–15 min. Man lernt kurz Holzfällen, Bergbau, Schmieden, Fischen, Kochen und alle drei Kampfarten und wählt dort die Einsteiger-Ausrüstung. **Pflicht für alle neuen Figuren**, bestehende müssen nicht. Ziel: Ausgabe 2 oder später.
 Nutzer (28.11.): **Nach der Insel ist man in der Waldmark.**
 
