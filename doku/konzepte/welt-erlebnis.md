@@ -26,9 +26,8 @@ Der Kanon sagt „Offene Welt statt Sperren“. Für den Drachenarm (und die Fro
 - An jeder **Hafenstadt** steht ein **Fährmann bzw. Kapitän** am Steg. Er fährt einen gegen **Splitter** zu den anderen Häfen.
 - Häfen (Vorschlag, Welt prüft die Lage): **Kielmund**, **Möwenbucht**, **Netzbucht**, **Grauwacht** (Kaimauer), dazu die bestehende **Fähre** am Ostufer.
 - **Preis** nach Entfernung, Richtwert **20–60 Splitter**. Das ist eine Splitter-Senke, günstiger als lange Wege, aber nicht umsonst.
-- **Die Fahrt:** kurz auf dem Schiff stehen (einige Sekunden Überfahrt mit Blick aufs Meer), dann ankommen. Kein Ladebildschirm, sondern ein kleines Erlebnis.
+- **Die Fahrt:** **Ankunft sofort**, wie ein Teleport, höchstens kurz laden. Keine Fahrt an Deck (Korrektur des Nutzers, 27.11.).
 - Neue Häfen schaltet man frei, indem man **einmal selbst hinläuft** (oder die Quest dorthin macht). So bleibt Entdecken wichtig.
-- Selten **Ereignisse auf See** (Möwenschwarm, ein Wal, Treibgut zum Aufheben) als Stimmung, ohne Kampf.
 
 ### Kutschennetz (im Kanon „für später“, ab etwa 5 Städten)
 - Inzwischen gibt es fünf große Städte: **Graufurt, Kielmund, Grauwacht, Glutbrunn, Steinhag**. Damit ist die Bedingung erfüllt.
@@ -58,7 +57,7 @@ Reihenfolge (Vorschlag): Grenzland, Waldland und Westmark zuerst (dort sind die 
 | Rolle | Aufgabe |
 |---|---|
 | Welt | Sperren Drachenarm/Frostkrone, Häfen und Stege, Bewuchs, Kleinigkeiten am Weg, neue Dörfer |
-| Systeme | Schiffsreise (Ziele nach dem ersten Besuch, Preis, kurze Überfahrt), Sperren mit Hinweis |
+| Systeme | Schiffsreise (Ziele nach dem ersten Besuch, Preis, Ankunft sofort), Sperren mit Hinweis |
 | Figuren | Schiff, Kapitäne, fehlende Kleinteile (Brunnen, Karren …) und Bewohner der Dörfer |
 | Oberfläche | Reiseziel-Fenster am Hafen |
 | Quests | kleine Aufgaben der Dorfbewohner; später die Freischalt-Quests für Drachenarm und Frostkrone |
