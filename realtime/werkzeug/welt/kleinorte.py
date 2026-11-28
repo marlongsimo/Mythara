@@ -198,6 +198,11 @@ from collections import Counter
 erg = {'hinweis': f'Kleinorte {schritt} (kleinorte.py): PLAN zur Freigabe – noch nichts gebaut. Weltfelder.', 'schritt': schritt, 'laender': LAENDER, 'anzahl': len(neu),
        'je_art': dict(Counter(q['artname'] for q in neu)), 'je_land': dict(Counter(q['land'] for q in neu)), 'messung': {'vorher': vor, 'nachher': nach}, 'objekte_je_art': OBJEKTE, 'orte': neu}
 os.makedirs(os.path.join(W, 'plaene'), exist_ok=True)
+_alt = os.path.join(W, 'plaene', f'kleinorte_{schritt}.json')
+if '--namen-behalten' in sys.argv and os.path.exists(_alt):   # Namen aus kleinorte_namen.py behalten (Lage ist gleich: fester Zufall)
+    _n = {(q['x'], q['y']): q['name'] for q in lies(_alt)['orte']}
+    for q in neu: q['name'] = _n.get((q['x'], q['y']), q['name'])
+    erg['orte'] = neu
 json.dump(erg, open(os.path.join(W, 'plaene', f'kleinorte_{schritt}.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
 
 # ───── Skizze ─────

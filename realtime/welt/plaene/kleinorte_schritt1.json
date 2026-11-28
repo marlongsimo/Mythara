@@ -155,7 +155,7 @@
    "region": "fl_186_198"
   },
   {
-   "name": "Hollerhof",
+   "name": "Hohe Heide",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -167,7 +167,7 @@
    "region": "westried"
   },
   {
-   "name": "Rabensruine",
+   "name": "Brandstätte",
    "art": "ruine",
    "artname": "Ruine",
    "land": "Grenzland",
@@ -179,7 +179,7 @@
    "region": "waldweg"
   },
   {
-   "name": "Hollerschrein",
+   "name": "Moosschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -191,7 +191,7 @@
    "region": "osthof"
   },
   {
-   "name": "Fuchsschrein",
+   "name": "Rübenkreuz",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -203,7 +203,7 @@
    "region": "waldweg"
   },
   {
-   "name": "Rabenswacht",
+   "name": "Kiefernwarte",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Grenzland",
@@ -215,7 +215,7 @@
    "region": "graufurt"
   },
   {
-   "name": "Fuchshof",
+   "name": "Hof am Dorfteich",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -227,7 +227,7 @@
    "region": "waldweg"
   },
   {
-   "name": "Erlenversteck",
+   "name": "Nesselnest",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Grenzland",
@@ -239,7 +239,7 @@
    "region": "fl_186_198"
   },
   {
-   "name": "Bromversteck",
+   "name": "Versteck am Schwarzwasser",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Grenzland",
@@ -251,7 +251,7 @@
    "region": "graufurt"
   },
   {
-   "name": "Krähenwacht",
+   "name": "Krummer Turm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Grenzland",
@@ -263,7 +263,7 @@
    "region": "fl_186_198"
   },
   {
-   "name": "Fuchsau",
+   "name": "Eschenau",
    "art": "weiler",
    "artname": "Weiler",
    "land": "Grenzland",
@@ -275,7 +275,7 @@
    "region": "nordsaum"
   },
   {
-   "name": "Weidenhof",
+   "name": "Hopfenhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -287,7 +287,7 @@
    "region": "aschenwerth"
   },
   {
-   "name": "Lerchenschrein",
+   "name": "Rübenschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -299,7 +299,7 @@
    "region": "nordwald"
   },
   {
-   "name": "Moosschrein",
+   "name": "Stiller Schrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -311,7 +311,7 @@
    "region": "nordsaum"
   },
   {
-   "name": "Lindenbrunnen",
+   "name": "Hinterm Moor",
    "art": "brunnen",
    "artname": "Brunnen",
    "land": "Grenzland",
@@ -323,7 +323,7 @@
    "region": "graufurt"
   },
   {
-   "name": "Hollerruine",
+   "name": "Leere Mauern",
    "art": "ruine",
    "artname": "Ruine",
    "land": "Grenzland",
@@ -335,7 +335,7 @@
    "region": "waldweg"
   },
   {
-   "name": "Rabensbrunnen",
+   "name": "Distelbrunnen",
    "art": "brunnen",
    "artname": "Brunnen",
    "land": "Grenzland",
@@ -347,7 +347,7 @@
    "region": "graufurt"
   },
   {
-   "name": "Krähenköhlerei",
+   "name": "Bruns Meiler",
    "art": "koehler",
    "artname": "Köhlerlager",
    "land": "Grenzland",
@@ -359,7 +359,7 @@
    "region": "waldweg"
   },
   {
-   "name": "Birkenhof",
+   "name": "Hungerhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -371,7 +371,7 @@
    "region": "osthang"
   },
   {
-   "name": "Dachswacht",
+   "name": "Hilles Turm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Grenzland",
@@ -383,7 +383,7 @@
    "region": "osthang"
   },
   {
-   "name": "Bromwacht",
+   "name": "Igelwarte",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Grenzland",
@@ -395,7 +395,7 @@
    "region": "waldweg"
   },
   {
-   "name": "Erlenschrein",
+   "name": "Alkes Schrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -407,7 +407,7 @@
    "region": "nordwald"
   },
   {
-   "name": "Haselhof",
+   "name": "Spukhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -419,7 +419,7 @@
    "region": "waldweg"
   },
   {
-   "name": "Dachsschrein",
+   "name": "Telses Schrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -431,7 +431,7 @@
    "region": "westried"
   },
   {
-   "name": "Rabensau",
+   "name": "Neusiedel",
    "art": "weiler",
    "artname": "Weiler",
    "land": "Grenzland",
@@ -443,7 +443,7 @@
    "region": "westried"
   },
   {
-   "name": "Fuchsköhlerei",
+   "name": "Eilerts Meiler",
    "art": "koehler",
    "artname": "Köhlerlager",
    "land": "Grenzland",
@@ -455,7 +455,7 @@
    "region": "nordsaum"
   },
   {
-   "name": "Rabenshof",
+   "name": "Gerstenhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -467,7 +467,7 @@
    "region": "fl_186_198"
   },
   {
-   "name": "Haselbrunnen",
+   "name": "Erlenbrunnen",
    "art": "brunnen",
    "artname": "Brunnen",
    "land": "Grenzland",
@@ -479,7 +479,7 @@
    "region": "osthang"
   },
   {
-   "name": "Birkenjägerlager",
+   "name": "Jagdlager",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Grenzland",
@@ -491,7 +491,7 @@
    "region": "weidenhain"
   },
   {
-   "name": "Krähenhof",
+   "name": "Eschenhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -503,7 +503,7 @@
    "region": "osthang"
   },
   {
-   "name": "Erlenhof",
+   "name": "Lerchenhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -515,7 +515,7 @@
    "region": "westried"
   },
   {
-   "name": "Distelschrein",
+   "name": "Bettlerschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -527,7 +527,7 @@
    "region": "rabenmoor"
   },
   {
-   "name": "Lerchenwacht",
+   "name": "Immes Turm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Grenzland",
@@ -539,7 +539,7 @@
    "region": "westried"
   },
   {
-   "name": "Erlenau",
+   "name": "Kleindorf",
    "art": "weiler",
    "artname": "Weiler",
    "land": "Grenzland",
@@ -551,7 +551,7 @@
    "region": "aschenwerth"
   },
   {
-   "name": "Weidenschrein",
+   "name": "Bienenschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -563,7 +563,7 @@
    "region": "nordsaum"
   },
   {
-   "name": "Haselschrein",
+   "name": "Ruprechts Schrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -575,7 +575,7 @@
    "region": "graufurt"
   },
   {
-   "name": "Birkenversteck",
+   "name": "Birkennest",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Grenzland",
@@ -587,7 +587,7 @@
    "region": "graufurt"
   },
   {
-   "name": "Birkenschrein",
+   "name": "Martens Schrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -599,7 +599,7 @@
    "region": "westried"
   },
   {
-   "name": "Erlenköhlerei",
+   "name": "Rußiger Meiler",
    "art": "koehler",
    "artname": "Köhlerlager",
    "land": "Grenzland",
@@ -611,7 +611,7 @@
    "region": "westmark"
   },
   {
-   "name": "Lerchenhof",
+   "name": "Tinis Hof",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -623,7 +623,7 @@
    "region": "westmark"
   },
   {
-   "name": "Lindenschrein",
+   "name": "Flachskreuz",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -635,7 +635,7 @@
    "region": "westried"
   },
   {
-   "name": "Eichenhof",
+   "name": "Hinter den Birken",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -647,7 +647,7 @@
    "region": "nordwald"
   },
   {
-   "name": "Rabensjägerlager",
+   "name": "Hasellager",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Grenzland",
@@ -659,7 +659,7 @@
    "region": "waldweg"
   },
   {
-   "name": "Hollerwacht",
+   "name": "Gretes Turm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Grenzland",
@@ -671,7 +671,7 @@
    "region": "waldweg"
   },
   {
-   "name": "Nesselhof",
+   "name": "Hof am Rotbach",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -683,7 +683,7 @@
    "region": "osthang"
   },
   {
-   "name": "Mooshof",
+   "name": "Bernds Hof",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -695,7 +695,7 @@
    "region": "osthang"
   },
   {
-   "name": "Fuchsjägerlager",
+   "name": "Schlehenlager",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Grenzland",
@@ -707,7 +707,7 @@
    "region": "nordwald"
   },
   {
-   "name": "Hollerjägerlager",
+   "name": "Hirschlager",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Grenzland",
@@ -719,7 +719,7 @@
    "region": "nordsaum"
   },
   {
-   "name": "Bromjägerlager",
+   "name": "Fallenstellerlager",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Grenzland",
@@ -731,7 +731,7 @@
    "region": "nordwald"
   },
   {
-   "name": "Haselköhlerei",
+   "name": "Kiefernmeiler",
    "art": "koehler",
    "artname": "Köhlerlager",
    "land": "Grenzland",
@@ -743,7 +743,7 @@
    "region": "waldweg"
   },
   {
-   "name": "Krähenschrein",
+   "name": "Holunderschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Grenzland",
@@ -755,7 +755,7 @@
    "region": "nordwald"
   },
   {
-   "name": "Dachsköhlerei",
+   "name": "Tammes Meiler",
    "art": "koehler",
    "artname": "Köhlerlager",
    "land": "Grenzland",
@@ -767,7 +767,7 @@
    "region": "nordsaum"
   },
   {
-   "name": "Dachshof",
+   "name": "Holunderhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Grenzland",
@@ -779,7 +779,7 @@
    "region": "graufurt"
   },
   {
-   "name": "Lindenwacht",
+   "name": "Leerer Turm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Grenzland",
@@ -791,7 +791,7 @@
    "region": "westmark"
   },
   {
-   "name": "Hollerau",
+   "name": "Birkenwinkel",
    "art": "weiler",
    "artname": "Weiler",
    "land": "Grenzland",
@@ -803,7 +803,7 @@
    "region": "graufurt"
   },
   {
-   "name": "Dachsruine",
+   "name": "Altes Gemäuer",
    "art": "ruine",
    "artname": "Ruine",
    "land": "Grenzland",
@@ -815,7 +815,7 @@
    "region": "osthang"
   },
   {
-   "name": "Bromhütte",
+   "name": "Schlehenkate",
    "art": "fischer",
    "artname": "Fischerhütte",
    "land": "Grenzland",
@@ -827,7 +827,7 @@
    "region": "fl_186_198"
   },
   {
-   "name": "Bromstein",
+   "name": "Grenzstein",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Grenzland",
@@ -839,7 +839,7 @@
    "region": "fl_186_198"
   },
   {
-   "name": "Krähenbrunnen",
+   "name": "Ansgars Brunnen",
    "art": "brunnen",
    "artname": "Brunnen",
    "land": "Grenzland",
@@ -903,7 +903,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Frosthirtenlager",
+   "name": "Hirtenrast",
    "art": "hirten",
    "artname": "Hirtenlager",
    "land": "Fahle Weiten",
@@ -915,7 +915,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Wacholderruine",
+   "name": "Binsenruh",
    "art": "ruine",
    "artname": "Ruine",
    "land": "Fahle Weiten",
@@ -927,7 +927,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Windkate",
+   "name": "Ottos Kate",
    "art": "fischer",
    "artname": "Fischerhütte",
    "land": "Fahle Weiten",
@@ -939,7 +939,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Windmühle",
+   "name": "Stille Mühle",
    "art": "muehle",
    "artname": "Mühle",
    "land": "Fahle Weiten",
@@ -951,7 +951,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Wolfskate",
+   "name": "Kate am Ententeich",
    "art": "fischer",
    "artname": "Fischerhütte",
    "land": "Fahle Weiten",
@@ -963,7 +963,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Windhof",
+   "name": "Volkers Hof",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -975,7 +975,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Grauhof",
+   "name": "Schwarzhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -987,7 +987,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Wacholderstein",
+   "name": "Ödes Feld",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -999,7 +999,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Nebelnest",
+   "name": "Wolfsnest",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Fahle Weiten",
@@ -1011,7 +1011,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Aschschrein",
+   "name": "Borstkreuz",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -1023,7 +1023,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Fahlnest",
+   "name": "Elsternest",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Fahle Weiten",
@@ -1035,7 +1035,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Hünenkate",
+   "name": "Mettes Kate",
    "art": "fischer",
    "artname": "Fischerhütte",
    "land": "Fahle Weiten",
@@ -1047,7 +1047,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Moorschrein",
+   "name": "Hirtenschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -1059,7 +1059,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Nebeljägerlager",
+   "name": "Lager am Moorgraben",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Fahle Weiten",
@@ -1071,7 +1071,7 @@
    "region": "ostufer"
   },
   {
-   "name": "Frostnest",
+   "name": "Moornest",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Fahle Weiten",
@@ -1083,7 +1083,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Reifhof",
+   "name": "Wiebkes Hof",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1095,7 +1095,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Steinstein",
+   "name": "Hinterm Wald",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1107,7 +1107,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Reifwarte",
+   "name": "Wolfswarte",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1119,7 +1119,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Frostkate",
+   "name": "Torfkate",
    "art": "fischer",
    "artname": "Fischerhütte",
    "land": "Fahle Weiten",
@@ -1131,7 +1131,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Windschrein",
+   "name": "Sumpfschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -1143,7 +1143,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Dornhof",
+   "name": "Rabenhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1155,7 +1155,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Frostjägerlager",
+   "name": "Fennas Jagdhütte",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Fahle Weiten",
@@ -1167,7 +1167,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Reifweiler",
+   "name": "Föhrenfeld",
    "art": "weiler",
    "artname": "Weiler",
    "land": "Fahle Weiten",
@@ -1179,7 +1179,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Wolfshof",
+   "name": "Pfeifenhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1191,7 +1191,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Heidewarte",
+   "name": "Ginsterwarte",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1203,7 +1203,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Fahlwarte",
+   "name": "Dörtes Turm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1215,7 +1215,7 @@
    "region": "ostufer"
   },
   {
-   "name": "Aschstein",
+   "name": "Binsenstein",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1227,7 +1227,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Ginsterstein",
+   "name": "Elsterstein",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1239,7 +1239,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Wacholderborn",
+   "name": "Tiefer Brunnen",
    "art": "brunnen",
    "artname": "Brunnen",
    "land": "Fahle Weiten",
@@ -1251,7 +1251,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Hünenborn",
+   "name": "Lerchenbrunnen",
    "art": "brunnen",
    "artname": "Brunnen",
    "land": "Fahle Weiten",
@@ -1263,7 +1263,7 @@
    "region": "ostufer"
   },
   {
-   "name": "Fahlstein",
+   "name": "Bei den Steinen",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1275,7 +1275,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Heideschrein",
+   "name": "Rolfs Schrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -1287,7 +1287,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Frostschrein",
+   "name": "Konrads Schrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -1299,7 +1299,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Fahlruine",
+   "name": "Bleichruh",
    "art": "ruine",
    "artname": "Ruine",
    "land": "Fahle Weiten",
@@ -1311,7 +1311,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Reifjägerlager",
+   "name": "Harms Jagdhütte",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Fahle Weiten",
@@ -1323,7 +1323,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Heidestein",
+   "name": "Am Dornbusch",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1335,7 +1335,7 @@
    "region": "ostufer"
   },
   {
-   "name": "Frostköhlerei",
+   "name": "Meiler am Eulenbach",
    "art": "koehler",
    "artname": "Köhlerlager",
    "land": "Fahle Weiten",
@@ -1347,7 +1347,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Wacholderwarte",
+   "name": "Josts Turm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1359,7 +1359,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Ginsterwarte",
+   "name": "Alte Warte",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1371,7 +1371,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Nebelweiler",
+   "name": "Nebelau",
    "art": "weiler",
    "artname": "Weiler",
    "land": "Fahle Weiten",
@@ -1383,7 +1383,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Frostruine",
+   "name": "Am Stillen Teich",
    "art": "ruine",
    "artname": "Ruine",
    "land": "Fahle Weiten",
@@ -1395,7 +1395,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Hünenjägerlager",
+   "name": "Erikalager",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Fahle Weiten",
@@ -1407,7 +1407,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Krähennest",
+   "name": "Diebeslager",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Fahle Weiten",
@@ -1419,7 +1419,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Hünenstein",
+   "name": "Am Krummen Pfad",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1431,7 +1431,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Heidehof",
+   "name": "Kranichhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1443,7 +1443,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Grauwarte",
+   "name": "Ginsterturm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1455,7 +1455,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Steinschrein",
+   "name": "Borstschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -1467,7 +1467,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Wolfsstein",
+   "name": "Wacholderstein",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1479,7 +1479,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Grauschrein",
+   "name": "Schrein der Ertrunkenen",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -1491,7 +1491,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Dornnest",
+   "name": "Kranichnest",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Fahle Weiten",
@@ -1503,7 +1503,7 @@
    "region": "ostufer"
   },
   {
-   "name": "Aschwarte",
+   "name": "Dornwarte",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1515,7 +1515,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Steinweiler",
+   "name": "Rabenau",
    "art": "weiler",
    "artname": "Weiler",
    "land": "Fahle Weiten",
@@ -1527,7 +1527,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Wolfsruine",
+   "name": "Langes Feld",
    "art": "ruine",
    "artname": "Ruine",
    "land": "Fahle Weiten",
@@ -1539,7 +1539,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Dornweiler",
+   "name": "Drei Höfe",
    "art": "weiler",
    "artname": "Weiler",
    "land": "Fahle Weiten",
@@ -1551,7 +1551,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Moorhof",
+   "name": "Hof am Kreuzbach",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1563,7 +1563,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Steinhof",
+   "name": "Hof am Weidengraben",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1575,7 +1575,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Frosthof",
+   "name": "Hof am Hasenbach",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1587,7 +1587,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Steinjägerlager",
+   "name": "Lerchenlager",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Fahle Weiten",
@@ -1599,7 +1599,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Aschnest",
+   "name": "Versteck am Erlenbach",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Fahle Weiten",
@@ -1611,7 +1611,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Wolfswarte",
+   "name": "Torfturm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1623,7 +1623,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Nebelstein",
+   "name": "Krüppelstein",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1635,7 +1635,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Graunest",
+   "name": "Wegelagerer",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Fahle Weiten",
@@ -1647,7 +1647,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Wacholderhof",
+   "name": "Krüppelhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1659,7 +1659,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Hünenwarte",
+   "name": "Alter Turm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1671,7 +1671,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Hünenweiler",
+   "name": "Föhrenau",
    "art": "weiler",
    "artname": "Weiler",
    "land": "Fahle Weiten",
@@ -1683,7 +1683,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Dornwarte",
+   "name": "Riekes Turm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1695,7 +1695,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Fahlhof",
+   "name": "Erikahof",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1707,7 +1707,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Graustein",
+   "name": "Totenstein",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1719,7 +1719,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Dornschrein",
+   "name": "Bleichschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -1731,7 +1731,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Wolfsnest",
+   "name": "Galgenvogelnest",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Fahle Weiten",
@@ -1743,7 +1743,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Ginsterhof",
+   "name": "Am Kahlen Berg",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1755,7 +1755,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Steinwarte",
+   "name": "Hohe Wacht",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1767,7 +1767,7 @@
    "region": "ostufer"
   },
   {
-   "name": "Krähenwarte",
+   "name": "Wacholderwarte",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1779,7 +1779,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Ginsterschrein",
+   "name": "Sumpfkreuz",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -1791,7 +1791,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Reifkate",
+   "name": "Schwarzkate",
    "art": "fischer",
    "artname": "Fischerhütte",
    "land": "Fahle Weiten",
@@ -1803,7 +1803,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Moorstein",
+   "name": "Pfeifenstein",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1815,7 +1815,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Ginsterkate",
+   "name": "Netzhütte",
    "art": "fischer",
    "artname": "Fischerhütte",
    "land": "Fahle Weiten",
@@ -1827,7 +1827,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Frostwarte",
+   "name": "Heideturm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -1839,7 +1839,7 @@
    "region": "ostufer"
   },
   {
-   "name": "Heideweiler",
+   "name": "Am Wolfsbuckel",
    "art": "weiler",
    "artname": "Weiler",
    "land": "Fahle Weiten",
@@ -1851,7 +1851,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Windstein",
+   "name": "Im Grund",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1863,7 +1863,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Nebelschrein",
+   "name": "Witwenschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -1875,7 +1875,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Steingrotte",
+   "name": "Fuchsloch",
    "art": "hoehle",
    "artname": "Höhleneingang",
    "land": "Fahle Weiten",
@@ -1887,7 +1887,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Heidenest",
+   "name": "Räubernest",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Fahle Weiten",
@@ -1899,7 +1899,7 @@
    "region": "ostufer"
   },
   {
-   "name": "Hünenruine",
+   "name": "Alte Schanze",
    "art": "ruine",
    "artname": "Ruine",
    "land": "Fahle Weiten",
@@ -1911,7 +1911,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Nebelgrotte",
+   "name": "Kalte Höhle",
    "art": "hoehle",
    "artname": "Höhleneingang",
    "land": "Fahle Weiten",
@@ -1923,7 +1923,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Windnest",
+   "name": "Versteck am Steinbach",
    "art": "banditen",
    "artname": "Banditenlager",
    "land": "Fahle Weiten",
@@ -1935,7 +1935,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Nebelhof",
+   "name": "Hof am Mühlbach",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1947,7 +1947,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Krähenstein",
+   "name": "Blutstein",
    "art": "stein",
    "artname": "Steinkreis",
    "land": "Fahle Weiten",
@@ -1959,7 +1959,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Hünenhof",
+   "name": "Hof am Schwarzwasser",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1971,7 +1971,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Aschhof",
+   "name": "Brandhof",
    "art": "hof",
    "artname": "Hof",
    "land": "Fahle Weiten",
@@ -1983,7 +1983,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Fahlkate",
+   "name": "Reusenhütte",
    "art": "fischer",
    "artname": "Fischerhütte",
    "land": "Fahle Weiten",
@@ -1995,7 +1995,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Reifschrein",
+   "name": "Ilsabes Schrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -2007,7 +2007,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Wacholderfeuer",
+   "name": "Heidefeuer",
    "art": "leuchtfeuer",
    "artname": "Leuchtfeuer",
    "land": "Fahle Weiten",
@@ -2019,7 +2019,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Wacholderkate",
+   "name": "Nebelkate",
    "art": "fischer",
    "artname": "Fischerhütte",
    "land": "Fahle Weiten",
@@ -2031,7 +2031,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Graufeuer",
+   "name": "Strandfeuer",
    "art": "leuchtfeuer",
    "artname": "Leuchtfeuer",
    "land": "Fahle Weiten",
@@ -2043,7 +2043,7 @@
    "region": "fl_186_183"
   },
   {
-   "name": "Dornfeuer",
+   "name": "Feuer am Kap",
    "art": "leuchtfeuer",
    "artname": "Leuchtfeuer",
    "land": "Fahle Weiten",
@@ -2055,7 +2055,7 @@
    "region": "fl_186_169"
   },
   {
-   "name": "Wacholderschrein",
+   "name": "Pilgerschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -2067,7 +2067,7 @@
    "region": "ostufer"
   },
   {
-   "name": "Wolfsschrein",
+   "name": "Moorschrein",
    "art": "schrein",
    "artname": "Schrein",
    "land": "Fahle Weiten",
@@ -2079,7 +2079,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Windwarte",
+   "name": "Eddas Turm",
    "art": "turm",
    "artname": "Wachturm",
    "land": "Fahle Weiten",
@@ -2091,7 +2091,7 @@
    "region": "fl_201_169"
   },
   {
-   "name": "Graujägerlager",
+   "name": "Dornlager",
    "art": "jaeger",
    "artname": "Jägerlager",
    "land": "Fahle Weiten",
@@ -2103,7 +2103,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Heidemühle",
+   "name": "Alte Mühle",
    "art": "muehle",
    "artname": "Mühle",
    "land": "Fahle Weiten",
@@ -2115,7 +2115,7 @@
    "region": "fl_201_183"
   },
   {
-   "name": "Aschkate",
+   "name": "Aalkate",
    "art": "fischer",
    "artname": "Fischerhütte",
    "land": "Fahle Weiten",
