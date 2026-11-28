@@ -33,9 +33,17 @@ const ERSATZ = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://ww
 /** #166: jedes Bildfach malen, das noch kein Bild trägt – auch wenn der Reiter sein HTML nicht neu setzt (gleicher Inhalt), sonst bleiben früh gebaute Fächer leer */
 function faecherMalen(wurzel: ParentNode): void { wurzel.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (!G || c.dataset.url === dingBildUrl(G)) return; if (G.symbol) { symbolMalen(c, G.symbol); c.dataset.url = dingBildUrl(G); } else void dingBild(c, G); }); }
 export const dingBildUrl = (G: { bild?: string }): string => (G.bild ? "../" + G.bild : ERSATZ);
-async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: string; bild?: string }): Promise<void> {
+/** #188 (Rückfall #166): den Hintergrund erst setzen, wenn das Bild geladen ist. Vorher stand die Adresse sofort im Stil: Lief das Laden beim
+ *  Anmelden noch (oder schlug fehl), zeichnete die iOS-App (WKWebView) die Fläche nicht nach, und faecherMalen hielt das Fach für fertig –
+ *  erst neues HTML (etwas anlegen) brachte das Bild. Jetzt: laden, dann setzen; Fehlschlag: nach kurzer Pause noch einmal (höchstens 6-mal). */
+async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: string; bild?: string }, versuch = 0): Promise<void> {
   const x = c.getContext("2d"); if (x) x.clearRect(0, 0, c.width, c.height);
-  c.dataset.url = dingBildUrl(G); c.style.backgroundImage = `url("${dingBildUrl(G)}")`; c.style.backgroundSize = "contain"; c.style.backgroundPosition = "center"; c.style.backgroundRepeat = "no-repeat"; }
+  const url = dingBildUrl(G); c.dataset.url = url; c.dataset.geladen = "";
+  const setzen = () => { if (c.dataset.url !== url) return; c.style.backgroundImage = `url("${i.src}")`; /* genau die geladene Adresse (mit Wiederholungszähler) */ c.style.backgroundSize = "contain"; c.style.backgroundPosition = "center"; c.style.backgroundRepeat = "no-repeat"; c.dataset.geladen = "1"; };
+  const i = new Image(); i.decoding = "async";
+  i.onload = () => { void (i.decode ? i.decode().catch(() => undefined) : Promise.resolve()).then(setzen); };
+  i.onerror = () => { if (c.dataset.url !== url) return; if (versuch >= 5) { setzen(); return; } setTimeout(() => { if (c.isConnected && c.dataset.url === url && !c.dataset.geladen) void dingBild(c, G, versuch + 1); }, 1500 * (versuch + 1)); };
+  i.src = url + (versuch ? (url.includes("?") ? "&" : "?") + "n=" + versuch : ""); }
 import { inventar, ablegen, anlegen, fallenLassen, tauschenBitten, inventarAmServer, trinken, wirkungenJetzt } from "./inventar";
 import { benutzen, benutzt } from "./benutzen";
 import { REZEPTE } from "../../shared/handwerk";
