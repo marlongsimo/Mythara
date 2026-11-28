@@ -15,6 +15,8 @@
  */
 import { ausbauDa } from "./stadtstufen";
 
+/** So lang darf die Kennung einer Questfigur oder eines Questdings sein: der Server nimmt nicht mehr an (Schutz vor überlangen Eingaben; Test kennungen) */
+export const KENNUNG_MAX = 40;
 export interface Zeile { wer: string; text: string }
 export interface Antwort { id: string; text: string }
 export interface Dialog { npc: string; name: string; zeilen: Zeile[]; antworten: Antwort[] }
