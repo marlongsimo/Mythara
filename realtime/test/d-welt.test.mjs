@@ -50,7 +50,8 @@ try {
   console.log("D3 „Wels im Trüben“");
   check(await sprich(k, D3, "alma", "annehmen") && stand(k, D3).phase === "laeuft", "Kai nimmt D3 an");
   check(await fischen(k, "faehrhafen", "fisch_wels_roh", 3, 180000) && erl(k, D3, "welse"), `Drei Graufurter Welse im Fährhafen (${anzahl(k, "fisch_wels_roh")})`);
-  { let r = ""; for (let i = 0; i < 6 && anzahl(k, "welspastete") < 2; i++) r = await herstellen(k, 6698.2, 6537.2, "welspastete", 2 - anzahl(k, "welspastete")); check(r === "ok" && anzahl(k, "welspastete") >= 2 && erl(k, D3, "pasteten"), `Zwei Welspasteten am Herd „Zur Furt“ (${r}, ${anzahl(k, "welspastete")})`); }
+  { let r = ""; for (let i = 0; i < 6 && anzahl(k, "welspastete") < 2; i++) { r = await herstellen(k, 6698.2, 6537.2, "welspastete", 2 - anzahl(k, "welspastete"));
+      if (/fehlt.*Wels/.test(r) && anzahl(k, "welspastete") < 2) await fischen(k, "faehrhafen", "fisch_wels_roh", anzahl(k, "fisch_wels_roh") + 1, 90000); } /* eine angebrannte Pastete verbraucht einen Wels: einen nachangeln */ check(r === "ok" && anzahl(k, "welspastete") >= 2 && erl(k, D3, "pasteten"), `Zwei Welspasteten am Herd „Zur Furt“ (${r}, ${anzahl(k, "welspastete")})`); }
   check(await sprich(k, D3, "alma", "abgeben") && fertig(k, D3), "D3 fertig, Lohn abgeholt");
   { const vor = anzahl(k, "welspastete"); await W.stelle(k, 6700.5, 6543.8); sende(k, { t: "kaufen", laden: "graufurt_alma", g: "welspastete" }); await schlaf(800);
     check(anzahl(k, "welspastete") === vor + 1, `Alma verkauft jetzt Welspastete (${vor} → ${anzahl(k, "welspastete")})`);
