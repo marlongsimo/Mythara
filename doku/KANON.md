@@ -156,5 +156,8 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - **Kleinorte Schritt 2 – Ockerlande** (28.11., Skizze `welt/plaene/kleinorte_schritt2.png`, Welt 440f3504): freigegeben, wie skizziert. Es gibt 5 Siedlungen (Rotbucht als Hafenstadt, die Dörfer Tonbrenn und Schneerast, die Ruine Wacht am Weißen Ende, ein Karawanenlager) und 126 Kleinorte im Abstand von 44–70 Feldern. **Die Siedlungen kommen zuerst.** Bedingung: Die bestehenden Ockerlande-Quests (Block I) müssen danach weiter passen, also Wege, Stellen, Figuren und Tests.
 
+- **Skilling-Orte ausdünnen (vorgemerkt, 28.11.):** Zu viele Arbeitsstellen (Holz, Erz, Fisch …) liegen dicht beieinander. Sie sollen später auf etwa **50 %** reduziert und besser verteilt werden. Das wird jetzt noch nicht umgesetzt, gilt aber schon als Richtschnur für neue Stellen (Kleinorte, Verdichtung). Höherrangige Stellen dürfen abgelegen liegen (siehe Dichte wie klassisches MMO).
+- **Weltkarte (Wunsch 28.11.):** Kochstellen als Kartensymbol. Beim Herauszoomen werden die Symbole auch kleiner, nicht nur weniger.
+
 ## Offen (Fragen an den Nutzer)
 
