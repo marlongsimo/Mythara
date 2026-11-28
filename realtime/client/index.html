@@ -795,6 +795,9 @@
     .skachel.held { background: #c99a3c; cursor: default; align-content: center; gap: 0; } .skachel.held small { font: 600 9px Cinzel, Georgia, serif; color: #b9a57c; letter-spacing: .05em; } .skachel.held strong { font: 700 17px/1 Cinzel, Georgia, serif; color: #ffe7b0; }
     .tab-rucksack .traster { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 5px; max-height: calc(4 * 66px + 15px); max-width: calc(6 * 76px + 25px); width: 100%; margin: 0 auto; }
     .tab-rucksack .traster .ifeld { display: grid; } .tab-rucksack .traster .ifeld :is(canvas,img.dbild) { height: 86%; width: auto; max-width: 86%; aspect-ratio: 1; } .tab-rucksack .kopf small { margin-left: auto; } .tab-rucksack .traster .ifeld:not(.voll) { background: #4a3a24; cursor: default; }
+    /* #188: das Bild absolut ins Fach (WebKit/iPhone löst height:% + aspect-ratio im Raster nicht auf – das <img> war dort winzig oder 0 breit) */
+    :is(.kreuz .ifeld, .tab-rucksack .traster .ifeld, .seitentab .traster .ifeld, .seitentab .tplatz .ifeld, .tab-stil .swaffe) > img.dbild { position: absolute; inset: 0; z-index: 1; margin: auto; width: 86%; height: 86%; max-width: none; max-height: none; aspect-ratio: auto; object-fit: contain; will-change: auto; transform: none; }
+    :is(.kreuz .ifeld, .tab-rucksack .traster .ifeld, .seitentab .ifeld) .menge { z-index: 2; }
     .tab-rucksack .traster .ifeld .menge { position: absolute; z-index: 1; left: 5px; right: auto; top: 3px; bottom: auto; font: 700 11.5px Inter, sans-serif; }
     .tab-rucksack .traster .ifeld.gewaehlt, .tab-rucksack .traster .ifeld.ziel { background: #ffe08a; } .tab-rucksack .traster .ifeld.benutzt { background: #ffffff; } .tab-rucksack .traster .ifeld.zieht { opacity: .35; }
     .tab-stil .tinhalt { gap: 8px; } .tab-stil .kopf { gap: 10px; }
