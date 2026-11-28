@@ -179,6 +179,22 @@
     .vorhang .tipp { margin: 4px 0 0; min-height: 3em; max-width: 400px; font: italic 400 17px/1.4 "Cormorant Garamond", Georgia, serif; color: #cdb98a; }
     .vorhang .balken { width: 100%; height: 8px; margin: 4px 0 10px; border: 1px solid #5d4517; border-radius: 4px; background: rgba(0,0,0,.55); overflow: hidden; }
     .vorhang .balken i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #4a7fb0, #8fd8ff, #e8fbff); box-shadow: 0 0 10px #8fd8ff; transition: width .9s ease; }
+    /* Ladebild neu (Wunsch des Nutzers, 28.11.): das Bild mit dem Riftmere-Logo frei lassen – unten nur ein schmales Band im Stil der Fenster
+       (abgeschrägte Ecken, Goldrand), darin ein kleiner Seelensplitter, die Zeile „was gerade lädt“, ein goldener Balken und ein Tipp */
+    .vorhang { background-position: center, center top; padding-bottom: max(4.5vh, 14px); }
+    .vorhang .mitte { --f: 9px; position: relative; isolation: isolate; width: min(600px, 92vw); padding: 11px 22px 10px; border-radius: 0; background: #c99a3c; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+      clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); display: grid; justify-items: center; gap: 0; }
+    .vorhang .mitte::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: linear-gradient(rgba(38,29,18,.94), rgba(22,16,10,.96)); clip-path: inherit; }
+    .vorhang .lzeile { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 7px; }
+    .vorhang .lsplitter { width: 14px; height: 20px; flex: none; clip-path: polygon(50% 0, 100% 38%, 72% 100%, 28% 100%, 0 38%); background: linear-gradient(160deg, #f4fdff, #8fd8ff 40%, #3d7fc0 75%, #1d3a6a); filter: drop-shadow(0 0 6px rgba(143,216,255,.9)); animation: ezSchweben 2.6s ease-in-out infinite; }
+    .vorhang .was, .vorhang .zeit { margin: 0; font: 600 14.5px Cinzel, Georgia, serif; letter-spacing: .06em; color: #ffe7b0; }
+    .vorhang .balken { position: relative; width: 100%; height: 6px; margin: 0 0 8px; border: 1px solid #5a4528; border-radius: 3px; background: #120d08; overflow: hidden; }
+    .vorhang .balken i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #8a6420, #c99a3c 55%, #ffe08a); box-shadow: 0 0 8px rgba(255,211,106,.6); transition: width .9s ease; }
+    .vorhang .balken.laeuft i { width: 32%; animation: ezLaeuft 1.8s ease-in-out infinite; } /* Start: ohne Zahl – ein Glanz läuft hin und her */
+    @keyframes ezLaeuft { 0% { transform: translateX(-100%); } 100% { transform: translateX(320%); } }
+    .vorhang .tipp { margin: 0; min-height: 0; max-width: 540px; font: italic 400 15.5px/1.35 "Cormorant Garamond", Georgia, serif; color: #d9c79e; }
+    .vorhang .tipp:not(:empty)::before { content: "Tipp · "; font: 600 11px Inter, sans-serif; font-style: normal; letter-spacing: .08em; text-transform: uppercase; color: #c9a24f; }
+    @media (min-height: 600px) { .vorhang .mitte { padding: 14px 26px 12px; } .vorhang .was, .vorhang .zeit { font-size: 16px; } .vorhang .tipp { font-size: 17px; } }
     @keyframes ezSchweben { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     @keyframes ezGluehen { 0%, 100% { filter: drop-shadow(0 0 10px rgba(143,216,255,.7)); } 50% { filter: drop-shadow(0 0 26px rgba(143,216,255,1)); } }
     @keyframes ezDrehen { to { transform: rotate(360deg); } }
@@ -564,10 +580,10 @@
     #ez-konto .tafel.bank { --f: 7px; }
     #ez-konto .tafel.bank .bkopf { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; } #ez-konto .tafel.bank .bkopf .breiter { flex: 1; min-width: 0; margin: 0; }
     #ez-konto .tafel.bank .bsuche { display: none; flex: 1; } #ez-konto .tafel.bank .bkopf.sucht .bsuche { display: block; } #ez-konto .tafel.bank .bkopf.sucht .breiter { display: none; }
-    #ez-konto .tafel.bank .bsuchknopf, #ez-konto .tafel.bank .breit, #ez-konto .tafel.bank .bfach, #ez-konto .tafel.bank .bmenge, #ez-konto .tafel.bank .balles {
+    #ez-konto .tafel.bank .bsuchknopf, #ez-konto .tafel.bank .breit, #ez-konto .tafel.bank .bfach, #ez-konto .tafel.bank .bmenge, #ez-konto .tafel.bank .balles, #ez-konto .tafel.bank .bplatzh {
       position: relative; isolation: isolate; border: 0 !important; border-radius: 0 !important; background: #6d5632 !important; box-shadow: none !important;
       clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); }
-    #ez-konto .tafel.bank .bsuchknopf::before, #ez-konto .tafel.bank .breit::before, #ez-konto .tafel.bank .bfach::before, #ez-konto .tafel.bank .bmenge::before, #ez-konto .tafel.bank .balles::before {
+    #ez-konto .tafel.bank .bsuchknopf::before, #ez-konto .tafel.bank .breit::before, #ez-konto .tafel.bank .bfach::before, #ez-konto .tafel.bank .bmenge::before, #ez-konto .tafel.bank .balles::before, #ez-konto .tafel.bank .bplatzh::before {
       content: ""; position: absolute; inset: 1.5px; z-index: -1; background: radial-gradient(#241b10, #120d08); clip-path: inherit; }
     #ez-konto .tafel.bank .bsuchknopf { flex: none; width: 34px; height: 34px; margin: 0; padding: 0; display: grid; place-items: center; color: #e9cf8e; cursor: pointer; } #ez-konto .tafel.bank .bkopf.sucht .bsuchknopf { background: #ffd36a !important; }
     #ez-konto .tafel.bank .breit { width: 38px; height: 34px; color: #e9cf8e; } #ez-konto .tafel.bank .breit.an { background: #ffd36a !important; } #ez-konto .tafel.bank .breit.an::before { background: radial-gradient(#4a3a1e, #241a0c); } #ez-konto .tafel.bank .breit.neu { background: #4a3a24 !important; }
@@ -578,6 +594,14 @@
     #ez-konto .tafel.bank .braster { align-content: start; background: rgba(0,0,0,.25); border: 0; border-top: 1px solid #6d5632; border-bottom: 1px solid #6d5632; border-radius: 0; padding: 6px 2px; }
     #ez-konto .tafel.bank .bleiste { gap: 8px; margin: 7px 0 0; } #ez-konto .tafel.bank .bmengen { display: flex; gap: 4px; }
     #ez-konto .tafel.bank .bmenge { min-width: 38px; height: 32px; padding: 0 8px !important; color: #e9cf8e !important; font: 700 13px Inter, sans-serif !important; } #ez-konto .tafel.bank .bmenge.an { background: #ffd36a !important; color: #fff3cf !important; } #ez-konto .tafel.bank .bmenge.an::before { background: radial-gradient(#5a4220, #2a1e0e); }
+    /* #117: Platzhalter blass mit 0; Ziehen: Feld bleibt halb sichtbar, Ziel leuchtet; Schalter „Platzhalter“ in der Leiste */
+    #ez-konto .tafel.bank .bfach.platz canvas { opacity: .32; filter: grayscale(.7); } #ez-konto .tafel.bank .bfach.platz { background: #5a4a30 !important; }
+    #ez-konto .tafel.bank .bfach.zieht { opacity: .35; } #ez-konto .tafel.bank .bfach.ziel, #ez-konto .tafel.bank .breit.ziel { background: #ffe08a !important; }
+    #ez-konto .tafel.bank .braster { touch-action: pan-y; overflow-x: hidden; }
+    #ez-konto .tafel.bank .bplatzh { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px !important; }
+    #ez-konto .tafel.bank .bplatzh .bpsym { width: 14px; height: 14px; border: 1.5px dashed #c9a24f; border-radius: 3px; }
+    #ez-konto .tafel.bank .bplatzh.an .bpsym { border-style: solid; background: #c99a3c; box-shadow: 0 0 6px rgba(255,211,106,.6); } #ez-konto .tafel.bank .bplatzh.an { color: #ffe08a; }
+    @media (max-height: 500px) { #ez-konto .tafel.bank .bplatzh .bptext { display: none; } }
     #ez-konto .tafel.bank .balles { width: 40px; height: 36px; padding: 0 !important; display: grid; place-items: center; } #ez-konto .tafel.bank .balles img { width: 26px; height: 26px; } #ez-konto .tafel.bank .balles i { position: absolute; right: 4px; bottom: 1px; font: 700 12px/1 Inter, sans-serif; font-style: normal; color: #8fe07a; text-shadow: 0 1px 2px #000; }
     #ez-konto .tafel.bank .brechts { background: transparent; border: 0; border-left: 1px solid #6d5632; border-radius: 0; padding: 0 0 0 10px; } #ez-konto .tafel.bank .brechts .brs { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; text-align: left; margin: 2px 0 6px; } #ez-konto .tafel.bank .brs small { font: 600 11.5px Inter, sans-serif; color: #cdb98a; }
     @media (max-height: 520px) { #ez-konto .tafel.bank { max-height: calc(100vh - 8px); padding-top: 8px; padding-bottom: 8px; } #ez-konto .tafel.bank h2 { font-size: 15px; } #ez-konto .tafel.bank .zier { display: none; }
@@ -836,6 +860,19 @@
     #ez-konto .tafel.menue > h2::before, #ez-konto .tafel.freunde .fkopf::before { content: ""; position: absolute; left: calc(50% + 20px); bottom: -3px; width: 6px; height: 6px; transform: translateX(-50%) rotate(45deg); background: #1c150d; border: 1px solid #e0b860; z-index: 1; }
     #ez-konto .tafel.menue { width: min(620px, calc(100vw - 20px)); }
     #ez-konto .tafel.menue .espalten { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin: 10px 0 6px; } @media (max-width: 520px) { #ez-konto .tafel.menue .espalten { grid-template-columns: 1fr; } }
+    #ez-konto .tafel.menue .schalter small { margin-left: 6px; font: 600 12px Inter, sans-serif; color: #c9a24f; } #ez-konto .tafel.menue .schalter.an small { color: #ffe08a; }
+    #ez-konto .tafel.menue .ehinweis { margin: -2px 4px 0; font-size: 11.5px; color: #b9a57c; }
+    /* #125: Wahl am Boss-Eingang – zwei Karten nebeneinander (auch auf dem Handy quer) */
+    #ez-konto .tafel.bosswahl { --f: 6px; width: min(560px, calc(100vw - 20px)); }
+    #ez-konto .tafel.bosswahl .bwahlen { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 2px; }
+    #ez-konto .tafel.bosswahl .bwahl { --f: 8px; position: relative; isolation: isolate; display: grid; justify-items: center; align-content: start; gap: 4px; padding: 12px 12px 10px; border: 0; background: #6d5632; color: #e9dcb8; cursor: pointer; text-align: center; clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); }
+    #ez-konto .tafel.bosswahl .bwahl::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: radial-gradient(120% 90% at 50% 0%, #2a2014, #120d08); clip-path: inherit; }
+    #ez-konto .tafel.bosswahl .bwahl:hover, #ez-konto .tafel.bosswahl .bwahl:focus-visible { background: #e0b860; } #ez-konto .tafel.bosswahl .bwahl.zuletzt { background: #c99a3c; }
+    #ez-konto .tafel.bosswahl .bsym { font-size: 26px; line-height: 1.1; }
+    #ez-konto .tafel.bosswahl .bwahl b { font: 700 16px Cinzel, Georgia, serif; color: #ffe7b0; letter-spacing: .03em; }
+    #ez-konto .tafel.bosswahl .bwahl small { font: 12.5px/1.35 Inter, sans-serif; color: #cdb98a; min-height: 2.7em; }
+    #ez-konto .tafel.bosswahl .bwahl em { font: 600 12.5px Inter, sans-serif; font-style: normal; color: #ffd36a; } #ez-konto .tafel.bosswahl .bwahl em i { font-style: normal; color: #b9a57c; font-weight: 500; }
+    #ez-konto .tafel.bosswahl .bwahl.fehlt em { color: #ff8a6a; }
     #ez-konto .tafel.menue .einst, #ez-konto .tafel.menue .erechts { display: grid; gap: 6px; margin: 0; align-content: start; }
     #ez-konto .tafel.menue .schalter, #ez-konto .tafel.menue .weltknopf, #ez-konto .tafel.menue .abmelden, #ez-konto .tafel.menue .weltzeile, #ez-konto .tafel.freunde .fliste li, #ez-konto .tafel.freunde .fanfrage {
       position: relative; isolation: isolate; margin: 0; min-height: 40px; padding: 7px 12px; border: 0 !important; border-radius: 0 !important; background: #6d5632 !important; box-shadow: none !important; color: #e9dcb8; font: 13.5px Inter, sans-serif; clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); }
@@ -1037,10 +1074,10 @@
     </style>
 </head>
 <body>
-  <div id="ez-start" class="vorhang" role="status" aria-live="polite"><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><p class="was">Die Waldmark erwacht</p><p class="tipp"></p></div></div>
+  <div id="ez-start" class="vorhang" role="status" aria-live="polite"><div class="mitte"><div class="lzeile"><span class="lsplitter" aria-hidden="true"></span><p class="was">Die Waldmark erwacht</p></div><div class="balken laeuft"><i></i></div><p class="tipp"></p></div></div>
   <script>/* sofort, noch vor dem Spiel: was gerade geladen wird, und ein Satz aus der Welt */ (function () { var q = new URLSearchParams(location.search), w = document.querySelector("#ez-start .was"), t = document.querySelector("#ez-start .tipp");
     w.textContent = q.get("kampf") ? "Der Kampf beginnt" : q.get("ort") === "weidenhain" ? "Auf dem Weg nach Weidenhain" : q.get("los") ? "Der Riss öffnet sich" : "Die Waldmark erwacht";
-    var s = ["Wo ein Seelensplitter liegt, war einmal ein Leben. Heb ihn auf, und er erinnert sich an dich.", "Die Wachen am Stadttor sagen, hinter den Hügeln flackern wieder Irrlichter.", "In der Heldenhalle hängen fünf Schilde. Jeder erzählt von einem anderen Kampf.", "Gegner holen sichtbar aus – wer dann aus der Reichweite geht, bleibt heil.", "Der Riss im Osten wird jede Nacht ein wenig breiter."];
+    var s = ["Kurz tippen läuft hin oder führt die erste Aktion aus – lange drücken (am PC Rechtsklick) zeigt alle Möglichkeiten.", "Die Farbe hinter der Stufe eines Gegners zeigt, wie gefährlich er für dich ist: grün leicht, gelb machbar, orange gefährlich, rot tödlich.", "Leuchtet der Boden unter dir, kommt gleich ein Großangriff – geh rechtzeitig aus dem Feld.", "Tippe im Skills-Fenster auf einen Skill: Unten siehst du, wie viel bis zum nächsten Level fehlt. Lange drücken öffnet das Skillbuch.", "Gelbe Ausrufezeichen auf der Minikarte führen dich zu neuen Quests.", "Reib den Wegstein im Rucksack, um an Orte zu reisen, die du schon freigeschaltet hast.", "In der Bank sortierst du durch Ziehen um. Mit Platzhaltern behält jeder Gegenstand seinen Platz.", "Beim Holzfällen und im Bergbau findest du mit etwas Glück einen kleinen Begleiter.", "Die Karte zeigt dir die ganze Welt – mit + und − zoomst du hinein und heraus."]; /* Tipps zum heutigen Spiel (28.11.) – gleich wie TIPPS in src/main.ts */
     t.textContent = s[Math.floor(Math.random() * s.length)]; })();</script>
   <div id="ez-feld"></div>
   <div id="ez-dunkel"></div>
@@ -1120,7 +1157,7 @@
   <div id="ez-wahl" hidden></div><div id="ez-welt" hidden></div><div id="ez-dialog" hidden></div><div class="ez-kasten" id="ez-ziel" hidden></div><div class="ez-kasten" id="ez-probe" hidden></div><div id="ez-neben" hidden></div>
   <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button> <a href="./" style="color:#d9cdf5;margin-left:14px">Zurück ins Dorf</a></div></div>
   <div id="ez-konto" hidden></div>
-  <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
+  <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="lzeile"><span class="lsplitter" aria-hidden="true"></span><p class="zeit">Verbinde mit dem Spielserver …</p></div><div class="balken"><i></i></div><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
   <script src="spiel.js?v=__V__"></script>

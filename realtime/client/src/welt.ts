@@ -96,6 +96,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "teleport") { const f = teleportWarten; teleportWarten = null; if (f) f(Boolean(m.ok), Number(m.rest) || 0, Boolean(m.gast)); }
     else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); if (m.abholen) window.dispatchEvent(new CustomEvent("ez-quest-abholen", { detail: String(m.abholen) })); }
+    else if (m.t === "bosswahl") { if (m.ok && (m.wahl === "oeffentlich" || m.wahl === "instanz")) bossWahlen.set(String(m.id), m.wahl); if (m.text) chatSystem(String(m.text)); const f = bossWahlWarten; bossWahlWarten = null; if (f) f(Boolean(m.ok)); } /* #125 */
     else if (m.t === "pet") window.dispatchEvent(new CustomEvent("ez-pet", { detail: m })); /* #170: Pet gefunden (Freude) */
     else if (m.t === "handel") window.dispatchEvent(new CustomEvent("ez-handel", { detail: m })); /* #65: Handel (client/src/handel.ts) */
     else if (m.t === "abgeholt") { /* #77: der Server hat den Lohn gebucht (genau einmal) */ if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>);
@@ -169,6 +170,10 @@ export function questVerfolgen(an: boolean, id: string): void { try { localStora
 /** Holzfällerei: fällen („start“ mit Baum-id), Kernschlag („kern“), aufhören („stop“) – der Server prüft alles */
 /** Heim-Teleport beim Server anfragen: antwort(ok, Restzeit in ms, gast). Ohne Verbindung (oder ohne Antwort nach 3 s): null */
 let teleportWarten: ((ok: boolean, rest: number, gast: boolean) => void) | null = null;
+/* #125: Wahl am Boss-Eingang (öffentlich / eigene Instanz) – je Instanz gemerkt, sobald der Server sie bestätigt hat */
+const bossWahlen = new Map<string, "oeffentlich" | "instanz">(); let bossWahlWarten: ((ok: boolean) => void) | null = null;
+export const bossWahl = (id: string): "oeffentlich" | "instanz" => bossWahlen.get(id) || "oeffentlich";
+export function bossWahlBitten(id: string, wahl: "oeffentlich" | "instanz"): Promise<boolean> { return new Promise((ok) => { if (!ws || ws.readyState !== 1) { ok(false); return; } bossWahlWarten = ok; senden({ t: "bosswahl", id, wahl }); setTimeout(() => { if (bossWahlWarten === ok) { bossWahlWarten = null; ok(false); } }, 8000); }); }
 export function teleportFragen(antwort: (ok: boolean, rest: number, gast: boolean) => void, ohne: () => void): void {
   if (!ws || ws.readyState !== 1) { ohne(); return; } teleportWarten = antwort; senden({ t: "teleport" });
   setTimeout(() => { if (teleportWarten === antwort) { teleportWarten = null; ohne(); } }, 3000); }

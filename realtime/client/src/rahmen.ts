@@ -44,7 +44,8 @@ async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: st
   i.onload = () => { void (i.decode ? i.decode().catch(() => undefined) : Promise.resolve()).then(setzen); };
   i.onerror = () => { if (c.dataset.url !== url) return; if (versuch >= 5) { setzen(); return; } setTimeout(() => { if (c.isConnected && c.dataset.url === url && !c.dataset.geladen) void dingBild(c, G, versuch + 1); }, 1500 * (versuch + 1)); };
   i.src = url + (versuch ? (url.includes("?") ? "&" : "?") + "n=" + versuch : ""); }
-import { inventar, ablegen, anlegen, fallenLassen, tauschenBitten, inventarAmServer, trinken, wirkungenJetzt } from "./inventar";
+import { petAusGegenstand } from "../../shared/pets";
+import { inventar, petBitten, ablegen, anlegen, fallenLassen, tauschenBitten, inventarAmServer, trinken, wirkungenJetzt } from "./inventar";
 import { benutzen, benutzt } from "./benutzen";
 import { REZEPTE } from "../../shared/handwerk";
 import { skillFuehrer, skillBuch, kampfFreischaltungen } from "./skillfuehrer";
@@ -183,13 +184,15 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReite
 /** Aktionen eines Gegenstands im Tab; die erste führt kurzes Antippen aus */
 function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a: Aktion[] } | null {
   const G = GEGENSTAENDE[g]; if (!G) return null; const imRucksack = wo.startsWith("r"), n = imRucksack ? (inventar().anzahl || [])[Number(wo.slice(1))] || 1 : 1, a: Aktion[] = [];
+  { const pet = imRucksack ? petAusGegenstand(g) : null; /* #170 (KANON fd1014fd0): Pet als Gegenstand – aus dem Rucksack folgen lassen oder wegschicken */
+    if (pet) a.push(inventar().petAktiv === pet ? { text: "Wegschicken", sym: "👋", tat: () => petBitten(null) } : { text: "Folgen lassen", sym: "🐾", tat: () => petBitten(pet) }); }
   if (!imRucksack && G.platz) a.push({ text: "Ablegen", sym: "⤵️", tat: () => { if (!ablegen(G.platz!)) chatSystem("Der Rucksack ist voll."); } });
   if (imRucksack && G.platz) a.push({ text: "Ausrüsten", sym: "🛡️", tat: () => anlegen(g) });
   if (imRucksack && G.trank) a.push(G.art === "Essen" ? { text: "Essen", sym: "🍞", tat: () => trinken(Number(wo.slice(1))) } : { text: "Trinken", sym: "🧪", tat: () => trinken(Number(wo.slice(1))) });
   /* Benutzen wie in OSRS: bei Dingen ohne eigenen Zweck (Stämme, Erze, Leder …) die erste Aktion; danach Werkstatt oder anderen Gegenstand antippen */
   if (g === REISEKARTE) a.push({ text: "Reisen", sym: "🗺", tat: () => setTimeout(() => wegsteinMenue(true), 0) }); /* Phase 9 (#102): einmal am Tag frei – der Server weiß, ob heute noch */
   if (imRucksack && g === "wegstein") a.push({ text: "Reiben", sym: "✨", tat: () => setTimeout(wegsteinMenue, 0) /* erst nach dem Schließen dieses Menüs */ });   /* Phase 3a: Ziele wählen, der Server reist */
-  if (imRucksack && !G.platz && !G.trank && g !== "splitter" && g !== "wegstein") a.push({ text: "Benutzen", sym: "✋", tat: () => { benutzen({ wo, g }); chatSystem(`${G.name} benutzen mit … (Werkstatt oder Gegenstand antippen)`); } });
+  if (imRucksack && !G.platz && !G.trank && g !== "splitter" && g !== "wegstein" && !petAusGegenstand(g)) a.push({ text: "Benutzen", sym: "✋", tat: () => { benutzen({ wo, g }); chatSystem(`${G.name} benutzen mit … (Werkstatt oder Gegenstand antippen)`); } });
   a.push({ text: "Untersuchen", sym: "🔍", tat: () => untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }) });
   if (imRucksack && inventarAmServer()) a.push({ text: "Fallen lassen", sym: "⬇️", tat: () => fallenLassen(Number(wo.slice(1))) });
   return { kopf: G.name + (n > 1 ? ` ×${n}` : ""), farbe: SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, a }; }
