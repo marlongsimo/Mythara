@@ -151,6 +151,10 @@ for schritt in schritte:
             if BIB.get(oid, {}).get('kategorie') == 'bewuchs' and oid.startswith('stil_') and not any(s in oid for s in ('schilf', 'erle_tot', 'samm_')): pal[oid] = pal.get(oid, 0) + 1
         if not pal: pal = {'stil_eiche_01': 3, 'stil_eiche_02': 3, 'stil_linde_01': 2, 'stil_birke_01': 2, 'stil_busch_01': 3, 'stil_busch_02': 2}
         PAL = list(pal.items())
+        # Leistung (Leitstelle 28.11.): jede eigene Art im Bild kostet auf dem Handy einen Zeichenaufruf – feste Bodenlisten nur mit Arten, die im Gebiet schon stehen
+        # (sonst die ersten zwei der Liste); Kleinigkeiten am Weg zuerst aus vorhandenen Arten, neue Arten höchstens die Hälfte
+        vorhanden = {o['objekt'] for o in obj}
+        BPAL = {c: ([p for p in l if p[0] in vorhanden] or l[:2]) for c, l in BODEN_PAL.items()}
         land = geh & ~weg & (G != 'p')
         def leer_feld():
             m = np.ones((H, B), bool)
@@ -169,7 +173,7 @@ for schritt in schritte:
             for _ in range(min(20, len(kand))):
                 cy, cx = kand[rng.randrange(len(kand))]
                 if dl[cy, cx] <= 10: continue
-                kl = klasse(G[cy, cx]); PALG = PAL if kl == 'wiese' else BODEN_PAL.get(G[cy, cx])
+                kl = klasse(G[cy, cx]); PALG = PAL if kl == 'wiese' else BPAL.get(G[cy, cx])
                 if not PALG: continue
                 for k in range(rng.randint(3, 7)):
                     a, rr = rng.random() * 6.283, rng.random() * 4.5
@@ -187,7 +191,10 @@ for schritt in schritte:
         # je Gebiet nur wenige Arten (jede Art kostet auf dem Handy einen eigenen Zeichenaufruf): 4 für Wiesen, 3 für Wald, fest je Gebiet
         GROSS = ('karren', 'huette', 'ruine', 'brunnen')   # „gross“ in verdichten_regler.json: diese öfter
         gw = lambda l: [(o, w * (RG['gross'] if any(g in o for g in GROSS) else 1)) for o, w in l]
-        DW = sorted(rng.sample(gw(DEKOR_WIESE), min(RG['wiese'], len(DEKOR_WIESE)))); DWA = sorted(rng.sample(gw(DEKOR_WALD), min(RG['wald'], len(DEKOR_WALD))))
+        def waehle(liste, anz):   # vorhandene Arten zuerst, neue höchstens die Hälfte (aufgerundet)
+            da = [p for p in gw(liste) if p[0] in vorhanden]; neu_ = [p for p in gw(liste) if p[0] not in vorhanden]
+            w = rng.sample(da, min(anz, len(da))); w += rng.sample(neu_, min(max(0, anz - len(w)), (anz + 1) // 2, len(neu_))); return sorted(w)
+        DW = waehle(DEKOR_WIESE, RG['wiese']); DWA = waehle(DEKOR_WALD, RG['wald'])
         klein = [(o['x'], o['y']) for o in obj if BIB.get(o['objekt'], {}).get('kategorie') not in ('bewuchs', None)]
         dk = np.full((H, B), 999.0)
         def merke(x, y):

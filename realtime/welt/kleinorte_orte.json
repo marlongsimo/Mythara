@@ -57,8 +57,8 @@
    "name": "Brandstätte",
    "art": "ruine",
    "land": "Grenzland",
-   "x": 6562.8,
-   "y": 6566.4,
+   "x": 6568.0,
+   "y": 6559.0,
    "lesestelle": "ko_5_l",
    "besonders": false,
    "abseits": false,
@@ -105,8 +105,8 @@
    "name": "Hof am Dorfteich",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6391.9,
-   "y": 6575.0,
+   "x": 6381.7,
+   "y": 6567.4,
    "lesestelle": "ko_9_l",
    "besonders": false,
    "abseits": false,
@@ -237,8 +237,8 @@
    "name": "Bruns Meiler",
    "art": "koehler",
    "land": "Grenzland",
-   "x": 6553.3,
-   "y": 6642.5,
+   "x": 6543.0,
+   "y": 6646.0,
    "lesestelle": "ko_20_l",
    "besonders": false,
    "abseits": false,
@@ -249,8 +249,8 @@
    "name": "Hungerhof",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6634.7,
-   "y": 6492.9,
+   "x": 6635.0,
+   "y": 6488.4,
    "lesestelle": "ko_21_l",
    "besonders": false,
    "abseits": false,
@@ -381,8 +381,8 @@
    "name": "Eschenhof",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6604.1,
-   "y": 6713.6,
+   "x": 6601.7,
+   "y": 6714.5,
    "lesestelle": "ko_32_l",
    "besonders": false,
    "abseits": false,
@@ -525,8 +525,8 @@
    "name": "Hinter den Birken",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6279.5,
-   "y": 6342.0,
+   "x": 6273.0,
+   "y": 6349.0,
    "lesestelle": "ko_44_l",
    "besonders": false,
    "abseits": false,
@@ -561,8 +561,8 @@
    "name": "Hof am Rotbach",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6619.2,
-   "y": 6656.3,
+   "x": 6616.1,
+   "y": 6655.3,
    "lesestelle": "ko_47_l",
    "besonders": false,
    "abseits": false,
@@ -681,8 +681,8 @@
    "name": "Birkenwinkel",
    "art": "weiler",
    "land": "Grenzland",
-   "x": 6719.6,
-   "y": 6645.1,
+   "x": 6709.4,
+   "y": 6646.7,
    "lesestelle": "ko_57_l",
    "besonders": false,
    "abseits": false,
@@ -693,8 +693,8 @@
    "name": "Altes Gemäuer",
    "art": "ruine",
    "land": "Grenzland",
-   "x": 6599.1,
-   "y": 6588.9,
+   "x": 6598.0,
+   "y": 6601.0,
    "lesestelle": "ko_58_l",
    "besonders": false,
    "abseits": false,
@@ -2037,8 +2037,8 @@
   [
    "Brandstätte",
    "Ruine",
-   6562.8,
-   6566.4
+   6568.0,
+   6559.0
   ],
   [
    "Moosschrein",
@@ -2061,8 +2061,8 @@
   [
    "Hof am Dorfteich",
    "Gehöft",
-   6391.9,
-   6575.0
+   6381.7,
+   6567.4
   ],
   [
    "Nesselnest",
@@ -2127,14 +2127,14 @@
   [
    "Bruns Meiler",
    "Ort",
-   6553.3,
-   6642.5
+   6543.0,
+   6646.0
   ],
   [
    "Hungerhof",
    "Gehöft",
-   6634.7,
-   6492.9
+   6635.0,
+   6488.4
   ],
   [
    "Hilles Turm",
@@ -2199,8 +2199,8 @@
   [
    "Eschenhof",
    "Gehöft",
-   6604.1,
-   6713.6
+   6601.7,
+   6714.5
   ],
   [
    "Lerchenhof",
@@ -2271,8 +2271,8 @@
   [
    "Hinter den Birken",
    "Gehöft",
-   6279.5,
-   6342.0
+   6273.0,
+   6349.0
   ],
   [
    "Hasellager",
@@ -2289,8 +2289,8 @@
   [
    "Hof am Rotbach",
    "Gehöft",
-   6619.2,
-   6656.3
+   6616.1,
+   6655.3
   ],
   [
    "Bernds Hof",
@@ -2349,14 +2349,14 @@
   [
    "Birkenwinkel",
    "Ort",
-   6719.6,
-   6645.1
+   6709.4,
+   6646.7
   ],
   [
    "Altes Gemäuer",
    "Ruine",
-   6599.1,
-   6588.9
+   6598.0,
+   6601.0
   ],
   [
    "Schlehenkate",

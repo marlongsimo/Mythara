@@ -261,35 +261,6 @@
    ]
   },
   {
-   "id": "ko_36_1_kessel",
-   "station": "kessel",
-   "x": 6235.8,
-   "y": 6720.4,
-   "quelle": "Bauplan dorf_huette_holz_02 (aschenwerth)",
-   "innen": true,
-   "gebaeude": "ko_36_1",
-   "bauplan": "dorf_huette_holz_02",
-   "region": "aschenwerth",
-   "innenraum": [
-    6233,
-    6719,
-    6237,
-    6722
-   ],
-   "tuer": [
-    6234.5,
-    6722
-   ],
-   "stehplatz": [
-    6234.8,
-    6721.05
-   ],
-   "von_aussen_in_greifweite": [
-    6234.95,
-    6722.8
-   ]
-  },
-  {
    "id": "steinhaus_160_ofen",
    "station": "backofen",
    "x": 6671.9,
@@ -459,35 +430,6 @@
    ]
   },
   {
-   "id": "ko_57_1_kessel",
-   "station": "kessel",
-   "x": 6720.8,
-   "y": 6643.4,
-   "quelle": "Bauplan dorf_huette_holz_02 (graufurt)",
-   "innen": true,
-   "gebaeude": "ko_57_1",
-   "bauplan": "dorf_huette_holz_02",
-   "region": "graufurt",
-   "innenraum": [
-    6718,
-    6642,
-    6722,
-    6645
-   ],
-   "tuer": [
-    6719.5,
-    6645
-   ],
-   "stehplatz": [
-    6719.8,
-    6644.05
-   ],
-   "von_aussen_in_greifweite": [
-    6719.95,
-    6645.8
-   ]
-  },
-  {
    "id": "nordwald_huette_holz_1_kessel",
    "station": "kessel",
    "x": 6356.8,
@@ -526,6 +468,15 @@
    "region": "nordwald"
   },
   {
+   "id": "ko_44_0_ofen",
+   "station": "backofen",
+   "x": 6271.2,
+   "y": 6345.6,
+   "quelle": "Bauplan weidenhain_bauernhaus_01 (nordwald)",
+   "innen": false,
+   "region": "westried"
+  },
+  {
    "id": "obstwiesen_huette_holz_1_kessel",
    "station": "kessel",
    "x": 6558.8,
@@ -558,7 +509,7 @@
    "id": "ko_21_0_ofen",
    "station": "backofen",
    "x": 6633.2,
-   "y": 6489.6,
+   "y": 6484.6,
    "quelle": "Bauplan weidenhain_bauernhaus_01 (osthang)",
    "innen": true,
    "gebaeude": "ko_21_0",
@@ -566,18 +517,44 @@
    "region": "osthang",
    "innenraum": [
     6632,
-    6489,
+    6484,
     6638,
-    6493
+    6488
    ],
    "tuer": [
     6635.5,
-    6493
+    6488
    ],
    "stehplatz": null,
    "von_aussen_in_greifweite": [
     6631.85,
-    6491.75
+    6486.75
+   ]
+  },
+  {
+   "id": "ko_47_0_ofen",
+   "station": "backofen",
+   "x": 6614.2,
+   "y": 6651.6,
+   "quelle": "Bauplan weidenhain_bauernhaus_01 (osthang)",
+   "innen": true,
+   "gebaeude": "ko_47_0",
+   "bauplan": "weidenhain_bauernhaus_01",
+   "region": "osthang",
+   "innenraum": [
+    6613,
+    6651,
+    6619,
+    6655
+   ],
+   "tuer": [
+    6616.5,
+    6655
+   ],
+   "stehplatz": null,
+   "von_aussen_in_greifweite": [
+    6613.1,
+    6650.75
    ]
   },
   {
@@ -739,6 +716,32 @@
    "quelle": "welt/regionen/waldmark (Objekt)",
    "innen": false,
    "region": "waldmark"
+  },
+  {
+   "id": "ko_9_0_ofen",
+   "station": "backofen",
+   "x": 6380.2,
+   "y": 6563.6,
+   "quelle": "Bauplan weidenhain_bauernhaus_01 (waldweg)",
+   "innen": true,
+   "gebaeude": "ko_9_0",
+   "bauplan": "weidenhain_bauernhaus_01",
+   "region": "waldweg",
+   "innenraum": [
+    6379,
+    6563,
+    6385,
+    6567
+   ],
+   "tuer": [
+    6382.5,
+    6567
+   ],
+   "stehplatz": null,
+   "von_aussen_in_greifweite": [
+    6378.85,
+    6565.75
+   ]
   },
   {
    "id": "ko_25_0_ofen",
@@ -1161,35 +1164,6 @@
    "von_aussen_in_greifweite": [
     6203.85,
     6467.75
-   ]
-  },
-  {
-   "id": "ko_27_1_kessel",
-   "station": "kessel",
-   "x": 6205.8,
-   "y": 6546.4,
-   "quelle": "Bauplan dorf_huette_holz_02 (westried)",
-   "innen": true,
-   "gebaeude": "ko_27_1",
-   "bauplan": "dorf_huette_holz_02",
-   "region": "westried",
-   "innenraum": [
-    6203,
-    6545,
-    6207,
-    6548
-   ],
-   "tuer": [
-    6204.5,
-    6548
-   ],
-   "stehplatz": [
-    6204.8,
-    6547.05
-   ],
-   "von_aussen_in_greifweite": [
-    6204.95,
-    6548.8
    ]
   },
   {

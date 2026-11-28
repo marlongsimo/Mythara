@@ -1,8 +1,8 @@
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-ffffeeefffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-ffeeefffff......fffffffffffffffffffffffffffffffffffffffffffftfff
-ffeeffff...........fffffffffffff......,,,..........ffffffffftfff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffff......fffffffffffffffffffffffffffffffffffffffffffftfff
+ffffffff...........fffffffffffff......,,,..........ffffffffftfff
 ffffff................fffffff........,,,,,..................ffff
 ffffff..................ff..........,,,,,,.................fffff
 ffffff..............................,,,,,,.................fffff
@@ -55,10 +55,10 @@ fff.....aaaaaaaaaaaaaaaaaaaaaaaaaaaaaeee..ww,,,..........fffffff
 fff.....aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaeee.,ww,,..........fffffff
 ffff....aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.ee..ww............fffffff
 ffff....aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..ee.ww.............ffffff
-fffff...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..eeewwwe...........ffffff
-fffff...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...eewwweeeeeeeeeeeeffffff
+fffff...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..eeewww............ffffff
+fffff...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...eewwweeeeeeee....ffffff
 ffffff..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa......wweeeeeeeeeeeeeeeeff
-ffffff..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa......ww...eeee......fffff
+ffffff..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa......ww...eeee....eeeeeff
 ffffff..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,.....www............fffff
 ffffff............................,,,,,,....www.............ffff
 ffffff............................,,,,,,.....ww.............ffff
