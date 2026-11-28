@@ -1,0 +1,90 @@
+{
+ "start": [
+  [
+   12,
+   50
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "treppe_hinauf",
+   "art": "eingang",
+   "x": 12,
+   "y": 46.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die ausgetretenen Stufen führen hinauf in die Gruft.",
+    "tat": "aufstieg",
+    "knopf": "Hinauf in die Gruft",
+    "ziel": [
+     6188,
+     6727.6
+    ]
+   }
+  },
+  {
+   "id": "kerker_treppe",
+   "art": "eingang",
+   "x": 97.5,
+   "y": 10.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Leiter in einem Schacht, durch den Moorluft hereinzieht. Oben schimmert Tageslicht: der alte Fluchtweg der Wächter, hinauf zur Gruft.",
+    "tat": "aufstieg",
+    "knopf": "Hinauf zur Gruft",
+    "ziel": [
+     6188,
+     6727.6
+    ]
+   }
+  },
+  {
+   "id": "kerker",
+   "art": "lesen",
+   "x": 85,
+   "y": 16,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vier Käfige an der Wand. In einem hockt jemand und hebt den Kopf, als du näher kommst."
+   }
+  },
+  {
+   "id": "splitterbecken",
+   "art": "lesen",
+   "x": 92,
+   "y": 67.2,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Becken ist voll von etwas, das wie Wasser aussieht, aber violett leuchtet. Die Splitter am Rand summen leise."
+   }
+  },
+  {
+   "id": "thronsaal_tor",
+   "art": "eingang",
+   "x": 115,
+   "y": 62,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein hohes Tor aus schwarzem Holz, mit Federn behängt. Dahinter: der Thronsaal.",
+    "tat": "thronsaal",
+    "knopf": "Den Thronsaal betreten",
+    "ziel": [
+     10768,
+     9628.5
+    ]
+   }
+  }
+ ]
+}

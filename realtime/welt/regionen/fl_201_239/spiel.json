@@ -1,0 +1,30 @@
+{
+ "start": [
+  [
+   240.0,
+   240.0
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "fischplatz_ockerstrom_muendung",
+   "art": "lesen",
+   "x": 362.5,
+   "y": 26.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Nahe der Mündung des Ockerstroms: In der warmen Strömung jagen Glutwelse.",
+    "fisch": "glutwels",
+    "stufe": 65
+   }
+  }
+ ]
+}

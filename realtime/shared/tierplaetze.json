@@ -1,0 +1,101 @@
+{
+ "_hinweis": "Tiere zur Stimmung (shared/tiere.ts): je Platz Art, Mitte (Weltfelder), Umkreis (Felder) und Anzahl. Friedlich, nicht angreifbar, nur im Browser (Stelle nach der Uhr). Arten: ziege, murmeltier, schaf. Plätze nach Welt (#147, d344565a, welt/hochlande_orte.json → npc: alm_tier_*, ziege_*, murmeltier_*).",
+ "plaetze": [
+  {
+   "id": "alm_ziegen",
+   "art": "ziege",
+   "x": 7196,
+   "y": 6016,
+   "radius": 7,
+   "anzahl": 3
+  },
+  {
+   "id": "alm_schafe",
+   "art": "schaf",
+   "x": 7184,
+   "y": 6017,
+   "radius": 7,
+   "anzahl": 3
+  },
+  {
+   "id": "ziege_1",
+   "art": "ziege",
+   "x": 6982.5,
+   "y": 5700.5,
+   "radius": 5,
+   "anzahl": 2
+  },
+  {
+   "id": "ziege_2",
+   "art": "ziege",
+   "x": 6990.5,
+   "y": 5712.5,
+   "radius": 5,
+   "anzahl": 2
+  },
+  {
+   "id": "ziege_3",
+   "art": "ziege",
+   "x": 7120.5,
+   "y": 5770.5,
+   "radius": 5,
+   "anzahl": 2
+  },
+  {
+   "id": "ziege_4",
+   "art": "ziege",
+   "x": 7180.5,
+   "y": 5760.5,
+   "radius": 5,
+   "anzahl": 2
+  },
+  {
+   "id": "ziege_5",
+   "art": "ziege",
+   "x": 7230.5,
+   "y": 5640.5,
+   "radius": 5,
+   "anzahl": 2
+  },
+  {
+   "id": "murmeltier_1",
+   "art": "murmeltier",
+   "x": 6950.5,
+   "y": 5640.5,
+   "radius": 4,
+   "anzahl": 2
+  },
+  {
+   "id": "murmeltier_2",
+   "art": "murmeltier",
+   "x": 6976.5,
+   "y": 5590.5,
+   "radius": 4,
+   "anzahl": 2
+  },
+  {
+   "id": "murmeltier_3",
+   "art": "murmeltier",
+   "x": 7110.5,
+   "y": 5790.5,
+   "radius": 4,
+   "anzahl": 2
+  },
+  {
+   "id": "murmeltier_4",
+   "art": "murmeltier",
+   "x": 7172.5,
+   "y": 5786.5,
+   "radius": 4,
+   "anzahl": 2
+  },
+  {
+   "id": "murmeltier_5",
+   "art": "murmeltier",
+   "x": 7280.5,
+   "y": 5380.5,
+   "radius": 4,
+   "anzahl": 2
+  }
+ ]
+}

@@ -7,6 +7,7 @@
  *  2. Schadenswurf: Bei einem Treffer wird zwischen Mindest- und Höchstschaden der Waffe gewürfelt.
  * Verteidigung senkt also die Trefferchance, nicht den Schaden. Torvalds Schild erhöht seinen Verteidigungswurf; Schutzpunkte fangen Schaden ab.
  */
+import { gegnerStufe, type GegnerV3 } from "./kampfwerte";
 export const TICK = 20;            // Rechenschritte je Sekunde (Server-Simulation)
 export const DT = 1 / TICK;
 export const ZUSTAND_JE = 1;       // jeder Schritt geht an den Client: 20 Zustände je Sekunde
@@ -39,6 +40,7 @@ export const K = {
   AGGRO: 5.5, LEINE: 10,                   // Monster: ab wann sie angreifen, wie weit sie ihrem Lager folgen
   WIEDER_HELD: 5,
   HEIL_EP: 0.3,                            // gemeinsame Welt: Heiler bekommen so viele EP je geheiltem Lebenspunkt
+  AGGRO_DAUER: 900, AGGRO_RUECKSETZEN: 20, // offene Welt: nach 15 min greifen Gegner einen Helden nicht mehr von selbst an – bis er 20 Felder weggeht oder die Region verlässt und wieder betritt (unsichtbar)
   WELT_WIEDERKEHR: 60,                     // gemeinsame Welt: Sekunden, bis ein besiegter Gegner wieder an seinem Lager steht
   HEIM_HEILUNG: 0.15, HEIM_HEILUNG_BOSS: 0.02, // Monster, die niemanden mehr verfolgen, heilen an ihrem Platz so viel ihres Lebens je Sekunde
   SPLITTER: [1, 20] as [number, number],
@@ -108,13 +110,41 @@ export const HELDEN: Record<string, HeldDef> = {
 };
 export const HELDENREIHE = ["schildwaechter", "elementarist", "lichtbringer", "assassine", "kopfgeldjaeger"];
 
-export interface MonsterDef { name: string; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; ruhe?: string; ruheMass?: [number, number, number]; hoehe?: number; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; boss?: boolean;
+export interface MonsterDef { name: string; /** angezeigte Stufe – mit Werten (v2) aus ihnen errechnet (stufeVon, KANON 0eeea8e8b), sonst von Hand */ stufe?: number; /** die von Hand gesetzte Stufe des Konzepts (Gebietsplanung) */ planStufe?: number; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; ruhe?: string; ruheMass?: [number, number, number]; hoehe?: number; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; /** #160 (Hüter der Hochlande): Schaden je Angriffsart mal (stark: 0,5, schwach: 1,5) */ widerstand?: Partial<Record<Schadensart, number>>; boss?: boolean;
   angriff: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number };
   /* Spezialangriff auf eine Fläche: Der Gegner hält inne und lädt (laden Sekunden), die Fläche ist am Boden zu sehen; dann trifft er jeden, der noch darin steht. alle: Pause bis zum nächsten Mal. */
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
-  fest?: boolean; unsichtbar?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };
+  /** Heiler (Phase 7, Grünlicht): heilt im Kampf alle alle Sekunden den schwächsten Verbündeten (nur dieser Art, wenn nur) im Umkreis radius um anteil seines Lebens */
+  heiler?: { alle: number; anteil: number; radius: number; nur?: string };
+  /** Glocke (#102): friedlich gegen Helden, für die dieser Schalter an ist (der Server setzt „glocke_laeutet“ eine Minute nach jeder vollen Stunde) – greift sie nicht an und lässt von ihnen ab */
+  friedlichBei?: string;
+  /** Gift (#102): nach einem Treffer mit dieser Chance Schaden über Zeit (jeSek Leben je Sekunde, dauer Sekunden) */
+  gift?: { chance: number; jeSek: number; dauer: number };
+  /** Flackern (#102): im Kampf alle alle Sekunden für dauer Sekunden unangreifbar */
+  flackern?: { alle: number; dauer: number };
+  /** Sand-Auftauchen (#102): liegt eingegraben (unsichtbar, unangreifbar); kommt ein Held auf weit Felder heran, leuchtet sein Feld vorlauf Kampf-Ticks (Standard 2), dann taucht er auf und trifft, wer noch dort steht */
+  eingegraben?: { weit: number; schaden: [number, number]; vorlauf?: number; name?: string };
+  /** Verkleidung (#49): wer einen dieser Gegenstände angelegt hat, wird nicht von selbst angegriffen (Rabenkapuze → Novizen friedlich) – wer angreift, bekommt Gegenwehr */
+  friedlichMit?: string[];
+  /** Stilwechsel (#49): im Kampf reihum diese Stile, je sek Sekunden (Federmutter: Schwerter, dann Federn) – angriff und v2 ersetzen die Grundwerte, v2 Feld für Feld */
+  stile?: { sek: number; name?: string; angriff?: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number }; v2?: Partial<GegnerV3>; text?: string }[];
+  /** flieht einmal je Leben unter diesem Anteil seines Lebens zum nächsten Lagerkumpan und kämpft dort weiter (Banditen-Späher: 0,25) – shared/sim.ts fliehen */
+  fliehen?: number;
+  /** Offene Welt: greift von selbst an (Standard ja) und ab welcher Entfernung in Feldern (Standard: aggro des Gebiets, sonst 5). Nach AGGRO_DAUER greift er einen Helden nicht mehr von selbst an. */
+  /** gemeinsame Welt: Sekunden, bis er nach dem Besiegen wieder dasteht (sonst WELT_WIEDERKEHR) */ wiederkehr?: number; /** Gegnerfamilie (Waffen mit „gegen“ treffen sie härter): wald = Waldgolem, Mooshocker */ familie?: string;
+  aggressiv?: boolean; aggroReich?: number;
+  /** sonst friedlich, aber gegen Helden, für die dieser Schalter an ist (QuestDef.schalter, setzt der Server), im Umkreis von weit Feldern aggressiv – z. B. Mooshocker nach ihrer Quest (#81) */ aggressivNach?: { schalter: string; weit: number }; /** greift nur Helden unter diesem Heldenlevel von selbst an (stärkere lässt er in Ruhe, bis sie angreifen) */ aggroBisLevel?: number;
+  /** Drop-Tabelle (offene Welt) als Rolls: jeder Roll wählt höchstens einen Eintrag (Chancen in Prozent, zusammen ≤ 100; der Rest ist „nichts“).
+   *  anzahl [min, max] (Standard 1). nur: der Roll zählt nur, wenn der Bezwinger diese Bedingung erfüllt (z. B. „einsteigerquest“ begonnen) – sonst fällt nichts. */
+  drops?: { nur?: string; /** #160: nur in der starken Fassung eines Bosses (nicht in der Quest-Kopie) */ stark?: boolean; wurf: { g: string; chance: number; anzahl?: [number, number] }[] }[];
+  /** Kampfregeln v3 (OSRS-Rechnung): die Skill-Level der Kampfart (Nahkampf: Geschick und Stärke; Fernkampf; Magie), Defense- und Magie-Level und Verteidigungsboni gegen alle drei Angriffsarten.
+   *  Würfe und Max Hit rechnet kampfwerte.ts gegnerWerte() wie OSRS für Monster (Level + 9). Angriffstakt in Ticks (1 Tick = 0,5 s). */
+  v2?: GegnerV3;
+  /** Untersuchen (Bestiarium): kurzer Text über das Wesen */
+  info?: string;
+  fest?: boolean; unsichtbar?: boolean; /** Zielscheibe: unverwundbar, greift nicht an, keine Beute; Treffer melden sich als Ereignis „treffer“ (Phase 2) */ zielscheibe?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };
   spezial?: { name: string; laden: number; alle: number; radius: number; reich: number; schaden: [number, number]; art: Schadensart; bild?: string; mass?: [number, number, number] } }
 /* Stärke der Gegner: hängt an der Stufe der Aufgabe und an der Zahl der Helden. Die Grundwerte in MONSTER gelten für Stufe 1 … und werden hiermit malgenommen.
    Stufe 1 ist Einsteigerniveau (0,6-fach), je Stufe 0,15 mehr. Leben wächst je weiterem Helden um die Hälfte, der Schaden um ein Zehntel. Im Riss gilt 1. */
@@ -143,10 +173,87 @@ export const MONSTER: Record<string, MonsterDef> = {
     angriff: { name: "Zunge", art: "nah", schaden: [12, 24], takt: 1.6, reich: 2.5, aushol: 0.55 } }, // langsam, aber die Zunge reicht weit
   kroetchen: { name: "Junge Kröte", bild: "img/gegner/schlammkroete.jpg", figur: "img/echtzeit/kroete.webp", fuss: [0.5, 0.9], lauf: "img/echtzeit/kroete-lauf.webp", laufMass: [0.507, 0.88, 0.604], hieb: "img/echtzeit/kroete-hieb.webp", hiebMass: [0.5, 0.87, 0.581], hoehe: 58, lp: 80, tempo: 2.9, angriffswert: { nah: 55, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 40, magie: 35 }, r: 0.28,
     angriff: { name: "Zunge", art: "nah", schaden: [6, 12], takt: 1.3, reich: 1.8, aushol: 0.45 } }, // frisch geschlüpft: klein, flink, harmloser
-  /* Kreuzwald: Banditen mit Dolch und Beuteschild (Figur aus der Fabrik, gegner.bandit v003). Für Anfänger: wenig Leben, schnelle, schwache Stiche;
+  /* Bandit Level 1 (Kampfregeln v1): 40 LP, Nahkampf-Angriff 5 (Stärke 2 + 3), Verteidigung 5/3/2, Dolch 3–6 alle 2 s – Schild und Dolch der Figur sind nur Optik.
+     Kreuzwald: Banditen mit Dolch und Beuteschild (Figur aus der Fabrik, gegner.bandit v003). Für Anfänger: wenig Leben, schnelle, schwache Stiche;
      auf der Lichtung als Gegner der Stufe 3 (setzeStaerke), damit sie zu frischen Helden passen. */
-  bandit_dolch: { name: "Bandit", bild: "img/echtzeit/bandit.webp", figur: "img/echtzeit/bandit.webp", fuss: [0.5, 0.94], lauf: "img/echtzeit/bandit.webp", laufMass: [0.5, 0.94, 0.84], hieb: "img/echtzeit/bandit.webp", hiebMass: [0.5, 0.94, 0.84], hoehe: 84, lp: 130, tempo: 2.9, angriffswert: { nah: 62, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 50, magie: 45 }, r: 0.3,
-    angriff: { name: "Dolch", art: "nah", schaden: [7, 13], takt: 1.0, reich: 1.3, aushol: 0.35 } },
+  bandit_dolch: { name: "Bandit", stufe: 1, bild: "img/echtzeit/bandit.webp", figur: "img/echtzeit/bandit.webp", fuss: [0.5, 0.94], lauf: "img/echtzeit/bandit.webp", laufMass: [0.5, 0.94, 0.84], hieb: "img/echtzeit/bandit.webp", hiebMass: [0.5, 0.94, 0.84], hoehe: 84, lp: 6, tempo: 2.9, angriffswert: { nah: 5, fern: 1, magie: 0 }, abwehr: { nah: 5, fern: 3, magie: 2 }, r: 0.3,
+    angriff: { name: "Dolch", art: "nah", schaden: [1, 1], takt: 2.0, reich: 1.5, aushol: 0 },
+    /* v3 (Simulation 23.11.2026, Helden starten mit 10 LP und Max Hit 1): Nahkämpfer – Geschick 5 = Trefferwert 5 · Stärke 1 → Max Hit 1 (ab Stärke 7: 2) · Abwehr 4/4/3 · 6 LP */
+    v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, ticks: 4, abwehr: { nah: 0, fern: 0, magie: 0 } }, /* OSRS-Rechnung: ein Level-1-Monster ohne Boni (Simulation 23.11.2026) */
+    drops: [ /* 1. Splitter · 2. Ausrüstung oder Kleiner Heiltrank · 3. Hinweispergament, nur mit dem Quest-Auftrag, es zu sichern */
+      { wurf: [{ g: "splitter", chance: 95, anzahl: [1, 5] }, { g: "splitter", chance: 5, anzahl: [15, 20] }] },
+      { wurf: [{ g: "ritterschwert", chance: 1 }, { g: "rundschild", chance: 1 }, { g: "jagdbogen", chance: 1 }, { g: "hirtenstab", chance: 1 }, { g: "lederpanzer", chance: 1 }, { g: "magiepanzer", chance: 1 }, { g: "kleiner_heiltrank", chance: 8 }] }, /* 2. Wurf: je 1 % Trainingsausrüstung, 8 % Kleiner Heiltrank */
+      { nur: "einsteigerquest", wurf: [{ g: "hinweispergament", chance: 35 }] }] },
+  /* Mooshocker (Quest „Der stille Rain“, Osthof, 23.11.2026): passiver Trainingsgegner wie die Sand Crab in OSRS – viel Leben, Max Hit 1, langsam, greift nie von selbst an.
+     Für Helden um Kampflevel 5–6 gedacht (gut eine Minute je Mooshocker), ab Level 1 machbar. Modell img/figuren-echt3d/mooshocker3d.glb. */
+  mooshocker: { name: "Mooshocker", familie: "wald", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 62, lp: 40, tempo: 1.5, angriffswert: { nah: 1, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.4, aggressiv: false,
+    /* #81: nach „Der stille Rain“ greifen sie den Helden im Umkreis von 8 Feldern an (Schalter aus shared/quest02.ts); ein Wurf Beute, keine Ausrüstung (Wegerich folgt, sobald es den Gegenstand gibt) */
+    aggressivNach: { schalter: "moosrain_wach", weit: 8 },
+    drops: [{ wurf: [{ g: "wurm", chance: 15, anzahl: [1, 3] }, { g: "stamm_eiche", chance: 8, anzahl: [1, 2] }, { g: "stamm_tanne", chance: 4 }, { g: "erz_kupfer", chance: 6, anzahl: [1, 2] },
+      { g: "erz_eisen", chance: 3 }, { g: "seelenlicht", chance: 3 }] }],
+    angriff: { name: "Kopfstoß", art: "nah", schaden: [1, 1], takt: 3.0, reich: 1.5, aushol: 0 },
+    v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -50, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } }, /* trifft selten (Angriffsbonus −50): Simulation – Level 1: 98–100 % Siege, 110–150 s, −2 bis −4 LP · Kampflevel 6–7: 55–70 s (Stab 128 s), −1 LP */
+    info: "Ein gedrungenes Wesen mit einem breiten, moosbewachsenen Panzer. Es bewegt sich langsam und sucht feuchte Steine, an denen es seinen Rücken reibt. Es wirkt träge, hält aber erstaunlich viel aus. Bei Bedrängnis stößt es mit dem Kopf nach seinem Angreifer." },
+  /* Kuh (Handwerk, Gehege im Osthof, 25.11.2026): friedlich, Level 1, 10 Lebenspunkte, lässt immer eine Kuhhaut fallen, steht nach 20 s wieder da. Modell img/figuren-echt3d/kuh3d.glb. */
+  kuh: { name: "Kuh", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 50, lp: 10, tempo: 1.2, angriffswert: { nah: 1, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.45, aggressiv: false, wiederkehr: 20,
+    angriff: { name: "Kopfstoß", art: "nah", schaden: [0, 1], takt: 3.0, reich: 1.5, aushol: 0 },
+    v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -60, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } },
+    drops: [{ wurf: [{ g: "kuhhaut", chance: 100 }] }, { wurf: [{ g: "kuhfleisch", chance: 100 }] }] /* Phase 3b: Kuhfleisch für den Bauerneintopf */,
+    info: "Eine gutmütige Kuh mit kastanienbraunen Flecken. Sie kaut, schaut und stößt höchstens einmal mit dem Kopf, wenn man sie ärgert." },
+  /* Waldgolem (Nordwald, verfallene Feste, 24.11.2026): Level 15, wie ein OSRS-Monster – schlägt selten, aber hart (Max Hit 5 aus Stärke 36), langsam (6 Ticks),
+     Holz: Pfeile bleiben stecken (+20 Fern), Magie trifft gut (−10). Greift nur Helden unter Level 15 von selbst an. Modell img/figuren-echt3d/waldgolem3d.glb.
+     Simulation (Heldenlevel 15, Einfach-Ausrüstung, ohne Tränke): Schwert 90 % Siege, 42 s, 62 % LP übrig · Bogen 83 %, 34 s, 45 % · Stab 89 %, 24 s, 51 %. */
+  waldgolem: { name: "Waldgolem", familie: "wald", stufe: 15, bild: "img/echtzeit/bandit.webp", hoehe: 134, lp: 30, tempo: 1.6, angriffswert: { nah: 6, fern: 0, magie: 0 }, abwehr: { nah: 12, fern: 12, magie: 3 }, r: 0.5, aggroBisLevel: 15, aggroReich: 4,
+    angriff: { name: "Faustschlag", art: "nah", schaden: [1, 5], takt: 3.0, reich: 1.5, aushol: 0 },
+    v2: { geschick: 6, staerke: 36, defense: 12, magie: 3, ticks: 6, abwehr: { nah: 10, fern: 20, magie: -10 } },
+    info: "Ein hünenhaftes Wesen aus Wurzelholz, Moos und altem Mauerstein. Es bewegt sich schwerfällig und trifft selten – doch wenn seine Faust trifft, dann mit aller Wucht. Pfeile bleiben in seiner Rinde stecken; Zauber setzen ihm sichtlich zu.",
+    /* Beute (Phase 2, 26.11.2026): 1. Golemstein · 2. Splitter oder ein Eichenstamm · 3. Steintafel-Bruchstück, nur im passenden Schritt von A2 „Das Wappen mit dem Turm“ */
+    drops: [{ wurf: [{ g: "golemstein", chance: 60, anzahl: [1, 2] }] },
+      { wurf: [{ g: "splitter", chance: 50, anzahl: [5, 15] }, { g: "stamm_eiche", chance: 20 }] },
+      { nur: "a2_steintafel", wurf: [{ g: "steintafel", chance: 30 }] }] },
+  /* Zielscheibe (Phase 2 „Waldland“, A1): Strohscheibe neben dem Südturm der Waldmark – unverwundbar, greift nie an, keine Beute. Fernkampf-XP nur bis Fernkampf 10. */
+  /* Phase 4 „Westmark & erster Boss“ (doku/konzepte/phase-4.md, Beute doku/konzepte/beute.md): drei Banditen-Varianten und Hauptmann Rotmantel.
+     Modelle img/figuren-echt3d/bandit3d_spaeher|_schlaeger|_armbrust.glb und banditenboss3d.glb (#24). Max Hit: Späher 3, Schläger 4, Armbrustschütze 5, Rotmantel 14.
+     Ausrüstung der Stufe „Einfach“ und „Episch“ aus beute.md gibt es noch nicht – dafür steht Trainings- bzw. Selten-Ausrüstung. */
+  bandit_spaeher: { name: "Banditen-Späher", stufe: 18, bild: "img/echtzeit/bandit.webp", hoehe: 84, lp: 22, tempo: 3.2, angriffswert: { nah: 4, fern: 18, magie: 0 }, abwehr: { nah: 10, fern: 14, magie: 4 }, r: 0.3,
+    angriff: { name: "Schleuder", art: "fern", schaden: [1, 3], takt: 2.5, reich: 5.5, aushol: 0.4 }, fliehen: 0.25,
+    v2: { fernkampf: 18, defense: 14, magie: 8, staerkeBonus: 10, ticks: 5, abwehr: { nah: 5, fern: 10, magie: 0 } },
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [3, 10] }] },
+      { wurf: [{ g: "leder_rau", chance: 15 }, { g: "garn", chance: 10, anzahl: [5, 10] }, { g: "apfel", chance: 10, anzahl: [1, 3] }, { g: "kleiner_heiltrank", chance: 8 }] },
+      { wurf: [{ g: "jagdbogen", chance: 1.5 }] },
+      { nur: "b3_karrenbrief", wurf: [{ g: "karrenbrief", chance: 100 }] }], /* B3: der fünfte Späher trägt ihn (Bedingung in quest_b3.ts: Zähler ≥ 4, Brief noch offen) */
+    info: "Ein hagerer Kerl in Grün mit einer Schleuder am Gürtel. Er hält Abstand – und wenn es eng wird, rennt er zu seinen Kumpanen." },
+  bandit_schlaeger: { name: "Bandit-Schläger", stufe: 22, bild: "img/echtzeit/bandit.webp", hoehe: 94, lp: 34, tempo: 2.6, angriffswert: { nah: 22, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 14, magie: 4 }, r: 0.34,
+    angriff: { name: "Axthieb", art: "nah", schaden: [1, 4], takt: 3.0, reich: 1.5, aushol: 0 },
+    v2: { geschick: 22, staerke: 24, defense: 20, magie: 5, staerkeBonus: 20, ticks: 6, abwehr: { nah: 15, fern: 10, magie: 0 } },
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [5, 12] }] },
+      { wurf: [{ g: "erz_eisen", chance: 15, anzahl: [1, 3] }, { g: "heiltrank", chance: 5 }] },
+      { wurf: [{ g: "eidschwert", chance: 0.2 }, { g: "eiddolch", chance: 0.2 }, { g: "eidzweihaender", chance: 0.2 }, { g: "sternbrecher", chance: 0.2 }] },
+      { nur: "b4_schluessel", wurf: [{ g: "schluesselbund", chance: 100 }] }],
+    info: "Breite Schultern, eine schartige Axt und kein Wort zu viel. Er schlägt langsam, aber wer stehen bleibt, spürt es." },
+  bandit_armbrust: { name: "Armbrustschütze", stufe: 24, bild: "img/echtzeit/bandit.webp", hoehe: 84, lp: 28, tempo: 2.8, angriffswert: { nah: 4, fern: 26, magie: 0 }, abwehr: { nah: 12, fern: 18, magie: 6 }, r: 0.3,
+    angriff: { name: "Bolzen", art: "fern", schaden: [1, 5], takt: 3.0, reich: 6.5, aushol: 0.6 },
+    v2: { fernkampf: 26, defense: 16, magie: 8, staerkeBonus: 30, ticks: 6, abwehr: { nah: 5, fern: 15, magie: 0 } },
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [5, 12] }] },
+      { wurf: [{ g: "stamm_tanne", chance: 15, anzahl: [1, 2] }, { g: "garn", chance: 10, anzahl: [5, 10] }] },
+      { wurf: [{ g: "sternarmbrust", chance: 0.4 }] }],
+    info: "Ocker gekleidet, die Armbrust immer gespannt. Er zielt lange – und trifft dann härter als die anderen." },
+  /* Hauptmann Rotmantel (#16): Stufe 32, 120 LP, Max Hit 14, Zweihänder. Phasen, Rundumschlag, Ruf und Heiltrank stehen in shared/bosse.ts (Boss-Baukasten).
+     Als Questgegner in der eigenen Kopie der Kammer (Instanz), danach öffentlich mit 3 Minuten Wiederkehr. Beute laut beute.md (ohne Episch und Rotmantels Klinge, die es noch nicht gibt). */
+  rotmantel: { name: "Hauptmann Rotmantel", stufe: 32, bild: "img/echtzeit/bandit.webp", hoehe: 100, lp: 120, tempo: 2.6, angriffswert: { nah: 34, fern: 0, magie: 0 }, abwehr: { nah: 30, fern: 24, magie: 8 }, r: 0.38, wiederkehr: 180,
+    angriff: { name: "Zweihandhieb", art: "nah", schaden: [2, 14], takt: 3.0, reich: 1.8, aushol: 0.3 },
+    v2: { geschick: 34, staerke: 50, defense: 30, magie: 10, staerkeBonus: 88, ticks: 6, abwehr: { nah: 25, fern: 20, magie: 5 } },
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [80, 160] }] },
+      { wurf: [{ g: "barren_eisen", chance: 20, anzahl: [3, 5] }, { g: "erz_schwarzeisen", chance: 15, anzahl: [4, 8] }, { g: "leder_weich", chance: 15, anzahl: [2, 4] }, { g: "heiltrank", chance: 15, anzahl: [2, 3] },
+        { g: "garn", chance: 10, anzahl: [20, 40] }, { g: "seelenlicht", chance: 10, anzahl: [3, 5] }, { g: "splitter", chance: 10, anzahl: [150, 250] }] },
+      { wurf: [{ g: "eidschwert", chance: 0.4 }, { g: "eiddolch", chance: 0.4 }, { g: "eidzweihaender", chance: 0.4 }, { g: "sternbrecher", chance: 0.4 }, { g: "sterndorn", chance: 0.4 },
+        { g: "mondlangbogen", chance: 0.4 }, { g: "mondkurzbogen", chance: 0.4 }, { g: "sternarmbrust", chance: 0.4 }, { g: "sternenszepter", chance: 0.4 }, { g: "sternenschild", chance: 0.4 }] },
+      { wurf: [{ g: "rotes_banner", chance: 0.67 }] },
+      { nur: "b4_rabenbrief", wurf: [{ g: "rabenbrief", chance: 100 }] }],
+    info: "Ein Hüne im roten Mantel, der Zweihänder lehnt an seiner Schulter wie ein Spazierstock. Früher Söldner der Wacht – heute der Mann, vor dem die Westmark flüstert." },
+  zielscheibe: { name: "Zielscheibe", bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 100, tempo: 0, fest: true, zielscheibe: true, aggressiv: false, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 0, fern: 0, magie: 0 }, r: 0.5,
+    angriff: { name: "–", art: "nah", schaden: [0, 0], takt: 99, reich: 0, aushol: 0 },
+    info: "Eine Strohscheibe auf einem Holzgestell, bemalt mit drei Ringen. Hier üben die Wachen der Waldmark – bis Fernkampf 10 lernst du daran etwas, danach nicht mehr." },
   laich: { name: "Krötenlaich", bild: "img/gegner/schlammkroete.jpg", fest: true, unsichtbar: true, lp: 170, tempo: 0, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 35, magie: 30 }, r: 0.6,
     angriff: { name: "–", art: "nah", schaden: [0, 0], takt: 99, reich: 0, aushol: 0 }, brut: { art: "kroetchen", takt: 9, max: 2, gesamt: 3 } }, // liegt im Tümpel; solange er heil ist, schlüpfen Junge
   moorleiche: { name: "Moorleiche", bild: "img/gegner/moorleiche.jpg", figur: "img/echtzeit/moorleiche.webp", fuss: [0.433, 0.957], lauf: "img/echtzeit/moorleiche-lauf.webp", laufMass: [0.433, 0.957, 0.936], hieb: "img/echtzeit/moorleiche-hieb.webp", hiebMass: [0.438, 0.945, 0.912], ruhe: "img/echtzeit/moorleiche-ruhe.webp", ruheMass: [0.482, 0.979, 0.958], hoehe: 88, lp: 190, tempo: 1.9, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 60, magie: 35 }, r: 0.38, untot: true, aufstehen: 0.5,
@@ -168,5 +275,415 @@ export const MONSTER: Record<string, MonsterDef> = {
     angriff: { name: "Knochenklinge", art: "nah", schaden: [20, 36], takt: 1.7, reich: 1.9, aushol: 0.6 } },
 };
 
+/* ───────── Phase 6 (#17, #18, #26): der Rabenorden auf Aschenwerth und im Rabengrund – Werte doku/konzepte/phase-6.md, Beute doku/konzepte/beute.md ─────────
+   Kampfrechnung v3 (gegnerWerte): Max Hit aus Stärke/Fernkampf/Magie + Bonus, Treffer aus Geschick bzw. Kampfart. Modelle img/figuren-echt3d/ (Figuren #20). */
+const RABE_INFO = "Ein Diener des Rabenordens.";
+Object.assign(MONSTER, {
+  /** Moorrabe: Stufe 20, 25 LP, Max Hit 4, schnell, in Schwärmen (Federgänge, Moor bei Nacht) */
+  moorrabe: { name: "Moorrabe", stufe: 20, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 25, tempo: 4.2, angriffswert: { nah: 20, fern: 0, magie: 0 }, abwehr: { nah: 15, fern: 10, magie: 15 }, r: 0.35,
+    angriff: { name: "Sturz", art: "nah", schaden: [1, 4], takt: 1.5, reich: 1.3, aushol: 0 },
+    v2: { geschick: 22, staerke: 28, defense: 15, magie: 5, ticks: 3, abwehr: { nah: 0, fern: -5, magie: 5 } }, aggroReich: 5,
+    info: "Ein schwarzer Rabe, größer als jeder Rabe sein dürfte. Wo einer ist, sind mehr.",
+    drops: [{ wurf: [{ g: "splitter", chance: 50, anzahl: [1, 3] }] }, { wurf: [{ g: "rabenfedern", chance: 40 }] }] },
+  /** Rabenpriester-Novize: Stufe 28, 60 LP, Max Hit 7 (Magie), schwach gegen Fernkampf; friedlich gegen Helden mit Rabenkapuze (C2) */
+  rabenpriester_novize: { name: "Novize des Rabenordens", stufe: 28, bild: "img/echtzeit/bandit.webp", hoehe: 118, lp: 60, tempo: 2.8, angriffswert: { nah: 5, fern: 0, magie: 30 }, abwehr: { nah: 20, fern: 10, magie: 35 }, r: 0.4,
+    angriff: { name: "Rabenfluch", art: "magie", schaden: [1, 7], takt: 2.5, reich: 5, aushol: 0 }, friedlichMit: ["rabenkapuze"],
+    v2: { magie: 70, geschick: 10, staerke: 10, defense: 20, ticks: 5, abwehr: { nah: 0, fern: -10, magie: 20 } },
+    info: "Ein junger Priester in schwarzer Kutte. Er murmelt ohne Pause – Silben, die in den Ohren kleben bleiben. " + RABE_INFO,
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [8, 15] }] }, { wurf: [{ g: "rabenfedern", chance: 50, anzahl: [1, 3] }, { g: "seelenlicht", chance: 10 }] }, /* Moorglöckchen 15 % kommt mit Kräuterkunde (#29) */
+      { wurf: [{ g: "sternenszepter", chance: 100 / 128 }] }] },
+  /** Akoluth mit Bogen: Stufe 35, 85 LP, Max Hit 9 (Fernkampf), hält Abstand */
+  rabenpriester_akoluth: { name: "Akoluth des Rabenordens", stufe: 35, bild: "img/echtzeit/bandit.webp", hoehe: 122, lp: 85, tempo: 3.0, angriffswert: { nah: 10, fern: 40, magie: 0 }, abwehr: { nah: 35, fern: 35, magie: 25 }, r: 0.4,
+    angriff: { name: "Rabenpfeil", art: "fern", schaden: [1, 9], takt: 2.0, reich: 6, aushol: 0 },
+    v2: { fernkampf: 80, geschick: 30, staerke: 30, defense: 35, magie: 20, ticks: 4, abwehr: { nah: 5, fern: 15, magie: 0 } },
+    info: "Ein Krieger des Ordens mit Langbogen und Federmantel. Er schießt, bevor man ihn sieht. " + RABE_INFO,
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [10, 20] }] }, { wurf: [{ g: "rabenfedern", chance: 60, anzahl: [2, 5] }, { g: "seelenlicht", chance: 15 }] },
+      { wurf: [{ g: "@selten:Bogen", chance: 100 / 96 }, { g: "@episch:Bogen", chance: 100 / 1024 }] }, { wurf: [{ g: "federsiegel", chance: 100 / 12 }] },
+      { nur: "c2_federsiegel", wurf: [{ g: "federsiegel", chance: 100 }] }] },
+  /** Akoluth mit Speer: Stufe 35, 95 LP, Max Hit 10 (Nahkampf), Ansturm */
+  rabenpriester_akoluth_speer: { name: "Akoluth des Rabenordens", stufe: 35, bild: "img/echtzeit/bandit.webp", hoehe: 122, lp: 95, tempo: 3.4, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 30, magie: 25 }, r: 0.4,
+    angriff: { name: "Speerstoß", art: "nah", schaden: [1, 10], takt: 2.5, reich: 1.9, aushol: 0 },
+    v2: { staerke: 90, geschick: 50, defense: 40, magie: 20, ticks: 5, abwehr: { nah: 15, fern: 5, magie: 0 } },
+    info: "Ein Krieger des Ordens mit langem Speer und Federmantel. Er stürmt, sobald er dich sieht. " + RABE_INFO,
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [10, 20] }] }, { wurf: [{ g: "rabenfedern", chance: 60, anzahl: [2, 5] }, { g: "seelenlicht", chance: 15 }] },
+      { wurf: [{ g: "@selten:Speer", chance: 100 / 96 }, { g: "@episch:Speer", chance: 100 / 1024 }] }, { wurf: [{ g: "federsiegel", chance: 100 / 12 }] },
+      { nur: "c2_federsiegel", wurf: [{ g: "federsiegel", chance: 100 }] }] },
+  /** C3 (#118): der Kerkermeister im Kerker des Rabengrunds – ein Akoluth mit Speer, etwas zäher; trägt den Kerkerschlüssel (nur solange C3 ihn braucht) */
+  kerkermeister: { name: "Kerkermeister", stufe: 38, bild: "img/echtzeit/bandit.webp", hoehe: 126, lp: 130, tempo: 3.2, angriffswert: { nah: 44, fern: 0, magie: 0 }, abwehr: { nah: 44, fern: 32, magie: 26 }, r: 0.42,
+    angriff: { name: "Speerstoß", art: "nah", schaden: [1, 11], takt: 2.5, reich: 1.9, aushol: 0 },
+    v2: { staerke: 98, geschick: 52, defense: 46, magie: 20, ticks: 5, abwehr: { nah: 17, fern: 6, magie: 0 } },
+    info: "Er trägt einen schweren Schlüsselring am Gürtel und lacht, wenn die Käfige klirren. " + RABE_INFO,
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [15, 30] }] }, { wurf: [{ g: "rabenfedern", chance: 70, anzahl: [3, 6] }, { g: "seelenlicht", chance: 20 }] },
+      { wurf: [{ g: "@selten:Speer", chance: 100 / 64 }, { g: "@episch:Speer", chance: 100 / 768 }] }, { wurf: [{ g: "federsiegel", chance: 100 / 10 }] },
+      { nur: "c3_kerkerschluessel", wurf: [{ g: "kerkerschluessel", chance: 100 }] }] },
+  /** Federmutter Ravena: Mini-Boss, Stufe 40, 200 LP, Max Hit 12; wechselt alle 20 s Stab, Bogen, Speer (Stilwechsel) */
+  federmutter: { name: "Federmutter Ravena", stufe: 40, bild: "img/echtzeit/bandit.webp", hoehe: 128, lp: 200, tempo: 3.0, angriffswert: { nah: 45, fern: 45, magie: 45 }, abwehr: { nah: 45, fern: 45, magie: 45 }, r: 0.45, boss: true, wiederkehr: 300,
+    angriff: { name: "Rabenstab", art: "magie", schaden: [1, 12], takt: 2.5, reich: 5, aushol: 0 },
+    v2: { magie: 60, fernkampf: 60, staerke: 60, geschick: 55, defense: 45, staerkeBonus: 50, ticks: 5, abwehr: { nah: 10, fern: 10, magie: 10 } },
+    stile: [{ sek: 20, name: "Stab", angriff: { name: "Rabenstab", art: "magie", schaden: [1, 12], takt: 2.5, reich: 5, aushol: 0 }, v2: { ticks: 5 } },
+      { sek: 20, name: "Bogen", text: "greift zum Bogen!", angriff: { name: "Federpfeil", art: "fern", schaden: [1, 12], takt: 2.0, reich: 6, aushol: 0 }, v2: { ticks: 4 } },
+      { sek: 20, name: "Speer", text: "greift zum Speer!", angriff: { name: "Federspeer", art: "nah", schaden: [1, 12], takt: 2.5, reich: 1.9, aushol: 0 }, v2: { ticks: 5 } }],
+    info: "Die Federmutter des Ordens. Ihre Waffe wechselt, kaum dass man sich darauf eingestellt hat – Stab, Bogen, Speer.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [100, 200] }] }, { wurf: [{ g: "rabenfedern", chance: 100, anzahl: [5, 10] }] }, { wurf: [{ g: "seelenlicht", chance: 30, anzahl: [3, 6] }] },
+      { wurf: [{ g: "@selten", chance: 5 }] }] },
+  /** Der Oberste Rabenpriester: Boss, Stufe 55, 350 LP, Max Hit 18 (Doppelhieb), Thronsaal als Instanz (shared/bosse.ts) */
+  oberster_rabenpriester: { name: "Der Oberste Rabenpriester", stufe: 55, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 350, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 40 }, abwehr: { nah: 60, fern: 55, magie: 50 }, r: 0.9, boss: true, wiederkehr: 600,
+    angriff: { name: "Zwillingsklingen", art: "nah", schaden: [1, 18], takt: 2.0, reich: 2.2, aushol: 0 },
+    v2: { staerke: 81, geschick: 70, defense: 60, magie: 60, staerkeBonus: 64, ticks: 4, abwehr: { nah: 20, fern: 15, magie: 10 } },
+    info: "Der Oberste des Rabenordens. Auf seinem Thron aus Federn und Splittern wartet er seit Jahren darauf, dass jemand kommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [300, 600] }] }, { wurf: [{ g: "rabenfedern", chance: 100, anzahl: [10, 25] }] },
+      { wurf: [{ g: "barren_sterneisen", chance: 18, anzahl: [3, 6] }, { g: "erz_splittereisen", chance: 12, anzahl: [5, 10] }, { g: "stamm_moorweide", chance: 15, anzahl: [10, 20] }, { g: "stamm_kernbaum", chance: 10, anzahl: [5, 10] },
+        { g: "seelenlicht", chance: 15, anzahl: [10, 20] }, { g: "heiltrank", chance: 10, anzahl: [2, 4] }, { g: "federsiegel", chance: 10, anzahl: [1, 2] }] }, /* Kräuter 35–45 (10 %) und starke Tränke kommen mit Kräuterkunde (#29); bis dahin Heiltränke */
+      { wurf: [{ g: "@selten", chance: 100 / 16 }, { g: "@episch", chance: 100 / 64 }, { g: "@legendaer", chance: 100 / 512 }] },
+      { wurf: [{ g: "splitterkern", chance: 100 / 64 }, { g: "rabenschwinge", chance: 100 / 256 }, { g: "rabenkueken", chance: 100 / 2000 }] }] },
+} as Record<string, MonsterDef>);
+
+/* ───────── Phase 7 (#40): Graufurt, Ostufer und der Turm mit dem grünen Licht – Werte doku/konzepte/phase-7.md (Beute: Vorschläge des Konzepts, beute.md folgt) ───────── */
+Object.assign(MONSTER, {
+  /** Schlickkrebs: Stufe 45, langsam, hohe Defense (Ufer, Schilf) */
+  schlickkrebs: { name: "Schlickkrebs", stufe: 45, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 80, tempo: 1.6, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 70, magie: 40 }, r: 0.5,
+    angriff: { name: "Scherenhieb", art: "nah", schaden: [1, 9], takt: 3, reich: 1.5, aushol: 0 },
+    v2: { staerke: 80, geschick: 45, defense: 75, magie: 10, ticks: 6, abwehr: { nah: 40, fern: 35, magie: 0 } }, aggroReich: 3,
+    info: "Ein Krebs so groß wie ein Hund, der Panzer voller Schlick. Langsam – aber an seinen Scheren beißt man sich die Zähne aus.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [12, 25] }] }, { wurf: [{ g: "krebsschere", chance: 40, anzahl: [1, 2] }] }, { wurf: [{ g: "erz_splittereisen", chance: 8, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 200 }] }] },
+  /** Splitterreiher: Stufe 50, Fernkampf (Splitter-Stoß), flieht nicht (Ostufer-Wiesen) */
+  splitterreiher: { name: "Splitterreiher", stufe: 50, bild: "img/echtzeit/bandit.webp", hoehe: 110, lp: 75, tempo: 3.4, angriffswert: { nah: 10, fern: 50, magie: 0 }, abwehr: { nah: 45, fern: 50, magie: 35 }, r: 0.45,
+    angriff: { name: "Splitter-Stoß", art: "fern", schaden: [1, 11], takt: 2, reich: 6, aushol: 0 },
+    v2: { fernkampf: 100, geschick: 40, staerke: 20, defense: 50, magie: 20, ticks: 4, abwehr: { nah: 0, fern: 20, magie: 5 } },
+    info: "Ein grauer Reiher mit Splittern statt Federn am Hals. Er schleudert sie, bevor man nah genug ist.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [15, 30] }] }, { wurf: [{ g: "federn", chance: 50, anzahl: [2, 4] }] }, { wurf: [{ g: "seelenlicht", chance: 10 }] }, { wurf: [{ g: "@selten", chance: 100 / 160 }] }] },
+  /** Turmwächter: Stufe 58, gerüstete Steinfigur der Wacht, Rundumschlag mit Ansage (Fläche um sein Ziel) */
+  turmwaechter: { name: "Turmwächter", stufe: 58, bild: "img/echtzeit/bandit.webp", hoehe: 140, lp: 120, tempo: 2.2, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 80, fern: 70, magie: 45 }, r: 0.55,
+    angriff: { name: "Speerhieb", art: "nah", schaden: [1, 13], takt: 2.5, reich: 1.9, aushol: 0 },
+    spezial: { name: "Rundumschlag", laden: 1, alle: 9, radius: 2.2, reich: 2, schaden: [8, 14], art: "nah" },
+    v2: { staerke: 105, geschick: 70, defense: 85, magie: 20, ticks: 5, abwehr: { nah: 40, fern: 30, magie: -5 } }, aggroReich: 4,
+    info: "Eine gerüstete Steinfigur mit dem Wappen der Wacht auf der Brust. Wer den Turm betritt, wird gestellt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [25, 45] }] }, { wurf: [{ g: "wachtstein", chance: 30 }] }, { wurf: [{ g: "erz_ureisen", chance: 6 }] }, { wurf: [{ g: "@selten", chance: 100 / 64 }, { g: "@episch", chance: 100 / 512 }] }] },
+  /** Grünlicht: Stufe 60, Irrlicht auf dem Turmdach, heilt Turmwächter in der Nähe */
+  gruenlicht: { name: "Grünlicht", stufe: 60, bild: "img/gegner/irrlicht.jpg", hoehe: 90, lp: 60 /* #150: 90 → 60, auf dem Dach mit dem Turmwächter zusammen (D2, Heldenlevel 45) */, tempo: 3.0, angriffswert: { nah: 0, fern: 0, magie: 60 }, abwehr: { nah: 60, fern: 40, magie: 80 }, r: 0.4,
+    angriff: { name: "Grünes Feuer", art: "magie", schaden: [1, 10], takt: 2.5, reich: 5, aushol: 0 }, heiler: { alle: 6, anteil: 0.15, radius: 8, nur: "turmwaechter" },
+    v2: { magie: 95, geschick: 30, staerke: 10, defense: 60, ticks: 5, abwehr: { nah: 10, fern: -10, magie: 40 } },
+    info: "Ein grünes Licht, das schwebt und flüstert. Wo es ist, stehen die Turmwächter wieder auf.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [20, 40] }] }, { wurf: [{ g: "seelenlicht", chance: 60, anzahl: [2, 5] }] }, { wurf: [{ g: "splitterkern_gruen", chance: 100 / 100 }] }] },
+} as Record<string, MonsterDef>);
+
+/* ───────── Phase 8 (#58): die Fahlen Weiten und Grauwacht – Werte doku/konzepte/phase-8.md (Beute: Vorschläge des Konzepts, ohne Wachtrüstung – vorerst nicht, Entscheidung 26.11.) ───────── */
+Object.assign(MONSTER, {
+  /** Heidewolf: Stufe 32, im Rudel (offene Heide) */
+  heidewolf: { name: "Heidewolf", stufe: 32, bild: "img/echtzeit/bandit.webp", hoehe: 80, lp: 45, tempo: 4.4, angriffswert: { nah: 30, fern: 0, magie: 0 }, abwehr: { nah: 25, fern: 20, magie: 20 }, r: 0.45,
+    angriff: { name: "Sprungbiss", art: "nah", schaden: [1, 6], takt: 2, reich: 1.4, aushol: 0 },
+    v2: { staerke: 50, geschick: 35, defense: 25, magie: 5, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 6,
+    info: "Ein grauer Wolf der Heide, mager und zäh. Wo einer heult, antworten drei.",
+    drops: [{ wurf: [{ g: "splitter", chance: 80, anzahl: [6, 14] }] }, { wurf: [{ g: "wolfsfell", chance: 50 }] }, { wurf: [{ g: "wolfsfleisch", chance: 40 }] }] },
+  /** Rudelführer: Stufe 36, führt das Rudel (E1) */
+  rudelfuehrer: { name: "Rudelführer", stufe: 36, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 80, tempo: 4.4, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 35, fern: 30, magie: 25 }, r: 0.5,
+    angriff: { name: "Reißen", art: "nah", schaden: [1, 8], takt: 2, reich: 1.5, aushol: 0 },
+    v2: { staerke: 70, geschick: 45, defense: 35, magie: 5, ticks: 4, abwehr: { nah: 10, fern: 5, magie: 0 } }, aggroReich: 6,
+    info: "Der größte Wolf der Heide, das Fell grau wie Asche. Er heult – und das Rudel kommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [20, 40] }] }, { wurf: [{ g: "leder_gehaertet", chance: 30, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 64 }] }] },
+  /** Wiedergänger: Stufe 38, langsam und zäh; friedlich, solange die Glocke läutet (shared/weltereignisse.ts) */
+  wiedergaenger: { name: "Wiedergänger", stufe: 38, bild: "img/gegner/moorleiche.jpg", hoehe: 118, lp: 110, tempo: 1.4, angriffswert: { nah: 35, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 45, magie: 20 }, r: 0.45, untot: true,
+    angriff: { name: "Rostklinge", art: "nah", schaden: [1, 8], takt: 3, reich: 1.6, aushol: 0 }, friedlichBei: "glocke_laeutet",
+    v2: { staerke: 70, geschick: 40, defense: 40, magie: 10, ticks: 6, abwehr: { nah: 15, fern: 25, magie: -10 } }, aggroReich: 4,
+    info: "Ein Toter in rostiger Wachtrüstung. Er geht, als hätte er noch einen Befehl. Wenn die Glocke von Grauwacht schlägt, bleibt er stehen und lauscht.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [8, 18] }] }, { wurf: [{ g: "seelenlicht", chance: 15 }] }, { wurf: [{ g: "@selten", chance: 100 / 256 }] }] },
+  /** Deserteur mit Schwert: Stufe 42, flieht zum Lager (Grenzposten) */
+  deserteur_schwert: { name: "Deserteur", stufe: 42, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 85, tempo: 3.2, angriffswert: { nah: 45, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 40, magie: 30 }, r: 0.4, fliehen: 0.25,
+    angriff: { name: "Wachtschwert", art: "nah", schaden: [1, 9], takt: 2.5, reich: 1.6, aushol: 0 },
+    v2: { staerke: 80, geschick: 55, defense: 45, magie: 10, ticks: 5, abwehr: { nah: 20, fern: 15, magie: 0 } },
+    info: "Ein Wachtmann in grauem Wappenrock, das Wappen abgerissen. Er hat die Wacht verlassen – und verteidigt jetzt nur noch sich selbst.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [10, 22] }] }, { wurf: [{ g: "barren_eisen", chance: 15 }] }, { wurf: [{ g: "heiltrank", chance: 8 }] }, { wurf: [{ g: "@selten:Schwert", chance: 100 / 128 }] }] },
+  /** Deserteur mit Armbrust: Stufe 44, Fernkampf */
+  deserteur_armbrust: { name: "Deserteur", stufe: 44, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 75, tempo: 3.0, angriffswert: { nah: 10, fern: 50, magie: 0 }, abwehr: { nah: 35, fern: 45, magie: 30 }, r: 0.4,
+    angriff: { name: "Bolzen", art: "fern", schaden: [1, 10], takt: 3, reich: 6, aushol: 0 },
+    v2: { fernkampf: 90, geschick: 30, staerke: 20, defense: 40, magie: 10, ticks: 6, abwehr: { nah: 5, fern: 20, magie: 0 } },
+    info: "Ein Wachtmann mit schwerer Armbrust. Er lädt langsam – aber er trifft.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [10, 22] }] }, { wurf: [{ g: "barren_eisen", chance: 15 }] }, { wurf: [{ g: "heiltrank", chance: 8 }] }, { wurf: [{ g: "@selten:Armbrust", chance: 100 / 128 }] }] },
+  /** Tjark Sölde: Anführer der Deserteure (E3, „besiegen“) – wie Rotmantel: Rundumschlag, ruft seine Leute, trinkt */
+  tjark: { name: "Tjark Sölde", stufe: 46, bild: "img/echtzeit/bandit.webp", hoehe: 128, lp: 220, tempo: 3.2, angriffswert: { nah: 55, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 50, magie: 35 }, r: 0.5, boss: true, wiederkehr: 600,
+    angriff: { name: "Zweihänder", art: "nah", schaden: [1, 13], takt: 3, reich: 1.9, aushol: 0 },
+    v2: { staerke: 95, geschick: 60, defense: 55, magie: 15, staerkeBonus: 20, ticks: 6, abwehr: { nah: 25, fern: 20, magie: 0 } },
+    info: "Der Anführer der Deserteure. Einst ein guter Wachtmann, sagen sie in Grauwacht.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [120, 220] }] }, { wurf: [{ g: "wachtstein", chance: 60, anzahl: [2, 4] }] }, { wurf: [{ g: "@selten", chance: 10 }, { g: "@episch", chance: 1 }] }] },
+  /** Grabwächter: Stufe 48, Steinfigur der Grabkammern, Rundumschlag mit Ansage */
+  grabwaechter: { name: "Grabwächter", stufe: 48, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 105, tempo: 2.0, angriffswert: { nah: 50, fern: 0, magie: 0 }, abwehr: { nah: 75, fern: 65, magie: 40 }, r: 0.55,
+    angriff: { name: "Steinspeer", art: "nah", schaden: [1, 11], takt: 3, reich: 1.9, aushol: 0 }, spezial: { name: "Rundumschlag", laden: 1, alle: 10, radius: 2.2, reich: 2, schaden: [7, 12], art: "nah" },
+    v2: { staerke: 90, geschick: 55, defense: 75, magie: 15, ticks: 6, abwehr: { nah: 35, fern: 30, magie: -5 } }, aggroReich: 4,
+    info: "Eine Steinfigur am Eingang einer Grabkammer. Sie hält Wache, seit es keine Wacht mehr gibt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [18, 35] }] }, { wurf: [{ g: "wachtstein", chance: 25 }] }, { wurf: [{ g: "erz_schwarzeisen", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 80 }] }] },
+  /** Der Graue Hauptmann: Mini-Boss, Stufe 52, Geist in Wachtrüstung (Gruft, Instanz – shared/bosse.ts) */
+  grauer_hauptmann: { name: "Der Graue Hauptmann", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 260, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 55, magie: 45 }, r: 0.55, untot: true, boss: true, wiederkehr: 600,
+    angriff: { name: "Geisterklinge", art: "nah", schaden: [1, 15], takt: 2.5, reich: 1.9, aushol: 0 },
+    v2: { staerke: 100, geschick: 70, defense: 60, magie: 40, staerkeBonus: 30, ticks: 5, abwehr: { nah: 25, fern: 25, magie: 0 } },
+    info: "Der letzte Hauptmann von Grauwacht. Er hat seine Wacht nie beendet – und lässt die Toten nicht ruhen.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [150, 300] }] }, { wurf: [{ g: "wachtstein", chance: 100, anzahl: [2, 4] }] }, { wurf: [{ g: "seelenlicht", chance: 40, anzahl: [3, 6] }] }, { wurf: [{ g: "@selten", chance: 100 / 12 }, { g: "@episch", chance: 100 / 48 }, { g: "@legendaer", chance: 100 / 600 }] }] },
+} as Record<string, MonsterDef>);
+
+/* ───────── Phase 9 (#86): die Glutsande und Glutbrunn – Werte doku/konzepte/phase-9.md (Beute: Vorschläge des Konzepts, beute.md folgt) ───────── */
+Object.assign(MONSTER, {
+  /** Sandkriecher: Stufe 42, liegt eingegraben und taucht mit Ansage-Feld unter dem Helden auf (Dünen) */
+  sandkriecher: { name: "Sandkriecher", stufe: 42, bild: "img/echtzeit/bandit.webp", hoehe: 80, lp: 90, tempo: 2.6, angriffswert: { nah: 45, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 45, magie: 30 }, r: 0.55,
+    angriff: { name: "Kieferbiss", art: "nah", schaden: [1, 9], takt: 2.5, reich: 1.6, aushol: 0 }, eingegraben: { weit: 3, schaden: [6, 12], name: "Der Sand bebt" },
+    v2: { staerke: 80, geschick: 50, defense: 50, magie: 10, ticks: 5, abwehr: { nah: 20, fern: 15, magie: 0 } },
+    info: "Ein Wurm aus Panzerplatten, so lang wie ein Wagen. Man sieht ihn erst, wenn der Sand unter den Füßen nachgibt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [10, 20] }] }, { wurf: [{ g: "chitin", chance: 40 }] }, { wurf: [{ g: "salz", chance: 20, anzahl: [1, 3] }] }] },
+  /** Glutskorpion: Stufe 48, Gift (Schaden über Zeit), Salzpfanne und Kanal */
+  glutskorpion: { name: "Glutskorpion", stufe: 48, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 95, tempo: 3.0, angriffswert: { nah: 50, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 55, magie: 35 }, r: 0.5,
+    angriff: { name: "Stachel", art: "nah", schaden: [1, 10], takt: 2.5, reich: 1.5, aushol: 0 }, gift: { chance: 0.3, jeSek: 1, dauer: 8 },
+    v2: { staerke: 85, geschick: 60, defense: 60, magie: 10, ticks: 5, abwehr: { nah: 25, fern: 20, magie: 0 } },
+    info: "Ein Skorpion mit glühendem Stachel. Wen er trifft, dem brennt das Gift noch lange in den Adern.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [14, 28] }] }, { wurf: [{ g: "giftdruese", chance: 30 }] }, { wurf: [{ g: "salz", chance: 25, anzahl: [1, 3] }] }, { wurf: [{ g: "@selten", chance: 100 / 200 }] }] },
+  /** Karawanenräuber mit Säbel: Stufe 50, wie Banditen, flieht (Kanal-Lager) */
+  karawanenraeuber_saebel: { name: "Karawanenräuber", stufe: 50, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 95, tempo: 3.4, angriffswert: { nah: 55, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 45, magie: 30 }, r: 0.4, fliehen: 0.25,
+    angriff: { name: "Säbel", art: "nah", schaden: [1, 11], takt: 2, reich: 1.6, aushol: 0 },
+    v2: { staerke: 95, geschick: 70, defense: 50, magie: 10, ticks: 4, abwehr: { nah: 20, fern: 15, magie: 0 } },
+    info: "Ein Räuber in Tüchern gegen den Sand, mit krummem Säbel. Wer die Karawanen überfällt, kennt keine Gnade – und läuft, wenn es eng wird.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [15, 30] }] }, { wurf: [{ g: "barren_splittereisen", chance: 12 }] }, { wurf: [{ g: "fisch_glutwels_roh", chance: 10 }] }, { wurf: [{ g: "@selten:Schwert", chance: 100 / 96 }, { g: "@episch:Schwert", chance: 100 / 800 }] }] },
+  /** Karawanenräuber mit Bogen: Stufe 52, Fernkampf */
+  karawanenraeuber_bogen: { name: "Karawanenräuber", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 85, tempo: 3.2, angriffswert: { nah: 10, fern: 55, magie: 0 }, abwehr: { nah: 40, fern: 50, magie: 30 }, r: 0.4, fliehen: 0.25,
+    angriff: { name: "Wüstenbogen", art: "fern", schaden: [1, 11], takt: 2, reich: 6, aushol: 0 },
+    v2: { fernkampf: 100, geschick: 40, staerke: 20, defense: 45, magie: 10, ticks: 4, abwehr: { nah: 5, fern: 20, magie: 0 } },
+    info: "Ein Räuber mit Kurzbogen, das Gesicht hinter Tüchern. Er schießt aus dem Schatten der Kanalmauer.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [15, 30] }] }, { wurf: [{ g: "barren_splittereisen", chance: 12 }] }, { wurf: [{ g: "fisch_glutwels_roh", chance: 10 }] }, { wurf: [{ g: "@selten:Bogen", chance: 100 / 96 }, { g: "@episch:Bogen", chance: 100 / 800 }] }] },
+  /** Glutgeist: Stufe 56, Magie, flackert (kurz unangreifbar) – Tempel, nachts in den Dünen */
+  glutgeist: { name: "Glutgeist", stufe: 56, bild: "img/gegner/irrlicht.jpg", hoehe: 110, lp: 85, tempo: 3.0, angriffswert: { nah: 0, fern: 0, magie: 60 }, abwehr: { nah: 55, fern: 45, magie: 70 }, r: 0.45,
+    angriff: { name: "Glutstrahl", art: "magie", schaden: [1, 12], takt: 2.5, reich: 5, aushol: 0 }, flackern: { alle: 7, dauer: 1.5 },
+    v2: { magie: 100, geschick: 30, staerke: 10, defense: 55, ticks: 5, abwehr: { nah: 10, fern: -5, magie: 35 } },
+    info: "Eine Gestalt aus Hitze und Licht. Sie flackert – und für einen Atemzug ist da nichts, was man treffen könnte.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [20, 40] }] }, { wurf: [{ g: "seelenlicht", chance: 40, anzahl: [2, 4] }] }, { wurf: [{ g: "erz_ureisen", chance: 6 }] }, { wurf: [{ g: "@selten", chance: 100 / 120 }] }] },
+  /** Die Sandmutter: Mini-Boss, Stufe 60, riesiger Sandkriecher – gräbt sich ein, Ansage-Felder (Kammer im Tempel, Instanz) */
+  sandmutter: { name: "Die Sandmutter", stufe: 60, bild: "img/echtzeit/bandit.webp", hoehe: 150, lp: 320, tempo: 2.6, angriffswert: { nah: 65, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 60, magie: 45 }, r: 0.9, boss: true, wiederkehr: 600,
+    angriff: { name: "Kieferbiss", art: "nah", schaden: [1, 16], takt: 2.5, reich: 2.2, aushol: 0 },
+    v2: { staerke: 110, geschick: 75, defense: 70, magie: 20, staerkeBonus: 30, ticks: 5, abwehr: { nah: 30, fern: 20, magie: 0 } },
+    info: "Die Mutter aller Sandkriecher. Sie schläft in der Kammer unter dem Tempel – bis jemand das Auge öffnet.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [300, 600] }] }, { wurf: [{ g: "chitin", chance: 100, anzahl: [3, 6] }] }, { wurf: [{ g: "erz_ureisen", chance: 25, anzahl: [2, 4] }] }, { wurf: [{ g: "stamm_weltenbaum", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 10 }, { g: "@episch", chance: 100 / 40 }, { g: "@legendaer", chance: 100 / 400 }] }, { stark: true, wurf: [{ g: "glutsteinschild", chance: 100 / 60 }] } /* Glutsteinschild: nur in der starken Fassung, 1 : 100 je Sieg (Entscheidung des Nutzers) */] },
+  /* ───── Phase 10 (#92): Smaragdküste, Kielmund, Klippenhöhlen (doku/konzepte/phase-10.md; Beute nach den Vorschlägen, beute.md folgt) ───── */
+  /** Strandkrabbe: Stufe 22, Panzer (stark gegen Nahkampf), Strände und Wrack */
+  strandkrabbe: { name: "Strandkrabbe", stufe: 22, bild: "img/echtzeit/bandit.webp", hoehe: 55, lp: 32, tempo: 2.8, angriffswert: { nah: 22, fern: 0, magie: 0 }, abwehr: { nah: 30, fern: 15, magie: 10 }, r: 0.4,
+    angriff: { name: "Zwicken", art: "nah", schaden: [1, 4], takt: 2, reich: 1.3, aushol: 0 },
+    v2: { staerke: 26, geschick: 22, defense: 30, magie: 1, ticks: 4, abwehr: { nah: 15, fern: 5, magie: -10 } },
+    info: "Eine Krabbe so groß wie ein Schild. Am Strand rennen sie seitwärts davon – bis eine zurückzwickt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 70, anzahl: [3, 8] }] }, { wurf: [{ g: "krebsschere", chance: 40 }] }, { wurf: [{ g: "fisch_hering_roh", chance: 20 }] }] },
+  /** Riesenkrabbe: Stufe 34, Panzer, Wrack und Buchten */
+  riesenkrabbe: { name: "Riesenkrabbe", stufe: 34, bild: "img/echtzeit/bandit.webp", hoehe: 85, lp: 65, tempo: 2.6, angriffswert: { nah: 35, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 25, magie: 15 }, r: 0.6,
+    angriff: { name: "Scherenschlag", art: "nah", schaden: [1, 7], takt: 2.5, reich: 1.5, aushol: 0 },
+    v2: { staerke: 45, geschick: 32, defense: 50, magie: 1, ticks: 5, abwehr: { nah: 25, fern: 10, magie: -10 } },
+    info: "Seepocken und Tang auf dem Panzer – die hier ist älter als das Wrack, unter dem sie wohnt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [6, 14] }] }, { wurf: [{ g: "krebsschere", chance: 40 }] }, { wurf: [{ g: "fisch_hering_roh", chance: 20 }] }, { wurf: [{ g: "@selten", chance: 100 / 400 }] }] },
+  /** Seevogel: Stufe 26, Sturzflug von den Klippen (wie der Moorrabe), schwach gegen Fernkampf */
+  seevogel: { name: "Seevogel", stufe: 26, bild: "img/echtzeit/bandit.webp", hoehe: 75, lp: 30, tempo: 4.6, angriffswert: { nah: 26, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 10, magie: 20 }, r: 0.4,
+    angriff: { name: "Sturzflug", art: "nah", schaden: [1, 5], takt: 2, reich: 1.4, aushol: 0 },
+    v2: { geschick: 30, staerke: 32, defense: 18, magie: 5, ticks: 4, abwehr: { nah: 0, fern: -10, magie: 5 } }, aggroReich: 6,
+    info: "Eine Möwe mit der Spannweite eines Mannes. Sie stößt herab, wo jemand ihren Klippen zu nahe kommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 60, anzahl: [2, 6] }] }, { wurf: [{ g: "federn", chance: 50, anzahl: [1, 3] }] }] },
+  /** Strandräuber mit Säbel: Stufe 30, wie Banditen, Wrack und Klippenhöhlen (G1, G3) */
+  strandraeuber_saebel: { name: "Strandräuber", stufe: 30, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 52, tempo: 3.2, angriffswert: { nah: 32, fern: 0, magie: 0 }, abwehr: { nah: 28, fern: 26, magie: 20 }, r: 0.4,
+    angriff: { name: "Säbelhieb", art: "nah", schaden: [1, 6], takt: 2.4, reich: 1.5, aushol: 0 },
+    v2: { staerke: 40, geschick: 36, defense: 28, magie: 5, ticks: 4, abwehr: { nah: 10, fern: 5, magie: 0 } },
+    info: "Was das Meer anspült, gehört ihnen – und was die Straße bringt, nehmen sie sich.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [6, 15] }] }, { wurf: [{ g: "stamm_eibe", chance: 15 }] }, { wurf: [{ g: "erz_kupfer", chance: 8 }, { g: "erz_eisen", chance: 7 }] }, { wurf: [{ g: "@selten:Schwert", chance: 100 / 160 }] }] },
+  /** Strandräuber mit Armbrust: Stufe 32, Fernkampf */
+  strandraeuber_armbrust: { name: "Strandräuber", stufe: 32, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 48, tempo: 3.0, angriffswert: { nah: 10, fern: 36, magie: 0 }, abwehr: { nah: 24, fern: 32, magie: 20 }, r: 0.4,
+    angriff: { name: "Bolzen", art: "fern", schaden: [1, 7], takt: 3, reich: 6, aushol: 0 },
+    v2: { fernkampf: 55, geschick: 25, staerke: 15, defense: 28, magie: 5, ticks: 6, abwehr: { nah: 0, fern: 15, magie: 0 } },
+    info: "Er hockt hinter Treibholz und wartet, bis jemand den Kopf hebt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [6, 15] }] }, { wurf: [{ g: "stamm_eibe", chance: 15 }] }, { wurf: [{ g: "erz_kupfer", chance: 8 }, { g: "erz_eisen", chance: 7 }] }, { wurf: [{ g: "@selten:Armbrust", chance: 100 / 160 }] }] },
+  /** Mangrovenlurch: Stufe 38, leichtes Gift, Mangroven */
+  mangrovenlurch: { name: "Mangrovenlurch", stufe: 38, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 75, tempo: 2.8, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 35, fern: 30, magie: 25 }, r: 0.55,
+    angriff: { name: "Schnappen", art: "nah", schaden: [1, 8], takt: 2.5, reich: 1.5, aushol: 0 }, gift: { chance: 0.2, jeSek: 1, dauer: 5 },
+    v2: { staerke: 55, geschick: 40, defense: 35, magie: 5, ticks: 5, abwehr: { nah: 10, fern: 5, magie: 0 } },
+    info: "Ein Lurch, halb so lang wie ein Boot, schleimig und still. Sein Biss brennt noch lange nach.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [8, 18] }] }, { wurf: [{ g: "fisch_seeaal_roh", chance: 15 }] }, { wurf: [{ g: "@selten", chance: 100 / 200 }] }] },
+  /** Der Wrackkapitän: Stufe 40, Geist, Mini-Boss in der Kajüte (Instanz wrack_kajuete, G3); ruft Strandräuber */
+  wrackkapitaen: { name: "Der Wrackkapitän", stufe: 40, bild: "img/echtzeit/bandit.webp", hoehe: 130, lp: 200, tempo: 3.0, angriffswert: { nah: 48, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 40, magie: 35 }, r: 0.5, untot: true, boss: true, wiederkehr: 600,
+    angriff: { name: "Geistersäbel", art: "nah", schaden: [1, 12], takt: 2.5, reich: 1.7, aushol: 0 },
+    v2: { staerke: 75, geschick: 55, defense: 45, magie: 30, staerkeBonus: 20, ticks: 5, abwehr: { nah: 20, fern: 20, magie: 0 } },
+    info: "Der Kapitän des Wracks. Er ist mit seinem Schiff untergegangen – und hat es nie verlassen.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [120, 250] }] }, { wurf: [{ g: "fisch_seeaal_roh", chance: 50, anzahl: [2, 4] }] }, { wurf: [{ g: "barren_eisen", chance: 30, anzahl: [3, 6] }] }, { wurf: [{ g: "@selten", chance: 100 / 12 }, { g: "@episch", chance: 100 / 60 }] }] },
+  /* ───── Süden (#126, doku/konzepte/sueden.md): Heckenhof bis Lehmfurt, Stufe 2–30; Beute nach beute.md (nur Fleisch neu) ───── */
+  /** Feldhase: Stufe 3, Heckenhof-Felder, Hasenfleisch für den Hasenbraten (S1) */
+  feldhase: { name: "Feldhase", stufe: 3, bild: "img/echtzeit/bandit.webp", hoehe: 40, lp: 8, tempo: 3.6, angriffswert: { nah: 3, fern: 0, magie: 0 }, abwehr: { nah: 3, fern: 2, magie: 2 }, r: 0.3, aggressiv: false,
+    angriff: { name: "Tritt", art: "nah", schaden: [0, 1], takt: 2.4, reich: 1.2, aushol: 0 },
+    v2: { geschick: 3, staerke: 3, defense: 2, magie: 1, ticks: 4, abwehr: { nah: 0, fern: 0, magie: 0 } },
+    info: "Ein brauner Feldhase. Er duckt sich in die Furche – bis man zu nah kommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 40, anzahl: [1, 2] }] }, { wurf: [{ g: "hasenfleisch", chance: 100 }] }] },
+  /** Krähenschwarm: Stufe 4, stiehlt Saat (S1), fliegt wie der Moorrabe */
+  kraehenschwarm: { name: "Krähenschwarm", stufe: 4, bild: "img/echtzeit/bandit.webp", hoehe: 60, lp: 10, tempo: 4.0, angriffswert: { nah: 4, fern: 0, magie: 0 }, abwehr: { nah: 3, fern: 1, magie: 3 }, r: 0.35,
+    angriff: { name: "Hacken", art: "nah", schaden: [1, 2], takt: 2, reich: 1.3, aushol: 0 },
+    v2: { geschick: 4, staerke: 4, defense: 3, magie: 1, ticks: 4, abwehr: { nah: 0, fern: -5, magie: 0 } }, aggroReich: 4,
+    info: "Ein Dutzend schwarze Krähen, die aufflattern und gleich wieder landen. Auf den Feldern des Heckenhofs bleibt kein Korn liegen.",
+    drops: [{ wurf: [{ g: "splitter", chance: 50, anzahl: [1, 3] }] }, { wurf: [{ g: "federn", chance: 30 }] }] },
+  /** Wildbienen-Schwarm: Stufe 8, greift nur an, wer den Stöcken zu nah kommt */
+  wildbienen_schwarm: { name: "Wildbienen-Schwarm", stufe: 8, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 14, tempo: 3.4, angriffswert: { nah: 9, fern: 0, magie: 0 }, abwehr: { nah: 10, fern: 4, magie: 6 }, r: 0.4,
+    angriff: { name: "Stiche", art: "nah", schaden: [1, 3], takt: 2, reich: 1.3, aushol: 0 },
+    v2: { geschick: 10, staerke: 8, defense: 6, magie: 1, ticks: 4, abwehr: { nah: 10, fern: -5, magie: 0 } }, aggroReich: 2,
+    info: "Eine summende Wolke über der Wiese. Wer die Stöcke in Ruhe lässt, den lassen sie in Ruhe.",
+    drops: [{ wurf: [{ g: "splitter", chance: 60, anzahl: [2, 4] }] }] },
+  /** Schilfkröte: Stufe 12, langsam und zäh – Trainingsgegner wie der Mooshocker (Schilfsee) */
+  schilfkroete: { name: "Schilfkröte", stufe: 12, bild: "img/echtzeit/bandit.webp", hoehe: 55, lp: 45, tempo: 1.4, angriffswert: { nah: 10, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 15, magie: 8 }, r: 0.45, aggressiv: false,
+    angriff: { name: "Kopfstoß", art: "nah", schaden: [1, 2], takt: 3, reich: 1.4, aushol: 0 },
+    v2: { geschick: 8, staerke: 10, defense: 22, magie: 1, angriffBonus: -20, ticks: 6, abwehr: { nah: 15, fern: 10, magie: -5 } },
+    info: "Eine Kröte mit einem Panzer aus Schlick und Schilf. Sie hat keine Eile – und hält viel aus.",
+    drops: [{ wurf: [{ g: "splitter", chance: 70, anzahl: [3, 6] }] }, { wurf: [{ g: "wurm", chance: 25, anzahl: [1, 3] }] }] },
+  /** Fuchs: Stufe 14, Erlengrund-Wald */
+  fuchs: { name: "Fuchs", stufe: 14, bild: "img/echtzeit/bandit.webp", hoehe: 50, lp: 24, tempo: 4.0, angriffswert: { nah: 14, fern: 0, magie: 0 }, abwehr: { nah: 10, fern: 8, magie: 8 }, r: 0.35,
+    angriff: { name: "Biss", art: "nah", schaden: [1, 3], takt: 2, reich: 1.3, aushol: 0 },
+    v2: { geschick: 16, staerke: 14, defense: 10, magie: 1, ticks: 4, abwehr: { nah: 0, fern: 0, magie: 0 } }, aggroReich: 4,
+    info: "Ein roter Fuchs, schlau und schnell. Er beißt lieber zuerst.",
+    drops: [{ wurf: [{ g: "splitter", chance: 75, anzahl: [3, 7] }] }, { wurf: [{ g: "leder_rau", chance: 20 }] }] },
+  /** Wildschwein: Stufe 18, Erlengrund-Wald, Wildschweinfleisch */
+  wildschwein: { name: "Wildschwein", stufe: 18, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 38, tempo: 3.4, angriffswert: { nah: 18, fern: 0, magie: 0 }, abwehr: { nah: 16, fern: 12, magie: 10 }, r: 0.5,
+    angriff: { name: "Hauer", art: "nah", schaden: [1, 4], takt: 2.4, reich: 1.4, aushol: 0 },
+    v2: { staerke: 22, geschick: 16, defense: 16, magie: 1, ticks: 5, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 4,
+    info: "Ein borstiger Keiler mit gelben Hauern. Er bricht durchs Unterholz wie ein Karren.",
+    drops: [{ wurf: [{ g: "splitter", chance: 80, anzahl: [4, 9] }] }, { wurf: [{ g: "wildschweinfleisch", chance: 70 }] }, { wurf: [{ g: "leder_rau", chance: 20 }] }] },
+  /** Wegelagerer mit Knüppel: Stufe 20, Südstraße, flieht */
+  wegelagerer_knueppel: { name: "Wegelagerer", stufe: 20, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 40, tempo: 3.0, angriffswert: { nah: 20, fern: 0, magie: 0 }, abwehr: { nah: 18, fern: 16, magie: 12 }, r: 0.4, fliehen: 0.25,
+    angriff: { name: "Knüppel", art: "nah", schaden: [1, 4], takt: 2.4, reich: 1.5, aushol: 0 },
+    v2: { staerke: 24, geschick: 20, defense: 18, magie: 1, ticks: 5, abwehr: { nah: 5, fern: 0, magie: 0 } },
+    info: "Ein Mann mit einem Knüppel und schlechten Absichten. Wenn es eng wird, ist er schneller weg als gekommen.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [5, 11] }] }, { wurf: [{ g: "brot", chance: 15 }, { g: "kleiner_heiltrank", chance: 8 }] }, { wurf: [{ g: "@selten", chance: 100 / 256 }] }] },
+  /** Wegelagerer mit Schleuder: Stufe 22, Fernkampf, flieht */
+  wegelagerer_schleuder: { name: "Wegelagerer", stufe: 22, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 36, tempo: 3.0, angriffswert: { nah: 6, fern: 22, magie: 0 }, abwehr: { nah: 14, fern: 20, magie: 12 }, r: 0.4, fliehen: 0.25,
+    angriff: { name: "Schleuderstein", art: "fern", schaden: [1, 4], takt: 2.6, reich: 5, aushol: 0 },
+    v2: { fernkampf: 28, geschick: 15, staerke: 10, defense: 16, magie: 1, ticks: 5, abwehr: { nah: 0, fern: 5, magie: 0 } },
+    info: "Er wirft Steine aus dem Gebüsch und rennt, sobald jemand auf ihn zukommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [5, 11] }] }, { wurf: [{ g: "brot", chance: 15 }, { g: "kleiner_heiltrank", chance: 8 }] }, { wurf: [{ g: "@selten:Bogen", chance: 100 / 256 }] }] },
+  /** Steinschlucker: Stufe 26, kleiner Golem, eigene Familie „stein“ (Steinbruch Lehmfurt) */
+  steinschlucker: { name: "Steinschlucker", familie: "stein", stufe: 26, bild: "img/echtzeit/bandit.webp", hoehe: 100, lp: 60, tempo: 1.8, angriffswert: { nah: 26, fern: 0, magie: 0 }, abwehr: { nah: 32, fern: 28, magie: 12 }, r: 0.55,
+    angriff: { name: "Faustschlag", art: "nah", schaden: [1, 5], takt: 3, reich: 1.6, aushol: 0 }, anfaellig: "wucht",
+    v2: { staerke: 32, geschick: 18, defense: 32, magie: 5, ticks: 6, abwehr: { nah: 20, fern: 15, magie: -10 } },
+    info: "Ein Klumpen aus Lehm und Bruchstein, der Erz frisst. Schläge mit Wucht bringen ihn ins Wanken.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [6, 14] }] }, { wurf: [{ g: "erz_kupfer", chance: 15, anzahl: [1, 2] }, { g: "erz_eisen", chance: 12, anzahl: [1, 2] }, { g: "erz_schwarzeisen", chance: 4 }] }, { wurf: [{ g: "@selten", chance: 100 / 200 }] }] },
+  /** Der Graupelz: Stufe 30, Alpha-Wolf (Mini-Gegner, kein Boss), mit zwei Wölfen in der Waldsenke; kommt nur alle 15 Minuten wieder (S8) */
+  graupelz: { name: "Der Graupelz", stufe: 30, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 110, tempo: 4.2, angriffswert: { nah: 32, fern: 0, magie: 0 }, abwehr: { nah: 28, fern: 24, magie: 20 }, r: 0.55, wiederkehr: 900,
+    angriff: { name: "Reißen", art: "nah", schaden: [1, 7], takt: 2.2, reich: 1.5, aushol: 0 },
+    v2: { staerke: 45, geschick: 38, defense: 28, magie: 5, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 6,
+    info: "Ein grauer Wolf, größer als die anderen, mit einer Narbe über dem Auge. Das Rudel folgt ihm.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [40, 80] }] }, { wurf: [{ g: "wolfsfleisch", chance: 100, anzahl: [1, 2] }] }, { wurf: [{ g: "wolfsfell", chance: 100 }] }, { wurf: [{ g: "@selten", chance: 100 / 24 }, { g: "@episch", chance: 100 / 240 }] }] },
+  /* Tiere zur Stimmung (friedlich wie die Kuh): Schafe am Heckenhof, Enten am Schilfsee */
+  schaf: { name: "Schaf", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 50, lp: 8, tempo: 1.4, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.4, aggressiv: false, wiederkehr: 30,
+    angriff: { name: "Stoß", art: "nah", schaden: [0, 1], takt: 3, reich: 1.3, aushol: 0 },
+    v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -60, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } },
+    info: "Ein wolliges Schaf vom Heckenhof. Es kaut und schaut.", drops: [{ wurf: [{ g: "garn", chance: 30, anzahl: [1, 2] }] }] },
+  ente: { name: "Ente", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 30, lp: 4, tempo: 2.0, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.25, aggressiv: false, wiederkehr: 30,
+    angriff: { name: "Schnabel", art: "nah", schaden: [0, 1], takt: 3, reich: 1.2, aushol: 0 },
+    v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -60, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } },
+    info: "Eine Ente vom Schilfsee. Sie watschelt, wohin sie will.", drops: [{ wurf: [{ g: "federn", chance: 30 }] }] },
+  /* ───── Vorbereitet (#130, Modelle vom Nutzer, Figuren baut sie): zehn Gegner der Ockerlande, Hochlande, Frostkrone und des Drachenarms nach beute.md.
+     Noch ohne Lager – die Gegnerplätze mit quelle „fehlt“ bleiben aus, bis Figuren die Modelle liefert und die Gebiete stehen. Neu ist nur Wildbret (Fleisch). ───── */
+  steppenwolf: { name: "Steppenwolf", stufe: 46, bild: "img/echtzeit/bandit.webp", hoehe: 85, lp: 90, tempo: 4.6, angriffswert: { nah: 46, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 35, magie: 30 }, r: 0.45,
+    angriff: { name: "Biss", art: "nah", schaden: [1, 9], takt: 2, reich: 1.4, aushol: 0 },
+    v2: { staerke: 78, geschick: 60, defense: 42, magie: 5, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 6,
+    info: "Ein sandfarbener Wolf der Steppe. Sie jagen zu zweit und kreisen ihre Beute ein.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [12, 24] }] }, { wurf: [{ g: "wolfsfleisch", chance: 50 }] }, { wurf: [{ g: "wolfsfell", chance: 40 }] }, { wurf: [{ g: "@selten", chance: 100 / 220 }] }] },
+  ockerhyaene: { name: "Ockerhyäne", stufe: 50, bild: "img/echtzeit/bandit.webp", hoehe: 80, lp: 100, tempo: 4.2, angriffswert: { nah: 50, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 38, magie: 32 }, r: 0.45,
+    angriff: { name: "Zerren", art: "nah", schaden: [1, 10], takt: 2.2, reich: 1.4, aushol: 0 }, gift: { chance: 0.15, jeSek: 1, dauer: 5 },
+    v2: { staerke: 85, geschick: 62, defense: 48, magie: 5, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 6,
+    info: "Eine gefleckte Hyäne der Ockerlande. Ihr Biss entzündet sich, wenn man ihn nicht auswäscht.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [14, 26] }] }, { wurf: [{ g: "wildbret", chance: 40 }] }, { wurf: [{ g: "leder_gehaertet", chance: 15 }] }, { wurf: [{ g: "@selten", chance: 100 / 200 }] }] },
+  hochlandwidder: { name: "Hochlandwidder", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 115, tempo: 3.6, angriffswert: { nah: 52, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 45, magie: 35 }, r: 0.5, aggressiv: false,
+    angriff: { name: "Rammstoß", art: "nah", schaden: [1, 11], takt: 2.6, reich: 1.5, aushol: 0 }, anfaellig: "wucht",
+    v2: { staerke: 90, geschick: 50, defense: 58, magie: 5, ticks: 5, abwehr: { nah: 15, fern: 5, magie: 0 } },
+    info: "Ein Widder mit geschwungenen Hörnern. Er lässt einen in Ruhe – bis man ihm zu nahe kommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [14, 26] }] }, { wurf: [{ g: "wildbret", chance: 70 }] }, { wurf: [{ g: "garn", chance: 40, anzahl: [4, 10] }] }, { wurf: [{ g: "@selten", chance: 100 / 220 }] }] },
+  hochlandbaer: { name: "Hochlandbär", stufe: 54, bild: "img/echtzeit/bandit.webp", hoehe: 140, lp: 150, tempo: 3.2, angriffswert: { nah: 56, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 48, magie: 38 }, r: 0.7,
+    angriff: { name: "Prankenhieb", art: "nah", schaden: [1, 13], takt: 2.8, reich: 1.7, aushol: 0 },
+    v2: { staerke: 100, geschick: 55, defense: 58, magie: 5, ticks: 5, abwehr: { nah: 10, fern: 5, magie: 0 } }, aggroReich: 5,
+    info: "Ein Bär mit silbrigem Fell. Im Hochland ist er der König, und er weiß es.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [16, 30] }] }, { wurf: [{ g: "wildbret", chance: 80, anzahl: [1, 2] }] }, { wurf: [{ g: "leder_gehaertet", chance: 25 }] }, { wurf: [{ g: "@selten", chance: 100 / 160 }] }] },
+  klippenadler: { name: "Klippenadler", stufe: 56, bild: "img/echtzeit/bandit.webp", hoehe: 90, lp: 95, tempo: 5.0, angriffswert: { nah: 58, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 30, magie: 45 }, r: 0.45,
+    angriff: { name: "Sturzflug", art: "nah", schaden: [1, 11], takt: 2, reich: 1.4, aushol: 0 },
+    v2: { geschick: 70, staerke: 88, defense: 45, magie: 10, ticks: 4, abwehr: { nah: 0, fern: -10, magie: 5 } }, aggroReich: 7,
+    info: "Ein Adler, der von den Klippen stößt. Gegen Pfeile ist er schutzlos – wenn man ihn trifft.",
+    drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [14, 28] }] }, { wurf: [{ g: "federn", chance: 60, anzahl: [2, 5] }] }, { wurf: [{ g: "@selten:Bogen", chance: 100 / 200 }] }] },
+  bergtroll: { name: "Bergtroll", stufe: 58, bild: "img/echtzeit/bandit.webp", hoehe: 190, lp: 190, tempo: 2.6, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 62, fern: 55, magie: 30 }, r: 0.8,
+    angriff: { name: "Keulenhieb", art: "nah", schaden: [1, 15], takt: 3, reich: 1.9, aushol: 0 }, spezial: { name: "Felsbrocken", reich: 6, laden: 1.5, radius: 1.5, schaden: [8, 16], alle: 12, art: "nah" },
+    v2: { staerke: 110, geschick: 45, defense: 65, magie: 5, ticks: 6, abwehr: { nah: 20, fern: 15, magie: -10 } },
+    info: "Ein Troll aus Stein und Moos. Wer ihm zu lange zusieht, bekommt einen Felsbrocken.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [25, 45] }] }, { wurf: [{ g: "erz_splittereisen", chance: 20, anzahl: [1, 3] }, { g: "erz_ureisen", chance: 6 }] }, { wurf: [{ g: "@selten", chance: 100 / 80 }, { g: "@episch", chance: 100 / 600 }] }] },
+  /* ───── #160 (Block H): die drei Hüter der Hochlande (Bosse nach #116, Mechaniken in shared/bosse.ts) und ihre Helfer – Dreieck aus stark und schwach (widerstand).
+     Werte der starken Fassung; Stufe nach den Boss-Regeln (#175) aus den Werten (kampfwerte.ts gegnerStufe): 150–200. Die Quest-Fassung (H4) ist schwächer (QUEST_MILDE in bosse.ts). Rüstung der Stufe 70 nur in der starken Fassung: der letzte Wurf (stark) – insgesamt 1 : 75 je Sieg, welches Teil gleich verteilt (Entscheidung des Nutzers, #160). Modelle vorerst Platzhalter (#159). ───── */
+  /** Grumhold: uralter Bergtroll in der Trollhalle – Steinhaut (Nahkampf −50 %), schwach gegen Magie; Stampf-Ring, Felsbrocken, bei halbem Leben zwei Felsbrocken-Wächter, die ihn heilen */
+  grumhold: { name: "Grumhold", stufe: 200, bild: "img/echtzeit/bandit.webp", hoehe: 230, lp: 440, tempo: 2.4, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 80, fern: 70, magie: 40 }, r: 1.0, boss: true, wiederkehr: 600, aggressiv: false, aggressivNach: { schalter: "grumhold_danach", weit: 8 } /* öffentlich nur gegen die, die H4 abgeschlossen haben */,
+    angriff: { name: "Keulenhieb", art: "nah", schaden: [1, 18], takt: 3, reich: 2.2, aushol: 0 }, widerstand: { nah: 0.5, magie: 1.5 },
+    v2: { staerke: 130, geschick: 85, defense: 82, magie: 20, staerkeBonus: 5 /* #175: Grundangriff höchstens ~15 % des Höchstlebens (Max Hit 15) */, ticks: 6, abwehr: { nah: 45, fern: 35, magie: -10 } },
+    info: "Der älteste Troll des Erzbergs, mit Steinplatten statt Haut. Klingen prallen an ihm ab – Zauber nicht.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [400, 800] }] }, { wurf: [{ g: "erz_ureisen", chance: 40, anzahl: [2, 5] }, { g: "erz_splittereisen", chance: 60, anzahl: [3, 6] }] }, { wurf: [{ g: "@episch", chance: 100 / 20 }, { g: "@legendaer", chance: 100 / 120 }] }, { stark: true, wurf: [{ g: "steinvogt_helm", chance: 100 / 75 / 3 }, { g: "steinvogt_platte", chance: 100 / 75 / 3 }, { g: "steinvogt_beinschienen", chance: 100 / 75 / 3 }] }] },
+  /** Felsbrocken-Wächter: stehen still, werfen Geröll und heilen Grumhold, bis man sie zerschlägt */
+  felsbrocken_waechter: { name: "Felsbrocken-Wächter", stufe: 64, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 90, tempo: 0, angriffswert: { nah: 0, fern: 50, magie: 0 }, abwehr: { nah: 50, fern: 50, magie: 20 }, r: 0.6,
+    angriff: { name: "Geröll", art: "fern", schaden: [1, 8], takt: 3, reich: 8, aushol: 0 }, heiler: { alle: 4, anteil: 0.03, radius: 14, nur: "grumhold" },
+    v2: { fernkampf: 70, defense: 60, magie: 10, ticks: 6, abwehr: { nah: 30, fern: 30, magie: -20 } },
+    info: "Ein Felsbrocken mit glühenden Adern. Solange er steht, wachsen Grumhold die Platten nach.", drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [10, 20] }] }] },
+  /** Die Sturmschwinge: Riesenadler auf dem Grauhorn – Wind lenkt Zauber ab (Magie −50 %), schwach gegen Fernkampf; kreist außer Nahkampf-Reichweite, Sturzflug, danach 4 s am Boden, Sturmböen schieben */
+  sturmschwinge: { name: "Die Sturmschwinge", stufe: 184, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 400, tempo: 4.5, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 55, magie: 75 }, r: 0.9, boss: true, wiederkehr: 600, aggressiv: false, aggressivNach: { schalter: "sturmschwinge_danach", weit: 8 } /* öffentlich nur gegen die, die H4 abgeschlossen haben */,
+    angriff: { name: "Krallen", art: "nah", schaden: [1, 16], takt: 2.4, reich: 1.6, aushol: 0 }, widerstand: { magie: 0.5, fern: 1.5 },
+    v2: { geschick: 90, staerke: 115, defense: 72, magie: 40, staerkeBonus: 8 /* #175: Max Hit 14 */, ticks: 4, abwehr: { nah: 30, fern: -5, magie: 45 } },
+    info: "Ein Adler, so groß wie eine Hütte. Wer auf dem Grauhorn steht, sieht zuerst ihren Schatten.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [400, 800] }] }, { wurf: [{ g: "federn", chance: 100, anzahl: [10, 20] }] }, { wurf: [{ g: "@episch", chance: 100 / 20 }, { g: "@legendaer", chance: 100 / 120 }] }, { stark: true, wurf: [{ g: "sturmfeder_haube", chance: 100 / 75 / 3 }, { g: "sturmfeder_wams", chance: 100 / 75 / 3 }, { g: "sturmfeder_hose", chance: 100 / 75 / 3 }] }] },
+  /** Die Frostwitwe: Eismagierin in der Eishöhle am Hochpass – Eiswand (Fernkampf −50 %), schwach gegen Nahkampf; Eisfelder (verlangsamen, Erstarren), Eissplitter-Wächter, Frostnova */
+  frostwitwe: { name: "Die Frostwitwe", stufe: 171, bild: "img/echtzeit/bandit.webp", hoehe: 150, lp: 380, tempo: 2.8, angriffswert: { nah: 0, fern: 0, magie: 75 }, abwehr: { nah: 55, fern: 80, magie: 80 }, r: 0.6, boss: true, wiederkehr: 600, aggressiv: false, aggressivNach: { schalter: "frostwitwe_danach", weit: 8 } /* öffentlich nur gegen die, die H4 abgeschlossen haben */,
+    angriff: { name: "Eislanze", art: "magie", schaden: [1, 16], takt: 3, reich: 6, aushol: 0 }, widerstand: { fern: 0.5, nah: 1.5 },
+    v2: { magie: 120, defense: 70, staerkeBonus: -16, ticks: 5, abwehr: { nah: -10, fern: 50, magie: 50 } } /* #175 Taktikerin: schwächere Grundangriffe (Max Hit 9, ~9 % des Höchstlebens) */,
+    info: "Sie wartet seit dem letzten Winter, der nie zu Ende ging. Pfeile zerspringen an ihrer Eiswand – eine Klinge nicht.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [400, 800] }] }, { wurf: [{ g: "seelenlicht", chance: 80, anzahl: [3, 8] }] }, { wurf: [{ g: "@episch", chance: 100 / 20 }, { g: "@legendaer", chance: 100 / 120 }] }, { stark: true, wurf: [{ g: "frostschleier_kapuze", chance: 100 / 75 / 3 }, { g: "frostschleier_robe", chance: 100 / 75 / 3 }, { g: "frostschleier_rock", chance: 100 / 75 / 3 }] }] },
+  /** Eissplitter-Wächter: kleine Eisfiguren, die die Frostwitwe ruft */
+  eissplitter_waechter: { name: "Eissplitter-Wächter", stufe: 62, bild: "img/echtzeit/bandit.webp", hoehe: 110, lp: 70, tempo: 2.4, angriffswert: { nah: 55, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 50, magie: 40 }, r: 0.5,
+    angriff: { name: "Eissplitter", art: "nah", schaden: [1, 10], takt: 2.5, reich: 1.5, aushol: 0 },
+    v2: { geschick: 70, staerke: 85, defense: 60, ticks: 4, abwehr: { nah: 20, fern: 20, magie: 0 } },
+    info: "Ein Splitter Eis mit Armen. Er zerspringt, wenn man fest genug zuschlägt.", drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [8, 16] }] }] },
+  tundraelch: { name: "Tundraelch", stufe: 62, bild: "img/echtzeit/bandit.webp", hoehe: 170, lp: 170, tempo: 3.8, angriffswert: { nah: 62, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 50, magie: 40 }, r: 0.7, aggressiv: false,
+    angriff: { name: "Geweih", art: "nah", schaden: [1, 14], takt: 2.6, reich: 1.8, aushol: 0 },
+    v2: { staerke: 108, geschick: 60, defense: 62, magie: 5, ticks: 5, abwehr: { nah: 10, fern: 5, magie: 0 } },
+    info: "Ein Elch mit einem Geweih wie ein Baum. Friedlich – solange man ihn friedlich lässt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [18, 34] }] }, { wurf: [{ g: "wildbret", chance: 90, anzahl: [1, 3] }] }, { wurf: [{ g: "leder_gehaertet", chance: 30 }] }, { wurf: [{ g: "@selten", chance: 100 / 180 }] }] },
+  frostwolf: { name: "Frostwolf", stufe: 64, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 140, tempo: 4.8, angriffswert: { nah: 64, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 48, magie: 50 }, r: 0.5,
+    angriff: { name: "Eisbiss", art: "nah", schaden: [1, 13], takt: 2, reich: 1.4, aushol: 0 },
+    v2: { staerke: 112, geschick: 80, defense: 58, magie: 20, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 10 } }, aggroReich: 7,
+    info: "Ein weißer Wolf der Frostkrone. Sein Atem gefriert in der Luft.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [18, 34] }] }, { wurf: [{ g: "wolfsfleisch", chance: 50 }] }, { wurf: [{ g: "wolfsfell", chance: 50 }] }, { wurf: [{ g: "seelenlicht", chance: 15, anzahl: [1, 3] }] }, { wurf: [{ g: "@selten", chance: 100 / 150 }] }] },
+  drakling: { name: "Drakling", stufe: 66, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 160, tempo: 3.6, angriffswert: { nah: 60, fern: 0, magie: 66 }, abwehr: { nah: 62, fern: 60, magie: 55 }, r: 0.6, /* Bodengegner – der Drakling fliegt nicht (Entscheidung) */
+    angriff: { name: "Glutatem", art: "magie", schaden: [1, 14], takt: 2.6, reich: 4, aushol: 0 },
+    v2: { staerke: 90, geschick: 60, defense: 64, magie: 115, ticks: 5, abwehr: { nah: 15, fern: 15, magie: 5 } }, aggroReich: 6,
+    info: "Ein junger Drache, noch ohne Flügel, die ihn tragen. Sein Atem brennt trotzdem.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [24, 44] }] }, { wurf: [{ g: "erz_ureisen", chance: 12, anzahl: [1, 2] }] }, { wurf: [{ g: "seelenlicht", chance: 30, anzahl: [2, 4] }] }, { wurf: [{ g: "@selten", chance: 100 / 90 }, { g: "@episch", chance: 100 / 500 }] }] },
+  eisgolem: { name: "Eisgolem", familie: "stein", stufe: 72, bild: "img/echtzeit/bandit.webp", hoehe: 180, lp: 230, tempo: 2.2, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 75, fern: 70, magie: 40 }, r: 0.8,
+    angriff: { name: "Eisfaust", art: "nah", schaden: [1, 17], takt: 3, reich: 1.8, aushol: 0 }, anfaellig: "wucht",
+    v2: { staerke: 125, geschick: 40, defense: 80, magie: 10, ticks: 6, abwehr: { nah: 25, fern: 20, magie: -15 } },
+    info: "Ein Golem aus blauem Eis. Hämmer und Keulen sprengen ihn, Klingen gleiten ab.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [30, 55] }] }, { wurf: [{ g: "erz_ureisen", chance: 20, anzahl: [1, 3] }] }, { wurf: [{ g: "golemstein", chance: 40, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 70 }, { g: "@episch", chance: 100 / 400 }] }] },
+} as Record<string, MonsterDef>);
+
+
+
+
+
 /** Trefferchance aus Angriffs- und Verteidigungswert (beide würfeln 0 bis Wert, der höhere Angriffswurf trifft) */
 export const trefferchance = (a: number, d: number) => (a > d ? 1 - (d + 2) / (2 * (a + 1)) : a / (2 * (d + 1)));
+
+/* ───────── Entscheidung des Nutzers (27.11., KANON 0eeea8e8b, #175): die Stufe jedes Gegners wird aus seinen Werten errechnet (kampfwerte.ts gegnerStufe) –
+   ein von Hand gesetztes stufe zählt nicht mehr, sobald der Gegner Werte (v2) hat. Nur die Anzeige; das Gleichgewicht bleibt. ───────── */
+/** Stufe eines Gegners: aus seinen Werten; lp = sein Höchstleben (die Quest-Fassung eines Bosses hat weniger – Schnappschuss: max); ohne v2 die gesetzte Stufe */
+export const stufeVon = (art: string, lp?: number): number => { const M = MONSTER[art]; if (!M) return 1; return M.v2 ? gegnerStufe(M.v2, lp ?? M.lp) : M.stufe ?? 1; };
+/* die gesetzte Stufe bleibt als planStufe (Stufe des Gebiets im Konzept, für die Planung und die Inhaltstests) */
+for (const art of Object.keys(MONSTER)) { const M = MONSTER[art]; if (M.v2) { M.planStufe = M.stufe; M.stufe = stufeVon(art); } }
+/* ───── Ausgabe 1: Gegnerfamilien für die Quest-Waffen (gegen: wild / untot, Quests 9d3174ba2). Hier gesetzt und nicht im Eintrag selbst –
+   Werkzeuge der Welt (gegnerplaetze) und Tests lesen die Einträge als Text und erwarten „name:“ vorn. ───── */
+const FAMILIEN_AUSGABE1: Record<string, string[]> = {
+  wild: ["heidewolf", "steppenwolf", "rudelfuehrer", "hochlandbaer", "hochlandwidder", "ockerhyaene", "frostwolf"],
+  untot: ["wiedergaenger", "grabwaechter", "grauer_hauptmann", "rabenpriester_akoluth", "rabenpriester_akoluth_speer", "oberster_rabenpriester"],
+};
+for (const [familie, arten] of Object.entries(FAMILIEN_AUSGABE1)) for (const art of arten) { const M = MONSTER[art] as { familie?: string } | undefined;
+  if (!M) throw new Error("FAMILIEN_AUSGABE1: unbekannter Gegner " + art); M.familie = familie; }
+/* ───── Ausgabe 1 (Entscheidung des Nutzers, 27.11.): Legendär und Mythisch als seltene Drops – je Kill ein eigener Wurf zusätzlich zu den bestehenden.
+   Starke Gegner (Kampfstufe ≥ 100) Legendär 1:400, die drei stärksten zusätzlich Mythisch 1:1.500; mittlere (80–99) Legendär 1:600;
+   Bosse (starke Fassung): die sechs mit Legendär zusätzlich Mythisch 1:400, Tjark, Wrackkapitän und Federmutter neu Legendär 1:150. Unter 80 nichts. ───── */
+const LEGENDAER_DROPS: [string[], string, number, boolean?][] = [
+  [["eisgolem", "bergtroll", "tundraelch", "frostwolf", "drakling", "turmwaechter", "hochlandbaer"], "@legendaer", 400],
+  [["eisgolem", "bergtroll", "tundraelch"], "@mythisch", 1500],
+  [["kerkermeister", "grabwaechter", "karawanenraeuber_saebel", "karawanenraeuber_bogen", "hochlandwidder", "klippenadler", "glutskorpion", "ockerhyaene", "glutgeist", "eissplitter_waechter"], "@legendaer", 600],
+  [["grumhold", "sturmschwinge", "frostwitwe", "sandmutter", "oberster_rabenpriester", "grauer_hauptmann"], "@mythisch", 400, true],
+  [["tjark", "wrackkapitaen", "federmutter"], "@legendaer", 150, true],
+];
+for (const [arten, g, eins, stark] of LEGENDAER_DROPS) for (const art of arten) { const M = MONSTER[art]; if (!M) throw new Error("LEGENDAER_DROPS: unbekannter Gegner " + art);
+  (M.drops ??= []).push({ ...(stark ? { stark: true } : {}), wurf: [{ g, chance: 100 / eins }] }); }

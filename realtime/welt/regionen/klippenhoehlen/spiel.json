@@ -1,0 +1,84 @@
+{
+ "start": [
+  [
+   32,
+   57
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "klippenhoehlen_hinaus",
+   "art": "eingang",
+   "x": 32,
+   "y": 61.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinaus zur Klippe.",
+    "tat": "klippenhoehle_hinaus",
+    "knopf": "Hinaus",
+    "ziel": [
+     6180,
+     7092
+    ]
+   }
+  },
+  {
+   "id": "gezeitenbecken",
+   "art": "lesen",
+   "x": 22.5,
+   "y": 30,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Gezeitenbecken. Bei Flut läuft es voll, bei Ebbe glitzern Muscheln am Grund."
+   }
+  },
+  {
+   "id": "schmugglerlager",
+   "art": "lesen",
+   "x": 32,
+   "y": 55,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Kisten mit fremden Siegeln – Schmuggelgut, und frisch."
+   }
+  },
+  {
+   "id": "rettungsboot",
+   "art": "lesen",
+   "x": 46,
+   "y": 21.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rettungsboot mit der Aufschrift „Morgenstern“. Dahinter eine Tür aus Schiffsplanken."
+   }
+  },
+  {
+   "id": "kajuete_tuer",
+   "art": "eingang",
+   "x": 50,
+   "y": 13.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Tür aus Schiffsplanken, mit Muscheln bewachsen. Dahinter: die Kajüte des Kapitäns.",
+    "tat": "kajuete",
+    "knopf": "Die Kajüte betreten",
+    "ziel": [
+     11504,
+     9627
+    ]
+   }
+  }
+ ]
+}

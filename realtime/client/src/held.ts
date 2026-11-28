@@ -32,8 +32,8 @@ export interface EditorAngaben { breite: number; hoehe: number; kopf: { y: numbe
 export interface FigurAngaben { bezug: { haut: number; haar: number; bart: number } }
 const BASIS = "../img/figuren-fabrik/";
 const json = new Map<string, Promise<unknown>>(), bilder = new Map<string, Promise<HTMLImageElement>>(), gefaerbt = new Map<string, HTMLCanvasElement>();
-const holeJson = <T>(url: string): Promise<T> => { let p = json.get(url); if (!p) { p = fetch(url).then((r) => { if (!r.ok) throw new Error(url); return r.json(); }); json.set(url, p); } return p as Promise<T>; };
-export function bildLaden(url: string): Promise<HTMLImageElement> { let p = bilder.get(url); if (!p) { p = new Promise((ok, fehler) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => fehler(new Error(url)); i.src = url; }); bilder.set(url, p); } return p; }
+const holeJson = <T>(url: string): Promise<T> => { let p = json.get(url); if (!p) { const q: Promise<unknown> = fetch(url).then((r) => { if (!r.ok) throw new Error(url); return r.json(); }).catch((e) => { if (json.get(url) === q) json.delete(url); throw e; }); p = q; json.set(url, q); } return p as Promise<T>; }; /* #166: Fehlschläge nicht merken */
+export function bildLaden(url: string): Promise<HTMLImageElement> { let p = bilder.get(url); if (!p) { const q: Promise<HTMLImageElement> = new Promise((ok, fehler) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => { if (bilder.get(url) === q) bilder.delete(url); fehler(new Error(url)); }; i.src = url; }); p = q; bilder.set(url, q); } return p; } /* #166: Fehlschläge nicht merken */
 export const editorAngaben = (g: string) => holeJson<EditorAngaben>(`${BASIS}held.${g}/editor/editor.json`);
 export const figurAngaben = (g: string) => holeJson<FigurAngaben>(`${BASIS}held.${g}/held.${g}.json`);
 

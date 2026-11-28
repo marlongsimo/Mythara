@@ -1,0 +1,123 @@
+{
+ "fl_186_198": {
+  "name": "Das Grenzland",
+  "land": 29010,
+  "leer_anteil": 0.74,
+  "wegfelder": 0,
+  "weg_max": null,
+  "weg_mittel": null,
+  "weg_ueber_12": null,
+  "objekte": 107,
+  "bewuchs": 107
+ },
+ "westried": {
+  "name": "Die Riedwiesen",
+  "land": 32351,
+  "leer_anteil": 0.478,
+  "wegfelder": 417,
+  "weg_max": 259.6,
+  "weg_mittel": 205.7,
+  "weg_ueber_12": 1.0,
+  "objekte": 153,
+  "bewuchs": 153
+ },
+ "nordwald": {
+  "name": "Der Nordwald",
+  "land": 15612,
+  "leer_anteil": 0.004,
+  "wegfelder": 772,
+  "weg_max": 28.0,
+  "weg_mittel": 5.7,
+  "weg_ueber_12": 0.135,
+  "objekte": 732,
+  "bewuchs": 601
+ },
+ "nordsaum": {
+  "name": "Der Nordsaum",
+  "land": 22712,
+  "leer_anteil": 0.007,
+  "wegfelder": 1047,
+  "weg_max": 258.2,
+  "weg_mittel": 101.7,
+  "weg_ueber_12": 0.855,
+  "objekte": 1079,
+  "bewuchs": 1072
+ },
+ "osthof": {
+  "name": "Der Osthof",
+  "land": 5748,
+  "leer_anteil": 0.009,
+  "wegfelder": 396,
+  "weg_max": 31.4,
+  "weg_mittel": 7.4,
+  "weg_ueber_12": 0.174,
+  "objekte": 227,
+  "bewuchs": 146
+ },
+ "obstwiesen": {
+  "name": "Die Obstwiesen",
+  "land": 5850,
+  "leer_anteil": 0.026,
+  "wegfelder": 139,
+  "weg_max": 18.4,
+  "weg_mittel": 6.9,
+  "weg_ueber_12": 0.216,
+  "objekte": 208,
+  "bewuchs": 163
+ },
+ "osthang": {
+  "name": "Der Osthang",
+  "land": 22129,
+  "leer_anteil": 0.005,
+  "wegfelder": 399,
+  "weg_max": 24.1,
+  "weg_mittel": 12.7,
+  "weg_ueber_12": 0.571,
+  "objekte": 986,
+  "bewuchs": 916
+ },
+ "weidenhain": {
+  "name": "Weidenhain",
+  "land": 10134,
+  "leer_anteil": 0.0,
+  "wegfelder": 1733,
+  "weg_max": 16.5,
+  "weg_mittel": 3.3,
+  "weg_ueber_12": 0.008,
+  "objekte": 342,
+  "bewuchs": 200
+ },
+ "waldweg": {
+  "name": "Der Kreuzwald",
+  "land": 45708,
+  "leer_anteil": 0.001,
+  "wegfelder": 3444,
+  "weg_max": 180.3,
+  "weg_mittel": 77.8,
+  "weg_ueber_12": 0.951,
+  "objekte": 2262,
+  "bewuchs": 2256
+ },
+ "waldmark": {
+  "name": "Waldmark",
+  "land": 5715,
+  "leer_anteil": 0.0,
+  "wegfelder": 385,
+  "weg_max": 6.1,
+  "weg_mittel": 3.2,
+  "weg_ueber_12": 0.0,
+  "objekte": 290,
+  "bewuchs": 186
+ },
+ "westmark": {
+  "name": "Die Westmark",
+  "land": 10604,
+  "leer_anteil": 0.013,
+  "wegfelder": 806,
+  "weg_max": 50.2,
+  "weg_mittel": 17.6,
+  "weg_ueber_12": 0.594,
+  "objekte": 333,
+  "bewuchs": 306
+ }
+}

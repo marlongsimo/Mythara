@@ -1,0 +1,218 @@
+{
+ "start": [
+  [
+   240,
+   224
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 97,
+    "y0": 296,
+    "x1": 98,
+    "y1": 297
+   },
+   {
+    "art": "rechteck",
+    "x0": 92,
+    "y0": 294,
+    "x1": 93,
+    "y1": 295
+   },
+   {
+    "art": "rechteck",
+    "x0": 96,
+    "y0": 290,
+    "x1": 97,
+    "y1": 291
+   },
+   {
+    "art": "rechteck",
+    "x0": 121,
+    "y0": 361,
+    "x1": 122,
+    "y1": 362
+   },
+   {
+    "art": "rechteck",
+    "x0": 116,
+    "y0": 359,
+    "x1": 117,
+    "y1": 360
+   },
+   {
+    "art": "rechteck",
+    "x0": 121,
+    "y0": 356,
+    "x1": 122,
+    "y1": 357
+   },
+   {
+    "art": "rechteck",
+    "x0": 174,
+    "y0": 378,
+    "x1": 175,
+    "y1": 379
+   },
+   {
+    "art": "rechteck",
+    "x0": 168,
+    "y0": 376,
+    "x1": 169,
+    "y1": 377
+   },
+   {
+    "art": "rechteck",
+    "x0": 173,
+    "y0": 372,
+    "x1": 174,
+    "y1": 373
+   },
+   {
+    "art": "rechteck",
+    "x0": 123,
+    "y0": 316,
+    "x1": 124,
+    "y1": 317
+   },
+   {
+    "art": "rechteck",
+    "x0": 120,
+    "y0": 317,
+    "x1": 121,
+    "y1": 318
+   },
+   {
+    "art": "rechteck",
+    "x0": 119,
+    "y0": 314,
+    "x1": 120,
+    "y1": 315
+   },
+   {
+    "art": "rechteck",
+    "x0": 122,
+    "y0": 312,
+    "x1": 123,
+    "y1": 313
+   },
+   {
+    "art": "rechteck",
+    "x0": 52,
+    "y0": 282,
+    "x1": 53,
+    "y1": 283
+   },
+   {
+    "art": "rechteck",
+    "x0": 47,
+    "y0": 283,
+    "x1": 48,
+    "y1": 284
+   },
+   {
+    "art": "rechteck",
+    "x0": 49,
+    "y0": 279,
+    "x1": 50,
+    "y1": 280
+   }
+  ],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "rast_ockerlande_4",
+   "art": "lesen",
+   "x": 11.5,
+   "y": 270.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz an der Karawanenstraße. Asche, Dattelkerne, ein umgestürzter Krug."
+   }
+  },
+  {
+   "id": "tafelrast_bankkiste",
+   "art": "lesen",
+   "x": 100,
+   "y": 323.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste von Tafelrast, im Fels verankert. Was du einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "tafelrast_steinmetz",
+   "art": "lesen",
+   "x": 97.5,
+   "y": 319.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkstatt der Steinbrecher von Tafelrast: Keile, Hämmer und eine Esse, die nie ausgeht."
+   }
+  },
+  {
+   "id": "tafelrast",
+   "art": "lesen",
+   "x": 99.5,
+   "y": 319,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Tafelrast. Wer zum Roten Tisch hinauf will, rastet hier – und wer vom Steinbruch kommt, trinkt hier seinen Staub weg."
+   }
+  },
+  {
+   "id": "ockerhoehle_eingang",
+   "art": "lesen",
+   "x": 160,
+   "y": 387.72,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spalt in der Flanke des Roten Tisches. Drinnen glänzt es schwarz – Ureisen, sagen die Steinbrecher, und etwas, das darüber wacht.",
+    "tat": "ockerhoehle",
+    "knopf": "Hineingehen",
+    "ziel": [
+     11952,
+     9627
+    ]
+   }
+  },
+  {
+   "id": "fischplatz_wasserloch_4",
+   "art": "lesen",
+   "x": 172.5,
+   "y": 120.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wasserloch in der Lehmsteppe. Erstaunlich, was hier im trüben Wasser schwimmt.",
+    "fisch": "wels",
+    "stufe": 45
+   }
+  }
+ ],
+ "senken": [
+  {
+   "x": 121.6,
+   "y": 315.4,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 49.7,
+   "y": 281.9,
+   "r": 5,
+   "tiefe": 1.1
+  }
+ ]
+}

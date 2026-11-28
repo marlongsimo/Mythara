@@ -1,0 +1,603 @@
+{
+ "hinweis": "Ortsnamen und Grenzen (#90) für die Weltkarte und den Schriftzug beim Betreten (Oberfläche). gebiete: Grenze [x0, y0, x1, y1] und Schriftpunkt in Weltfeldern; orte: einzelne Namen auf der Karte.",
+ "gebiete": [
+  {
+   "id": "waldmark",
+   "name": "Die Waldmark",
+   "art": "Stadt",
+   "untertitel": "Die Zuflucht der Wanderer",
+   "grenze": [
+    6400,
+    6400,
+    6496,
+    6464
+   ],
+   "schrift": [
+    6448,
+    6432
+   ]
+  },
+  {
+   "id": "weidenhain",
+   "name": "Weidenhain",
+   "art": "Dorf",
+   "untertitel": "Das Dorf am Mühlgraben",
+   "grenze": [
+    6400,
+    6656,
+    6528,
+    6752
+   ],
+   "schrift": [
+    6464,
+    6704
+   ]
+  },
+  {
+   "id": "osthof",
+   "name": "Der Osthof",
+   "art": "Gehöft",
+   "untertitel": "Felder und Windmühle östlich der Waldmark",
+   "grenze": [
+    6496,
+    6400,
+    6592,
+    6464
+   ],
+   "schrift": [
+    6544,
+    6432
+   ]
+  },
+  {
+   "id": "waldweg",
+   "name": "Der Kreuzwald",
+   "art": "Wald",
+   "untertitel": "Steinwege nach Westen und Osten, der Feldweg nach Weidenhain",
+   "grenze": [
+    6336,
+    6464,
+    6592,
+    6656
+   ],
+   "schrift": [
+    6464,
+    6560
+   ]
+  },
+  {
+   "id": "nordwald",
+   "name": "Der Nordwald",
+   "art": "Wald",
+   "untertitel": "Köhlerlichtung, die verfallene Feste und ein alter Friedhof",
+   "grenze": [
+    6272,
+    6336,
+    6400,
+    6464
+   ],
+   "schrift": [
+    6336,
+    6400
+   ]
+  },
+  {
+   "id": "rabenmoor",
+   "name": "Rabenmoor",
+   "art": "Dorf",
+   "untertitel": "Das Dorf im Schwarzmoor",
+   "grenze": [
+    6272,
+    6656,
+    6400,
+    6752
+   ],
+   "schrift": [
+    6336,
+    6704
+   ]
+  },
+  {
+   "id": "obstwiesen",
+   "name": "Die Obstwiesen",
+   "art": "Landschaft",
+   "untertitel": "Apfelgärten östlich von Weidenhain",
+   "grenze": [
+    6528,
+    6656,
+    6592,
+    6752
+   ],
+   "schrift": [
+    6560,
+    6704
+   ]
+  },
+  {
+   "id": "westmark",
+   "name": "Die Westmark",
+   "art": "Landschaft",
+   "untertitel": "Wiesen und karges Moor am Westweg",
+   "grenze": [
+    6272,
+    6464,
+    6336,
+    6656
+   ],
+   "schrift": [
+    6304,
+    6560
+   ]
+  },
+  {
+   "id": "westried",
+   "name": "Die Riedwiesen",
+   "art": "Landschaft",
+   "untertitel": "Wiesen am Westrand, im Süden beginnt das Moor",
+   "grenze": [
+    6144,
+    6336,
+    6272,
+    6592
+   ],
+   "schrift": [
+    6208,
+    6464
+   ]
+  },
+  {
+   "id": "aschenwerth",
+   "name": "Aschenwerth",
+   "art": "Ruineninsel",
+   "untertitel": "Die Ruineninsel im Sumpf – nur über die alte Brücke",
+   "grenze": [
+    6144,
+    6592,
+    6272,
+    6752
+   ],
+   "schrift": [
+    6208,
+    6672
+   ]
+  },
+  {
+   "id": "nordsaum",
+   "name": "Der Nordsaum",
+   "art": "Wald",
+   "untertitel": "Grenzwald im Norden, der Uferweg zum alten Friedhof",
+   "grenze": [
+    6400,
+    6336,
+    6784,
+    6400
+   ],
+   "schrift": [
+    6592,
+    6368
+   ]
+  },
+  {
+   "id": "osthang",
+   "name": "Der Osthang",
+   "art": "Landschaft",
+   "untertitel": "Hügelland am Steinweg nach Graufurt",
+   "grenze": [
+    6592,
+    6400,
+    6656,
+    6752
+   ],
+   "schrift": [
+    6624,
+    6576
+   ]
+  },
+  {
+   "id": "graufurt",
+   "name": "Graufurt",
+   "art": "Stadt",
+   "untertitel": "Die Stadt am grauen Fluss",
+   "grenze": [
+    6656,
+    6400,
+    6784,
+    6752
+   ],
+   "schrift": [
+    6720,
+    6576
+   ]
+  },
+  {
+   "id": "ostufer",
+   "name": "Das Ostufer",
+   "art": "Landschaft",
+   "untertitel": "Jenseits des grauen Flusses – nur mit der Fähre",
+   "grenze": [
+    6784,
+    6400,
+    6912,
+    6752
+   ],
+   "schrift": [
+    6848,
+    6576
+   ]
+  }
+ ],
+ "orte": [
+  {
+   "name": "Kreuzweg",
+   "art": "Kreuzung",
+   "x": 6506,
+   "y": 6508
+  },
+  {
+   "name": "Heidrast",
+   "art": "Dorf",
+   "x": 6596,
+   "y": 5872
+  },
+  {
+   "name": "Grauwacht",
+   "art": "Stadt",
+   "x": 6706,
+   "y": 5740
+  },
+  {
+   "name": "Hügelgräber",
+   "art": "Ort",
+   "x": 6462,
+   "y": 5770
+  },
+  {
+   "name": "Grenzposten",
+   "art": "Ruine",
+   "x": 6640,
+   "y": 6112
+  },
+  {
+   "name": "Kernbaum-Tal",
+   "art": "Tal",
+   "x": 6236,
+   "y": 5778
+  },
+  {
+   "name": "Glutbrunn",
+   "art": "Stadt",
+   "x": 7160,
+   "y": 6950
+  },
+  {
+   "name": "Salzpfanne",
+   "art": "Ort",
+   "x": 7330,
+   "y": 6642
+  },
+  {
+   "name": "Der versandete Tempel",
+   "art": "Ort",
+   "x": 7112,
+   "y": 6680
+  },
+  {
+   "name": "Oase",
+   "art": "Ort",
+   "x": 7256,
+   "y": 6800
+  },
+  {
+   "name": "Ende des Grases",
+   "art": "Wegmarke",
+   "x": 6914,
+   "y": 6742
+  },
+  {
+   "name": "Kielmund",
+   "art": "Stadt",
+   "x": 6426,
+   "y": 7314
+  },
+  {
+   "name": "Möwenbucht",
+   "art": "Dorf",
+   "x": 6214,
+   "y": 7160
+  },
+  {
+   "name": "Leuchtturm",
+   "art": "Ort",
+   "x": 6176,
+   "y": 7036
+  },
+  {
+   "name": "Kräuterhof",
+   "art": "Ort",
+   "x": 6418,
+   "y": 7064
+  },
+  {
+   "name": "Mangroven",
+   "art": "Landschaft",
+   "x": 6508,
+   "y": 7590
+  },
+  {
+   "name": "Gehöft",
+   "art": "Ort",
+   "x": 6150,
+   "y": 6236
+  },
+  {
+   "name": "Mühle am Bach",
+   "art": "Ort",
+   "x": 6224,
+   "y": 6282
+  },
+  {
+   "name": "Köhlerhütte",
+   "art": "Ort",
+   "x": 6188,
+   "y": 6262
+  },
+  {
+   "name": "Schrein",
+   "art": "Ort",
+   "x": 6420,
+   "y": 6300
+  },
+  {
+   "name": "Alte Wachruine",
+   "art": "Ruine",
+   "x": 6320,
+   "y": 6232
+  },
+  {
+   "name": "Die Fahlen Weiten",
+   "art": "Landschaft",
+   "x": 6450,
+   "y": 5700
+  },
+  {
+   "name": "Die Glutsande",
+   "art": "Landschaft",
+   "x": 7200,
+   "y": 6750
+  },
+  {
+   "name": "Die Smaragdküste",
+   "art": "Landschaft",
+   "x": 6330,
+   "y": 7150
+  },
+  {
+   "name": "Die Furtklamm",
+   "art": "Ort",
+   "x": 6684,
+   "y": 6443
+  },
+  {
+   "name": "Heckenhof",
+   "art": "Gehöft",
+   "x": 6490,
+   "y": 6812
+  },
+  {
+   "name": "Summweide",
+   "art": "Ort",
+   "x": 6418,
+   "y": 6904
+  },
+  {
+   "name": "Schilfsee",
+   "art": "Ort",
+   "x": 6450,
+   "y": 7188
+  },
+  {
+   "name": "Erlengrund",
+   "art": "Dorf",
+   "x": 6392,
+   "y": 7004
+  },
+  {
+   "name": "Lehmfurt",
+   "art": "Dorf",
+   "x": 6466,
+   "y": 7244
+  },
+  {
+   "name": "Wegkapelle am Kreuzstein",
+   "art": "Ort",
+   "x": 6476,
+   "y": 7098
+  },
+  {
+   "name": "Halber Weg",
+   "art": "Wegmarke",
+   "x": 6474,
+   "y": 7010
+  },
+  {
+   "name": "Fährtenlager",
+   "art": "Ort",
+   "x": 6608,
+   "y": 6834
+  },
+  {
+   "name": "Lämmerhang",
+   "art": "Ort",
+   "x": 6292,
+   "y": 7096
+  },
+  {
+   "name": "Distelhof",
+   "art": "Gehöft",
+   "x": 6560,
+   "y": 6966
+  },
+  {
+   "name": "Der Turm mit dem grünen Licht",
+   "art": "Ort",
+   "x": 6840,
+   "y": 6518
+  },
+  {
+   "name": "Haferstedt",
+   "art": "Dorf",
+   "x": 6215,
+   "y": 6980
+  },
+  {
+   "name": "Netzbucht",
+   "art": "Ort",
+   "x": 6146,
+   "y": 6930
+  },
+  {
+   "name": "Sandquell",
+   "art": "Dorf",
+   "x": 7384,
+   "y": 6740
+  },
+  {
+   "name": "Nordstrand",
+   "art": "Ort",
+   "x": 7450,
+   "y": 6500
+  },
+  {
+   "name": "Die Hochlande",
+   "art": "Landschaft",
+   "x": 7240,
+   "y": 5860
+  },
+  {
+   "name": "Steinhag",
+   "art": "Stadt",
+   "x": 6990,
+   "y": 5892
+  },
+  {
+   "name": "Hohe Alm",
+   "art": "Gehöft",
+   "x": 7190,
+   "y": 6000
+  },
+  {
+   "name": "Erzberg-Bergwerk",
+   "art": "Ort",
+   "x": 7128,
+   "y": 5808
+  },
+  {
+   "name": "Passwacht",
+   "art": "Ort",
+   "x": 6962,
+   "y": 5608
+  },
+  {
+   "name": "Einsiedelei",
+   "art": "Ort",
+   "x": 7340,
+   "y": 5664
+  },
+  {
+   "name": "Die Furt",
+   "art": "Wegmarke",
+   "x": 6800,
+   "y": 5761
+  },
+  {
+   "name": "Grauhorn",
+   "art": "Landschaft",
+   "x": 6990,
+   "y": 5570
+  },
+  {
+   "name": "Steinhagsee",
+   "art": "Landschaft",
+   "x": 6990,
+   "y": 5846
+  },
+  {
+   "name": "Vogtsburg",
+   "art": "Ort",
+   "x": 7053,
+   "y": 5838
+  },
+  {
+   "name": "Spiegelsee",
+   "art": "Landschaft",
+   "x": 7322,
+   "y": 5650
+  },
+  {
+   "name": "Die Nordklippen",
+   "art": "Landschaft",
+   "x": 7290,
+   "y": 5300
+  },
+  {
+   "name": "Hügelgrund",
+   "art": "Dorf",
+   "x": 6165,
+   "y": 5800
+  },
+  {
+   "name": "Kohlstatt",
+   "art": "Dorf",
+   "x": 6420,
+   "y": 5878
+  },
+  {
+   "name": "Brechstein",
+   "art": "Ort",
+   "x": 6656,
+   "y": 5946
+  },
+  {
+   "name": "Wollhag",
+   "art": "Ort",
+   "x": 6570,
+   "y": 5738
+  },
+  {
+   "name": "Weiherhof",
+   "art": "Ort",
+   "x": 6340,
+   "y": 5834
+  },
+  {
+   "name": "Reifbach",
+   "art": "Ort",
+   "x": 6424,
+   "y": 5722
+  },
+  {
+   "name": "Rotlehm",
+   "art": "Stadt",
+   "x": 6830,
+   "y": 7340
+  },
+  {
+   "name": "Brunnenkreis",
+   "art": "Ort",
+   "x": 7070,
+   "y": 7180
+  },
+  {
+   "name": "Dornhag",
+   "art": "Dorf",
+   "x": 7290,
+   "y": 7404
+  },
+  {
+   "name": "Tafelrast",
+   "art": "Dorf",
+   "x": 7490,
+   "y": 7520
+  }
+ ]
+}

@@ -1,0 +1,358 @@
+{
+ "hinweis": "Hauptstadt Kielmund (Welt #174): Mauer (Rechteck der Landseite; im Westen Kiel und Meer), Tore, Wahrzeichen, Viertel mit Gebäudezahl, Banken, Ladenplätze, Stationen, NPC-Plätze. Weltfelder.",
+ "mauer": [
+  6410,
+  7262,
+  6500,
+  7380
+ ],
+ "tore": {
+  "nord": [
+   6452,
+   7262
+  ],
+  "bruecke": [
+   6392,
+   7300
+  ]
+ },
+ "wahrzeichen": {
+  "mole": {
+   "von": [
+    6373,
+    7337
+   ],
+   "bis": [
+    6350.6,
+    7337
+   ],
+   "leuchtturm": [
+    6349.1,
+    7338.900000000001
+   ]
+  },
+  "kuestenhaus": [
+   6414,
+   7296
+  ],
+  "tempel": [
+   6474.5,
+   7277
+  ],
+  "hafenmeisterei": [
+   6406.5,
+   7348
+  ],
+  "kran": [
+   6386,
+   7322
+  ]
+ },
+ "viertel": {
+  "Altstadt": 26,
+  "Hafen": 16,
+  "Kaufmannsviertel": 22,
+  "Fischerquartier": 22
+ },
+ "laeden": [
+  {
+   "id": "kielmund_hafenstand_1",
+   "viertel": "Hafen",
+   "art": "Stand am Kai",
+   "x": 6404,
+   "y": 7309.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "kielmund_hafenstand_2",
+   "viertel": "Hafen",
+   "art": "Stand am Kai",
+   "x": 6412.5,
+   "y": 7323.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "kielmund_hafenstand_3",
+   "viertel": "Hafen",
+   "art": "Stand am Kai",
+   "x": 6400.5,
+   "y": 7343.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "kielmund_kaufstand_1",
+   "viertel": "Kaufmannsviertel",
+   "art": "Marktstand",
+   "x": 6440,
+   "y": 7307.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "kielmund_kaufstand_2",
+   "viertel": "Kaufmannsviertel",
+   "art": "Marktstand",
+   "x": 6476,
+   "y": 7307.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "kielmund_kaufstand_3",
+   "viertel": "Kaufmannsviertel",
+   "art": "Marktstand",
+   "x": 6488,
+   "y": 7307.2,
+   "blick": [
+    0,
+    -1
+   ]
+  },
+  {
+   "id": "kielmund_laden_schuppen_holz_53",
+   "viertel": "Hafen",
+   "art": "Ladenhaus",
+   "gebaeude": "km_schuppen_holz_53",
+   "x": 6407,
+   "y": 7359.2,
+   "blick": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "kielmund_laden_schuppen_holz_52",
+   "viertel": "Hafen",
+   "art": "Ladenhaus",
+   "gebaeude": "km_schuppen_holz_52",
+   "x": 6412,
+   "y": 7358.2,
+   "blick": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "kielmund_laden_stadthaus_72",
+   "viertel": "Altstadt",
+   "art": "Ladenhaus",
+   "gebaeude": "km_stadthaus_72",
+   "x": 6424,
+   "y": 7276.2,
+   "blick": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "kielmund_laden_kate_65",
+   "viertel": "Fischerquartier",
+   "art": "Ladenhaus",
+   "gebaeude": "km_kate_65",
+   "x": 6454,
+   "y": 7372.2,
+   "blick": [
+    0,
+    1
+   ]
+  }
+ ],
+ "banken": [
+  {
+   "id": "kielmund_bank",
+   "gebaeude": "kielmund_bank",
+   "schalter": [
+    6452,
+    7297.4
+   ],
+   "vorhanden": true
+  },
+  {
+   "id": "kielmund_hafenbank",
+   "gebaeude": "kielmund_hafenbank",
+   "schalter": [
+    6414,
+    7333.4
+   ]
+  }
+ ],
+ "stationen": [
+  {
+   "id": "raeucherhuette_kielmund",
+   "station": "raeucherhuette",
+   "x": 6400.5,
+   "y": 7320.6
+  },
+  {
+   "id": "kessel_kielmund",
+   "station": "kessel",
+   "x": 6472,
+   "y": 7365.4
+  },
+  {
+   "id": "esse_kielmund",
+   "station": "esse",
+   "x": 6447.5,
+   "y": 7325.4,
+   "vorhanden": true
+  },
+  {
+   "id": "amboss_kielmund",
+   "station": "amboss",
+   "x": 6450.5,
+   "y": 7325.4,
+   "vorhanden": true
+  },
+  {
+   "id": "werkbank_kielmund",
+   "station": "werkbank",
+   "x": 6456,
+   "y": 7327.4,
+   "vorhanden": true
+  },
+  {
+   "id": "herd_kielmund_taverne",
+   "station": "herd",
+   "x": 6440,
+   "y": 7297.4
+  }
+ ],
+ "west": {
+  "7262": 6416,
+  "7380": 6384
+ },
+ "gebaeude": 86,
+ "npc": [
+  {
+   "id": "torwache_kielmund_nord",
+   "rolle": "Torwache (Nordtor)",
+   "x": 6448.5,
+   "y": 7265
+  },
+  {
+   "id": "torwache_kielmund_bruecke",
+   "rolle": "Torwache (Brückentor)",
+   "x": 6396,
+   "y": 7304
+  },
+  {
+   "id": "leuchtturmwaerter_kielmund",
+   "rolle": "Leuchtturmwärter (Mole)",
+   "x": 6351.1,
+   "y": 7336.5
+  },
+  {
+   "id": "priesterin_kielmund",
+   "rolle": "Priesterin (Tempel)",
+   "x": 6475.5,
+   "y": 7278
+  },
+  {
+   "id": "bankier_kielmund_hafen",
+   "rolle": "Bank (Hafenbank)",
+   "x": 6414,
+   "y": 7333.4
+  },
+  {
+   "id": "bankier_kielmund",
+   "rolle": "Bank (Kaufmannsviertel)",
+   "x": 6452,
+   "y": 7297.4
+  },
+  {
+   "id": "hafenmeisterin_kielmund",
+   "rolle": "Hafenmeisterin",
+   "x": 6408,
+   "y": 7350
+  }
+ ],
+ "fischerzunft_fang": [
+  {
+   "id": "fischerzunft_fang_1",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6386.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6386.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_2",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6384.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6384.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_3",
+   "fisch": "klippenbarsch",
+   "stufe": 35,
+   "x": 6382.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6382.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_4",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6380.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6380.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_5",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6378.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6378.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_6",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 6377.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6377.5,
+    7352.5
+   ]
+  }
+ ],
+ "namen": [
+  [
+   "Kielmund",
+   "Stadt",
+   6426,
+   7314
+  ]
+ ]
+}

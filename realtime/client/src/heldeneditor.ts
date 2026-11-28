@@ -6,6 +6,7 @@
  */
 import { FRISUREN, BAERTE, HAARFARBEN, HAUTFARBEN, STARTWAFFEN, STANDARD, Held, Startwaffe } from "../../shared/aussehen";
 import { heldLaden, heldSpeichern, heldZeichnen, editorAngaben } from "./held";
+import { querformat } from "./quer";
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 const RNAME = ["Rechts", "Vorn rechts", "Vorn", "Vorn links", "Links", "Hinten links", "Hinten", "Hinten rechts"];
@@ -59,6 +60,11 @@ async function start() {
     catch (e) { m.textContent = "Speichern hat nicht geklappt: " + ((e as Error).message || "unbekannt") + ". Bitte noch einmal versuchen."; k.disabled = false; } };
   anzeigen();
 }
-void start();
+/* Der Heldeneditor kommt erst nach der Willkommensseite („Ins Spiel“ setzt ez__lager für diesen Tab). Wer held.html direkt öffnet
+   (Lesezeichen, alter Link), geht erst dorthin – ohne Datenbank (Tests, Gerät ohne Konto) bleibt alles wie bisher. */
+function ohneWillkommen(): boolean { const W = window as unknown as { supabase?: unknown; MR_MULTIPLAYER_CONFIG?: unknown }; if (!W.supabase || !W.MR_MULTIPLAYER_CONFIG) return false;
+  try { if (sessionStorage.getItem("ez__lager") === "1") return false; } catch { return false; }
+  const w = new URLSearchParams(location.search).get("weiter") || ""; location.replace("willkommen.html" + (w.startsWith("?") ? "?weiter=" + encodeURIComponent(w) : "")); return true; }
+if (!ohneWillkommen()) { querformat(); /* ab dem Heldeneditor: Querformat auf Handy und Tablet */ void start(); }
 /* für Prüfungen im Browser */
 (window as unknown as { EZH: unknown }).EZH = { get held() { return held; }, get richtung() { return richtung; } };

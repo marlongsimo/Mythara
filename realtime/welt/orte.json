@@ -1,0 +1,595 @@
+{
+ "_hinweis": "Orte für Systeme und Quests (Phase 3, Issue #7). Alle Koordinaten in Weltfeldern. werkzeug/welt/orte.mjs trägt Flächen, Wege, Objekte und Freiräume in die Gebiete ein (mehrfach ausführbar); lichtungen und senken sind Vorschläge im Format von shared/holz_standorte.json und shared/bergbau_standorte.json – lichtungen.mjs schneidet sie schon frei, bis die Rolle Spiel sie dorthin übernimmt. stellen sind reine Lagenangaben für Standort-Dateien (Seelenlichter, Fanggründe, Wasser, Würmer).",
+ "wege": [
+  {
+   "name": "Feldweg Westmark → Riedwiesen → Kernbaum-Hain",
+   "breite": 1.7,
+   "punkte": [
+    [
+     6298.5,
+     6541.5
+    ],
+    [
+     6284,
+     6540
+    ],
+    [
+     6262,
+     6537
+    ],
+    [
+     6236,
+     6528
+    ],
+    [
+     6212,
+     6514
+    ],
+    [
+     6188,
+     6496
+    ],
+    [
+     6168,
+     6481
+    ]
+   ]
+  },
+  {
+   "name": "Pfad zum Ried am Moorrand",
+   "breite": 1.4,
+   "punkte": [
+    [
+     6212,
+     6514
+    ],
+    [
+     6204,
+     6546
+    ],
+    [
+     6192,
+     6580
+    ],
+    [
+     6180,
+     6606
+    ],
+    [
+     6172,
+     6624
+    ]
+   ]
+  },
+  {
+   "name": "Phase 4: Pfad vom Späher-Lager zur Hütte",
+   "breite": 1.4,
+   "punkte": [
+    [
+     6288,
+     6556
+    ],
+    [
+     6294,
+     6562
+    ],
+    [
+     6299,
+     6566
+    ]
+   ]
+  },
+  {
+   "name": "Phase 4: Pfad zum Lager am Moorrand",
+   "breite": 1.4,
+   "punkte": [
+    [
+     6181,
+     6604
+    ],
+    [
+     6196,
+     6606
+    ],
+    [
+     6206,
+     6609
+    ]
+   ]
+  },
+  {
+   "name": "Südstraße: Weidenhain → Kielmund (Phase 10, #82; weiter im Festland: kueste.mjs)",
+   "breite": 2.0,
+   "punkte": [
+    [
+     6444.5,
+     6737
+    ],
+    [
+     6444.5,
+     6745
+    ],
+    [
+     6444,
+     6753
+    ]
+   ]
+  }
+ ],
+ "flaechen": [
+  {
+   "name": "Sterneisen-Senke: Rand",
+   "x": 6318.5,
+   "y": 6530.5,
+   "r": 5.0,
+   "zeichen": "e",
+   "auf": ".,f",
+   "frei": 0
+  },
+  {
+   "name": "Sterneisen-Senke: Steinboden",
+   "x": 6318.5,
+   "y": 6530.5,
+   "r": 3.8,
+   "zeichen": "h",
+   "auf": ".,fe",
+   "frei": 0
+  },
+  {
+   "name": "Wiesenlicht 1 (Riedwiesen)",
+   "x": 6196.5,
+   "y": 6402.5,
+   "r": 3.2,
+   "zeichen": ",",
+   "auf": ".,",
+   "frei": 4
+  },
+  {
+   "name": "Wiesenlicht 2 (Riedwiesen)",
+   "x": 6238.5,
+   "y": 6452.5,
+   "r": 3.2,
+   "zeichen": ",",
+   "auf": ".,",
+   "frei": 4
+  },
+  {
+   "name": "Wiesenlicht 3 (Riedwiesen)",
+   "x": 6186.5,
+   "y": 6556.5,
+   "r": 3.2,
+   "zeichen": ",",
+   "auf": ".,",
+   "frei": 4
+  },
+  {
+   "name": "Ried am Moorrand: Uferplatz",
+   "x": 6172.5,
+   "y": 6626.5,
+   "r": 2.6,
+   "zeichen": "m",
+   "auf": "vt",
+   "frei": 3
+  },
+  {
+   "name": "Wehrkolk unterhalb des Wehrs",
+   "x": 6465.5,
+   "y": 6705.5,
+   "r": 2.7,
+   "zeichen": "~",
+   "auf": ".,e",
+   "frei": 0
+  },
+  {
+   "name": "Steg am Mühlgraben (Lambert Schilf)",
+   "rechteck": [
+    6451,
+    6704,
+    6453,
+    6706
+   ],
+   "zeichen": "d",
+   "auf": "~.,"
+  },
+  {
+   "name": "Phase 4: Späher-Lager, festgetretener Boden",
+   "x": 6284.5,
+   "y": 6553.5,
+   "r": 4.2,
+   "zeichen": "e",
+   "auf": ".,",
+   "frei": 7
+  },
+  {
+   "name": "Phase 4: Lager am Moorrand, festgetretener Boden",
+   "x": 6213.5,
+   "y": 6609.5,
+   "r": 4.0,
+   "zeichen": "m",
+   "auf": ".,vt",
+   "frei": 7
+  }
+ ],
+ "objekte": [
+  {
+   "id": "ort_schuppen_tebbe",
+   "objekt": "hand_tebbes_schuppen",
+   "x": 6446,
+   "y": 6672.5,
+   "weg": [
+    "laterne_31"
+   ]
+  },
+  {
+   "id": "ort_schuppen_werkbank",
+   "objekt": "hand_werkbank_01",
+   "x": 6447.25,
+   "y": 6671.6
+  },
+  {
+   "id": "ort_steg_fass",
+   "objekt": "dorf_fass_01",
+   "x": 6455.2,
+   "y": 6707.4
+  },
+  {
+   "id": "ort_steg_kiste",
+   "objekt": "dorf_kiste_01",
+   "x": 6449.2,
+   "y": 6707.6
+  },
+  {
+   "id": "ort_kolk_schilf_1",
+   "objekt": "stil_schilf_01",
+   "x": 6468.6,
+   "y": 6708.2
+  },
+  {
+   "id": "ort_kolk_schilf_2",
+   "objekt": "stil_schilf_02",
+   "x": 6462.4,
+   "y": 6708.6,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_quellstein",
+   "objekt": "moor_menhir_01",
+   "x": 6571.5,
+   "y": 6692.4
+  },
+  {
+   "id": "ort_taverne_herd",
+   "objekt": "hand_herd_01",
+   "x": 6426.2,
+   "y": 6426.0
+  },
+  {
+   "id": "ort_taverne_kessel",
+   "objekt": "hand_kessel_01",
+   "x": 6428.4,
+   "y": 6426.0
+  },
+  {
+   "id": "ort_ried_kahn",
+   "objekt": "moor_kahn_01",
+   "x": 6178.5,
+   "y": 6630.4
+  },
+  {
+   "id": "ort_p4_spaeher_zelt_1",
+   "objekt": "welt_zelt_01",
+   "x": 6280.5,
+   "y": 6550.6
+  },
+  {
+   "id": "ort_p4_spaeher_zelt_2",
+   "objekt": "welt_zelt_01",
+   "x": 6288.5,
+   "y": 6549.8,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_p4_spaeher_feuer",
+   "objekt": "dorf_festfeuer_01",
+   "x": 6284.5,
+   "y": 6556.4
+  },
+  {
+   "id": "ort_p4_spaeher_kiste_1",
+   "objekt": "k_kiste",
+   "x": 6278.6,
+   "y": 6556.2
+  },
+  {
+   "id": "ort_p4_spaeher_fass",
+   "objekt": "dorf_fass_01",
+   "x": 6290.4,
+   "y": 6556.6
+  },
+  {
+   "id": "ort_p4_spaeher_banner",
+   "objekt": "k_banner_rot",
+   "x": 6284.5,
+   "y": 6548.2
+  },
+  {
+   "id": "ort_p4_huette_kiste_1",
+   "objekt": "dorf_kiste_01",
+   "x": 6305.6,
+   "y": 6586.6
+  },
+  {
+   "id": "ort_p4_huette_kiste_2",
+   "objekt": "dorf_kiste_01",
+   "x": 6306.8,
+   "y": 6587.4
+  },
+  {
+   "id": "ort_p4_huette_kiste_3",
+   "objekt": "dorf_kiste_01",
+   "x": 6304.4,
+   "y": 6587.8
+  },
+  {
+   "id": "ort_p4_moor_zelt_1",
+   "objekt": "welt_zelt_01",
+   "x": 6209.5,
+   "y": 6606.6
+  },
+  {
+   "id": "ort_p4_moor_zelt_2",
+   "objekt": "welt_zelt_01",
+   "x": 6217.5,
+   "y": 6606.2,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_p4_moor_feuer",
+   "objekt": "moor_feuerkorb_01",
+   "x": 6213.5,
+   "y": 6611.4
+  },
+  {
+   "id": "ort_p4_moor_kiste",
+   "objekt": "k_kiste",
+   "x": 6208.4,
+   "y": 6612.0
+  },
+  {
+   "id": "ort_p4_moor_faesser",
+   "objekt": "k_faesser",
+   "x": 6218.6,
+   "y": 6612.2
+  },
+  {
+   "id": "ort_p4_moor_banner",
+   "objekt": "k_banner_rot",
+   "x": 6213.5,
+   "y": 6604.4
+  },
+  {
+   "id": "ort_p4_gisbert_kiste_1",
+   "objekt": "dorf_kiste_01",
+   "x": 6564.6,
+   "y": 6688.8
+  },
+  {
+   "id": "ort_p4_gisbert_kiste_2",
+   "objekt": "dorf_kiste_01",
+   "x": 6565.4,
+   "y": 6689.6
+  },
+  {
+   "id": "ort_p4_gisbert_kiste_3",
+   "objekt": "dorf_kiste_01",
+   "x": 6561.2,
+   "y": 6693.0
+  },
+  {
+   "id": "ort_p4_spur_obst_1",
+   "objekt": "welt_spuren_01",
+   "x": 6550.5,
+   "y": 6700.5
+  },
+  {
+   "id": "ort_p4_spur_obst_2",
+   "objekt": "welt_spuren_01",
+   "x": 6541.5,
+   "y": 6711.5,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_p4_spur_obst_3",
+   "objekt": "welt_spuren_01",
+   "x": 6533.5,
+   "y": 6722.5
+  },
+  {
+   "id": "ort_p4_spur_weg_1",
+   "objekt": "welt_spuren_01",
+   "x": 6489.5,
+   "y": 6721.5,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_p4_spur_weg_2",
+   "objekt": "welt_spuren_01",
+   "x": 6443.5,
+   "y": 6707.5
+  },
+  {
+   "id": "ort_p4_spur_weg_3",
+   "objekt": "welt_spuren_01",
+   "x": 6388.5,
+   "y": 6702.5,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_p4_spur_weg_4",
+   "objekt": "welt_spuren_01",
+   "x": 6334.5,
+   "y": 6696.5
+  },
+  {
+   "id": "ort_p4_spur_weg_5",
+   "objekt": "welt_spuren_01",
+   "x": 6320.5,
+   "y": 6650.5,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_p4_spur_weg_6",
+   "objekt": "welt_spuren_01",
+   "x": 6294.5,
+   "y": 6616.5
+  },
+  {
+   "id": "ort_p6_akoluth_feuer_1",
+   "objekt": "moor_feuerkorb_01",
+   "x": 6205.5,
+   "y": 6702.5
+  },
+  {
+   "id": "ort_p6_akoluth_feuer_2",
+   "objekt": "moor_feuerkorb_01",
+   "x": 6222.5,
+   "y": 6702.5
+  },
+  {
+   "id": "ort_p6_akoluth_lager_1",
+   "objekt": "hoehle_lager_01",
+   "x": 6203.5,
+   "y": 6711.5
+  },
+  {
+   "id": "ort_p6_akoluth_lager_2",
+   "objekt": "hoehle_lager_01",
+   "x": 6224.5,
+   "y": 6711.5
+  },
+  {
+   "id": "ort_p6_akoluth_federn_1",
+   "objekt": "hoehle_federn_01",
+   "x": 6211.5,
+   "y": 6706.5
+  },
+  {
+   "id": "ort_p6_akoluth_federn_2",
+   "objekt": "hoehle_federn_01",
+   "x": 6217.5,
+   "y": 6714.5,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_p6_novizen_feuer",
+   "objekt": "moor_feuerkorb_01",
+   "x": 6249.5,
+   "y": 6738.5
+  },
+  {
+   "id": "ort_p6_novizen_federn",
+   "objekt": "hoehle_federn_01",
+   "x": 6239.5,
+   "y": 6734.5
+  },
+  {
+   "id": "ort_p6_gruft_federn",
+   "objekt": "hoehle_federn_01",
+   "x": 6190.5,
+   "y": 6728.5,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_p3_torffeuer",
+   "objekt": "dorf_festfeuer_01",
+   "x": 6317.0,
+   "y": 6703.4
+  },
+  {
+   "id": "ort_p5_kessel_hedda",
+   "objekt": "hand_kessel_01",
+   "x": 6291.6,
+   "y": 6677.8
+  },
+  {
+   "id": "ort_p5_bindestein_obelisk",
+   "objekt": "wz_bindestein",
+   "x": 6371,
+   "y": 6372.4,
+   "hinweis": "Phase 5b: Bindestein am Obelisk im Nordwald (Station, nach A2)"
+  },
+  {
+   "id": "ort_p3_fanggrund_wehrkolk",
+   "objekt": "fanggrund_kolk",
+   "x": 6465.5,
+   "y": 6705.5,
+   "hinweis": "Fanggrund Wehrkolk (Mühlbarsch, nach B2 mit Schalter wehr_heil) – #64"
+  }
+ ],
+ "lichtungen": [
+  {
+   "name": "Kernbaum-Hain am Westrand der Riedwiesen",
+   "baeume": [
+    {
+     "id": "kernbaum_1",
+     "art": "kernbaum",
+     "x": 6155.5,
+     "y": 6475.5,
+     "region": "westried"
+    },
+    {
+     "id": "kernbaum_2",
+     "art": "kernbaum",
+     "x": 6161.5,
+     "y": 6474.5,
+     "region": "westried"
+    },
+    {
+     "id": "kernbaum_3",
+     "art": "kernbaum",
+     "x": 6154.5,
+     "y": 6481.5,
+     "region": "westried"
+    },
+    {
+     "id": "kernbaum_4",
+     "art": "kernbaum",
+     "x": 6160.5,
+     "y": 6482.5,
+     "region": "westried"
+    }
+   ]
+  }
+ ],
+ "senken": [
+  {
+   "name": "Sterneisen-Senke in der Westmark",
+   "x": 6318.5,
+   "y": 6530.5,
+   "r": 5,
+   "adern": [
+    {
+     "id": "sterneisen_1",
+     "art": "sterneisen",
+     "x": 6316.5,
+     "y": 6528.5,
+     "region": "westmark"
+    },
+    {
+     "id": "sterneisen_2",
+     "art": "sterneisen",
+     "x": 6320.5,
+     "y": 6529.5,
+     "region": "westmark"
+    },
+    {
+     "id": "sterneisen_3",
+     "art": "sterneisen",
+     "x": 6318.5,
+     "y": 6533.5,
+     "region": "westmark"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+[
+ {"id":"leiter_1","objekt":"hoehle_leiter_01","x":32.5,"y":59.5},
+ {"id":"feuerkorb_2","objekt":"moor_feuerkorb_01","x":28.5,"y":50.5},
+ {"id":"kiste_3","objekt":"k_kiste","x":36,"y":54},
+ {"id":"faesser_4","objekt":"k_faesser","x":28.5,"y":54},
+ {"id":"truemmer_5","objekt":"k_truemmer","x":44.5,"y":20.5,"spiegeln":true},
+ {"id":"steinsaeule_6","objekt":"hoehle_steinsaeule_01","x":42.5,"y":14.5},
+ {"id":"steinsaeule_7","objekt":"hoehle_steinsaeule_01","x":50.5,"y":22.5},
+ {"id":"hoehle_rettungsboot","objekt":"graufurt_faehre_01","x":46,"y":18.5}
+]

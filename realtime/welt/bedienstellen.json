@@ -1,0 +1,927 @@
+{
+ "hinweis": "Welt #57: Stationen in Gebäuden mit Innenraum (Rechteck x0, y0, x1, y1 in Weltfeldern), Tür und Stehplatz drinnen. Regel fürs Spiel: Station in einem Gebäude nur bedienen, wenn der Held im Innenraum steht; sonst zum Stehplatz laufen (durch die Tür). „von_aussen_in_greifweite“: ein Feld außerhalb der Wand, von dem aus die Greifweite (2,6) heute reicht – der Fehler aus #57. Erzeugt von werkzeug/welt/bedienstellen.mjs.",
+ "stationen": [
+  {
+   "id": "esse",
+   "station": "esse",
+   "x": 6467.4,
+   "y": 6427.8,
+   "quelle": "shared/handwerk.ts",
+   "innen": true,
+   "gebaeude": "schmiede",
+   "bauplan": "dorf_schmiede_01",
+   "region": "waldmark",
+   "innenraum": [
+    6466,
+    6426,
+    6472,
+    6430
+   ],
+   "tuer": [
+    6470.5,
+    6430
+   ],
+   "stehplatz": [
+    6467.05,
+    6427.3
+   ],
+   "von_aussen_in_greifweite": [
+    6466.55,
+    6430.2
+   ]
+  },
+  {
+   "id": "amboss",
+   "station": "amboss",
+   "x": 6470.4,
+   "y": 6427.6,
+   "quelle": "shared/handwerk.ts",
+   "innen": true,
+   "gebaeude": "schmiede",
+   "bauplan": "dorf_schmiede_01",
+   "region": "waldmark",
+   "innenraum": [
+    6466,
+    6426,
+    6472,
+    6430
+   ],
+   "tuer": [
+    6470.5,
+    6430
+   ],
+   "stehplatz": [
+    6469.8,
+    6427.55
+   ],
+   "von_aussen_in_greifweite": [
+    6469.55,
+    6430
+   ]
+  },
+  {
+   "id": "bindestein",
+   "station": "bindestein",
+   "x": 6453.2,
+   "y": 6679.4,
+   "quelle": "shared/handwerk.ts",
+   "innen": false,
+   "region": "weidenhain"
+  },
+  {
+   "id": "werkbank_osthof",
+   "station": "werkbank",
+   "x": 6530.5,
+   "y": 6426.5,
+   "quelle": "shared/handwerk.ts",
+   "innen": false,
+   "region": "osthof"
+  },
+  {
+   "id": "feuer_weidenhain",
+   "station": "feuer",
+   "x": 6442,
+   "y": 6687.25,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": "weidenhain"
+  },
+  {
+   "id": "feuer_osthang",
+   "station": "feuer",
+   "x": 6626,
+   "y": 6516.75,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": "osthang"
+  },
+  {
+   "id": "feuer_rabenmoor",
+   "station": "feuer",
+   "x": 6317,
+   "y": 6703.25,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "brunnen_waldmark",
+   "station": "brunnen",
+   "x": 6448,
+   "y": 6432.85,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": "waldmark"
+  },
+  {
+   "id": "brunnen_osthof",
+   "station": "brunnen",
+   "x": 6529.6,
+   "y": 6431.2,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": "osthof"
+  },
+  {
+   "id": "herd_taverne",
+   "station": "herd",
+   "x": 6426.2,
+   "y": 6426,
+   "quelle": "shared/kochstellen.json",
+   "innen": true,
+   "gebaeude": "taverne",
+   "bauplan": "dorf_taverne_01",
+   "region": "waldmark",
+   "innenraum": [
+    6425,
+    6425,
+    6432,
+    6430
+   ],
+   "tuer": [
+    6428.5,
+    6430
+   ],
+   "stehplatz": [
+    6427.05,
+    6428.05
+   ],
+   "von_aussen_in_greifweite": [
+    6424.85,
+    6428.15
+   ]
+  },
+  {
+   "id": "kessel_taverne",
+   "station": "kessel",
+   "x": 6428.5,
+   "y": 6426,
+   "quelle": "shared/kochstellen.json",
+   "innen": true,
+   "gebaeude": "taverne",
+   "bauplan": "dorf_taverne_01",
+   "region": "waldmark",
+   "innenraum": [
+    6425,
+    6425,
+    6432,
+    6430
+   ],
+   "tuer": [
+    6428.5,
+    6430
+   ],
+   "stehplatz": [
+    6429.05,
+    6427.05
+   ],
+   "von_aussen_in_greifweite": [
+    6426.15,
+    6424.9
+   ]
+  },
+  {
+   "id": "raeucherhuette_moewenbucht",
+   "station": "raeucherhuette",
+   "x": 6214,
+   "y": 7168,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": null
+  },
+  {
+   "id": "feuer_moewenbucht",
+   "station": "feuer",
+   "x": 6218,
+   "y": 7169.25,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": null
+  },
+  {
+   "id": "kessel_kraeuterhof",
+   "station": "kessel",
+   "x": 6422,
+   "y": 7062,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": null
+  },
+  {
+   "id": "feuer_kuestenweg",
+   "station": "feuer",
+   "x": 6300,
+   "y": 7226.25,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": null
+  },
+  {
+   "id": "herd_heckenhof",
+   "station": "herd",
+   "x": 6493,
+   "y": 6812.4,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": null
+  },
+  {
+   "id": "feuer_halber_weg",
+   "station": "feuer",
+   "x": 6474,
+   "y": 7011.6,
+   "quelle": "shared/kochstellen.json",
+   "innen": false,
+   "region": null
+  },
+  {
+   "id": "steinhaus_160_ofen",
+   "station": "backofen",
+   "x": 6671.9,
+   "y": 6493.8,
+   "quelle": "Bauplan graufurt_steinhaus_01 (graufurt)",
+   "innen": true,
+   "gebaeude": "steinhaus_160",
+   "bauplan": "graufurt_steinhaus_01",
+   "region": "graufurt",
+   "innenraum": [
+    6668,
+    6493,
+    6673,
+    6497
+   ],
+   "tuer": [
+    6669.5,
+    6497
+   ],
+   "stehplatz": [
+    6669.8,
+    6495.05
+   ],
+   "von_aussen_in_greifweite": [
+    6673.05,
+    6495.95
+   ]
+  },
+  {
+   "id": "schmiede_163_amboss",
+   "station": "amboss",
+   "x": 6675.4,
+   "y": 6535.6,
+   "quelle": "Bauplan dorf_schmiede_01 (graufurt)",
+   "innen": true,
+   "gebaeude": "schmiede_163",
+   "bauplan": "dorf_schmiede_01",
+   "region": "graufurt",
+   "innenraum": [
+    6671,
+    6534,
+    6677,
+    6538
+   ],
+   "tuer": [
+    6675.5,
+    6538
+   ],
+   "stehplatz": [
+    6674.8,
+    6535.55
+   ],
+   "von_aussen_in_greifweite": [
+    6674.55,
+    6538
+   ]
+  },
+  {
+   "id": "herd_178",
+   "station": "herd",
+   "x": 6670,
+   "y": 6541.5,
+   "quelle": "welt/regionen/graufurt (Objekt)",
+   "innen": false,
+   "region": "graufurt"
+  },
+  {
+   "id": "werkbank_177",
+   "station": "werkbank",
+   "x": 6680,
+   "y": 6542.5,
+   "quelle": "welt/regionen/graufurt (Objekt)",
+   "innen": false,
+   "region": "graufurt"
+  },
+  {
+   "id": "kessel_179",
+   "station": "kessel",
+   "x": 6672.5,
+   "y": 6545.5,
+   "quelle": "welt/regionen/graufurt (Objekt)",
+   "innen": false,
+   "region": "graufurt"
+  },
+  {
+   "id": "steinhaus_166_ofen",
+   "station": "backofen",
+   "x": 6685.9,
+   "y": 6560.8,
+   "quelle": "Bauplan graufurt_steinhaus_01 (graufurt)",
+   "innen": true,
+   "gebaeude": "steinhaus_166",
+   "bauplan": "graufurt_steinhaus_01",
+   "region": "graufurt",
+   "innenraum": [
+    6682,
+    6560,
+    6687,
+    6564
+   ],
+   "tuer": [
+    6683.5,
+    6564
+   ],
+   "stehplatz": [
+    6683.8,
+    6562.05
+   ],
+   "von_aussen_in_greifweite": [
+    6687.05,
+    6562.95
+   ]
+  },
+  {
+   "id": "steinhaus_167_ofen",
+   "station": "backofen",
+   "x": 6703.9,
+   "y": 6561.8,
+   "quelle": "Bauplan graufurt_steinhaus_01 (graufurt)",
+   "innen": true,
+   "gebaeude": "steinhaus_167",
+   "bauplan": "graufurt_steinhaus_01",
+   "region": "graufurt",
+   "innenraum": [
+    6700,
+    6561,
+    6705,
+    6565
+   ],
+   "tuer": [
+    6701.5,
+    6565
+   ],
+   "stehplatz": [
+    6701.8,
+    6563.05
+   ],
+   "von_aussen_in_greifweite": [
+    6705.05,
+    6563.95
+   ]
+  },
+  {
+   "id": "nordwald_huette_holz_1_kessel",
+   "station": "kessel",
+   "x": 6356.8,
+   "y": 6424.4,
+   "quelle": "Bauplan dorf_huette_holz_02 (nordwald)",
+   "innen": true,
+   "gebaeude": "huette_holz_1",
+   "bauplan": "dorf_huette_holz_02",
+   "region": "nordwald",
+   "innenraum": [
+    6354,
+    6423,
+    6358,
+    6426
+   ],
+   "tuer": [
+    6355.5,
+    6426
+   ],
+   "stehplatz": [
+    6355.8,
+    6425.05
+   ],
+   "von_aussen_in_greifweite": [
+    6355.95,
+    6426.8
+   ]
+  },
+  {
+   "id": "ort_p5_bindestein_obelisk",
+   "station": "bindestein",
+   "x": 6371.5,
+   "y": 6372.5,
+   "quelle": "welt/regionen/nordwald (Objekt)",
+   "innen": false,
+   "region": "nordwald"
+  },
+  {
+   "id": "obstwiesen_huette_holz_1_kessel",
+   "station": "kessel",
+   "x": 6558.8,
+   "y": 6688.4,
+   "quelle": "Bauplan dorf_huette_holz_02 (obstwiesen)",
+   "innen": true,
+   "gebaeude": "huette_holz_1",
+   "bauplan": "dorf_huette_holz_02",
+   "region": "obstwiesen",
+   "innenraum": [
+    6556,
+    6687,
+    6560,
+    6690
+   ],
+   "tuer": [
+    6557.5,
+    6690
+   ],
+   "stehplatz": [
+    6557.8,
+    6689.05
+   ],
+   "von_aussen_in_greifweite": [
+    6557.95,
+    6690.8
+   ]
+  },
+  {
+   "id": "fachwerk_1_ofen",
+   "station": "backofen",
+   "x": 6520.3,
+   "y": 6423.8,
+   "quelle": "Bauplan weidenhain_fachwerk_03 (osthof)",
+   "innen": true,
+   "gebaeude": "fachwerk_1",
+   "bauplan": "weidenhain_fachwerk_03",
+   "region": "osthof",
+   "innenraum": [
+    6519,
+    6423,
+    6524,
+    6427
+   ],
+   "tuer": [
+    6520.5,
+    6427
+   ],
+   "stehplatz": [
+    6520.8,
+    6424.3
+   ],
+   "von_aussen_in_greifweite": [
+    6518.95,
+    6425.95
+   ]
+  },
+  {
+   "id": "ort_p5_kessel_hedda",
+   "station": "kessel",
+   "x": 6291.5,
+   "y": 6678,
+   "quelle": "welt/regionen/rabenmoor (Objekt)",
+   "innen": false,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "huette_o_kessel",
+   "station": "kessel",
+   "x": 6477.8,
+   "y": 6421.4,
+   "quelle": "Bauplan dorf_huette_holz_02 (waldmark)",
+   "innen": true,
+   "gebaeude": "huette_o",
+   "bauplan": "dorf_huette_holz_02",
+   "region": "waldmark",
+   "innenraum": [
+    6475,
+    6420,
+    6479,
+    6423
+   ],
+   "tuer": [
+    6476.5,
+    6423
+   ],
+   "stehplatz": [
+    6476.8,
+    6422.05
+   ],
+   "von_aussen_in_greifweite": [
+    6476.95,
+    6423.8
+   ]
+  },
+  {
+   "id": "kraeuterhaus_kessel",
+   "station": "kessel",
+   "x": 6420.9,
+   "y": 6437.5,
+   "quelle": "Bauplan dorf_kraeuterhaus_01 (waldmark)",
+   "innen": true,
+   "gebaeude": "kraeuterhaus",
+   "bauplan": "dorf_kraeuterhaus_01",
+   "region": "waldmark",
+   "innenraum": [
+    6418,
+    6436,
+    6422,
+    6439
+   ],
+   "tuer": [
+    6419.5,
+    6439
+   ],
+   "stehplatz": [
+    6419.8,
+    6438.05
+   ],
+   "von_aussen_in_greifweite": [
+    6420.05,
+    6439.9
+   ]
+  },
+  {
+   "id": "baeckerei_ofen",
+   "station": "backofen",
+   "x": 6456.8,
+   "y": 6447.4,
+   "quelle": "Bauplan dorf_baeckerei_01 (waldmark)",
+   "innen": true,
+   "gebaeude": "baeckerei",
+   "bauplan": "dorf_baeckerei_01",
+   "region": "waldmark",
+   "innenraum": [
+    6453,
+    6446,
+    6458,
+    6450
+   ],
+   "tuer": [
+    6454.5,
+    6450
+   ],
+   "stehplatz": [
+    6455.8,
+    6448.05
+   ],
+   "von_aussen_in_greifweite": [
+    6458.2,
+    6446.8
+   ]
+  },
+  {
+   "id": "kraeutergarten_kessel",
+   "station": "kessel",
+   "x": 6469.5,
+   "y": 6439.5,
+   "quelle": "welt/regionen/waldmark (Objekt)",
+   "innen": false,
+   "region": "waldmark"
+  },
+  {
+   "id": "huette_holz_51_kessel",
+   "station": "kessel",
+   "x": 6462.8,
+   "y": 6663.4,
+   "quelle": "Bauplan dorf_huette_holz_02 (weidenhain)",
+   "innen": true,
+   "gebaeude": "huette_holz_51",
+   "bauplan": "dorf_huette_holz_02",
+   "region": "weidenhain",
+   "innenraum": [
+    6460,
+    6662,
+    6464,
+    6665
+   ],
+   "tuer": [
+    6461.5,
+    6665
+   ],
+   "stehplatz": [
+    6461.8,
+    6664.05
+   ],
+   "von_aussen_in_greifweite": [
+    6461.95,
+    6665.8
+   ]
+  },
+  {
+   "id": "bauernhaus_52_ofen",
+   "station": "backofen",
+   "x": 6473.2,
+   "y": 6661.6,
+   "quelle": "Bauplan weidenhain_bauernhaus_01 (weidenhain)",
+   "innen": true,
+   "gebaeude": "bauernhaus_52",
+   "bauplan": "weidenhain_bauernhaus_01",
+   "region": "weidenhain",
+   "innenraum": [
+    6472,
+    6661,
+    6478,
+    6665
+   ],
+   "tuer": [
+    6475.5,
+    6665
+   ],
+   "stehplatz": null,
+   "von_aussen_in_greifweite": [
+    6471.85,
+    6663.75
+   ]
+  },
+  {
+   "id": "kraeuterhaus_54_kessel",
+   "station": "kessel",
+   "x": 6505.9,
+   "y": 6664.5,
+   "quelle": "Bauplan dorf_kraeuterhaus_01 (weidenhain)",
+   "innen": true,
+   "gebaeude": "kraeuterhaus_54",
+   "bauplan": "dorf_kraeuterhaus_01",
+   "region": "weidenhain",
+   "innenraum": [
+    6503,
+    6663,
+    6507,
+    6666
+   ],
+   "tuer": [
+    6504.5,
+    6666
+   ],
+   "stehplatz": [
+    6504.8,
+    6665.05
+   ],
+   "von_aussen_in_greifweite": [
+    6505.05,
+    6666.9
+   ]
+  },
+  {
+   "id": "fachwerk_49_ofen",
+   "station": "backofen",
+   "x": 6437.3,
+   "y": 6662.8,
+   "quelle": "Bauplan weidenhain_fachwerk_03 (weidenhain)",
+   "innen": true,
+   "gebaeude": "fachwerk_49",
+   "bauplan": "weidenhain_fachwerk_03",
+   "region": "weidenhain",
+   "innenraum": [
+    6436,
+    6662,
+    6441,
+    6666
+   ],
+   "tuer": [
+    6437.5,
+    6666
+   ],
+   "stehplatz": [
+    6437.8,
+    6663.3
+   ],
+   "von_aussen_in_greifweite": [
+    6435.95,
+    6664.95
+   ]
+  },
+  {
+   "id": "huette_holz_63_kessel",
+   "station": "kessel",
+   "x": 6515.8,
+   "y": 6682.4,
+   "quelle": "Bauplan dorf_huette_holz_02 (weidenhain)",
+   "innen": true,
+   "gebaeude": "huette_holz_63",
+   "bauplan": "dorf_huette_holz_02",
+   "region": "weidenhain",
+   "innenraum": [
+    6513,
+    6681,
+    6517,
+    6684
+   ],
+   "tuer": [
+    6514.5,
+    6684
+   ],
+   "stehplatz": [
+    6514.8,
+    6683.05
+   ],
+   "von_aussen_in_greifweite": [
+    6514.95,
+    6684.8
+   ]
+  },
+  {
+   "id": "fachwerk_61_ofen",
+   "station": "backofen",
+   "x": 6484.3,
+   "y": 6680.8,
+   "quelle": "Bauplan weidenhain_fachwerk_03 (weidenhain)",
+   "innen": true,
+   "gebaeude": "fachwerk_61",
+   "bauplan": "weidenhain_fachwerk_03",
+   "region": "weidenhain",
+   "innenraum": [
+    6483,
+    6680,
+    6488,
+    6684
+   ],
+   "tuer": [
+    6484.5,
+    6684
+   ],
+   "stehplatz": [
+    6484.8,
+    6681.3
+   ],
+   "von_aussen_in_greifweite": [
+    6482.95,
+    6682.95
+   ]
+  },
+  {
+   "id": "bauernhaus_64_ofen",
+   "station": "backofen",
+   "x": 6474.2,
+   "y": 6696.6,
+   "quelle": "Bauplan weidenhain_bauernhaus_01 (weidenhain)",
+   "innen": true,
+   "gebaeude": "bauernhaus_64",
+   "bauplan": "weidenhain_bauernhaus_01",
+   "region": "weidenhain",
+   "innenraum": [
+    6473,
+    6696,
+    6479,
+    6700
+   ],
+   "tuer": [
+    6476.5,
+    6700
+   ],
+   "stehplatz": null,
+   "von_aussen_in_greifweite": [
+    6472.85,
+    6698.75
+   ]
+  },
+  {
+   "id": "kraeuterhaus_66_kessel",
+   "station": "kessel",
+   "x": 6506.9,
+   "y": 6699.5,
+   "quelle": "Bauplan dorf_kraeuterhaus_01 (weidenhain)",
+   "innen": true,
+   "gebaeude": "kraeuterhaus_66",
+   "bauplan": "dorf_kraeuterhaus_01",
+   "region": "weidenhain",
+   "innenraum": [
+    6504,
+    6698,
+    6508,
+    6701
+   ],
+   "tuer": [
+    6505.5,
+    6701
+   ],
+   "stehplatz": [
+    6505.8,
+    6700.05
+   ],
+   "von_aussen_in_greifweite": [
+    6506.05,
+    6701.9
+   ]
+  },
+  {
+   "id": "bauernhaus_2_ofen",
+   "station": "backofen",
+   "x": 6425.2,
+   "y": 6697.6,
+   "quelle": "Bauplan weidenhain_bauernhaus_01 (weidenhain)",
+   "innen": true,
+   "gebaeude": "bauernhaus_2",
+   "bauplan": "weidenhain_bauernhaus_01",
+   "region": "weidenhain",
+   "innenraum": [
+    6424,
+    6697,
+    6430,
+    6701
+   ],
+   "tuer": [
+    6427.5,
+    6701
+   ],
+   "stehplatz": null,
+   "von_aussen_in_greifweite": [
+    6423.85,
+    6699.75
+   ]
+  },
+  {
+   "id": "fachwerk_73_ofen",
+   "station": "backofen",
+   "x": 6489.3,
+   "y": 6717.8,
+   "quelle": "Bauplan weidenhain_fachwerk_03 (weidenhain)",
+   "innen": true,
+   "gebaeude": "fachwerk_73",
+   "bauplan": "weidenhain_fachwerk_03",
+   "region": "weidenhain",
+   "innenraum": [
+    6488,
+    6717,
+    6493,
+    6721
+   ],
+   "tuer": [
+    6489.5,
+    6721
+   ],
+   "stehplatz": [
+    6489.8,
+    6718.3
+   ],
+   "von_aussen_in_greifweite": [
+    6487.95,
+    6719.95
+   ]
+  },
+  {
+   "id": "bauernhaus_76_ofen",
+   "station": "backofen",
+   "x": 6450.2,
+   "y": 6731.6,
+   "quelle": "Bauplan weidenhain_bauernhaus_01 (weidenhain)",
+   "innen": true,
+   "gebaeude": "bauernhaus_76",
+   "bauplan": "weidenhain_bauernhaus_01",
+   "region": "weidenhain",
+   "innenraum": [
+    6449,
+    6731,
+    6455,
+    6735
+   ],
+   "tuer": [
+    6452.5,
+    6735
+   ],
+   "stehplatz": null,
+   "von_aussen_in_greifweite": [
+    6448.85,
+    6733.75
+   ]
+  },
+  {
+   "id": "huette_holz_75_kessel",
+   "station": "kessel",
+   "x": 6435.8,
+   "y": 6734.4,
+   "quelle": "Bauplan dorf_huette_holz_02 (weidenhain)",
+   "innen": true,
+   "gebaeude": "huette_holz_75",
+   "bauplan": "dorf_huette_holz_02",
+   "region": "weidenhain",
+   "innenraum": [
+    6433,
+    6733,
+    6437,
+    6736
+   ],
+   "tuer": [
+    6434.5,
+    6736
+   ],
+   "stehplatz": [
+    6434.8,
+    6735.05
+   ],
+   "von_aussen_in_greifweite": [
+    6434.95,
+    6736.8
+   ]
+  },
+  {
+   "id": "ort_schuppen_werkbank",
+   "station": "werkbank",
+   "x": 6447,
+   "y": 6671.5,
+   "quelle": "welt/regionen/weidenhain (Objekt)",
+   "innen": false,
+   "region": "weidenhain"
+  }
+ ]
+}

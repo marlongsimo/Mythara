@@ -3,6 +3,8 @@
  * Reine Rechnung: dieselbe Funktion nutzen Werkzeuge, Editor und Prüfung.
  */
 import { CHUNK_FELDER, chunkName, regionFelder } from "./typen";
+import { TUEREN } from "../bosse";
+const TUER_SCHALTER = new Set(TUEREN.flatMap((t) => [t.schalter, t.weltSchalter].filter((s): s is string => Boolean(s))));
 import type { GelaendeBibliothek, ObjektBibliothek, ObjektDef, RegionDaten, Kollision, Platzierung, ChunkDaten, Figur, Interaktion, Spawnzone, Ausgang, Region, Zone } from "./typen";
 
 /** Liegt der Punkt (in Rechenfeldern, ab dem Fußpunkt gemessen) in der Kollisionsfläche? */
@@ -20,6 +22,9 @@ function rahmen(k: Flaeche): number[] {
   if (k.art === "rechteck") return [k.x, k.y, k.x + k.b, k.y + k.h];
   return [Math.min(...k.punkte.map((p) => p[0])), Math.min(...k.punkte.map((p) => p[1])), Math.max(...k.punkte.map((p) => p[0])), Math.max(...k.punkte.map((p) => p[1]))];
 }
+/** Drehung (#148) eines Versatzes vom Fußpunkt, im Uhrzeigersinn von oben gesehen (x nach Osten, y nach Süden): 90° macht aus Osten Süden */
+export function drehe(dx: number, dy: number, dreh = 0): [number, number] { const d = ((dreh % 360) + 360) % 360;
+  return d === 90 ? [-dy, dx] : d === 180 ? [-dx, -dy] : d === 270 ? [dy, -dx] : [dx, dy]; }
 /** Welche Kollision gilt für diese Platzierung? (eigene Angabe vor Bibliothek) */
 export const kollisionVon = (p: Platzierung, def: ObjektDef | undefined): Kollision | null => (p.kollision !== undefined ? p.kollision : def ? def.kollision : null);
 
@@ -27,14 +32,19 @@ export const kollisionVon = (p: Platzierung, def: ObjektDef | undefined): Kollis
  *  Ein Feld gilt als versperrt, wenn die Fläche mindestens vier von neun Messpunkten des Feldes trifft; das Feld unter dem Fußpunkt eines Kreises immer. */
 export function sperrFelder(p: Platzierung, def: ObjektDef | undefined): number[][] {
   const k = kollisionVon(p, def); if (!k) return [];
-  if (k.art === "gebaeude") return gebaeudeFelder(p, k);
+  const d = p.dreh || 0;
+  if (k.art === "gebaeude") { const f = gebaeudeFelder(p, k); if (!d) return f; /* #148: die Felder des ungedrehten Gebäudes um den Fußpunkt drehen (Feldmitten) */
+    const da = new Set<string>(); for (const [i, j] of f) { const [cx, cy] = drehe(i + 0.5 - p.x, j + 0.5 - p.y, d); da.add(Math.floor(p.x + cx) + "," + Math.floor(p.y + cy)); }
+    return [...da].map((x) => x.split(",").map(Number)); }
   const s = p.s ?? 1, sp = p.spiegeln ? -1 : 1, [x0, y0, x1, y1] = rahmen(k), aus: number[][] = [];
-  const ax = p.x + Math.min(x0 * s * sp, x1 * s * sp), bx = p.x + Math.max(x0 * s * sp, x1 * s * sp);
-  for (let j = Math.floor(p.y + y0 * s); j <= Math.floor(p.y + y1 * s); j++) for (let i = Math.floor(ax); i <= Math.floor(bx); i++) {
-    let n = 0; for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) if (trifft(k, (i + (a + 0.5) / 3 - p.x) / (s * sp), (j + (b + 0.5) / 3 - p.y) / s)) n++;
+  /* örtlich (spiegeln, Maßstab) → gedreht → Welt; Messpunkte rückwärts: Welt → zurückgedreht → örtlich */
+  const ecken = [[x0, y0], [x1, y0], [x0, y1], [x1, y1]].map(([x, y]) => drehe(x * s * sp, y * s, d));
+  const ax = p.x + Math.min(...ecken.map((e) => e[0])), bx = p.x + Math.max(...ecken.map((e) => e[0])), ay = p.y + Math.min(...ecken.map((e) => e[1])), by = p.y + Math.max(...ecken.map((e) => e[1]));
+  for (let j = Math.floor(ay); j <= Math.floor(by); j++) for (let i = Math.floor(ax); i <= Math.floor(bx); i++) {
+    let n = 0; for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) { const [ux, uy] = drehe(i + (a + 0.5) / 3 - p.x, j + (b + 0.5) / 3 - p.y, 360 - d); if (trifft(k, ux / (s * sp), uy / s)) n++; }
     if (n >= 4) aus.push([i, j]);
   }
-  if (k.art === "kreis") { const i = Math.floor(p.x + (k.dx || 0) * s * sp), j = Math.floor(p.y + (k.dy || 0) * s); if (!aus.some((f) => f[0] === i && f[1] === j)) aus.push([i, j]); }
+  if (k.art === "kreis") { const [cx, cy] = drehe((k.dx || 0) * s * sp, (k.dy || 0) * s, d), i = Math.floor(p.x + cx), j = Math.floor(p.y + cy); if (!aus.some((f) => f[0] === i && f[1] === j)) aus.push([i, j]); }
   return aus;
 }
 
@@ -54,6 +64,10 @@ function gebaeudeFelder(p: Platzierung, k: Extract<Kollision, { art: "gebaeude" 
     for (const t of k.tueren) { if (Math.abs(t.y - b.y1) > 0.01 || t.x0 < b.x0 || t.x1 > b.x1) continue;
       const tx0 = p.x + t.x0 * s, tx1 = p.x + t.x1 * s;
       for (let i = cW + 1; i < cO; i++) if (Math.min(i + 1, tx1) - Math.max(i, tx0) > 0.3) frei.add(i + "," + rS); } }
+  /* Möbel: jedes Feld, das ein Möbelstück zu mehr als einem Viertel bedeckt oder dessen Mitte darin liegt, ist gesperrt (die Türlücke bleibt frei) */
+  for (const m of k.moebel || []) { const x0 = p.x + m.x0 * s, x1 = p.x + m.x1 * s, y0 = p.y + m.y0 * s, y1 = p.y + m.y1 * s;
+    for (let j = Math.floor(y0); j < Math.ceil(y1); j++) for (let i = Math.floor(x0); i < Math.ceil(x1); i++) {
+      const mitte = i + 0.5 >= x0 && i + 0.5 <= x1 && j + 0.5 >= y0 && j + 0.5 <= y1; if (mitte || ueber(x0, y0, x1, y1, i, j) > 0.25) zu.add(i + "," + j); } }
   return [...zu].filter((f) => !frei.has(f)).map((f) => f.split(",").map(Number));
 }
 
@@ -63,10 +77,12 @@ export function gehRaster(d: RegionDaten, gelaende: GelaendeBibliothek, objekte:
   const [B, H] = regionFelder(d.region), art = new Map(gelaende.arten.map((a) => [a.zeichen, a])), def = new Map(objekte.objekte.map((o) => [o.id, o]));
   const g: string[][] = d.gelaende.map((z) => [...z].map((c) => { const a = art.get(c); return !a ? "#" : a.wasser ? "~" : a.begehbar ? "." : "#"; }));
   const setze = (i: number, j: number, c: string) => { if (i >= 0 && j >= 0 && i < B && j < H) g[j][i] = c; };
-  for (const p of d.objekte) for (const [i, j] of sperrFelder(p, def.get(p.objekt))) setze(i, j, "#");
+  for (const p of d.objekte) if (!p.ausbau && !p.ausbau_bis) for (const [i, j] of sperrFelder(p, def.get(p.objekt))) setze(i, j, "#"); /* Stadtstufen: sperren je Spieler (ChunkDaten.ausbau) */
   const flaeche = (z: { x0: number; y0: number; x1: number; y1: number }, c: string) => {
     for (let j = Math.floor(z.y0); j < Math.ceil(z.y1); j++) for (let i = Math.floor(z.x0); i < Math.ceil(z.x1); i++) if (i + 0.5 >= z.x0 && i + 0.5 <= z.x1 && j + 0.5 >= z.y0 && j + 0.5 <= z.y1) setze(i, j, c); };
-  for (const z of d.spiel.kollision.sperren) flaeche(z, "#");
+  for (const z of d.spiel.kollision.sperren) if (!(z as { schalter?: string }).schalter || !TUER_SCHALTER.has((z as { schalter?: string }).schalter!)) flaeche(z, "#");
+  /* #160: Sperren mit Schalter, für die es eine Tür gibt (shared/bosse.ts TUEREN – eingestürzter Stollen, Lehmfurt), bleiben im Raster frei:
+     die Tür sperrt sie je Spieler, bis sein Schalter an ist. Ohne Tür bleibt die Sperre fest (sicher). */
   for (const z of d.spiel.kollision.freigeben) flaeche(z, ".");
   return g.map((z) => z.join(""));
 }
@@ -87,6 +103,8 @@ export function chunksBauen(d: RegionDaten, gelaende: GelaendeBibliothek, objekt
     r.ursprung[0] + Math.max(0, Math.min(r.chunks[0] - 1, Math.floor(x / CHUNK_FELDER))), r.ursprung[1] + Math.max(0, Math.min(r.chunks[1] - 1, Math.floor(y / CHUNK_FELDER)))))!;
   const rund = (v: number) => Math.round(v * 100) / 100;
   for (const p of d.objekte) heim(p.x, p.y).objekte.push({ ...p, x: rund(p.x + ox), y: rund(p.y + oy) });
+  { const def = new Map(objekte.objekte.map((o) => [o.id, o])); for (const p of d.objekte) { if (!p.ausbau && !p.ausbau_bis) continue; const f = sperrFelder(p, def.get(p.objekt)); if (!f.length) continue; /* Stadtstufen */
+    const c = heim(p.x, p.y); (c.ausbau || (c.ausbau = [])).push({ m: `${p.ausbau || ""}|${p.ausbau_bis || ""}`, f: f.map(([i, j]) => [i + ox, j + oy]) }); } }
   for (const f of d.spiel.figuren) heim(f.x, f.y).figuren.push({ ...f, x: rund(f.x + ox), y: rund(f.y + oy) } as Figur);
   for (const a of d.spiel.interaktionen) heim(a.x, a.y).interaktionen.push({ ...a, x: rund(a.x + ox), y: rund(a.y + oy) } as Interaktion);
   for (const c of chunks.values()) c.objekte.sort((a, b) => a.y - b.y);

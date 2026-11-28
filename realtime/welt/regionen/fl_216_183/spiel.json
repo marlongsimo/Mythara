@@ -1,0 +1,721 @@
+{
+ "start": [
+  [
+   240,
+   240
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 72,
+    "y0": 112,
+    "x1": 73,
+    "y1": 113
+   },
+   {
+    "art": "rechteck",
+    "x0": 67,
+    "y0": 111,
+    "x1": 68,
+    "y1": 112
+   },
+   {
+    "art": "rechteck",
+    "x0": 67,
+    "y0": 106,
+    "x1": 68,
+    "y1": 107
+   },
+   {
+    "art": "rechteck",
+    "x0": 72,
+    "y0": 107,
+    "x1": 73,
+    "y1": 108
+   },
+   {
+    "art": "rechteck",
+    "x0": 307,
+    "y0": 141,
+    "x1": 308,
+    "y1": 142
+   },
+   {
+    "art": "rechteck",
+    "x0": 302,
+    "y0": 140,
+    "x1": 303,
+    "y1": 141
+   },
+   {
+    "art": "rechteck",
+    "x0": 303,
+    "y0": 135,
+    "x1": 304,
+    "y1": 136
+   },
+   {
+    "art": "rechteck",
+    "x0": 308,
+    "y0": 136,
+    "x1": 309,
+    "y1": 137
+   },
+   {
+    "art": "rechteck",
+    "x0": 53,
+    "y0": 118,
+    "x1": 54,
+    "y1": 119
+   },
+   {
+    "art": "rechteck",
+    "x0": 48,
+    "y0": 116,
+    "x1": 49,
+    "y1": 117
+   },
+   {
+    "art": "rechteck",
+    "x0": 52,
+    "y0": 112,
+    "x1": 53,
+    "y1": 113
+   },
+   {
+    "art": "rechteck",
+    "x0": 14,
+    "y0": 19,
+    "x1": 15,
+    "y1": 20
+   },
+   {
+    "art": "rechteck",
+    "x0": 8,
+    "y0": 17,
+    "x1": 9,
+    "y1": 18
+   },
+   {
+    "art": "rechteck",
+    "x0": 13,
+    "y0": 13,
+    "x1": 14,
+    "y1": 14
+   },
+   {
+    "art": "rechteck",
+    "x0": 90,
+    "y0": 106,
+    "x1": 91,
+    "y1": 107
+   },
+   {
+    "art": "rechteck",
+    "x0": 85,
+    "y0": 103,
+    "x1": 86,
+    "y1": 104
+   },
+   {
+    "art": "rechteck",
+    "x0": 89,
+    "y0": 100,
+    "x1": 90,
+    "y1": 101
+   },
+   {
+    "art": "rechteck",
+    "x0": 166,
+    "y0": 111,
+    "x1": 167,
+    "y1": 112
+   },
+   {
+    "art": "rechteck",
+    "x0": 161,
+    "y0": 109,
+    "x1": 162,
+    "y1": 110
+   },
+   {
+    "art": "rechteck",
+    "x0": 165,
+    "y0": 105,
+    "x1": 166,
+    "y1": 106
+   },
+   {
+    "art": "rechteck",
+    "x0": 238,
+    "y0": 124,
+    "x1": 239,
+    "y1": 125
+   },
+   {
+    "art": "rechteck",
+    "x0": 232,
+    "y0": 122,
+    "x1": 233,
+    "y1": 123
+   },
+   {
+    "art": "rechteck",
+    "x0": 237,
+    "y0": 118,
+    "x1": 238,
+    "y1": 119
+   },
+   {
+    "art": "rechteck",
+    "x0": 184,
+    "y0": 61,
+    "x1": 185,
+    "y1": 62
+   },
+   {
+    "art": "rechteck",
+    "x0": 178,
+    "y0": 58,
+    "x1": 179,
+    "y1": 59
+   },
+   {
+    "art": "rechteck",
+    "x0": 183,
+    "y0": 55,
+    "x1": 184,
+    "y1": 56
+   },
+   {
+    "art": "rechteck",
+    "x0": 12,
+    "y0": 66,
+    "x1": 13,
+    "y1": 67
+   },
+   {
+    "art": "rechteck",
+    "x0": 8,
+    "y0": 67,
+    "x1": 9,
+    "y1": 68
+   },
+   {
+    "art": "rechteck",
+    "x0": 9,
+    "y0": 63,
+    "x1": 10,
+    "y1": 64
+   },
+   {
+    "art": "rechteck",
+    "x0": 293,
+    "y0": 122,
+    "x1": 294,
+    "y1": 123
+   },
+   {
+    "art": "rechteck",
+    "x0": 289,
+    "y0": 123,
+    "x1": 290,
+    "y1": 124
+   },
+   {
+    "art": "rechteck",
+    "x0": 290,
+    "y0": 119,
+    "x1": 291,
+    "y1": 120
+   },
+   {
+    "art": "rechteck",
+    "x0": 105,
+    "y0": 115,
+    "x1": 106,
+    "y1": 116
+   },
+   {
+    "art": "rechteck",
+    "x0": 102,
+    "y0": 116,
+    "x1": 103,
+    "y1": 117
+   },
+   {
+    "art": "rechteck",
+    "x0": 100,
+    "y0": 113,
+    "x1": 101,
+    "y1": 114
+   },
+   {
+    "art": "rechteck",
+    "x0": 104,
+    "y0": 111,
+    "x1": 105,
+    "y1": 112
+   },
+   {
+    "art": "rechteck",
+    "x0": 12,
+    "y0": 85,
+    "x1": 13,
+    "y1": 86
+   },
+   {
+    "art": "rechteck",
+    "x0": 7,
+    "y0": 86,
+    "x1": 8,
+    "y1": 87
+   },
+   {
+    "art": "rechteck",
+    "x0": 9,
+    "y0": 82,
+    "x1": 10,
+    "y1": 83
+   },
+   {
+    "art": "rechteck",
+    "x0": 206,
+    "y0": 121,
+    "x1": 207,
+    "y1": 122
+   },
+   {
+    "art": "rechteck",
+    "x0": 201,
+    "y0": 122,
+    "x1": 202,
+    "y1": 123
+   },
+   {
+    "art": "rechteck",
+    "x0": 203,
+    "y0": 118,
+    "x1": 204,
+    "y1": 119
+   },
+   {
+    "art": "rechteck",
+    "x0": 195,
+    "y0": 18,
+    "x1": 196,
+    "y1": 19
+   },
+   {
+    "art": "rechteck",
+    "x0": 190,
+    "y0": 19,
+    "x1": 191,
+    "y1": 20
+   },
+   {
+    "art": "rechteck",
+    "x0": 192,
+    "y0": 15,
+    "x1": 193,
+    "y1": 16
+   },
+   {
+    "art": "rechteck",
+    "x0": 196,
+    "y0": 36,
+    "x1": 197,
+    "y1": 37
+   },
+   {
+    "art": "rechteck",
+    "x0": 191,
+    "y0": 37,
+    "x1": 192,
+    "y1": 38
+   },
+   {
+    "art": "rechteck",
+    "x0": 193,
+    "y0": 33,
+    "x1": 194,
+    "y1": 34
+   }
+  ],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 99.1,
+    "y0": 4,
+    "x1": 107,
+    "y1": 6.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 45.1,
+    "y0": 2.7,
+    "x1": 53,
+    "y1": 5.3
+   }
+  ]
+ },
+ "interaktionen": [
+  {
+   "id": "steinhag",
+   "art": "lesen",
+   "x": 80.5,
+   "y": 34.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Steinhag. Die Bergstadt am See – Stein auf Stein, Dächer mit Schiefer beschwert. Wer in die Hochlande will, kommt hier vorbei."
+   }
+  },
+  {
+   "id": "steinhag_vogthof",
+   "art": "lesen",
+   "x": 79,
+   "y": 23.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Hof der Bergvögte. Über dem Tor das Zeichen der Hochlande: zwei gekreuzte Hämmer unter einem Berg."
+   }
+  },
+  {
+   "id": "steinhag_bank_tuer",
+   "art": "lesen",
+   "x": 57,
+   "y": 23,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Steinhag. Dasselbe Konto wie im Tal – nur das Gold riecht nach Stollen."
+   }
+  },
+  {
+   "id": "steinhag_wegstein",
+   "art": "lesen",
+   "x": 72,
+   "y": 34.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Wegstein von Steinhag."
+   }
+  },
+  {
+   "id": "steinhag_bindestein",
+   "art": "lesen",
+   "x": 84,
+   "y": 34.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Bindestein am Brunnen von Steinhag."
+   }
+  },
+  {
+   "id": "steinhag_werkstatt",
+   "art": "lesen",
+   "x": 95,
+   "y": 64,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkstatt von Steinhag: Esse, Amboss und eine Werkbank, an der Grubenholz zugeschnitten wird."
+   }
+  },
+  {
+   "id": "fischplatz_steinhagsee",
+   "art": "lesen",
+   "x": 102,
+   "y": 3,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Steg aus beißen im kalten Steinhagsee die Welse.",
+    "fisch": "wels",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "almhuette",
+   "art": "lesen",
+   "x": 274,
+   "y": 145.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Almhütte auf der Hohen Alm. Im Sommer weiden hier Schafe und Ziegen, und in der Käserei reifen Laibe so groß wie Wagenräder."
+   }
+  },
+  {
+   "id": "wegweiser_steinhag_west",
+   "art": "lesen",
+   "x": 13.5,
+   "y": 41.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Wegweiser: Westen – die Furt, Grauwacht · Norden – um die Mauer zum Nordwesttor, Hochpass"
+   }
+  },
+  {
+   "id": "wegweiser_steinhag_ost",
+   "art": "lesen",
+   "x": 173.5,
+   "y": 41.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Wegweiser: Osten – Erzberg, Bergwerk · Süden – Hohe Alm"
+   }
+  },
+  {
+   "id": "fischplatz_almbach",
+   "art": "lesen",
+   "x": 242.5,
+   "y": 64.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Almbach. Bachlinge schießen zwischen den Steinen hin und her.",
+    "fisch": "bachling",
+    "stufe": 1
+   }
+  },
+  {
+   "id": "fischplatz_almbach_unten",
+   "art": "lesen",
+   "x": 248.5,
+   "y": 224.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Unterhalb der Alm wird der Bach breiter – Mühlbarsche.",
+    "fisch": "muehlbarsch",
+    "stufe": 10
+   }
+  },
+  {
+   "id": "steinhag_tor_west",
+   "art": "lesen",
+   "x": 21,
+   "y": 47.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Westtor von Steinhag. Hinunter zur Furt und über die Brücke nach Grauwacht."
+   }
+  },
+  {
+   "id": "steinhag_tor_ost",
+   "art": "lesen",
+   "x": 165,
+   "y": 47.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Osttor von Steinhag. Links zum Erzberg, ausgefahren von Erzwagen – rechts hinauf zur Hohen Alm."
+   }
+  },
+  {
+   "id": "steinhag_burgplatz",
+   "art": "lesen",
+   "x": 141,
+   "y": 8.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Burgplatz von Steinhag. Von hier führt der Burgsteig hinauf zur Vogtsburg."
+   }
+  },
+  {
+   "id": "steinhag_zunftbank_tuer",
+   "art": "lesen",
+   "x": 153,
+   "y": 59.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Zunftbank von Steinhag. Dasselbe Konto wie überall – nur näher an der Grube."
+   }
+  },
+  {
+   "id": "steinhag_zunftschmiede",
+   "art": "lesen",
+   "x": 144,
+   "y": 76.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Zunftschmiede der Bergleute: vier Ambosse, zwei Essen, und an der Wand die Meisterstücke der Zunft."
+   }
+  },
+  {
+   "id": "steinhag_brennofen",
+   "art": "lesen",
+   "x": 154.2,
+   "y": 76.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Brennofen der Zunft. Hier werden Tiegel und Formen gebrannt."
+   }
+  },
+  {
+   "id": "steinhag_zunftschmiede_bankkiste",
+   "art": "lesen",
+   "x": 140.2,
+   "y": 77.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Zunftschmiede. Was du hier einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "steinhag_zunftschmiede_tor",
+   "art": "lesen",
+   "x": 149.2,
+   "y": 81.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Tor zum Hof der Zunftschmiede. „Nur für Meister der Schmiedekunst – ab Stufe 60.“"
+   }
+  },
+  {
+   "id": "steinhag_zunftstollen_eingang",
+   "art": "eingang",
+   "x": 154,
+   "y": 88.6,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Abstieg in den Stollen der Bergmannszunft. Ein Schild: „Nur für Zunftmitglieder – Meisterschaft ab Stufe 60.“",
+    "tat": "zunftstollen",
+    "knopf": "Hinabsteigen",
+    "ziel": [
+     11872,
+     9657
+    ]
+   }
+  },
+  {
+   "id": "kaesekeller",
+   "art": "eingang",
+   "x": 281.5,
+   "y": 144.6,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Kellertür der Käserei. Unten reifen die Laibe im Kühlen.",
+    "tat": "kaesekeller",
+    "knopf": "Hinabsteigen",
+    "ziel": [
+     11824,
+     9624
+    ]
+   }
+  },
+  {
+   "id": "kaeserei_kessel_quest",
+   "art": "lesen",
+   "x": 286,
+   "y": 147.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Käsekessel der Sennerin. Hier wird die Milch gelabt.",
+    "questobjekt": "kaesekessel"
+   }
+  },
+  {
+   "id": "ziege_versteck_1",
+   "art": "lesen",
+   "x": 218,
+   "y": 180,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hier hat sich eine Ziege verkrochen und meckert dich an.",
+    "questobjekt": "ziege_1"
+   }
+  },
+  {
+   "id": "ziege_versteck_2",
+   "art": "lesen",
+   "x": 350,
+   "y": 136,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hier hat sich eine Ziege verkrochen und meckert dich an.",
+    "questobjekt": "ziege_2"
+   }
+  },
+  {
+   "id": "ziege_versteck_3",
+   "art": "lesen",
+   "x": 308,
+   "y": 210,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hier hat sich eine Ziege verkrochen und meckert dich an.",
+    "questobjekt": "ziege_3"
+   }
+  }
+ ],
+ "senken": [
+  {
+   "x": 10.2,
+   "y": 65.6,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 291.3,
+   "y": 121.7,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 103.1,
+   "y": 114.1,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 9.7,
+   "y": 84.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 203.7,
+   "y": 120.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 192.7,
+   "y": 17.7,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 193.7,
+   "y": 35.9,
+   "r": 5,
+   "tiefe": 1.1
+  }
+ ]
+}

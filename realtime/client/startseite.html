@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <link rel="manifest" href="manifest.webmanifest">
+  <script>
+    /* Alte Einstiege (#157): Einladungslinks ?von=…, Links mit Angaben und die App vom Startbildschirm gehen direkt ins Spiel (echtzeit/),
+       mit allen Angaben. Wer die Adresse im Browser öffnet, sieht diese Seite. Mit ?start bleibt man in jedem Fall hier. */
+    (function () {
+      try {
+        var q = location.search;
+        if (/[?&]start\b/.test(q)) return;
+        var app = matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches || navigator.standalone === true;
+        if (q.length > 1 || app) location.replace("echtzeit/" + q + location.hash);
+      } catch (e) { /* ohne matchMedia: Startseite zeigen */ }
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Riftmere – Online-Rollenspiel im Browser</title>
+  <meta name="description" content="Riftmere: eine lebendige Fantasy-Welt im Browser. Erkunde die Splitterlande mit anderen Spielern, kämpfe, sammle, handle und schreibe deine Geschichte – kostenlos, auf Handy und PC.">
+  <link rel="canonical" href="https://riftmere.de/">
+  <meta property="og:type" content="website"><meta property="og:site_name" content="Riftmere"><meta property="og:locale" content="de_DE">
+  <meta property="og:title" content="Riftmere – Online-Rollenspiel im Browser"><meta property="og:description" content="Erkunde die Splitterlande mit anderen Spielern – kostenlos, auf Handy und PC.">
+  <meta property="og:url" content="https://riftmere.de/"><meta property="og:image" content="https://riftmere.de/img/startseite/markt.jpg"><meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="img/favicon.png" type="image/png"><link rel="apple-touch-icon" href="img/app/mythara-180.png">
+  <!--
+    Startseite riftmere.de (#78, Oberfläche): kein klassischer Landing-Page-Aufbau, sondern wie der Titelbildschirm des Spiels –
+    der Trailer aus echten Spielbildern läuft im Hintergrund, darüber nur Name, ein Satz, „Spielen“ und die Neuigkeiten als Fenster im HUD-Stil.
+    Bilder und Trailer: echte Aufnahmen aus der 3D-Welt (img/startseite/). „Spielen“ führt ins Spiel (echtzeit/), das selbst zur Anmeldung leitet.
+  -->
+  <style>
+    @font-face { font-family: "Cinzel"; src: url("fonts/cinzel-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+    @font-face { font-family: "Inter"; src: url("fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "Inter"; src: url("fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+    :root { --gold: #c99a3c; --gold-hell: #ffd36a; --text: #f3e3b5; --leise: #cdb98a; --dunkel: #16100a; --f: 8px;
+      --ecke: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #0c0905; color: var(--text); font: 15px/1.45 Inter, system-ui, sans-serif; }
+    body { overflow-x: hidden; }
+    a { color: inherit; }
+
+    /* Bühne: der Trailer füllt den ganzen Bildschirm (wie ein Titelbildschirm), darüber ein leichter Schleier für die Lesbarkeit */
+    .buehne { position: relative; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px); grid-template-rows: auto 1fr auto; gap: 18px; padding: max(18px, env(safe-area-inset-top)) max(22px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(22px, env(safe-area-inset-left)); isolation: isolate; }
+    .film { position: absolute; inset: 0; z-index: -2; overflow: hidden; background: #0c0905; }
+    .film video, .film img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .film::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,7,4,.82) 0%, rgba(10,7,4,.35) 45%, rgba(10,7,4,.15) 65%, rgba(10,7,4,.6) 100%), linear-gradient(0deg, rgba(10,7,4,.85) 0%, transparent 30%); }
+
+    .kopf { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; }
+    .zeichen { font: 600 26px Cinzel, Georgia, serif; letter-spacing: .14em; color: var(--gold-hell); text-shadow: 0 2px 4px #000, 0 0 18px rgba(255,211,106,.35); text-decoration: none; }
+    .live { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; background: rgba(16,11,6,.7); border: 1px solid rgba(201,154,60,.6); border-radius: 999px; font: 600 12.5px Inter, sans-serif; color: var(--leise); }
+    .live i { width: 8px; height: 8px; border-radius: 50%; background: #8fe07a; box-shadow: 0 0 8px #8fe07a; animation: puls 1.8s ease-in-out infinite; } @keyframes puls { 50% { opacity: .35; } }
+    .live b { color: var(--text); }
+    .kopf .rechts { margin-left: auto; display: flex; gap: 10px; }
+    .klein-knopf { padding: 7px 14px; font: 600 13px Cinzel, Georgia, serif; letter-spacing: .05em; color: var(--text); text-decoration: none; background: rgba(16,11,6,.65); border: 1px solid rgba(201,154,60,.7); border-radius: 6px; }
+    .klein-knopf:hover { border-color: var(--gold-hell); color: #fff3cf; }
+
+    .links { grid-column: 1; align-self: end; display: grid; gap: 16px; max-width: 620px; padding-bottom: 8px; }
+    h1 { margin: 0; font: 600 clamp(44px, 7.5vw, 92px)/.95 Cinzel, Georgia, serif; letter-spacing: .06em; color: var(--gold-hell); text-shadow: 0 4px 10px #000, 0 0 40px rgba(255,190,80,.25); }
+    .satz { margin: 0; font-size: clamp(16px, 1.6vw, 19px); color: var(--text); text-shadow: 0 1px 3px #000; max-width: 34em; }
+    .merkmale { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; list-style: none; font: 600 12.5px Inter, sans-serif; color: var(--leise); }
+    .merkmale li::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 0; transform: rotate(45deg); background: var(--gold); }
+    .los { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+    .spielen { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 12px; padding: 16px 40px; text-decoration: none; background: var(--gold-hell); clip-path: var(--ecke); --f: 10px;
+      font: 600 22px Cinzel, Georgia, serif; letter-spacing: .12em; color: #fff3cf; text-shadow: 0 2px 3px #000; transition: filter .15s, transform .15s; }
+    .spielen::before { content: ""; position: absolute; inset: 2px; z-index: -1; background: linear-gradient(#7a5a2a, #3a2814); clip-path: inherit; }
+    .spielen:hover { filter: brightness(1.15); transform: translateY(-1px); } .spielen span { font-size: 18px; }
+    .los small { color: var(--leise); font-size: 13px; }
+
+    /* Rechts: Fenster im HUD-Stil – Neuigkeiten */
+    .fenster { position: relative; isolation: isolate; background: var(--gold); clip-path: var(--ecke); padding: 14px 16px; }
+    .fenster::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: linear-gradient(rgba(38,29,18,.94), rgba(22,16,10,.94)); clip-path: inherit; }
+    .fenster h2 { position: relative; margin: 0 0 10px; padding-bottom: 8px; font: 600 15px Cinzel, Georgia, serif; letter-spacing: .06em; color: #ffe7b0; }
+    .fenster h2::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold) 15%, var(--gold) 85%, transparent); }
+    .fenster h2::before { content: ""; position: absolute; left: 50%; bottom: -3px; width: 6px; height: 6px; transform: translateX(-50%) rotate(45deg); background: #1c150d; border: 1px solid #e0b860; z-index: 1; }
+    .neues { grid-column: 2; grid-row: 2; align-self: start; max-height: calc(100svh - 160px); display: flex; flex-direction: column; }
+    .neues ul { list-style: none; margin: 0; padding: 0 4px 0 0; display: grid; gap: 10px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #8a6a3a transparent; }
+    .neues li { display: grid; gap: 2px; padding-bottom: 10px; border-bottom: 1px solid rgba(201,154,60,.25); } .neues li:last-child { border-bottom: 0; padding-bottom: 0; }
+    .neues time { font: 600 11px Inter, sans-serif; color: #a8946a; letter-spacing: .04em; } .neues b { font: 600 14px Cinzel, Georgia, serif; color: #ffe7b0; } .neues p { margin: 0; font-size: 13px; color: var(--leise); }
+
+    /* Unten: Bilder aus dem Spiel – antippen = groß */
+    .bilder { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .bild { position: relative; isolation: isolate; display: block; padding: 0; border: 0; background: var(--gold); clip-path: var(--ecke); cursor: zoom-in; aspect-ratio: 16 / 9; }
+    .bild img { position: absolute; inset: 1.5px; width: calc(100% - 3px); height: calc(100% - 3px); object-fit: cover; clip-path: var(--ecke); transition: transform .4s; }
+    .bild:hover img { transform: scale(1.04); }
+    .bild span { position: absolute; left: 10px; bottom: 7px; z-index: 1; font: 600 12px Cinzel, Georgia, serif; letter-spacing: .05em; color: #fff3cf; text-shadow: 0 1px 3px #000, 0 0 8px #000; }
+
+    .fuss { grid-column: 1 / -1; display: flex; justify-content: center; gap: 16px; font-size: 12px; color: #8a7a5a; } .fuss a { color: #a8946a; }
+
+    .gross { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: rgba(6,4,2,.9); padding: 20px; cursor: zoom-out; }
+    .gross[hidden] { display: none; } .gross img { max-width: 100%; max-height: 100%; border: 1.5px solid var(--gold); }
+
+    /* Handy quer (wenig Höhe): kompakter, Neuigkeiten kürzer, Bilder als Reihe */
+    @media (max-height: 520px) {
+      .buehne { gap: 10px; padding-top: max(10px, env(safe-area-inset-top)); grid-template-columns: minmax(0, 1fr) minmax(240px, 300px); }
+      h1 { font-size: clamp(38px, 9vh, 56px); } .satz { font-size: 14px; } .links { gap: 10px; padding-bottom: 0; } .merkmale { display: none; }
+      .spielen { padding: 11px 28px; font-size: 18px; } .zeichen { font-size: 19px; } .live { font-size: 11.5px; padding: 3px 10px; } .klein-knopf { padding: 5px 10px; font-size: 12px; }
+      .neues { max-height: calc(100svh - 150px); } .fenster { padding: 10px 12px; } .neues p { display: none; } .neues li { padding-bottom: 6px; } .neues ul { gap: 6px; }
+      .bilder { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; } .bild span { font-size: 10px; left: 7px; bottom: 4px; }
+    }
+    /* Handy hoch: alles untereinander */
+    @media (max-width: 640px) and (orientation: portrait) {
+      .buehne { grid-template-columns: 1fr; grid-template-rows: auto auto auto auto auto; } .links { grid-column: 1; padding-top: 30vh; } .neues { grid-column: 1; grid-row: auto; max-height: none; }
+      .bilder { grid-template-columns: repeat(2, 1fr); } .kopf .live { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="buehne">
+    <div class="film" aria-hidden="true">
+      <img src="img/startseite/markt.jpg" alt="">
+      <video autoplay muted loop playsinline preload="auto" poster="img/startseite/markt.jpg"><source src="img/startseite/trailer.mp4" type="video/mp4"></video>
+    </div>
+
+    <header class="kopf">
+      <a class="zeichen" href="./">RIFTMERE</a>
+      <span class="live"><i></i>Welt <b>Riftmere 1</b><span class="zahl" hidden> · <b class="online"></b> unterwegs</span></span>
+      <nav class="rechts"><a class="klein-knopf" href="echtzeit/anmelden.html">Anmelden</a></nav>
+    </header>
+
+    <section class="links">
+      <h1>Riftmere</h1>
+      <p class="satz">Eine Welt im Browser, in der du nie allein unterwegs bist. Zieh durch die Splitterlande, kämpf gegen Banditen und Golems, fische, schmiede, handle – mit Spielern von überall.</p>
+      <ul class="merkmale"><li>Gemeinsame Welt</li><li>Kämpfe in Echtzeit</li><li>Quests und Berufe</li><li>Handy und PC</li><li>Kostenlos</li></ul>
+      <div class="los"><a class="spielen" href="echtzeit/">Spielen <span>▸</span></a><small>Kein Download. Konto in einer Minute.</small></div>
+    </section>
+
+    <aside class="neues fenster" aria-label="Neuigkeiten"><h2>Neues aus den Splitterlanden</h2><ul class="liste"><li><b>…</b></li></ul></aside>
+
+    <section class="bilder" aria-label="Bilder aus dem Spiel">
+      <button type="button" class="bild" data-gross="img/startseite/markt.jpg"><img src="img/startseite/markt-klein.jpg" alt="Der Marktplatz der Waldmark voller Spieler" loading="lazy"><span>Marktplatz der Waldmark</span></button>
+      <button type="button" class="bild" data-gross="img/startseite/nah.jpg"><img src="img/startseite/nah-klein.jpg" alt="Helden am Brunnen" loading="lazy"><span>Treffpunkt am Brunnen</span></button>
+      <button type="button" class="bild" data-gross="img/startseite/weidenhain.jpg"><img src="img/startseite/weidenhain-klein.jpg" alt="Die Mühle von Weidenhain" loading="lazy"><span>Weidenhain</span></button>
+      <button type="button" class="bild" data-gross="img/startseite/wald.jpg"><img src="img/startseite/wald-klein.jpg" alt="Banditen im Kreuzwald" loading="lazy"><span>Der Kreuzwald</span></button>
+    </section>
+
+    <footer class="fuss"><span>Riftmere</span><a href="echtzeit/impressum.html">Impressum</a><a href="echtzeit/datenschutz.html">Datenschutz</a></footer>
+  </main>
+  <div class="gross" hidden><img alt=""></div>
+  <script>
+    /* Neuigkeiten aus echtzeit/neuigkeiten.json (dieselben wie im Spiel), neueste zuerst */
+    fetch("echtzeit/neuigkeiten.json").then(function (r) { return r.json(); }).then(function (d) {
+      var l = document.querySelector(".neues .liste"), e = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+      l.innerHTML = (d.neuigkeiten || []).slice(0, 6).map(function (n) { var t = new Date(n.datum); return "<li><time>" + (isNaN(t) ? "" : t.toLocaleDateString("de-DE", { day: "numeric", month: "long" })) + "</time><b>" + e(n.titel) + "</b><p>" + e(n.text) + "</p></li>"; }).join("");
+    }).catch(function () { document.querySelector(".neues").hidden = true; });
+    /* Echte Spielerzahl vom Spielserver (wie im Fenster „Welt wechseln“); ohne Antwort bleibt nur der Weltname stehen */
+    fetch("https://mythara-echtzeit.onrender.com/").then(function (r) { return r.json(); }).then(function (d) { var n = (d.welten || []).reduce(function (s, w) { return s + (w.online || 0); }, 0);
+      if (n > 0) { document.querySelector(".live .online").textContent = n; document.querySelector(".live .zahl").hidden = false; } }).catch(function () {});
+    /* Bilder groß */
+    var g = document.querySelector(".gross"); document.querySelectorAll("[data-gross]").forEach(function (b) { b.onclick = function () { g.querySelector("img").src = b.dataset.gross; g.hidden = false; }; }); g.onclick = function () { g.hidden = true; };
+    /* Trailer nur, wenn er läuft (Datensparmodus, alte Geräte: dann bleibt das Standbild) */
+    var v = document.querySelector(".film video"); v.addEventListener("playing", function () { document.querySelector(".film img").style.opacity = 0; });
+  </script>
+</body>
+</html>

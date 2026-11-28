@@ -1,0 +1,16 @@
+{
+ "id": "fl_212_198",
+ "name": "Das Grenzland",
+ "untertitel": "Das erste Festland – noch unbesiedelt",
+ "ursprung": [
+  212,
+  198
+ ],
+ "chunks": [
+  4,
+  2
+ ],
+ "biom": "wiese",
+ "stufe": 3,
+ "nahtlos": "festland"
+}

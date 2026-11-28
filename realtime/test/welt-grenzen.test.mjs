@@ -5,7 +5,7 @@
  */
 import { region, regionNamen } from "../werkzeug/welt/laden.mjs";
 let ok = true; const check = (b, t, e = []) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) { ok = false; for (const z of e.slice(0, 12)) console.log("      " + z); } };
-const C = 32, namen = regionNamen().filter((n) => !region(n).region.entwurf && region(n).region.ebene !== "untergrund"), R = Object.fromEntries(namen.map((n) => [n, region(n)]));
+const C = 32, namen = regionNamen().filter((n) => !region(n).region.entwurf && !region(n).region.ebene), R = Object.fromEntries(namen.map((n) => [n, region(n)]));
 const besitz = new Map(); const doppelt = [];
 for (const n of namen) { const r = R[n].region; for (let j = 0; j < r.chunks[1]; j++) for (let i = 0; i < r.chunks[0]; i++) { const k = (r.ursprung[0] + i) + "_" + (r.ursprung[1] + j); if (besitz.has(k)) doppelt.push(k + ": " + besitz.get(k) + " / " + n); besitz.set(k, n); } }
 const xs = [...besitz.keys()].map((k) => +k.split("_")[0]), ys = [...besitz.keys()].map((k) => +k.split("_")[1]);
@@ -22,7 +22,10 @@ const brueche = [];
 for (let Y = y0 * C; Y < (y1 + 1) * C; Y++) for (let X = x0 * C; X < (x1 + 1) * C; X++) {
   const a = feld(X, Y); if (a === null) continue;
   for (const [dx, dy] of [[1, 0], [0, 1]]) { const X2 = X + dx, Y2 = Y + dy; if (besitz.get(Math.floor(X2 / C) + "_" + Math.floor(Y2 / C)) === besitz.get(Math.floor(X / C) + "_" + Math.floor(Y / C))) continue;
-    const b = feld(X2, Y2); if (b === null) continue; if (art(a) !== art(b) && (art(a) !== "land" || art(b) !== "land")) brueche.push({ X, Y, dx, a, b }); } }
+    const b = feld(X2, Y2); if (b === null) continue;
+    /* Regionen aus einem Guss (z. B. das Festland, werkzeug/welt/festland.py): ihre Küsten laufen echt über die Grenze, dort ist nichts versetzt */
+    const ra = R[besitz.get(Math.floor(X / C) + "_" + Math.floor(Y / C))].region, rb = R[besitz.get(Math.floor(X2 / C) + "_" + Math.floor(Y2 / C))].region;
+    if (ra.nahtlos && ra.nahtlos === rb.nahtlos) continue; if (art(a) !== art(b) && (art(a) !== "land" || art(b) !== "land")) brueche.push({ X, Y, dx, a, b }); } }
 /* einzelne Randfelder eines breiten Wegs dürfen ausfransen – ein Bruch zählt erst, wenn an einer Stelle zwei Felder nebeneinander nicht passen */
 const ernst = brueche.filter((p) => brueche.some((q) => q !== p && q.dx === p.dx && Math.abs(q.X - p.X) + Math.abs(q.Y - p.Y) === 1));
 check(ernst.length === 0, `an allen Regionsgrenzen trifft Weg auf Weg und Wasser auf Wasser (${brueche.length} einzelne Randfelder)`, ernst.map((p) => `${besitz.get(Math.floor(p.X / C) + "_" + Math.floor(p.Y / C))} → ${besitz.get(Math.floor((p.X + p.dx) / C) + "_" + Math.floor((p.Y + 1 - p.dx) / C))} bei ${p.X}|${p.Y}: „${p.a}“ gegen „${p.b}“`));

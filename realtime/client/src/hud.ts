@@ -4,12 +4,17 @@
  * darunter links die aktive Quest mit ihren Schritten (zum Ein- und Ausklappen), unten links das Team, unten rechts die Menüknöpfe.
  * Nur was es im Spiel wirklich gibt; Händler, Schmiede, Taverne, Post und Taschen kommen, wenn sie gebaut sind.
  */
+import { blockieren, blockierteNamen } from "./welt";
+import { dropsAn, dropsSetzen, daecherAus, daecherAusSetzen } from "./skills";
+import { musikAus, musikAusSetzen } from "./musik";
+import { eigenesLevel } from "./skills";
 import { profilZeigen } from "./held";
 import { HELDEN, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
 import { KARTEN, KAMPFFOLGE, ORTREIHE } from "../../shared/karten";
 import { epAlle } from "./halle";
 import { kontoKnopf, kontoFenster, kontoName, kontoAbmelden, kontoAnmelden } from "./konto";
-import { gruppenTafel, gruppeVerbinden, einladungenBeobachten } from "./gruppe";
+import { gruppenTafel, gruppeVerbinden, einladungenBeobachten, serverAdresse } from "./gruppe";
+import { wechselWarten } from "./kampfzeit";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const lies = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
@@ -108,7 +113,7 @@ export const ZEICHEN = {
 /** Bild, Name, Held und Stufe des Helden, der gerade läuft */
 export function hudProfil(held: string) {
   const D = HELDEN[held] || HELDEN.schildwaechter; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + D.bild; $("#ez-profil-held").textContent = `${D.name} · ${D.klasse}`;
-  $("#ez-profil-stufe").textContent = "St. " + stufeAusEp(epAlle()[held] || 0); kontoKnopf(); void gruppeVerbinden(); einladungenBeobachten(); profilZeigen(); /* der eigene Held: Gesicht statt der fünf Helden */
+  $("#ez-profil-stufe").textContent = "Lv " + eigenesLevel(stufeAusEp(epAlle()[held] || 0)); kontoKnopf(); void gruppeVerbinden(); einladungenBeobachten(); profilZeigen(); /* der eigene Held: Gesicht statt der fünf Helden */
 }
 
 /* ---------- Banner oben in der Mitte ---------- */
@@ -170,11 +175,58 @@ export function menueTafel(zu: () => void) {
   const schliessen = () => { removeEventListener("keydown", esc, true); f.hidden = true; f.innerHTML = ""; zu(); };
   const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc, true);
   f.innerHTML = `<div class="tafel menue"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>
-    <h2>Menü</h2><div class="zier"></div>
-    <div class="liste"><button type="button" data-t="koop">Zusammen spielen <small>(Freunde &amp; Koop)</small></button><button type="button" data-t="profil">Heldenprofil &amp; Bildnis</button><button type="button" data-t="start">Zur Startseite von Mythara</button>
-    ${n ? `<button type="button" data-t="ab">Abmelden <small>(${n})</small></button>` : `<button type="button" data-t="hin">Anmelden</button>`}</div>
-    <p class="klein">Splitterlande · Beta</p></div>`;
+    <h2>Einstellungen</h2><div class="zier"></div>
+    <div class="espalten"><div class="einst">
+      <button type="button" data-t="drops" class="schalter${dropsAn() ? " an" : ""}" role="switch" aria-checked="${dropsAn()}"><span>XP-Drops anzeigen</span><i class="regler"></i></button>
+      <button type="button" data-t="daecher" class="schalter${daecherAus() ? " an" : ""}" role="switch" aria-checked="${daecherAus()}"><span>Dächer immer ausblenden</span><i class="regler"></i></button>
+      <button type="button" data-t="musik" class="schalter${musikAus() ? "" : " an"}" role="switch" aria-checked="${!musikAus()}"><span>Musik</span><i class="regler"></i></button>
+    </div><div class="erechts">
+    <button type="button" class="weltknopf" data-t="welt"><span>Welt</span><b>Riftmere 1</b><i>›</i></button>
+    <button type="button" class="weltknopf" data-t="blockiert"><span>Blockierte Spieler</span><b>${blockierteNamen().length}</b><i>›</i></button>
+    ${n ? `<button type="button" class="abmelden" data-t="ab">Abmelden <small>${n}</small></button>` : `<button type="button" class="abmelden" data-t="hin">Anmelden</button>`}</div></div>
+    <p class="klein">Riftmere · <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> · <a href="impressum.html" target="_blank" rel="noopener">Impressum</a></p></div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
   f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f) { schliessen(); return; } if (!t) return; const w = t.dataset.t;
-    if (w === "zu") schliessen(); else if (w === "koop") { removeEventListener("keydown", esc, true); f.innerHTML = ""; gruppenTafel(zu); } else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") void kontoAbmelden(); else if (w === "hin") kontoAnmelden(); };
+    if (w === "welt") { weltenFenster(f.querySelector(".tafel") as HTMLElement); return; }
+    if (w === "blockiert") { blockiertFenster(f.querySelector(".tafel") as HTMLElement); return; }
+    if (w === "daecher") { daecherAusSetzen(!daecherAus()); t.classList.toggle("an", daecherAus()); t.setAttribute("aria-checked", String(daecherAus())); return; }
+    if (w === "musik") { musikAusSetzen(!musikAus()); t.classList.toggle("an", !musikAus()); t.setAttribute("aria-checked", String(!musikAus())); return; }
+    if (w === "drops") { dropsSetzen(!dropsAn()); t.classList.toggle("an", dropsAn()); t.setAttribute("aria-checked", String(dropsAn())); return; }
+    if (w === "zu") schliessen(); else if (w === "koop") { removeEventListener("keydown", esc, true); f.innerHTML = ""; gruppenTafel(zu); } else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") { const n = wechselWarten(); /* wie beim Weltenwechsel: erst 10 s nach dem letzten Kampf (25.11.2026) */
+      if (n > 0) { const alt = t.innerHTML; t.innerHTML = `Im Kampf <small>Abmelden in ${n} s möglich</small>`; t.classList.add("gesperrt"); setTimeout(() => { if (t.isConnected) { t.innerHTML = alt; t.classList.remove("gesperrt"); } }, 2200); }
+      else void kontoAbmelden(); } else if (w === "hin") kontoAnmelden(); };
 }
+
+/* ---------- Blockierte Spieler: Liste mit „Aufheben“ (blockieren und melden geht über den Namen im Chat) ---------- */
+function blockiertFenster(tafel: HTMLElement): void {
+  const alt = tafel.innerHTML; const e2 = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
+  const zeichnen = () => { const n = blockierteNamen();
+    tafel.innerHTML = `<i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-w="zurueck" aria-label="Zurück">‹</button>
+      <h2>Blockierte Spieler</h2><div class="zier"></div>
+      ${n.length ? `<ul class="blockliste">${n.map((x) => `<li><b>${e2(x)}</b><button type="button" data-frei="${e2(x)}">Aufheben</button></li>`).join("")}</ul>` : `<p class="klein">Du hast niemanden blockiert.</p>`}
+      <p class="klein">Blockieren oder melden: den Namen im Chat oder einen Spieler in der Welt antippen.</p>`; };
+  zeichnen();
+  tafel.onclick = (e) => { const t = e.target as HTMLElement; e.stopPropagation();
+    if (t.closest('[data-w="zurueck"]')) { tafel.onclick = null; tafel.innerHTML = alt; const z = tafel.querySelector('[data-t="blockiert"] b'); if (z) z.textContent = String(blockierteNamen().length); return; }
+    const b = t.closest<HTMLElement>("[data-frei]"); if (b) { blockieren(b.dataset.frei || "", false); zeichnen(); } }; }
+
+/* ---------- Welten (wie in OSRS): die verfügbaren Welten mit Spielerzahl; wechseln erst 10 s nach dem letzten Kampf. Bisher gibt es nur „Riftmere 1“ (id „beta“). ---------- */
+const WELTEN = [{ id: "beta", name: "Riftmere 1" }];
+const aktuelleWelt = (): string => { try { return localStorage.getItem("rift_welt") || "beta"; } catch { return "beta"; } };
+function weltenFenster(tafel: HTMLElement): void {
+  const alt = tafel.innerHTML; const jetzt = aktuelleWelt(); let zahlen: Record<string, number> = {};
+  let gezeichnet = ""; /* nur neu zeichnen, wenn sich etwas ändert: sonst ersetzt der Sekundentakt die Knöpfe zwischen Drücken und Loslassen, der Tipp geht verloren (#109) */
+  const zeichnen = () => { const warten = wechselWarten();
+    const html = `<i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-w="zurueck" aria-label="Zurück">‹</button>
+      <h2>Welt wechseln</h2><div class="zier"></div>
+      <ul class="weltliste">${WELTEN.map((W) => `<li><button type="button" class="weltzeile${W.id === jetzt ? " an" : ""}" data-welt="${W.id}" ${W.id === jetzt ? 'aria-current="true"' : ""}><span class="punkt"></span><b>${W.name}</b><small>${zahlen[W.id] !== undefined ? zahlen[W.id] + " online" : "… online"}</small>${W.id === jetzt ? '<em>aktuell</em>' : `<em class="wechsel">Wechseln</em>`}</button></li>`).join("")}</ul>
+      <p class="klein weltnote">${warten > 0 ? `Im Kampf: wechseln erst in ${warten} s.` : WELTEN.length === 1 ? "Weitere Welten folgen. Dein Konto, Held, Inventar und Quests gelten in jeder Welt." : "Dein Konto, Held, Inventar und Quests gelten in jeder Welt."}</p>`;
+    if (html !== gezeichnet || !tafel.querySelector(".weltliste")) { tafel.innerHTML = html; gezeichnet = html; } };
+  zeichnen();
+  const uhr = window.setInterval(() => { if (!tafel.isConnected || !tafel.querySelector(".weltliste")) { clearInterval(uhr); return; } zeichnen(); }, 1000);
+  fetch(serverAdresse().replace(/^ws/, "http").replace(/\/$/, "") + "/").then((r) => r.json()).then((d: { welten?: { id: string; online: number }[] }) => { for (const x of d.welten || []) zahlen[x.id] = x.online; if (tafel.querySelector(".weltliste")) zeichnen(); }).catch(() => { zahlen = {}; });
+  tafel.onclick = (e) => { const t = e.target as HTMLElement; e.stopPropagation();
+    if (t.closest('[data-w="zurueck"]')) { clearInterval(uhr); tafel.onclick = null; tafel.innerHTML = alt; return; }
+    const b = t.closest<HTMLElement>("[data-welt]"); if (!b || b.dataset.welt === jetzt) return;
+    if (wechselWarten() > 0) { zeichnen(); return; }
+    try { localStorage.setItem("rift_welt", b.dataset.welt!); } catch { /* privat */ } location.reload(); }; }

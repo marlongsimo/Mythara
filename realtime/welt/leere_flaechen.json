@@ -1,0 +1,125 @@
+{
+ "hinweis": "Leere Flächen (leere_flaechen.py): begehbares, offenes Land, auf dem im Umkreis von 30 Feldern kein Objekt steht – man läuft dort mehr als 60 Felder, ohne etwas zu sehen. Weltfelder.",
+ "radius": 30,
+ "flaechen": [
+  {
+   "mitte": [
+    7602,
+    6862
+   ],
+   "punkt": [
+    7610,
+    6865
+   ],
+   "felder": 286,
+   "ausdehnung": [
+    96,
+    124
+   ],
+   "gebiet": "fl_231_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7848,
+    7288
+   ],
+   "punkt": [
+    7848,
+    7288
+   ],
+   "felder": 117,
+   "ausdehnung": [
+    72,
+    73
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6041,
+    6371
+   ],
+   "punkt": [
+    6040,
+    6371
+   ],
+   "felder": 104,
+   "ausdehnung": [
+    79,
+    78
+   ],
+   "gebiet": "fl_186_198",
+   "land": "Süden/Küste"
+  },
+  {
+   "mitte": [
+    7866,
+    7639
+   ],
+   "punkt": [
+    7866,
+    7639
+   ],
+   "felder": 100,
+   "ausdehnung": [
+    75,
+    85
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7602,
+    5416
+   ],
+   "punkt": [
+    7602,
+    5416
+   ],
+   "felder": 80,
+   "ausdehnung": [
+    86,
+    83
+   ],
+   "gebiet": "fl_231_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6078,
+    6608
+   ],
+   "punkt": [
+    6078,
+    6608
+   ],
+   "felder": 57,
+   "ausdehnung": [
+    67,
+    78
+   ],
+   "gebiet": "fl_186_198",
+   "land": "Süden/Küste"
+  },
+  {
+   "mitte": [
+    6913,
+    6166
+   ],
+   "punkt": [
+    6913,
+    6166
+   ],
+   "felder": 52,
+   "ausdehnung": [
+    72,
+    79
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  }
+ ]
+}

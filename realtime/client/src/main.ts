@@ -3,6 +3,8 @@
  * und stellt dar, was die Simulation zurückmeldet. Er entscheidet nichts über Treffer oder Schaden.
  */
 import Phaser from "phaser";
+import "./abschluss"; /* #77: Quest-Abschlussfenster (Arbeitsfenster) */
+import { untaetigWaechter } from "./abmeldung";
 import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
 import { epAlle, epDazu } from "./halle";
 import type { HeldDef } from "../../shared/config";
@@ -23,7 +25,9 @@ import { heldLaden, heldSetzen } from "./held";
 import { Ort, ortName } from "./ort";
 import { Welt, weltName } from "./welt/welt";
 import { weltAnschliessen } from "./welt/anschluss";
-import { lokalerHeld, weltBetreten } from "./welt";
+import { Spielwelt3D, welt3dAn } from "./welt3d/spielwelt";
+import { querformat } from "./quer";
+import { lokalerHeld, weltBetreten, geraetAngaben } from "./welt";
 import { heldenFigur, richten } from "./modulfigur";
 import { hudKarte } from "./hud";
 import { SYMBOL, symbolBild } from "./symbole";
@@ -139,7 +143,7 @@ class Spiel extends Phaser.Scene {
   async starte(held: string, mit: string[]) {
     let url = SERVER, erste: unknown = undefined;
     if (FLACH && kampfJetzt) { const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : "";
-      if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || "") + kampfZusatz(); erste = { t: "anmeldung", token }; this.serverKampf = true; } else url = ""; }
+      if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || "") + kampfZusatz(); erste = { t: "anmeldung", token, ...geraetAngaben() }; /* Ein Konto, ein Gerät: dieselbe Seitenkennung wie in der Welt */ this.serverKampf = true; } else url = ""; }
     const SERVER0 = url;
     window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; liste?: { id: number; name: string; stufe: number }[] }; if (m.t === "namen" && m.liste) { this.spielerNamen.clear(); for (const s of m.liste) this.spielerNamen.set(s.id, s); } });
     /* Zwischenbuchungen des Servers: Die Werte aus der Datenbank gleich merken (falls der Tab danach abstürzt) */
@@ -379,7 +383,7 @@ const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => void, wort?: { los: string; zurueck: string }) {
   const el = $("#ez-wahl"); if (P.get("los") === "1" && !zurueck) { el.hidden = true; los(WAHL.held, WAHL.mit); return; }
   const zeichne = () => { const D = HELDEN[WAHL.held], w = (x: { nah: number; fern: number; magie: number }) => `Nahkampf ${x.nah} · Fernkampf ${x.fern} · Magie ${x.magie}`;
-    el.innerHTML = `<div class="ez-blatt"><p class="ez-klein">Mythara · Splitterlande · Beta</p><h1>Wähle deinen Helden</h1>
+    el.innerHTML = `<div class="ez-blatt"><p class="ez-klein">Riftmere</p><h1>Wähle deinen Helden</h1>
       <div class="ez-helden">${HELDENREIHE.map((k) => `<button type="button" class="ez-held${k === WAHL.held ? " an" : ""}" data-held="${k}"><img src="../${HELDEN[k].bild}" alt=""><b>${esc(HELDEN[k].name)}</b><small>${esc(HELDEN[k].klasse)}</small></button>`).join("")}</div>
       <div class="ez-karte"><h2>${esc(D.name)} – ${esc(D.titel)}</h2><p class="ez-rolle">${esc(D.rolle)} · ${D.lp} Leben · Tempo ${String(D.tempo).replace(".", ",")}</p>
         <p><b>Angriff:</b> ${w(D.angriff)}<br><b>Verteidigung:</b> ${w(D.abwehr)}</p>
@@ -406,11 +410,15 @@ const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1" || FLACH; // ?do
 /* Abgeschaltete Teile (Kampagnen, Waldweg – siehe freigabe.ts) führen zurück in die Waldmark */
 if (!adresseErlaubt(P0)) location.replace("./" + (P0.has("server") ? "?server=" + encodeURIComponent(P0.get("server") || "") : ""));
 else void Promise.race([kontoStart(), new Promise<boolean>((ok) => setTimeout(() => ok(false), 4000))]).then(async (neu) => { if (neu) return; if (!P.has("server") && !P.has("los")) await kontoSeite(); /* erst anmelden, Konto anlegen oder als Gast weiter (Testaufrufe überspringen das) */
+  querformat(); /* Spiel: auf Handy und Tablet Querformat (seit 24.11.2026 schon ab dem Login, quer.js) */
+  if (!P.has("server")) untaetigWaechter(); /* 5 Minuten ohne Eingabe: abmelden (abmeldung.ts); Testaufrufe mit eigenem Server ausgenommen */
   /* dann der eigene Held: wer noch keinen hat (neu registriert oder zum ersten Mal nach dem Update), kommt erst in den Heldeneditor */
   { const mein = await heldLaden().catch(() => null);
     if (!mein && !P.has("server") && !inKampagne) { location.replace("held.html?weiter=" + encodeURIComponent(location.search)); return; }
     if (mein) heldSetzen(mein); }
 if (inKampagne && !FLACH) { startWeg(); kampagneBeginnen(wahlZeigen); } /* Heldenwahl und Gespräche; ein Spielfeld gibt es erst im Kampf */
+else if (welt3dAn() && (weltName || (!(ortName && !FLACH) && !OHNE_DORF && STADT !== "alt" && STADT !== "bild"))) { /* die offene Welt in 3D (welt3d/spielwelt.ts) statt der 2D-Weltszene */
+  void new Spielwelt3D().start(document.getElementById("ez-feld") as HTMLElement, () => startWeg()).catch((e) => { console.error("3D-Welt:", e); const h = document.getElementById("ez-dorf-hilfe"); if (h) { h.textContent = "Die 3D-Welt konnte nicht starten – ?welt3d=0 führt zurück in die 2D-Welt."; h.style.display = ""; } startWeg(); }); }
 else { const spiel = new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: weltName ? [Welt] : ortName && !FLACH ? [Ort] : OHNE_DORF ? [Spiel] : [STADT === "alt" ? Dorf : STADT === "bild" ? Stadt : Welt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
   /* Der Startbildschirm geht, sobald eine Szene fertig geladen ist und ihr erstes Bild gezeichnet hat */
   let bilder = 0; const pruefen = () => { if (spiel.scene.getScenes(true).length && ++bilder >= 2) { spiel.events.off("postrender", pruefen); startWeg(); } }; spiel.events.on("postrender", pruefen); }

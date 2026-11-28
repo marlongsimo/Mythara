@@ -1,0 +1,887 @@
+{
+ "start": [
+  [
+   240,
+   224
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 232,
+    "y0": 328,
+    "x1": 233,
+    "y1": 329
+   },
+   {
+    "art": "rechteck",
+    "x0": 234,
+    "y0": 344,
+    "x1": 235,
+    "y1": 345
+   },
+   {
+    "art": "rechteck",
+    "x0": 208,
+    "y0": 284,
+    "x1": 209,
+    "y1": 285
+   },
+   {
+    "art": "rechteck",
+    "x0": 214,
+    "y0": 280,
+    "x1": 215,
+    "y1": 281
+   },
+   {
+    "art": "rechteck",
+    "x0": 466,
+    "y0": 136,
+    "x1": 467,
+    "y1": 137
+   },
+   {
+    "art": "rechteck",
+    "x0": 461,
+    "y0": 136,
+    "x1": 462,
+    "y1": 137
+   },
+   {
+    "art": "rechteck",
+    "x0": 462,
+    "y0": 131,
+    "x1": 463,
+    "y1": 132
+   },
+   {
+    "art": "rechteck",
+    "x0": 467,
+    "y0": 131,
+    "x1": 468,
+    "y1": 132
+   },
+   {
+    "art": "rechteck",
+    "x0": 426,
+    "y0": 240,
+    "x1": 427,
+    "y1": 241
+   },
+   {
+    "art": "rechteck",
+    "x0": 432,
+    "y0": 238,
+    "x1": 433,
+    "y1": 239
+   },
+   {
+    "art": "rechteck",
+    "x0": 440,
+    "y0": 237,
+    "x1": 441,
+    "y1": 238
+   },
+   {
+    "art": "rechteck",
+    "x0": 446,
+    "y0": 238,
+    "x1": 447,
+    "y1": 239
+   },
+   {
+    "art": "rechteck",
+    "x0": 443,
+    "y0": 272,
+    "x1": 444,
+    "y1": 273
+   },
+   {
+    "art": "rechteck",
+    "x0": 439,
+    "y0": 272,
+    "x1": 440,
+    "y1": 273
+   },
+   {
+    "art": "rechteck",
+    "x0": 439,
+    "y0": 267,
+    "x1": 440,
+    "y1": 268
+   },
+   {
+    "art": "rechteck",
+    "x0": 444,
+    "y0": 267,
+    "x1": 445,
+    "y1": 268
+   },
+   {
+    "art": "rechteck",
+    "x0": 470,
+    "y0": 296,
+    "x1": 471,
+    "y1": 297
+   },
+   {
+    "art": "rechteck",
+    "x0": 465,
+    "y0": 296,
+    "x1": 466,
+    "y1": 297
+   },
+   {
+    "art": "rechteck",
+    "x0": 465,
+    "y0": 291,
+    "x1": 466,
+    "y1": 292
+   },
+   {
+    "art": "rechteck",
+    "x0": 470,
+    "y0": 292,
+    "x1": 471,
+    "y1": 293
+   },
+   {
+    "art": "rechteck",
+    "x0": 462,
+    "y0": 263,
+    "x1": 463,
+    "y1": 264
+   },
+   {
+    "art": "rechteck",
+    "x0": 457,
+    "y0": 263,
+    "x1": 458,
+    "y1": 264
+   },
+   {
+    "art": "rechteck",
+    "x0": 457,
+    "y0": 258,
+    "x1": 458,
+    "y1": 259
+   },
+   {
+    "art": "rechteck",
+    "x0": 462,
+    "y0": 258,
+    "x1": 463,
+    "y1": 259
+   },
+   {
+    "art": "rechteck",
+    "x0": 359,
+    "y0": 343,
+    "x1": 360,
+    "y1": 344
+   },
+   {
+    "art": "rechteck",
+    "x0": 354,
+    "y0": 341,
+    "x1": 355,
+    "y1": 342
+   },
+   {
+    "art": "rechteck",
+    "x0": 358,
+    "y0": 337,
+    "x1": 359,
+    "y1": 338
+   },
+   {
+    "art": "rechteck",
+    "x0": 262,
+    "y0": 392,
+    "x1": 263,
+    "y1": 393
+   },
+   {
+    "art": "rechteck",
+    "x0": 256,
+    "y0": 390,
+    "x1": 257,
+    "y1": 391
+   },
+   {
+    "art": "rechteck",
+    "x0": 261,
+    "y0": 386,
+    "x1": 262,
+    "y1": 387
+   },
+   {
+    "art": "rechteck",
+    "x0": 307,
+    "y0": 212,
+    "x1": 308,
+    "y1": 213
+   },
+   {
+    "art": "rechteck",
+    "x0": 302,
+    "y0": 212,
+    "x1": 303,
+    "y1": 213
+   },
+   {
+    "art": "rechteck",
+    "x0": 303,
+    "y0": 207,
+    "x1": 304,
+    "y1": 208
+   },
+   {
+    "art": "rechteck",
+    "x0": 307,
+    "y0": 207,
+    "x1": 308,
+    "y1": 208
+   },
+   {
+    "art": "rechteck",
+    "x0": 279,
+    "y0": 187,
+    "x1": 280,
+    "y1": 188
+   },
+   {
+    "art": "rechteck",
+    "x0": 274,
+    "y0": 184,
+    "x1": 275,
+    "y1": 185
+   },
+   {
+    "art": "rechteck",
+    "x0": 279,
+    "y0": 181,
+    "x1": 280,
+    "y1": 182
+   },
+   {
+    "art": "rechteck",
+    "x0": 212,
+    "y0": 169,
+    "x1": 213,
+    "y1": 170
+   },
+   {
+    "art": "rechteck",
+    "x0": 206,
+    "y0": 166,
+    "x1": 207,
+    "y1": 167
+   },
+   {
+    "art": "rechteck",
+    "x0": 211,
+    "y0": 163,
+    "x1": 212,
+    "y1": 164
+   },
+   {
+    "art": "rechteck",
+    "x0": 441,
+    "y0": 261,
+    "x1": 442,
+    "y1": 262
+   },
+   {
+    "art": "rechteck",
+    "x0": 447,
+    "y0": 262,
+    "x1": 448,
+    "y1": 263
+   },
+   {
+    "art": "rechteck",
+    "x0": 453,
+    "y0": 261,
+    "x1": 454,
+    "y1": 262
+   },
+   {
+    "art": "rechteck",
+    "x0": 455,
+    "y0": 266,
+    "x1": 456,
+    "y1": 267
+   },
+   {
+    "art": "rechteck",
+    "x0": 442,
+    "y0": 267,
+    "x1": 443,
+    "y1": 268
+   },
+   {
+    "art": "rechteck",
+    "x0": 448,
+    "y0": 268,
+    "x1": 449,
+    "y1": 269
+   },
+   {
+    "art": "rechteck",
+    "x0": 452,
+    "y0": 270,
+    "x1": 453,
+    "y1": 271
+   },
+   {
+    "art": "rechteck",
+    "x0": 335,
+    "y0": 213,
+    "x1": 336,
+    "y1": 214
+   },
+   {
+    "art": "rechteck",
+    "x0": 450,
+    "y0": 144,
+    "x1": 451,
+    "y1": 145
+   },
+   {
+    "art": "rechteck",
+    "x0": 445,
+    "y0": 145,
+    "x1": 446,
+    "y1": 146
+   },
+   {
+    "art": "rechteck",
+    "x0": 447,
+    "y0": 141,
+    "x1": 448,
+    "y1": 142
+   },
+   {
+    "art": "rechteck",
+    "x0": 454,
+    "y0": 232,
+    "x1": 455,
+    "y1": 233
+   },
+   {
+    "art": "rechteck",
+    "x0": 450,
+    "y0": 232,
+    "x1": 451,
+    "y1": 233
+   },
+   {
+    "art": "rechteck",
+    "x0": 451,
+    "y0": 228,
+    "x1": 452,
+    "y1": 229
+   },
+   {
+    "art": "rechteck",
+    "x0": 337,
+    "y0": 329,
+    "x1": 338,
+    "y1": 330
+   },
+   {
+    "art": "rechteck",
+    "x0": 333,
+    "y0": 330,
+    "x1": 334,
+    "y1": 331
+   },
+   {
+    "art": "rechteck",
+    "x0": 334,
+    "y0": 326,
+    "x1": 335,
+    "y1": 327
+   },
+   {
+    "art": "rechteck",
+    "x0": 249,
+    "y0": 415,
+    "x1": 250,
+    "y1": 416
+   },
+   {
+    "art": "rechteck",
+    "x0": 245,
+    "y0": 415,
+    "x1": 246,
+    "y1": 416
+   },
+   {
+    "art": "rechteck",
+    "x0": 247,
+    "y0": 411,
+    "x1": 248,
+    "y1": 412
+   },
+   {
+    "art": "rechteck",
+    "x0": 237,
+    "y0": 271,
+    "x1": 238,
+    "y1": 272
+   },
+   {
+    "art": "rechteck",
+    "x0": 233,
+    "y0": 272,
+    "x1": 234,
+    "y1": 273
+   },
+   {
+    "art": "rechteck",
+    "x0": 232,
+    "y0": 269,
+    "x1": 233,
+    "y1": 270
+   },
+   {
+    "art": "rechteck",
+    "x0": 235,
+    "y0": 267,
+    "x1": 236,
+    "y1": 268
+   },
+   {
+    "art": "rechteck",
+    "x0": 236,
+    "y0": 196,
+    "x1": 237,
+    "y1": 197
+   },
+   {
+    "art": "rechteck",
+    "x0": 232,
+    "y0": 197,
+    "x1": 233,
+    "y1": 198
+   },
+   {
+    "art": "rechteck",
+    "x0": 231,
+    "y0": 193,
+    "x1": 232,
+    "y1": 194
+   },
+   {
+    "art": "rechteck",
+    "x0": 234,
+    "y0": 192,
+    "x1": 235,
+    "y1": 193
+   },
+   {
+    "art": "rechteck",
+    "x0": 181,
+    "y0": 168,
+    "x1": 182,
+    "y1": 169
+   },
+   {
+    "art": "rechteck",
+    "x0": 177,
+    "y0": 168,
+    "x1": 178,
+    "y1": 169
+   },
+   {
+    "art": "rechteck",
+    "x0": 179,
+    "y0": 164,
+    "x1": 180,
+    "y1": 165
+   },
+   {
+    "art": "rechteck",
+    "x0": 385,
+    "y0": 335,
+    "x1": 386,
+    "y1": 336
+   },
+   {
+    "art": "rechteck",
+    "x0": 241,
+    "y0": 168,
+    "x1": 242,
+    "y1": 169
+   }
+  ],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 232.1,
+    "y0": 406.7,
+    "x1": 240,
+    "y1": 409.3
+   }
+  ]
+ },
+ "interaktionen": [
+  {
+   "id": "bl_haferstedt",
+   "art": "lesen",
+   "x": 265.5,
+   "y": 226.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Haferstedt. Ein Marktflecken mitten in den Feldern – wer zwischen Rabenmoor und der Küste Korn, Wolle oder Fisch verkaufen will, kommt am Markttag hierher."
+   }
+  },
+  {
+   "id": "bl_haferstedt_bank_tuer",
+   "art": "lesen",
+   "x": 294,
+   "y": 226.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Haferstedt. Dasselbe Konto wie in der Stadt – und am Markttag eine lange Schlange."
+   }
+  },
+  {
+   "id": "bl_netzbucht",
+   "art": "lesen",
+   "x": 195,
+   "y": 179,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Netzbucht. Drei Fischerkaten und eine Räucherhütte an einer stillen Bucht. Der Fang geht jeden Markttag nach Haferstedt."
+   }
+  },
+  {
+   "id": "leuchtturm",
+   "art": "lesen",
+   "x": 224,
+   "y": 283.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Leuchtturm auf der Klippe. Oben brennt kein Licht mehr – seit das Schiff unten am Strand liegt."
+   }
+  },
+  {
+   "id": "waerterhaus",
+   "art": "lesen",
+   "x": 234.5,
+   "y": 283.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Wärterhaus. Auf dem Tisch ein Logbuch, die letzte Seite ist herausgerissen."
+   }
+  },
+  {
+   "id": "fischplatz_klippe",
+   "art": "lesen",
+   "x": 198.5,
+   "y": 352.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Unten an der Klippe schäumt die Brandung – Klippenbarsche stehen im Kehrwasser.",
+    "fisch": "klippenbarsch",
+    "stufe": 35
+   }
+  },
+  {
+   "id": "klippenhoehlen_eingang",
+   "art": "eingang",
+   "x": 228,
+   "y": 339.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Spalt in der Klippe, aus dem kalte, salzige Luft weht.",
+    "tat": "klippenhoehle",
+    "knopf": "Hineingehen",
+    "ziel": [
+     11456,
+     9658
+    ]
+   }
+  },
+  {
+   "id": "raeucherhuette",
+   "art": "lesen",
+   "x": 262.5,
+   "y": 414.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Räucherhütte. Heringe hängen in Reihen im Rauch – hier wird Räucherhering gemacht.",
+    "station": "raeucherhuette"
+   }
+  },
+  {
+   "id": "moewenbucht_bankkiste",
+   "art": "lesen",
+   "x": 271.5,
+   "y": 404.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Möwenbucht. Eisenbeschlagen, und der Schlüssel hängt beim Fischer – was du einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "moewenbucht",
+   "art": "lesen",
+   "x": 268,
+   "y": 409,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Möwenbucht. Netze trocknen zwischen den Katen, und über allem kreischen die Möwen."
+   }
+  },
+  {
+   "id": "fischplatz_moewenbucht",
+   "art": "lesen",
+   "x": 238.5,
+   "y": 406.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Steg aus fängt man Heringe.",
+    "fisch": "hering",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "kraeuterhof",
+   "art": "lesen",
+   "x": 466,
+   "y": 312.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Kräuterhof. Beete voller Ringelblumen, Moorglöckchen, Eisenhut und Nebelkraut – ein zweites Kräutergebiet."
+   }
+  },
+  {
+   "id": "summweide",
+   "art": "lesen",
+   "x": 466,
+   "y": 154,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Summweide. Über der Blumenwiese summt es, und es riecht nach Honig."
+   }
+  },
+  {
+   "id": "bienenstoecke",
+   "art": "lesen",
+   "x": 462,
+   "y": 161,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Bienenstöcke in einer Reihe. Einer fehlt – nur ein heller Fleck im Gras.",
+    "questobjekt": "bienenstock"
+   }
+  },
+  {
+   "id": "saegemuehle",
+   "art": "lesen",
+   "x": 438,
+   "y": 250.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Sägemühle von Erlengrund. Das Rad steht still – die Welle klemmt.",
+    "questobjekt": "saegemuehle_rad"
+   }
+  },
+  {
+   "id": "saegemuehle_werkbank",
+   "art": "lesen",
+   "x": 443,
+   "y": 255.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkbank in der Sägemühle.",
+    "station": "werkbank",
+    "schalter": "saegemuehle_frei"
+   }
+  },
+  {
+   "id": "koehlermeiler",
+   "art": "lesen",
+   "x": 452,
+   "y": 247.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Köhlermeiler. Er qualmt seit drei Tagen."
+   }
+  },
+  {
+   "id": "waldsenke",
+   "art": "lesen",
+   "x": 390,
+   "y": 218.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Senke im Wald. Abgenagte Knochen, Pfotenabdrücke so groß wie ein Teller."
+   }
+  },
+  {
+   "id": "laemmerhang",
+   "art": "lesen",
+   "x": 340,
+   "y": 343.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Lämmerhang, eine Schäferei. Im Pferch blöken die Lämmer, der Hund schläft in der Sonne."
+   }
+  },
+  {
+   "id": "wegweiser_moewenbucht_lesen",
+   "x": 282,
+   "y": 421.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Kielmund ↘ · Nach Leuchtturm ↖",
+    "ziele": [
+     "Nach Kielmund ↘",
+     "Nach Leuchtturm ↖"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "holzfaellerhof",
+   "art": "lesen",
+   "x": 443.5,
+   "y": 256.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Holzfällerhof. Ein Schild am Tor: „Hain der Zunft – nur für Meister der Holzfällerei (ab Stufe 60).“"
+   }
+  },
+  {
+   "id": "holzfaellerhof_bankkiste",
+   "art": "lesen",
+   "x": 454,
+   "y": 271.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Holzfäller. Was du hier einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "holzfaellerhof_werkbank",
+   "art": "lesen",
+   "x": 445.5,
+   "y": 271.1,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkbank des Holzfällerhofs. Hier werden Stämme zu Brettern und Bögen."
+   }
+  },
+  {
+   "id": "kochzunft",
+   "art": "lesen",
+   "x": 276.2,
+   "y": 215.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Kochhof der Zunft. „Herde und Öfen für Meisterköche – ab Stufe 60 im Kochen.“"
+   }
+  },
+  {
+   "id": "kochzunft_bankkiste",
+   "art": "lesen",
+   "x": 282,
+   "y": 217.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Kochzunft. Was du hier einlegst, liegt auf deinem Konto."
+   }
+  }
+ ],
+ "senken": [
+  {
+   "x": 447.8,
+   "y": 143.7,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 452.3,
+   "y": 231.4,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 335.2,
+   "y": 328.7,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 247.3,
+   "y": 414.4,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 234.9,
+   "y": 270.3,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 233.9,
+   "y": 195,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 179.5,
+   "y": 167.3,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 385.1,
+   "y": 335.2,
+   "r": 3,
+   "tiefe": 1.1
+  },
+  {
+   "x": 241.1,
+   "y": 168.8,
+   "r": 3,
+   "tiefe": 1.1
+  }
+ ]
+}

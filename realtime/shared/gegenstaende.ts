@@ -1,85 +1,184 @@
 /*
- * Gegenstände des eigenen Helden (Ausrüstung und Rucksack).
- * Plätze wie im Ausrüstungsfenster: Amulett oben, Waffe links, Brust in der Mitte (beide zu Beginn leer – der Grundkörper trägt Hemd und Hose fest), Nebenhand (Schild) rechts.
- * Die Werte der Waffen kommen aus den Ausrüstungssätzen (shared/config.ts HELDEN, Hauptwaffe des Satzes) und dem Schild (K.BLOCK) –
- * es sind dieselben Zahlen, mit denen der Kampf heute rechnet.
+ * Gegenstände des eigenen Helden (Ausrüstung und Rucksack) – mit ihren Kampfwerten nach den Regeln v2 (shared/kampfwerte.ts).
+ * Plätze im Ausrüstungsfenster: Waffe links, Brust (Rüstung) in der Mitte – zu Beginn leer, der Grundkörper trägt Hemd und Hose fest –, Nebenhand (Schild) rechts.
+ * Waffe: Kampfart, Takt in Ticks (1 Tick = 0,5 s), Reichweite und die Werte ihrer Art – Nahkampf: Geschick- und Stärke-Bonus; Fernkampf: Fernkampfstärke;
+ * Magie: Magische Genauigkeit und Schadensbereich. Schild und Rüstung: Verteidigungsboni je Angriffsart.
+ * Startausrüstung bewusst schwach, aber klar verschieden: Upgrades sollen sich deutlich bemerkbar machen, die Heldenwerte zählen von Anfang an.
  */
-import { HELDEN, K } from "./config";
 import { Startwaffe } from "./aussehen";
+import { NAMEN_AUS_DATENBLAETTERN } from "./gegenstand_namen";
+import { BILDER_AUS_FABRIK } from "./gegenstand_bilder";
+import { PETS, petGegenstand } from "./pets";
 
-export type Platz = "kopf" | "amulett" | "waffe" | "brust" | "beine" | "nebenhand";
-export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf" }, { id: "amulett", name: "Amulett" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
 export type Seltenheit = "anfaenger" | "gewoehnlich" | "set" | "selten" | "episch" | "legendaer" | "mythisch";
 /** Seltenheitsstufen: Name und Farbe (Rahmen im Ausrüstungsfenster) */
 export const SELTENHEITEN: Record<Seltenheit, { name: string; farbe: string }> = {
   anfaenger: { name: "Training", farbe: "#8e8a82" }, gewoehnlich: { name: "Einfach", farbe: "#b9b4a8" }, set: { name: "Set", farbe: "#b08ad8" }, selten: { name: "Selten", farbe: "#5fcf6a" }, episch: { name: "Episch", farbe: "#6f8cff" },
   legendaer: { name: "Legendär", farbe: "#ff9a2e" }, mythisch: { name: "Mythisch", farbe: "#ff4fd8" },
 };
-export interface Gegenstand { id: string; name: string; platz: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; werte: [string, string][]; text: string }
+export type Platz = "kopf" | "waffe" | "brust" | "beine" | "nebenhand";
+export type Art = "nah" | "fern" | "magie";
+export type AnfSkill = "geschick" | "staerke" | "fernkampf" | "magie" | "defense";
+export const ANF_NAME: Record<AnfSkill, string> = { geschick: "Geschick", staerke: "Stärke", fernkampf: "Fernkampf", magie: "Magie", defense: "Defense" };
+export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
+export interface WaffenWerte { art: Art; /** Mehr Schaden gegen eine Gegnerfamilie (MONSTER.familie), z. B. { wald: 0.15 } = +15 % Max Hit */ gegen?: Record<string, number>; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
+/** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
+export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number; /** #160: Magieschaden in Prozent (Max Hit der Magie × (1 + p/100)) */ magieSchaden?: number }; text: string;
+  /** #151 Waffen der Stufe 70: passive Fähigkeit, solange die Waffe Ladungen hat (chance je Treffer) – geladen wird sie mit 1 Splitter je Ladung, Laden bindet sie */ passiv?: Passiv;
+  /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; /** Grundwert in Splittern für den Trödler (#88), wenn kein Laden ihn führt */ wert?: number; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
 
-const waffe = (satz: string) => { const m = HELDEN[satz].modi[0], art = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie", heil: "Heilung" }[m.art] || m.art;
-  return [["Schaden", `${m.schaden[0]}–${m.schaden[1]}`], ["Schadensart", art], ["Angriffe je Sekunde", (1 / m.takt).toFixed(2).replace(".", ",")], ["Reichweite", `${String(m.reich).replace(".", ",")} Felder`]] as [string, string][]; };
-const prozent = (v: number) => `${Math.round(v * 100)} %`;
+const KAMPFART: Record<Art, string> = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie" };
+const zahl = (v: number) => String(v).replace(".", ",");
+const vz = (v: number | undefined) => ((v || 0) < 0 ? "−" + -(v || 0) : "+" + (v || 0));
+/** Die Werte eines Gegenstands als Zeilen fürs Untersuchen-Fenster */
+export function werteVon(G: Gegenstand): [string, string][] {
+  if (G.waffe) { const W = G.waffe, z: [string, string][] = [["Kampfart", KAMPFART[W.art]]];
+    if (W.art === "nah") z.push(["Geschick", `+${W.geschick || 0}`], ["Stärke", `+${W.staerke || 0}`]);
+    else if (W.art === "fern") z.push(["Fernkampf-Angriff", `+${W.fernAngriff || 0}`], ["Fernkampf-Stärke", `+${W.fernStaerke || 0}`]);
+    else z.push(["Magische Genauigkeit", `+${W.genau || 0}`], ["Magie-Stärke", `+${W.magieStaerke || 0}`]);
+    z.push(["Angriffstempo", `${W.ticks} Ticks (${zahl(W.ticks * 0.5)} s)`], ["Reichweite", W.art === "nah" ? (W.reich >= 2 ? `${Math.floor(W.reich)} Felder (Nahkampf)` : W.reich <= 1 ? "1 Feld (Nahkampf)" : "Nahkampf") : `${zahl(W.reich)} Felder`]);
+    if (G.abwehr) z.push(["Eigene Abwehr", `Nah ${G.abwehr.nah} · Fern ${G.abwehr.fern} · Magie ${G.abwehr.magie}`]); if (G.zweihand) z.push(["Hände", "zweihändig (kein Schild)"]);
+    if (G.passiv) z.push(["Geladen", `${G.passiv.name}: ${Math.round(G.passiv.chance * 100)} % je Treffer – ${G.passiv.text}`], ["Laden", "Bindestein, 1 Splitter je Ladung (höchstens 1.000) · bindet die Waffe"]); /* #151 */
+    if (G.anforderung) z.push(["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`]); return z; }
+  if (G.trank && VERBRAUCH[G.trank]) return VERBRAUCH[G.trank].werte;
+  if (G.abwehr) return [["Verteidigung Nahkampf", vz(G.abwehr.nah)], ["Verteidigung Fernkampf", vz(G.abwehr.fern)], ["Verteidigung Magie", vz(G.abwehr.magie)], ...(G.bonus && G.bonus.fernAngriff ? [["Fernkampf-Angriff", vz(G.bonus.fernAngriff)] as [string, string]] : []), ...(G.bonus && G.bonus.genau ? [["Magische Genauigkeit", vz(G.bonus.genau)] as [string, string]] : []),
+    /* #160: Angriffsboni an Rüstung und Schild (Stufe 70, Glutsteinschild) */ ...(G.bonus && G.bonus.geschick ? [["Geschick", vz(G.bonus.geschick)] as [string, string]] : []), ...(G.bonus && G.bonus.staerke ? [["Stärke", vz(G.bonus.staerke)] as [string, string]] : []),
+    ...(G.bonus && G.bonus.fernStaerke ? [["Fernkampf-Stärke", vz(G.bonus.fernStaerke)] as [string, string]] : []), ...(G.bonus && G.bonus.magieSchaden ? [["Magieschaden", `+${G.bonus.magieSchaden} %`] as [string, string]] : []), ...(G.anforderung ? [["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`] as [string, string]] : [])];
+  return G.platz === "waffe" ? [["Kampfwerte", "Werte folgen (bis dahin wie Fäuste)"]] : G.platz ? [["Verteidigung", "Werte folgen"]] : [];
+}
 
 export const GEGENSTAENDE: Record<string, Gegenstand> = {
-  ritterschwert: { id: "ritterschwert", name: "Trainingsschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "anfaenger", ebenen: ["waffe.schwert.ritter"], werte: waffe("schildwaechter"),
-    text: "Eine schlichte, gut ausgewogene Klinge der Waldmark-Schmiede. Treffer verlangsamen den Gegner kurz." },
+  ritterschwert: { id: "ritterschwert", name: "Trainingsschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "anfaenger", ebenen: ["waffe.schwert.ritter"],
+    waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 5, staerke: 5 }, text: "Eine schlichte, gut ausgewogene Klinge der Waldmark-Schmiede. Ein solider Allrounder." },
+  jagdbogen: { id: "jagdbogen", name: "Trainingsbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "anfaenger", ebenen: ["waffe.bogen.jagd"],
+    waffe: { art: "fern", ticks: 4, reich: 6, flug: 18, fernAngriff: 10, fernStaerke: 10 }, text: "Ein kurzer Eibenbogen, wie ihn die Jäger des Kreuzwalds führen." },
+  hirtenstab: { id: "hirtenstab", name: "Trainingsstab", platz: "waffe", art: "Stab", seltenheit: "anfaenger", ebenen: ["waffe.stab.hirte"],
+    waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 5, magieStaerke: 10 }, text: "Ein knorriger Stab mit gekrümmtem Kopf. In den richtigen Händen bündelt er die Kräfte der Splitter." },
   rundschild: { id: "rundschild", name: "Trainingsschild", platz: "nebenhand", art: "Schild", seltenheit: "anfaenger", ebenen: ["schild.rund"],
-    werte: [["Abwehr Nahkampf (von vorn)", prozent(K.BLOCK.nah)], ["Abwehr Fernkampf (von vorn)", prozent(K.BLOCK.fern)], ["Abwehr Magie (von vorn)", prozent(K.BLOCK.magie)], ["Schutzwinkel", `±${K.BLOCK.winkel}°`]],
-    text: "Holz mit Eisenbeschlag. Fängt Angriffe von vorn ab – im Schildmodus (Taste Q wechselt die Haltung)." },
-  jagdbogen: { id: "jagdbogen", name: "Trainingsbogen", platz: "waffe", art: "Bogen", seltenheit: "anfaenger", ebenen: ["waffe.bogen.jagd"], werte: waffe("kopfgeldjaeger"),
-    text: "Ein Eibenbogen, wie ihn die Jäger des Kreuzwalds führen. Hoher Einzelschaden aus sicherer Entfernung." },
-  hirtenstab: { id: "hirtenstab", name: "Trainingsstab", platz: "waffe", art: "Stab", seltenheit: "anfaenger", ebenen: ["waffe.stab.hirte"], werte: waffe("elementarist"),
-    text: "Ein knorriger Stab mit gekrümmtem Kopf. In den richtigen Händen bündelt er die Kräfte der Splitter." },
+    abwehr: { nah: 3, fern: 3, magie: 2 }, text: "Holz mit Eisenbeschlag. Eine kleine defensive Ergänzung – aus allen Richtungen." },
   lederpanzer: { id: "lederpanzer", name: "Trainings-Lederpanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "anfaenger", ebenen: ["ruestung.brust.lederpanzer"],
-    werte: [["Abwehr Nahkampf", "+3"], ["Abwehr Fernkampf", "+3"], ["Abwehr Magie", "+3"]],
-    text: "Gehärtetes Leder mit Messingschnallen und dem Eichenbaum der Waldmark. Schützt, ohne die Bewegung zu hemmen." },
+    abwehr: { nah: 3, fern: 3, magie: 3 }, text: "Gehärtetes Leder mit Messingschnallen und dem Eichenbaum der Waldmark. Schützt, ohne die Bewegung zu hemmen." },
   magiepanzer: { id: "magiepanzer", name: "Trainingsrobe", platz: "brust", art: "Leichte Rüstung", seltenheit: "anfaenger", ebenen: ["ruestung.brust.magiepanzer"],
-    werte: [["Abwehr Nahkampf", "+2"], ["Abwehr Fernkampf", "+2"], ["Abwehr Magie", "+4"]],
-    text: "Nachtblaues Leder mit goldenen Sternzeichen und einem Splitterstein am Kragen. Lenkt Zauber besser ab als Klingen." },
+    abwehr: { nah: 2, fern: 2, magie: 4 }, text: "Nachtblaues Leder mit goldenen Sternzeichen und einem Splitterstein am Kragen. Lenkt Zauber besser ab als Klingen." },
+  splitter: { id: "splitter", name: "Splitter", art: "Währung", seltenheit: "gewoehnlich", stapel: 1_000_000, modell3d: "img/objekte3d/splitter.glb", symbol: "kristall",
+    text: "Ein schimmernder Splitter der zerbrochenen Lande. In der Waldmark nimmt man ihn als Zahlungsmittel." },
+  /* Tränke (Figuren-Fabrik, Werte in VERBRAUCH): im Rucksack kurz antippen = trinken. Der kleine liegt je einzeln in einem Fach, der normale stapelt */
+  kleiner_heiltrank: { id: "kleiner_heiltrank", name: "Kleiner Heiltrank", art: "Trank", seltenheit: "gewoehnlich", modell3d: "img/objekte3d/heiltrank-klein.glb", symbol: "trank", trank: "kleiner_heiltrank",
+    text: "Ein Fläschchen grüner Kräutersud. Lindert Kratzer – für mehr reicht es nicht." },
+  heiltrank: { id: "heiltrank", name: "Heiltrank", art: "Trank", seltenheit: "gewoehnlich", stapel: 1000, modell3d: "img/objekte3d/heiltrank.glb", symbol: "trankrot", trank: "heiltrank",
+    text: "Ein rotes Elixier in bauchiger Flasche, mit dem Kreuz der Heiler auf dem Beschlag. Schließt Wunden, ersetzt aber keinen Rückzug." },
+  hinweispergament: { id: "hinweispergament", name: "Hinweispergament", art: "Questgegenstand", seltenheit: "gewoehnlich", symbol: "pergament",
+    text: "Ein zerknittertes Pergament mit einer hastig gekritzelten Nachricht. Gehört zum Einsteiger-Quest." },
+  /* Seltenes Eisenwacht-Set (Figuren-Fabrik): anlegbar, Werte folgen */
   eisenwacht: { id: "eisenwacht", name: "Eisenwacht-Brustpanzer", platz: "brust", art: "Schwere Rüstung", seltenheit: "selten", ebenen: ["ruestung.brust.eisenwacht"],
-    werte: [["Abwehr", "Werte folgen"]],
     text: "Geschwärzte Eisenplatten über Leder, mit Schulterstücken und Plattenschößen. Gehört zu den Eisenbeinschienen." },
   eisenbeinschienen: { id: "eisenbeinschienen", name: "Eisenbeinschienen", platz: "beine", art: "Schwere Rüstung", seltenheit: "selten", ebenen: ["ruestung.beine.eisenschienen"],
-    werte: [["Abwehr", "Werte folgen"]],
     text: "Eisenplatten über Oberschenkel, Knie und Schienbein, auf schwerem Leder genietet. Gehört zum Eisenwacht-Brustpanzer." },
   eisenwachthelm: { id: "eisenwachthelm", name: "Eisenwacht-Helm", platz: "kopf", art: "Schwere Rüstung", seltenheit: "selten", ebenen: ["kopf.helm.eisenwacht"],
-    werte: [["Abwehr", "Werte folgen"]],
     text: "Geschlossener Helm mit Nackenschirm und Halsschutz, die Kanten in Bronze gefasst. Gehört zum Eisenwacht-Set." },
   jaegerwams: { id: "jaegerwams", name: "Jägerwams", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.jaeger"],
-    werte: [["Abwehr", "Werte folgen"]], text: "Dunkles, vielfach geschnürtes Leder mit grünem Halstuch – leise im Unterholz. Gehört zum Jäger-Set." },
+    text: "Dunkles, vielfach geschnürtes Leder mit grünem Halstuch – leise im Unterholz. Gehört zum Jäger-Set." },
   jaegerhose: { id: "jaegerhose", name: "Jägerhose", platz: "beine", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.beine.jaeger"],
-    werte: [["Abwehr", "Werte folgen"]], text: "Lederhose mit Knieschützern und Taschen am Gürtel. Gehört zum Jäger-Set." },
+    text: "Lederhose mit Knieschützern und Taschen am Gürtel. Gehört zum Jäger-Set." },
   jaegerkapuze: { id: "jaegerkapuze", name: "Jägerkapuze", platz: "kopf", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["kopf.helm.jaegerkapuze"],
-    werte: [["Abwehr", "Werte folgen"]], text: "Moosgrüne Kapuze mit Blattschnalle; wirft einen Schatten über das Gesicht. Gehört zum Jäger-Set." },
+    text: "Moosgrüne Kapuze mit Blattschnalle; wirft einen Schatten über das Gesicht. Gehört zum Jäger-Set." },
   magierrobe: { id: "magierrobe", name: "Magierrobe", platz: "brust", art: "Stoffrüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.magier"],
-    werte: [["Abwehr", "Werte folgen"]], text: "Nachtblaue Robe mit Goldborte und einem Splitterstein an der Brust. Gehört zum Magier-Set." },
+    text: "Nachtblaue Robe mit Goldborte und einem Splitterstein an der Brust. Gehört zum Magier-Set." },
   magierrock: { id: "magierrock", name: "Magierrock", platz: "beine", art: "Stoffrüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.beine.magierrock"],
-    werte: [["Abwehr", "Werte folgen"]], text: "Langer, geschichteter Rock mit Quasten am Gürtel. Gehört zum Magier-Set." },
+    text: "Langer, geschichteter Rock mit Quasten am Gürtel. Gehört zum Magier-Set." },
   magierkapuze: { id: "magierkapuze", name: "Magierkapuze", platz: "kopf", art: "Stoffrüstung", seltenheit: "gewoehnlich", ebenen: ["kopf.helm.magierkapuze"],
-    werte: [["Abwehr", "Werte folgen"]], text: "Spitze Kapuze mit leuchtendem Stirnstein. Gehört zum Magier-Set." },
-  eidschwert: { id: "eidschwert", name: "Schwarzeisenschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.eidschwert"],
-    werte: [["Schaden", "Werte folgen"]], text: "Eine schlanke Klinge mit vergoldetem Korb, auf die Eide der Waldmark geschworen werden." },
+    text: "Spitze Kapuze mit leuchtendem Stirnstein. Gehört zum Magier-Set." },
+  eidschwert: { id: "eidschwert", name: "Seltenes Schwert", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.eidschwert"],
+    waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 5, staerke: 5 }, /* vorläufig wie das Startschwert – Werte folgen */ text: "Eine schlanke Klinge mit vergoldetem Korb, auf die Eide der Waldmark geschworen werden." },
   waldsaebel: { id: "waldsaebel", name: "Gesegneter Waldsäbel", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.waldsaebel"],
-    werte: [["Schaden", "Werte folgen"]], text: "Eine geschwungene Klinge, um deren Griff sich lebendige Dornenranken winden – vom Segen des Waldes durchdrungen." },
-  eiddolch: { id: "eiddolch", name: "Schwarzeisendolch", platz: "waffe", art: "Dolch", seltenheit: "selten", ebenen: ["waffe.eiddolch"],
-    werte: [["Schaden", "Werte folgen"]], text: "Breit und kurz, mit lederumwickeltem Griff – das kleine Gegenstück zum Eidschwert." },
-  eidzweihaender: { id: "eidzweihaender", name: "Schwarzeisen-Zweihänder", platz: "waffe", art: "Zweihandschwert", seltenheit: "selten", ebenen: ["waffe.eidzweihaender"],
-    werte: [["Schaden", "Werte folgen"]], text: "Ein langes Schwert für zwei Hände, die Parierstange wie gebogene Äste." },
-  sternenschild: { id: "sternenschild", name: "Eibenschild", platz: "nebenhand", art: "Schild", seltenheit: "selten", ebenen: ["schild.sternen"],
-    werte: [["Abwehr", "Werte folgen"]], text: "Ein Drachenschild aus dunklem Stahl mit goldenem Stern auf nachtblauem Grund." },
-  sternbrecher: { id: "sternbrecher", name: "Schwarzeisen-Streitkolben", platz: "waffe", art: "Streitkolben", seltenheit: "selten", ebenen: ["waffe.sternbrecher"],
-    werte: [["Schaden", "Werte folgen"]], text: "Ein Streitkolben mit sternförmigem Kopf aus dunklem Stahl, der Schaft grün lackiert und bronzebeschlagen." },
-  sterndorn: { id: "sterndorn", name: "Schwarzeisenspeer", platz: "waffe", art: "Speer", seltenheit: "selten", ebenen: ["waffe.sterndorn"],
-    werte: [["Schaden", "Werte folgen"]], text: "Ein langer Speer mit schlanker Spitze und grünem Wimpel – für zwei Hände und große Reichweite." },
-  mondlangbogen: { id: "mondlangbogen", name: "Eiben-Langbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.lang"],
-    werte: [["Schaden", "Werte folgen"]], text: "Ein hoher Bogen mit geschwungenen Wurfarmen, bronzebeschlagen und mit grünen Steinen besetzt." },
-  mondkurzbogen: { id: "mondkurzbogen", name: "Eiben-Kurzbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.kurz"],
-    werte: [["Schaden", "Werte folgen"]], text: "Die handliche Schwester des Mond-Langbogens – schneller gezogen, weniger Reichweite." },
-  sternarmbrust: { id: "sternarmbrust", name: "Eiben-Armbrust", platz: "waffe", art: "Armbrust", seltenheit: "selten", ebenen: ["waffe.sternarmbrust"],
-    werte: [["Schaden", "Werte folgen"]], text: "Eine schwere Armbrust mit sternförmigem Bügel und grün lackiertem Schaft." },
-  sternenszepter: { id: "sternenszepter", name: "Eibenstab", platz: "waffe", art: "Stab", seltenheit: "selten", ebenen: ["waffe.sternenszepter"],
-    werte: [["Schaden", "Werte folgen"]], text: "Ein schlanker Zauberstab, dessen bronzene Krone einen blau leuchtenden Kristall umfasst." },
+    waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 5, staerke: 5 }, /* vorläufig wie das Startschwert – Werte folgen */ text: "Eine geschwungene Klinge, um deren Griff sich lebendige Dornenranken winden – vom Segen des Waldes durchdrungen." },
+  eiddolch: { id: "eiddolch", name: "Seltener Dolch", platz: "waffe", art: "Dolch", seltenheit: "selten", ebenen: ["waffe.eiddolch"],
+    waffe: { art: "nah", ticks: 2, reich: 1.5, geschick: 4, staerke: 3 }, /* vorläufig: Kurzwaffe, 2 Ticks – Werte folgen */ text: "Breit und kurz, mit lederumwickeltem Griff – das kleine Gegenstück zum Eidschwert." },
+  eidzweihaender: { id: "eidzweihaender", name: "Seltener Zweihänder", platz: "waffe", art: "Zweihandschwert", seltenheit: "selten", ebenen: ["waffe.eidzweihaender"],
+    waffe: { art: "nah", ticks: 4, reich: 1.5, geschick: 5, staerke: 8 }, /* vorläufig: Zweihänder, 4 Ticks – Werte folgen */ text: "Ein langes Schwert für zwei Hände, die Parierstange wie gebogene Äste." },
+  sternenschild: { id: "sternenschild", name: "Seltener Schild", platz: "nebenhand", art: "Schild", seltenheit: "selten", ebenen: ["schild.sternen"],
+    text: "Ein Drachenschild aus dunklem Stahl mit goldenem Stern auf nachtblauem Grund." },
+  sternbrecher: { id: "sternbrecher", name: "Seltener Streitkolben", platz: "waffe", art: "Streitkolben", seltenheit: "selten", ebenen: ["waffe.sternbrecher"],
+    waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 4, staerke: 6 }, /* vorläufig: Streitkolben, 3 Ticks – Werte folgen */
+    text: "Ein Streitkolben mit sternförmigem Kopf aus dunklem Stahl, der Schaft grün lackiert und bronzebeschlagen." },
+  sterndorn: { id: "sterndorn", name: "Seltener Speer", platz: "waffe", art: "Speer", seltenheit: "selten", ebenen: ["waffe.sterndorn"],
+    waffe: { art: "nah", ticks: 4, reich: 2, geschick: 6, staerke: 6 }, /* Speer: Nahkampf aus 2 Feldern (sim.ts NAH_LANG); Werte aus BALANCING */
+    text: "Ein langer Speer mit schlanker Spitze und grünem Wimpel – für zwei Hände und große Reichweite." },
+  mondlangbogen: { id: "mondlangbogen", name: "Seltener Langbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.lang"],
+    waffe: { art: "fern", ticks: 5, reich: 7, flug: 18, fernAngriff: 12, fernStaerke: 12 }, /* vorläufig: Langbogen – Werte folgen */
+    text: "Ein hoher Bogen mit geschwungenen Wurfarmen, bronzebeschlagen und mit grünen Steinen besetzt." },
+  mondkurzbogen: { id: "mondkurzbogen", name: "Seltener Kurzbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.kurz"],
+    waffe: { art: "fern", ticks: 4, reich: 6, flug: 18, fernAngriff: 10, fernStaerke: 10 }, /* vorläufig wie der Startbogen – Werte folgen */
+    text: "Die handliche Schwester des Mond-Langbogens – schneller gezogen, weniger Reichweite." },
+  sternarmbrust: { id: "sternarmbrust", name: "Seltene Armbrust", platz: "waffe", art: "Armbrust", seltenheit: "selten", ebenen: ["waffe.sternarmbrust"],
+    waffe: { art: "fern", ticks: 5, reich: 6, flug: 22, fernAngriff: 12, fernStaerke: 12 }, /* vorläufig: Armbrust – Werte folgen */
+    text: "Eine schwere Armbrust mit sternförmigem Bügel und grün lackiertem Schaft." },
+  sternenszepter: { id: "sternenszepter", name: "Seltener Zauberstab", platz: "waffe", art: "Stab", seltenheit: "selten", ebenen: ["waffe.sternenszepter"],
+    waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 5, magieStaerke: 10 }, /* vorläufig wie der Startstab – Werte folgen */
+    text: "Ein schlanker Zauberstab, dessen bronzene Krone einen blau leuchtenden Kristall umfasst." },
+  /* Holzfällerei (shared/holz.ts, 24.11.2026): Stämme stapeln nicht (wie OSRS); Holzbeile fällen (Holzfällerei-Level, Beilstufe) und taugen als schwache Einhandwaffe (≈ ⅔ der Klinge derselben Stufe) */
+  stamm_eiche: { id: "stamm_eiche", name: "Eichenstamm", art: "Rohstoff", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/erzeugnisse/stamm_eiche.webp", text: "Ein frischer Eichenstamm mit hellem Kern. Gutes Holz für Bögen und Stäbe der ersten Stufe – und Brennstoff für die Esse." },
+  stamm_tanne: { id: "stamm_tanne", name: "Tannenstamm", art: "Rohstoff", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/erzeugnisse/stamm_tanne.webp", text: "Ein harziger Tannenstamm, gerade gewachsen. Daraus werden einfache Bögen, Stäbe und Schilde." },
+  stamm_eibe: { id: "stamm_eibe", name: "Eibenstamm", art: "Rohstoff", seltenheit: "selten", bild: "img/objekte3d/skilling/erzeugnisse/stamm_eibe.webp", text: "Zähes, rötliches Eibenholz – das klassische Holz für gute Bögen." },
+  stamm_moorweide: { id: "stamm_moorweide", name: "Moorweidenstamm", art: "Rohstoff", seltenheit: "episch", bild: "img/objekte3d/skilling/erzeugnisse/stamm_moorweide.webp", text: "Ein knorriger Stamm aus dem Rabenmoor, feucht und biegsam. Seine Adern glimmen noch schwach." },
+  stamm_kernbaum: { id: "stamm_kernbaum", name: "Kernbaumstamm", art: "Rohstoff", seltenheit: "legendaer", bild: "img/objekte3d/skilling/erzeugnisse/stamm_kernbaum.webp", text: "Uraltes Holz aus den Ruinen des Nordwalds. Im Kern schimmert ein goldenes Licht." },
+  stamm_weltenbaum: { id: "stamm_weltenbaum", name: "Weltenbaumstamm", art: "Rohstoff", seltenheit: "mythisch", bild: "img/objekte3d/skilling/erzeugnisse/stamm_weltenbaum.webp", text: "Holz eines jungen Weltenbaums, gewachsen an den Rissen. Es fühlt sich warm an und summt leise." },
+  hammer: { id: "hammer", name: "Hammer", art: "Werkzeug", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/utensilien/symbole/hammer.webp", modell3d: "img/objekte3d/skilling/utensilien/hammer.glb", text: "Ein schwerer Schmiedehammer. Ohne ihn im Rucksack geht am Amboss nichts." },
+  holzbeil_training: { id: "holzbeil_training", name: "Trainings-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil.training"], art: "Holzbeil", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.training.webp",
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 5, staerke: 4 }, text: "Ein rostiges Beil mit ausgeblichenem Stiel. Fällt Eichen – und taugt im Notfall zur Verteidigung." },
+  holzbeil_einfach: { id: "holzbeil_einfach", name: "Eisen-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil.gewoehnlich"], art: "Holzbeil", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.einfach.webp", anforderung: { skill: "geschick", level: 10 },
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 12, staerke: 11 }, text: "Ein solides Beil aus Eisen. Fällt Bäume bis zur Tanne zügiger." },
+  holzbeil_selten: { id: "holzbeil_selten", name: "Schwarzeisen-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil"], art: "Holzbeil", seltenheit: "selten", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.selten.webp", anforderung: { skill: "geschick", level: 20 },
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 15, staerke: 15 }, text: "Ein scharfes Beil mit gehärteter Klinge und Nussbaumstiel." },
+  holzbeil_episch: { id: "holzbeil_episch", name: "Sterneisen-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil.episch"], art: "Holzbeil", seltenheit: "episch", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.episch.webp", anforderung: { skill: "geschick", level: 35 },
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 19, staerke: 19 }, text: "Blau glimmende Metallkanten – es beißt sich tief ins Holz." },
+  holzbeil_legendaer: { id: "holzbeil_legendaer", name: "Splittereisen-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil.legendaer"], art: "Holzbeil", seltenheit: "legendaer", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.legendaer.webp", anforderung: { skill: "geschick", level: 45 },
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 25, staerke: 26 }, text: "Orange glühende Schneide, Stiel aus rotbraunem Holz. Ein Meisterwerkzeug." },
+  holzbeil_mythisch: { id: "holzbeil_mythisch", name: "Ureisen-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil.mythisch"], art: "Holzbeil", seltenheit: "mythisch", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.mythisch.webp", anforderung: { skill: "geschick", level: 65 },
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 46, staerke: 47 }, text: "Türkis bis magenta leuchtende Kanten, Ebenholzstiel. Selbst Weltenbaumholz gibt ihm nach." },
+  /* Handwerk (shared/handwerk.ts, 25.11.2026): Barren (Esse), Flachs und Hanf (Felder im Osthof), Bogensehne und Garn (Werkbank), Kuhhaut (Kühe im Osthof), Leder und Stoff je Stufe (Werkbank). Nur Garn stapelt */
+  barren_kupfer: { id: "barren_kupfer", name: "Kupferbarren", art: "Rohstoff", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/erzeugnisse/barren_kupfer.webp", text: "Ein rötlich schimmernder Barren. Weich genug für Übungsklingen und erste Werkzeuge." },
+  barren_eisen: { id: "barren_eisen", name: "Eisenbarren", art: "Rohstoff", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/erzeugnisse/barren_eisen.webp", text: "Ein grauer, schwerer Barren. Der Grundstoff des einfachen Schmiedens." },
+  barren_schwarzeisen: { id: "barren_schwarzeisen", name: "Schwarzeisenbarren", art: "Rohstoff", seltenheit: "selten", bild: "img/objekte3d/skilling/erzeugnisse/barren_schwarzeisen.webp", text: "Ein fast schwarzer Barren mit stumpfem Glanz. Hart und zäh." },
+  barren_sterneisen: { id: "barren_sterneisen", name: "Sterneisenbarren", art: "Rohstoff", seltenheit: "episch", bild: "img/objekte3d/skilling/erzeugnisse/barren_sterneisen.webp", text: "Ein Barren mit hellen Sprenkeln, als wären Sterne eingeschmolzen." },
+  barren_splittereisen: { id: "barren_splittereisen", name: "Splittereisenbarren", art: "Rohstoff", seltenheit: "legendaer", bild: "img/objekte3d/skilling/erzeugnisse/barren_splittereisen.webp", text: "Blau geäderter Barren. Die Splitteradern glimmen noch." },
+  barren_ureisen: { id: "barren_ureisen", name: "Ureisenbarren", art: "Rohstoff", seltenheit: "mythisch", bild: "img/objekte3d/skilling/erzeugnisse/barren_ureisen.webp", text: "Ein dunkler, warmer Barren aus Ureisen. Er fühlt sich lebendig an." },
+  flachs: { id: "flachs", name: "Flachs", art: "Rohstoff", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/erzeugnisse/flachs.webp", modell3d: "img/objekte3d/skilling/sammeln/flachs.glb", text: "Ein Bündel Flachs mit blauen Blüten. An der Werkbank wird daraus eine Bogensehne." },
+  hanf: { id: "hanf", name: "Hanf", art: "Rohstoff", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/erzeugnisse/hanf.webp", modell3d: "img/objekte3d/skilling/sammeln/hanf.glb", text: "Zäher Hanf mit gezackten Blättern. An der Werkbank wird daraus Garn." },
+  bogensehne: { id: "bogensehne", name: "Bogensehne", art: "Rohstoff", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/erzeugnisse/bogensehne.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/bogensehne.glb", text: "Eine gedrehte Sehne aus Flachs. Für Kurz-, Langbögen und Armbrüste." },
+  garn: { id: "garn", name: "Garn", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: "img/objekte3d/skilling/erzeugnisse/garn.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/garn.glb", text: "Eine Spule Hanfgarn. Daraus wird Stoff gewebt – und Rüstung genäht." },
+  kuhhaut: { id: "kuhhaut", name: "Kuhhaut", art: "Rohstoff", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/erzeugnisse/kuhhaut.webp", modell3d: "img/objekte3d/kuhhaut.glb", text: "Ein Fell mit kastanienbraunen Flecken, noch ungegerbt. An der Werkbank wird daraus Leder." },
+  leder_rau: { id: "leder_rau", name: "Raues Leder", art: "Rohstoff", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/erzeugnisse/leder_rau.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/leder_rau.glb", text: "Steifes, grob gegerbtes Leder. Für erste Kapuzen und Wämser." },
+  leder_weich: { id: "leder_weich", name: "Weiches Leder", art: "Rohstoff", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/erzeugnisse/leder_weich.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/leder_weich.glb", text: "Geschmeidig gegerbtes Leder in Sattelbraun." },
+  leder_gehaertet: { id: "leder_gehaertet", name: "Gehärtetes Leder", art: "Rohstoff", seltenheit: "selten", bild: "img/objekte3d/skilling/erzeugnisse/leder_gehaertet.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/leder_gehaertet.glb", text: "In Wachs gehärtetes, waldgrünes Leder. Hält Hiebe ab." },
+  leder_moor: { id: "leder_moor", name: "Moorleder", art: "Rohstoff", seltenheit: "episch", bild: "img/objekte3d/skilling/erzeugnisse/leder_moor.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/leder_moor.glb", text: "Nachtblaues Leder, im Moorwasser gegerbt. Die Nähte glimmen blau." },
+  leder_splitter: { id: "leder_splitter", name: "Splitterleder", art: "Rohstoff", seltenheit: "legendaer", bild: "img/objekte3d/skilling/erzeugnisse/leder_splitter.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/leder_splitter.glb", text: "Ochsenblutrotes Leder mit golden glühenden Nähten." },
+  leder_ur: { id: "leder_ur", name: "Urleder", art: "Rohstoff", seltenheit: "mythisch", bild: "img/objekte3d/skilling/erzeugnisse/leder_ur.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/leder_ur.glb", text: "Schillernd violettes Leder. Türkis und Magenta wandern über die Nähte." },
+  stoff_hanf: { id: "stoff_hanf", name: "Hanftuch", art: "Rohstoff", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/erzeugnisse/stoff_hanf.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/stoff_hanf.glb", text: "Ungefärbtes, festes Tuch aus Hanfgarn." },
+  stoff_grob: { id: "stoff_grob", name: "Grobtuch", art: "Rohstoff", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/erzeugnisse/stoff_grob.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/stoff_grob.glb", text: "Graubraunes, dicht gewebtes Tuch." },
+  stoff_fein: { id: "stoff_fein", name: "Feintuch", art: "Rohstoff", seltenheit: "selten", bild: "img/objekte3d/skilling/erzeugnisse/stoff_fein.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/stoff_fein.glb", text: "Smaragdgrünes, feines Tuch – leicht und weich." },
+  stoff_mond: { id: "stoff_mond", name: "Mondtuch", art: "Rohstoff", seltenheit: "episch", bild: "img/objekte3d/skilling/erzeugnisse/stoff_mond.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/stoff_mond.glb", text: "Purpurnes Tuch mit blau schimmerndem Saum." },
+  stoff_splitter: { id: "stoff_splitter", name: "Splittertuch", art: "Rohstoff", seltenheit: "legendaer", bild: "img/objekte3d/skilling/erzeugnisse/stoff_splitter.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/stoff_splitter.glb", text: "Karmesinrotes Tuch mit golden glühendem Saum." },
+  stoff_welten: { id: "stoff_welten", name: "Weltentuch", art: "Rohstoff", seltenheit: "mythisch", bild: "img/objekte3d/skilling/erzeugnisse/stoff_welten.webp", modell3d: "img/objekte3d/skilling/handwerk/zwischen/stoff_welten.glb", text: "Nachtviolettes Tuch, in dessen Saum Türkis und Magenta pulsieren." },
+  /* Bergbau (shared/bergbau.ts, 24.11.2026): Erze stapeln nicht (wie die Stämme); Spitzhacken bauen ab (Bergbau-Level, Hackenstufe) und taugen als schwache Waffe wie die Holzbeile */
+  erz_kupfer: { id: "erz_kupfer", name: "Kupfererz", art: "Rohstoff", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/erzeugnisse/erz_kupfer.webp", text: "Grünlich angelaufenes Kupfererz aus dem Steinbruch. Mit Holz in der Esse wird ein Kupferbarren daraus." },
+  erz_eisen: { id: "erz_eisen", name: "Eisenerz", art: "Rohstoff", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/erzeugnisse/erz_eisen.webp", text: "Schweres, rostrotes Eisenerz. Der Grundstoff für einfache Waffen und Rüstungen." },
+  erz_schwarzeisen: { id: "erz_schwarzeisen", name: "Schwarzeisenerz", art: "Rohstoff", seltenheit: "selten", bild: "img/objekte3d/skilling/erzeugnisse/erz_schwarzeisen.webp", text: "Dunkles, fast schwarzes Erz vom Flussufer. Härter als Eisen und schwer zu schmelzen." },
+  erz_sterneisen: { id: "erz_sterneisen", name: "Sterneisenerz", art: "Rohstoff", seltenheit: "episch", bild: "img/objekte3d/skilling/erzeugnisse/erz_sterneisen.webp", text: "Erz mit hellen, funkelnden Einschlüssen – als wäre ein Stück Nachthimmel darin gefangen." },
+  erz_splittereisen: { id: "erz_splittereisen", name: "Splittereisenerz", art: "Rohstoff", seltenheit: "legendaer", bild: "img/objekte3d/skilling/erzeugnisse/erz_splittereisen.webp", text: "Erz von den Rissen, durchzogen von blau glimmenden Splitteradern. Es summt leise in der Hand." },
+  erz_ureisen: { id: "erz_ureisen", name: "Ureisenerz", art: "Rohstoff", seltenheit: "mythisch", bild: "img/objekte3d/skilling/erzeugnisse/erz_ureisen.webp", text: "Uraltes Erz aus der Tiefe. Es ist schwerer, als es aussieht, und fühlt sich warm an." },
+  spitzhacke_training: { id: "spitzhacke_training", name: "Trainings-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke.training"], art: "Spitzhacke", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.training.webp",
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 5, staerke: 4 }, text: "Eine stumpfe Hacke mit wackligem Stiel. Bricht Kupfererz – und taugt im Notfall zur Verteidigung." },
+  spitzhacke_einfach: { id: "spitzhacke_einfach", name: "Eisen-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke.gewoehnlich"], art: "Spitzhacke", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.einfach.webp", anforderung: { skill: "geschick", level: 10 },
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 12, staerke: 11 }, text: "Eine solide Hacke aus Eisen. Kommt bis zum Eisenerz zügiger voran." },
+  spitzhacke_selten: { id: "spitzhacke_selten", name: "Schwarzeisen-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke"], art: "Spitzhacke", seltenheit: "selten", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.selten.webp", anforderung: { skill: "geschick", level: 20 },
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 15, staerke: 15 }, text: "Gehärtete Spitze, Stiel aus Eisenholz. Beißt sich durch Schwarzeisen." },
+  spitzhacke_episch: { id: "spitzhacke_episch", name: "Sterneisen-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke.episch"], art: "Spitzhacke", seltenheit: "episch", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.episch.webp", anforderung: { skill: "geschick", level: 35 },
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 19, staerke: 19 }, text: "Blau glimmende Kanten – das Gestein gibt nach, bevor sie es trifft." },
+  spitzhacke_legendaer: { id: "spitzhacke_legendaer", name: "Splittereisen-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke.legendaer"], art: "Spitzhacke", seltenheit: "legendaer", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.legendaer.webp", anforderung: { skill: "geschick", level: 45 },
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 25, staerke: 26 }, text: "Orange glühende Spitze. Ein Meisterwerkzeug für die Splitterfelsen." },
+  spitzhacke_mythisch: { id: "spitzhacke_mythisch", name: "Ureisen-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke.mythisch"], art: "Spitzhacke", seltenheit: "mythisch", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.mythisch.webp", anforderung: { skill: "geschick", level: 65 },
+    waffe: { art: "nah", ticks: 4, reich: 1, geschick: 46, staerke: 47 }, text: "Türkis bis magenta leuchtende Kanten. Selbst Ureisen bricht unter ihr." },
 };
 /* Das Eisenwacht-Set in allen Stufen (gleiche Form, anderes Material: fabrik/seltenheit.py, fabrik/stufen_bauen.sh). „selten“ sind die Grundteile oben;
    die übrigen Stufen tragen die Ebene <teil>.<stufe> (eigene Datei <figur>.teile/<teil>.<stufe>.glb, erst beim Anlegen geladen). */
@@ -115,7 +214,7 @@ for (const st of MAGIER_STUFEN) for (const [basis, nomen, endung] of [["magierro
   const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`, w = st.w === "Purpurn" ? (endung === "er" ? "Purpurner" : "Purpurne") : st.w + endung;
   GEGENSTAENDE[id] = { ...B, id, name: `${w} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }
-/* Die Waffen jeder Klasse in allen Stufen (die Namen setzt der Material-Block weiter unten: Eisenschwert, Schwarzeisenschwert …). Die Anfängerwaffen haben keine Stufen. */
+/* Die Waffen jeder Klasse (benannt nach Stufe und Klasse: Einfaches, Seltenes, Episches, Legendäres, Mythisches Schwert): übrige Stufen wie beim Eisenwacht-Set. Die Anfängerwaffen haben keine Stufen. */
 const WAFFEN_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
   { s: "gewoehnlich", w: "Einfach", text: "Schlicht gearbeitet, ohne Zierrat – solide Ware vom Dorfschmied." },
   { s: "episch", w: "Episch", text: "Nachtschwarzer Stahl mit Goldbeschlägen, die im Dunkeln schwach blau glimmen." },
@@ -139,92 +238,273 @@ export const RUESTUNGSGRUPPE: Record<string, "nahkampf" | "fernkampf" | "magie" 
   for (const g of Object.values(GEGENSTAENDE)) { const basis = g.id.split("_")[0], t = TEIL[basis]; if (!t || !STAMM[g.seltenheit]) continue; g.name = `${STAMM[g.seltenheit]}${ENDUNG[t[1]]} ${t[0]}`; RUESTUNGSGRUPPE[g.id] = t[2]; }
   RUESTUNGSGRUPPE.lederpanzer = "nahkampf"; RUESTUNGSGRUPPE.magiepanzer = "magie";
 }
-/* Namen nach dem Material der Stufe (Handwerk-Konzept doku/berufe/Mythara-Handwerk.pdf): Metallteile nach dem Barren, Lederteile nach dem Leder,
-   Stoffteile nach dem Stoff, Bögen, Stäbe, Schilde und Armbrüste nach dem Holz. Training behält „Training…“, Eigennamen (Rabenset, Waldsäbel) bleiben.
-   Die Kennungen (eidschwert_episch …) ändern sich nicht – Spielstände bleiben gültig. */
-{
-  const MATERIAL: Record<"metall" | "leder" | "stoff" | "holz", Partial<Record<Seltenheit, string>>> = {
-    metall: { gewoehnlich: "Eisen", selten: "Schwarzeisen", episch: "Sterneisen", legendaer: "Splittereisen", mythisch: "Ureisen" },
-    leder: { gewoehnlich: "Weichleder", selten: "Hartleder", episch: "Moorleder", legendaer: "Splitterleder", mythisch: "Urleder" },
-    stoff: { gewoehnlich: "Grobtuch", selten: "Feintuch", episch: "Mondtuch", legendaer: "Splittertuch", mythisch: "Weltentuch" },
-    holz: { gewoehnlich: "Tannen", selten: "Eiben", episch: "Moorweiden", legendaer: "Kernholz", mythisch: "Weltenbaum" },
-  };
-  /* Teil: Material und Wort; „-“ = mit Bindestrich (lange Zusammensetzungen), sonst zusammengeschrieben */
-  const TEILE: Record<string, [keyof typeof MATERIAL, string]> = {
-    eidschwert: ["metall", "schwert"], eiddolch: ["metall", "dolch"], sterndorn: ["metall", "speer"], eidzweihaender: ["metall", "-Zweihänder"], sternbrecher: ["metall", "-Streitkolben"],
-    sternenschild: ["holz", "schild"], sternenszepter: ["holz", "stab"], mondlangbogen: ["holz", "-Langbogen"], mondkurzbogen: ["holz", "-Kurzbogen"], sternarmbrust: ["holz", "-Armbrust"],
-    eisenwachthelm: ["metall", "helm"], eisenwacht: ["metall", "-Brustpanzer"], eisenbeinschienen: ["metall", "-Beinschienen"],
-    jaegerkapuze: ["leder", "-Kapuze"], jaegerwams: ["leder", "-Wams"], jaegerhose: ["leder", "-Hose"],
-    magierkapuze: ["stoff", "-Kapuze"], magierrobe: ["stoff", "-Robe"], magierrock: ["stoff", "-Rock"],
-  };
-  for (const g of Object.values(GEGENSTAENDE)) {
-    const t = TEILE[g.id.split("_")[0]], m = t && MATERIAL[t[0]][g.seltenheit]; if (!t || !m) continue;
-    g.name = m + t[1];
-  }
-}
-/* ---------- Werkzeuge (Utensilien der Berufe): wie eine Einhandwaffe in der rechten Hand (fabrik/assets/skilling/utensilien, Teile waffe.holzbeil/…),
- * Angriff = Einhand-Hieb. Holzbeil und Spitzhacke in sechs Stufen (Training bis Mythisch), der Hammer (Handwerk) nur in einer. Werte folgen. ---------- */
-{
-  const STUFE_W: [Seltenheit, string, string][] = [["anfaenger", "training", "Trainings-"], ["gewoehnlich", "gewoehnlich", "Einfache"], ["selten", "", "Seltene"], ["episch", "episch", "Epische"], ["legendaer", "legendaer", "Legendäre"], ["mythisch", "mythisch", "Mythische"]];
-  for (const [basis, nomen, art, text] of [["holzbeil", "Holzbeil", "Holzbeil", "Werkzeug der Holzfällerei – fällt Bäume, taugt zur Not auch als Waffe."],
-                                           ["spitzhacke", "Spitzhacke", "Spitzhacke", "Werkzeug des Bergbaus – bricht Erz aus dem Gestein."]] as const)
-    for (const [s, ebene, w] of STUFE_W) {
-      const id = s === "selten" ? basis : `${basis}_${ebene || s}`, artikel = basis === "holzbeil" ? (w.endsWith("-") ? w : w + "s") : w;   // das Holzbeil (Einfaches), die Spitzhacke (Einfache)
-      GEGENSTAENDE[id] = { id, name: w.endsWith("-") ? `${w}${nomen}` : `${artikel} ${nomen}`, platz: "waffe", art, seltenheit: s, ebenen: [ebene ? `waffe.${basis}.${ebene}` : `waffe.${basis}`],
-        werte: [["Werkzeug", basis === "holzbeil" ? "Holzfällerei" : "Bergbau"], ["Werte", "folgen"]], text };
-    }
-  for (const [s, ebene, w] of STUFE_W) {                                                      // Angelrute: wie Holzbeil und Spitzhacke in sechs Stufen
-    const id = s === "selten" ? "angelrute" : `angelrute_${ebene || s}`;
-    GEGENSTAENDE[id] = { id, name: w.endsWith("-") ? `${w}Angelrute` : `${w} Angelrute`, platz: "waffe", art: "Angelrute", seltenheit: s, ebenen: [ebene ? `waffe.angelrute.${ebene}` : "waffe.angelrute"],
-      werte: [["Werkzeug", "Angeln"], ["Werte", "folgen"]], text: "Biegsame Rute mit Rolle und Schwimmer – für Bachling, Mühlbarsch und Moorhecht." };
-  }
-  GEGENSTAENDE.lamberts_rute = { id: "lamberts_rute", name: "Lamberts Rute", platz: "waffe", art: "Angelrute", seltenheit: "episch", ebenen: ["waffe.lamberts_rute"],
-    werte: [["Werkzeug", "Angeln"], ["Werte", "folgen"]], text: "Lambert Schilfs alte Nussholzrute mit Messingbeschlägen und grüner Seidenwicklung. Er gibt sie nicht jedem." };
-  GEGENSTAENDE.fischreuse = { id: "fischreuse", name: "Fischreuse", platz: "waffe", art: "Fischreuse", seltenheit: "gewoehnlich", ebenen: ["waffe.fischreuse"],
-    werte: [["Werkzeug", "Angeln"], ["Werte", "folgen"]], text: "Geflochtene Weidenreuse mit Trichter – ins Wasser gelegt, fängt sie von selbst." };
-  GEGENSTAENDE.hammer = { id: "hammer", name: "Runenhammer", platz: "waffe", art: "Hammer", seltenheit: "selten", ebenen: ["waffe.hammer"],
-    werte: [["Werkzeug", "Handwerk"], ["Werte", "folgen"]], text: "Schwerer Schmiedehammer mit türkis leuchtender Rune – Werkzeug des Handwerks am Amboss." };
-}
 /* ---------- Rabenset: Belohnung der Raben-Trilogie (je Abschnitt ein Teil). Defensiv ausgewogen, schwächer als „selten“ (zwischen einfach und selten),
-   dafür ein Set-Bonus, wenn alle drei Teile angelegt sind. Werte zur Abstimmung vorgeschlagen. ---------- */
-GEGENSTAENDE.rabenkapuze = { id: "rabenkapuze", name: "Rabenkapuze", platz: "kopf", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["kopf.helm.rabe"],
-  werte: [["Abwehr Nahkampf", "+3"], ["Abwehr Fernkampf", "+3"], ["Abwehr Magie", "+3"]], text: "Schwarzes Leder unter einem Kragen aus Rabenfedern. Teil 1 des Rabensets – Belohnung aus dem ersten Abschnitt der Raben-Trilogie." };
-GEGENSTAENDE.rabenpanzer = { id: "rabenpanzer", name: "Rabenpanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["ruestung.brust.rabe"],
-  werte: [["Abwehr Nahkampf", "+5"], ["Abwehr Fernkampf", "+5"], ["Abwehr Magie", "+5"]], text: "Federbesetzte Schulterstücke, das Leder bronzen gesäumt. Teil 2 des Rabensets – Belohnung aus dem zweiten Abschnitt der Raben-Trilogie." };
-GEGENSTAENDE.rabenbeinschuetzer = { id: "rabenbeinschuetzer", name: "Rabenbeinschützer", platz: "beine", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["ruestung.beine.rabe"],
-  werte: [["Abwehr Nahkampf", "+4"], ["Abwehr Fernkampf", "+4"], ["Abwehr Magie", "+4"]], text: "Gehärtetes Leder mit Federsaum und einem Rabenwappen am Gürtel. Teil 3 des Rabensets – Belohnung aus dem dritten Abschnitt der Raben-Trilogie." };
+   dafür ein Set-Bonus, wenn alle drei Teile angelegt sind. Abwehr nach OSRS-Maßstab (v4, zwischen Hartleder und beschlagenem Leder, ohne Angriffsabzug), Defense 15 – vorläufig.
+   Der Set-Bonus (Heilung) steht als Daten und Anzeige bereit, die Kampfsimulation rechnet ihn noch nicht. ---------- */
+GEGENSTAENDE.rabenkapuze = { id: "rabenkapuze", name: "Rabenkapuze", platz: "kopf", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["kopf.helm.rabe"], anforderung: { skill: "defense", level: 15 },
+  abwehr: { nah: 7, fern: 7, magie: 5 }, text: "Schwarzes Leder unter einem Kragen aus Rabenfedern. Teil 1 des Rabensets – Belohnung aus dem ersten Abschnitt der Raben-Trilogie." };
+GEGENSTAENDE.rabenpanzer = { id: "rabenpanzer", name: "Rabenpanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["ruestung.brust.rabe"], anforderung: { skill: "defense", level: 15 },
+  abwehr: { nah: 19, fern: 20, magie: 14 }, text: "Federbesetzte Schulterstücke, das Leder bronzen gesäumt. Teil 2 des Rabensets – Belohnung aus dem zweiten Abschnitt der Raben-Trilogie." };
+GEGENSTAENDE.rabenbeinschuetzer = { id: "rabenbeinschuetzer", name: "Rabenbeinschützer", platz: "beine", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["ruestung.beine.rabe"], anforderung: { skill: "defense", level: 15 },
+  abwehr: { nah: 11, fern: 11, magie: 8 }, text: "Gehärtetes Leder mit Federsaum und einem Rabenwappen am Gürtel. Teil 3 des Rabensets – Belohnung aus dem dritten Abschnitt der Raben-Trilogie." };
 RUESTUNGSGRUPPE.rabenkapuze = RUESTUNGSGRUPPE.rabenpanzer = RUESTUNGSGRUPPE.rabenbeinschuetzer = "rabenset";
-export interface SetBonus { id: string; name: string; teile: string[]; text: string; heilung: { chance: number; anteil: number } }
+export interface SetBonus { id: string; name: string; teile: string[]; text: string; /** Treffer gegen den Helden heilen (Rabenset) */ heilung?: { chance: number; anteil: number };
+  /** #160: Boni wie Gegenstand.bonus, wenn alle Teile angelegt sind (Stufe 70: +2 Stärke, +2 Fernkampf-Stärke, +2 % Magieschaden) */ bonus?: Gegenstand["bonus"] }
 export const SETS: Record<string, SetBonus> = {
   rabenset: { id: "rabenset", name: "Rabenset", teile: ["rabenkapuze", "rabenpanzer", "rabenbeinschuetzer"], heilung: { chance: 0.15, anteil: 0.5 },
     text: "Alle drei Teile angelegt: Jeder Treffer, der Schaden macht, heilt mit 15 % Wahrscheinlichkeit um 50 % dieses Schadens (nicht über das maximale Leben)." },
+  /* #160: die Rüstung der Stufe 70 hat keinen Set-Bonus (Entscheidung des Nutzers, 27.11.) – die Boni stecken in den Teilen */
 };
 /** Aktive Set-Boni bei diesen angelegten Gegenständen */
 export const aktiveSets = (angelegt: (string | undefined)[]) => Object.values(SETS).filter((s) => s.teile.every((t) => angelegt.includes(t)));
 /** Heilung durch den Set-Bonus für einen Treffer (zufall: 0..1, z. B. Math.random()); 0 bei Schaden 0 oder ohne Glück */
-export const setHeilung = (s: SetBonus, schaden: number, zufall: number) => (schaden > 0 && zufall < s.heilung.chance ? Math.round(schaden * s.heilung.anteil) : 0);
+export const setHeilung = (s: SetBonus, schaden: number, zufall: number) => (s.heilung && schaden > 0 && zufall < s.heilung.chance ? Math.round(schaden * s.heilung.anteil) : 0);
 /** Angriffsbewegung der 3D-Figur je Waffenart (nur Darstellung – der Kampf rechnet weiter mit dem Ausrüstungssatz der Startwaffe) */
-export const ANGRIFF_JE_ART: Record<string, string> = { Holzbeil: "angriff", Spitzhacke: "angriff", Hammer: "angriff", Angelrute: "angriff", Fischreuse: "angriff", Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
+export const ANGRIFF_JE_ART: Record<string, string> = { Holzbeil: "angriff", Spitzhacke: "angriff", Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Kurzbogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
 /** Angriffsbewegung zu den angelegten Figurenebenen (die Waffe in der Hand) – oder null, wenn keine bekannte Waffe angelegt ist */
 export function angriffFuer(ebenen: string[]): string | null {
   for (const g of Object.values(GEGENSTAENDE)) if (g.platz === "waffe" && g.ebenen && g.ebenen.some((e) => ebenen.includes(e)) && ANGRIFF_JE_ART[g.art]) return ANGRIFF_JE_ART[g.art];
   return null;
 }
+/* Anzeigenamen kommen aus den Datenblättern der Figuren-Fabrik (Trainings-, Einfache, Seltene … Stücke) – eine Quelle, von build.mjs erzeugt. Die IDs bleiben (gespeicherte Inventare). */
+for (const [id, n] of Object.entries(NAMEN_AUS_DATENBLAETTERN)) if (GEGENSTAENDE[id]) GEGENSTAENDE[id].name = n;
+/* Rucksack-Bilder der Waffen und Rüstungen (werkzeug/ausruestung_bilder.py): ein festes Bild statt jedes Mal aus dem 3D-Modell gerendert; eigene Bilder bleiben */
+for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] && !GEGENSTAENDE[id].bild && !GEGENSTAENDE[id].symbol) GEGENSTAENDE[id].bild = b;
+/* Quest 03 „Der Säbel des Waldgottes“ (shared/quest03.ts): Holz, Erz, Barren und der Waldsäbel – nicht tauschbar */
+{ const Q = "img/objekte3d/skilling/erzeugnisse/";
+  GEGENSTAENDE.holz_waldgott = { id: "holz_waldgott", name: "Holz des Waldgottes", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: Q + "holz_waldgott.webp", modell3d: "img/objekte3d/skilling/holzfaellerei/stamm_weltenbaum.glb",
+    text: "Helles, warmes Holz vom Baum des Waldgottes. Kein Splitter hat diesen Baum je berührt." };
+  GEGENSTAENDE.erz_waldstein = { id: "erz_waldstein", name: "Waldstein", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: Q + "erz_waldstein.webp",
+    text: "Ein grünlich schimmernder Stein aus dem Nordwald. Er fühlt sich kühl an – wie Erde nach Regen." };
+  GEGENSTAENDE.barren_waldstein = { id: "barren_waldstein", name: "Waldsteinbarren", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: Q + "barren_waldstein.webp",
+    text: "Geschmolzener Waldstein. Das Metall nimmt keine Splitter an." };
+  GEGENSTAENDE.waldsaebel = { ...GEGENSTAENDE.waldsaebel /* der vorhandene Gesegnete Waldsäbel: eigenes Modell (waffe.waldsaebel) und Bild */, untauschbar: true,
+    anforderung: { skill: "geschick", level: 5 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 16, staerke: 14, gegen: { wald: 0.15 } } /* Balancing 27.11.: knapp unter dem Eidschwert der Stufe 10 (18/16) */,
+    text: "Eine geschwungene Klinge aus Waldstein, der Griff aus dem Holz des Waldgottes, umrankt von lebendigen Dornen. Er trifft, was die Splitter verändert haben, härter: +15 % Schaden gegen Wesen des Waldes (Waldgolems, Mooshocker). Nicht tauschbar." }; }
+/* Phase 2 „Waldland“ (26.11.2026): Gegenstände der Einsteigerquests A1–A3, Essen und Golem-Beute (Bilder: fabrik/waldland_dinge.py) */
+{ const Q = "img/objekte3d/skilling/erzeugnisse/";
+  /* A1 „Sehnen für den Wachturm“: Wachbogen – zwischen Training und Einfach, nicht tauschbar */
+  GEGENSTAENDE.wachbogen = { id: "wachbogen", name: "Wachbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "anfaenger", ebenen: ["waffe.bogen.jagd"], untauschbar: true, bild: "img/objekte3d/ausruestung/bilder/jagdbogen.webp",
+    waffe: { art: "fern", ticks: 4, reich: 6, flug: 18, fernAngriff: 11, fernStaerke: 11 },
+    text: "Der erste selbst gebaute Bogen: Eiche, Flachssehne und Gesas strenger Blick. Etwas besser als ein Trainingsbogen. Nicht tauschbar." };
+  GEGENSTAENDE.wachbogen_ungespannt = { id: "wachbogen_ungespannt", name: "Wachbogen (ungespannt)", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "wachbogen_ungespannt.webp",
+    text: "Geschnitzt, aber noch ohne Sehne. Benutze eine Bogensehne darauf, dann wird daraus ein Wachbogen." };
+  /* A2 „Das Wappen mit dem Turm“ */
+  GEGENSTAENDE.pergament = { id: "pergament", name: "Leeres Pergament", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, symbol: "pergament",
+    text: "Ein Bogen festes Pergament aus Bruder Anselms Truhe. Für einen Abrieb gedacht." };
+  GEGENSTAENDE.kohle = { id: "kohle", name: "Holzkohle", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "kohle.webp",
+    text: "Ein schwarzes, leichtes Stück Kohle aus Ulfs Meiler. Färbt die Finger und alles, was man damit berührt." };
+  GEGENSTAENDE.wappenabrieb = { id: "wappenabrieb", name: "Wappenabrieb", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: Q + "wappenabrieb.webp",
+    text: "Kohle auf Pergament: ein Turm über drei Wellen, abgerieben vom Stein der Gruft im Nordwald." };
+  GEGENSTAENDE.steintafel = { id: "steintafel", name: "Steintafel-Bruchstück", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 3, bild: Q + "steintafel.webp",
+    text: "Ein Stück einer beschrifteten Steintafel, eingewachsen in den Leib eines Waldgolems. Die Bruchkanten sind scharf." };
+  GEGENSTAENDE.golemstein = { id: "golemstein", name: "Golemstein", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: Q + "golemstein.webp",
+    text: "Mauerstein, durchzogen von Wurzeln und Moos – was von einem Waldgolem übrig bleibt. Handwerksmaterial; Kräuterkundige sollen ihn eines Tages schätzen." };
+  /* A3 „Die Mühle steht still“ */
+  GEGENSTAENDE.muehlenachslager = { id: "muehlenachslager", name: "Mühlenachslager", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "muehlenachslager.webp",
+    text: "Ein Lagerring aus zwei Kupferbarren, frisch vom Amboss. Hält, bis die Mühle umfällt – sagt Tills Vater." };
+  GEGENSTAENDE.mehlsack = { id: "mehlsack", name: "Mehlsack", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "mehlsack.webp",
+    text: "Ein Sack frisches Mehl aus der Mühle im Osthof. Grete Korn wartet darauf." };
+  /* Essen: heilt fest, stapelt nicht (Werte in VERBRAUCH) */
+  GEGENSTAENDE.brot = { id: "brot", name: "Brot", art: "Essen", seltenheit: "anfaenger", bild: Q + "brot.webp", trank: "brot",
+    text: "Ein runder Laib aus Gretes Ofen, die Kruste noch warm. Heilt 4 Lebenspunkte." };
+  /* Phase 3a Splitterbinden und B1 „Der Wegstein“ (shared/splitterbinden.ts, shared/wegstein.ts). Der Wegstein trägt seine Ladungen nicht selbst – sie stehen im Inventar (inventar.ladungen.wegstein) */
+  GEGENSTAENDE.wegstein = { id: "wegstein", name: "Wegstein", art: "Splitterbinden", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/splitterbinden/symbole/wegstein.webp",
+    text: "Ein glatter Quellstein, gefasst in Lindenholz, ein geweihter Splitter in der Mitte. Reib ihn, und er bringt dich zu einem Ort, den du kennst – eine Ladung je Reise. Laden am Bindestein an der Linde." };
+  GEGENSTAENDE.wegstein_ungeweiht = { id: "wegstein_ungeweiht", name: "Wegstein (ungeweiht)", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: "img/objekte3d/splitterbinden/symbole/wegstein_ungeweiht.webp",
+    text: "Gefügt, aber noch stumm. Quellwasser darauf, über dem Erntefeuer in Weidenhain – so hat Agnes es gesagt." };
+  GEGENSTAENDE.seelenlicht = { id: "seelenlicht", name: "Seelenlicht", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: Q + "seelenlicht.webp",
+    text: "Ein eingefangenes Licht, warm in der Hand. Am Bindestein ersetzt es einen der zwei Splitter einer Ladung." };
+  GEGENSTAENDE.quellstein = { id: "quellstein", name: "Glatter Quellstein", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "quellstein.webp",
+    text: "Ein flacher, glatter Stein aus der Quelle der Obstwiesen, vom Wasser rund geschliffen." };
+  GEGENSTAENDE.quellwasser = { id: "quellwasser", name: "Quellwasser", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: "img/objekte3d/splitterbinden/symbole/quellwasser.webp",
+    text: "Eine Flasche klares Wasser aus der Quelle der Obstwiesen. Agnes braucht es zum Weihen." };
+  GEGENSTAENDE.lindenspan = { id: "lindenspan", name: "Lindenspan", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "lindenspan.webp",
+    text: "Ein Span vom Totholz der alten Linde in Weidenhain. Er riecht nach Honig." };
+  GEGENSTAENDE.geweihter_splitter = { id: "geweihter_splitter", name: "Geweihter Splitter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
+    text: "Einer der 250 Splitter, die Agnes in die Wurzeln der Linde gelegt hat – er schimmert jetzt grünlich." };
+  /* Phase 4 „Westmark & erster Boss“: Beute und Questgegenstände aus B3 „Fallobst“ und B4 „Das rote Banner“ (Bilder von Figuren & 3D, #24) */
+  const P4 = "img/objekte3d/beute/symbole/";
+  GEGENSTAENDE.karrenbrief = { id: "karrenbrief", name: "Karrenbrief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P4 + "karrenbrief.webp",
+    text: "Ein zerknitterter Zettel: Äpfel, Silberleuchter, Stoffballen aus Graufurt. Unten: „An R., Westmark, bei den Fässern.“" };
+  GEGENSTAENDE.apfelkisten = { id: "apfelkisten", name: "Gisberts Apfelkisten", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: P4 + "apfelkorb.webp",
+    text: "Drei Kisten, auf jeder ein eingebranntes „A“. Halb leer, aber es sind die vom Großvater." };
+  GEGENSTAENDE.apfel = { id: "apfel", name: "Apfel", art: "Essen", seltenheit: "anfaenger", stapel: 1000, bild: P4 + "apfel.webp", trank: "apfel", wert: 1,
+    text: "Ein Apfel aus Gisberts Obstwiesen. Heilt 2 Lebenspunkte." };
+  GEGENSTAENDE.schluesselbund = { id: "schluesselbund", name: "Schlüsselbund", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P4 + "schluesselbund.webp",
+    text: "Ein Ring mit fünf schweren Schlüsseln. Einer davon passt zur Tür des Beutelagers im Unterschlupf." };
+  GEGENSTAENDE.silberleuchter = { id: "silberleuchter", name: "Silberleuchter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "silberleuchter.webp",
+    text: "Zwei silberne Kerzenleuchter, in Sackleinen gewickelt. Die aus Gisberts Karrenbrief – Othmar wird sie zurückhaben wollen." };
+  GEGENSTAENDE.rabenbrief = { id: "rabenbrief", name: "Brief mit Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "rabenbrief.webp",
+    text: "Schwarzes Wachs, ein Rabe darin, das Siegel gebrochen. „Für jeden Splitter, den ihr bringt, eine Feder. Die Insel wartet. – Der Oberste.“" };
+  GEGENSTAENDE.rotes_banner = { id: "rotes_banner", name: "Rotes Banner", art: "Zierde", seltenheit: "episch", bild: P4 + "rotes_banner.webp",
+    text: "Rotmantels Banner, schwerer roter Stoff, an den Rändern verbrannt. Ein Sammelstück – irgendwann hängt es in deinem Haus." };
+  /* Phase 3b Fischen und Kochen (shared/fischen.ts, Kochen in shared/handwerk.ts). Bilder von Figuren & 3D (#39) */
+  const A = "img/objekte3d/skilling/angeln/symbole/", K = "img/objekte3d/skilling/kochen/symbole/", U = "img/objekte3d/skilling/utensilien/";
+  GEGENSTAENDE.angelrute = { id: "angelrute", name: "Angelrute", art: "Werkzeug", seltenheit: "anfaenger", bild: A + "angelrute.webp", modell3d: U + "angelrute.glb",
+    text: "Eine biegsame Rute mit Schnur und Haken. Mit Würmern im Rucksack fängst du damit Bachlinge und Mühlbarsche. Eine bessere gibt es nicht – den Fisch fängt, wer sie hält." };
+  GEGENSTAENDE.reuse = { id: "reuse", name: "Fischreuse", art: "Werkzeug", seltenheit: "gewoehnlich", bild: A + "fischreuse.webp", modell3d: U + "fischreuse.glb",
+    text: "Ein Korb aus Tannenruten und Garn. Im Moorwasser fängt er Moorhechte, ganz ohne Köder. Ab Fischen 20." };
+  GEGENSTAENDE.wurm = { id: "wurm", name: "Wurm", art: "Köder", seltenheit: "anfaenger", stapel: 1000, bild: A + "wuermer.webp",
+    text: "Fett und lebendig, frisch aus dem Acker im Osthof. Ein Wurm je Fisch." };
+  const FN: Record<string, string> = { bachling: "Bachling", muehlbarsch: "Mühlbarsch", moorhecht: "Moorhecht" }, HEIL: Record<string, number> = { bachling: 3, muehlbarsch: 5, moorhecht: 7 };
+  for (const f of Object.keys(FN)) {
+    GEGENSTAENDE[`fisch_${f}_roh`] = { id: `fisch_${f}_roh`, name: `${FN[f]} (roh)`, art: "Rohstoff", seltenheit: "anfaenger", bild: A + `fisch_${f}_roh.webp`,
+      text: `Ein frisch gefangener ${FN[f]}. Roh isst ihn niemand – am Feuer gebraten heilt er ${HEIL[f]} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: f === "moorhecht" ? "Moorhecht am Spieß" : `Gebratener ${FN[f]}`, art: "Essen", seltenheit: "anfaenger", bild: A + `fisch_${f}_gebraten.webp`, trank: `fisch_${f}_gebraten`,
+      text: `Knusprig gebraten. Heilt ${HEIL[f]} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${FN[f]}`, art: "Abfall", seltenheit: "anfaenger", bild: A + `fisch_${f}_verbrannt.webp`,
+      text: "Schwarz bis auf die Gräten. Den will niemand essen." }; }
+  GEGENSTAENDE.fischsuppe = { id: "fischsuppe", name: "Fischsuppe", art: "Essen", seltenheit: "gewoehnlich", bild: K + "fischsuppe.webp", trank: "fischsuppe",
+    text: "Mühlbarsch, Wasser und Geduld. Heilt 6 Lebenspunkte und gibt 5 Minuten lang Defense +2." };
+  GEGENSTAENDE.bauerneintopf = { id: "bauerneintopf", name: "Bauerneintopf", art: "Essen", seltenheit: "gewoehnlich", bild: K + "bauerneintopf.webp", trank: "bauerneintopf",
+    text: "Kuhfleisch, Mehl und Wasser, lange auf dem Herd. Heilt 8 Lebenspunkte; 10 Minuten lang erholt sich die Ausdauer 25 % schneller." };
+  GEGENSTAENDE.suppe_verbrannt = { id: "suppe_verbrannt", name: "Angebrannter Topf", art: "Abfall", seltenheit: "anfaenger", bild: K + "suppe_verbrannt.webp", text: "Am Boden klebt etwas Schwarzes. Es war einmal Essen." };
+  GEGENSTAENDE.brot_verbrannt = { id: "brot_verbrannt", name: "Verbranntes Brot", art: "Abfall", seltenheit: "anfaenger", bild: K + "brot_verbrannt.webp", text: "Hart wie ein Stein und genauso schmackhaft." };
+  GEGENSTAENDE.mehl = { id: "mehl", name: "Mehl", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: K + "mehl.webp", text: "Fein gemahlen in der Mühle im Osthof. Zum Backen und für den Eintopf." };
+  GEGENSTAENDE.krug = { id: "krug", name: "Krug", art: "Werkzeug", seltenheit: "anfaenger", bild: K + "krug.webp", text: "Ein leerer Tonkrug. Am Brunnen füllst du ihn mit Wasser." };
+  GEGENSTAENDE.krug_wasser = { id: "krug_wasser", name: "Krug mit Wasser", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "krug_wasser.webp", text: "Frisches Brunnenwasser. Für Brot, Suppe und Eintopf." };
+  /* Phase 3c B2 „Wasser auf die Mühle“ – Bilder vorläufig aus vorhandenen (Issue an Figuren) */
+  GEGENSTAENDE.schuetztafel = { id: "schuetztafel", name: "Schütztafel", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/stamm_tanne.webp",
+    text: "Zwei Tannenbohlen, verzapft und gewachst. Passt in einen Überlauf am Wehr von Weidenhain." };
+  GEGENSTAENDE.eisenband = { id: "eisenband", name: "Eisenband", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, stapel: 100, bild: "img/objekte3d/skilling/erzeugnisse/barren_eisen.webp",
+    text: "Ein geschmiedetes Band mit zwei Nagellöchern. Zwei halten eine Schütztafel im Wehr." };
+  GEGENSTAENDE.hanftau = { id: "hanftau", name: "Hanftau", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/garn.webp",
+    text: "Ein dickes Tau aus vier Strängen Garn. Für die obere Tafel – dort zieht das Wasser am stärksten." };
+  GEGENSTAENDE.kuhfleisch = { id: "kuhfleisch", name: "Kuhfleisch", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "kuhfleisch.webp", text: "Ein gutes Stück vom Rind. Roh nichts für den Magen – im Eintopf schon." }; }
+/* Zwischenteile des Handwerks (wie in OSRS): ungespannte Bögen und Armbrustschäfte – an der Werkbank geschnitzt, im Rucksack mit einer Bogensehne zur Waffe (Bilder: werkzeug/zwischenteile_bilder.py) */
+const ZW_STUFEN = ["_gewoehnlich", "", "_episch", "_legendaer", "_mythisch"];
+export const ZWISCHEN_BOEGEN = [...ZW_STUFEN.map((s) => "mondkurzbogen" + s), ...ZW_STUFEN.map((s) => "mondlangbogen" + s)], ZWISCHEN_ARMBRUESTE = ZW_STUFEN.map((s) => "sternarmbrust" + s);
+/** Das Zwischenteil zu einer Fernkampfwaffe ("" = keins) */
+export const zwischenteil = (g: string): string => (ZWISCHEN_BOEGEN.includes(g) ? "ungespannt_" + g : ZWISCHEN_ARMBRUESTE.includes(g) ? "schaft_" + g : "");
+for (const g of [...ZWISCHEN_BOEGEN, ...ZWISCHEN_ARMBRUESTE]) { const W = GEGENSTAENDE[g]; if (!W) continue; const id = zwischenteil(g), bogen = id.startsWith("ungespannt_");
+  GEGENSTAENDE[id] = { id, name: bogen ? `${W.name} (ungespannt)` : `${W.name} (Schaft)`, art: "Rohstoff", seltenheit: W.seltenheit, bild: `img/objekte3d/skilling/erzeugnisse/${id}.webp`,
+    text: bogen ? `Geschnitzt, aber noch ohne Sehne. Benutze eine Bogensehne darauf, dann wird daraus: ${W.name}.` : `Schaft und Bogenarme sind fertig, die Sehne fehlt. Benutze eine Bogensehne darauf, dann wird daraus: ${W.name}.` }; }
+/* ───────── Ausrüstung nach OSRS (Vorgabe 23.11.2026): Training ↔ Bronze/Leder/Zauberrobe, Einfach (Level 10) ↔ Black, Selten (Level 20) ↔ Mithril ─────────
+   Treffer und Abwehr rechnen wie OSRS: Wurf = (Level + Stil + 8) × (Bonus + 64) – die Boni sind die OSRS-Werte direkt.
+   Nahkampf: ein Angriffsbonus (der passende OSRS-Angriffsstil der Waffe). Fernkampf: Bogen und Munition in einem (Pfeil-/Bolzenstärke in fernStaerke).
+   Magie: der Zauber steckt im Stab (magieStaerke). Rüstung: Abwehr nah = Mittel aus Stich/Hieb/Wucht; Metall senkt Fernkampf- und Magie-Angriff wie in OSRS.
+   Anforderungen, Ticks und Reichweiten aus dem Balancing-Dokument. Episch (35) ↔ Adamant, Legendär (45) ↔ Rune, Mythisch (65) ↔ Dragon. */
+type Bal = { a?: [AnfSkill, number]; w?: Partial<WaffenWerte>; ab?: [number, number, number]; /** Angriffsboni der Rüstung: [Fernkampf, Magie] */ mal?: [number, number]; zweihand?: boolean };
+/* OSRS-Abzüge der Metallrüstung auf Fernkampf- und Magie-Angriff (Volle Helme, Plattenpanzer, Beinschienen, Kite-Schilde) */
+const HELM: [number, number] = [-3, -6], PANZER: [number, number] = [-15, -30], BEINE: [number, number] = [-11, -21], KITE: [number, number] = [-2, -8];
+const BALANCING: Record<string, Bal> = {
+  /* Training (Level 1): Bronze-Säbel, Kurzbogen + Bronzepfeile, Luftstab, Bronze-Kiteschild, Lederwams, Zauberrobe */
+  ritterschwert: { w: { geschick: 7, staerke: 6 } }, jagdbogen: { w: { fernAngriff: 8, fernStaerke: 7 } }, hirtenstab: { w: { genau: 10 } },
+  rundschild: { ab: [6, 6, -1], mal: KITE }, lederpanzer: { ab: [9, 9, 4], mal: [2, -2] }, magiepanzer: { ab: [0, 0, 3], mal: [0, 3] },
+  /* Nahkampf: Black (Level 10) / Mithril (Level 20) – Langschwert, Dolch, Zweihänder, Streitkolben, Speer */
+  eidschwert_gewoehnlich: { a: ["geschick", 10], w: { ticks: 3, reich: 1, geschick: 18, staerke: 16 } }, eidschwert: { a: ["geschick", 20], w: { ticks: 3, reich: 1, geschick: 22, staerke: 22 } },
+  eiddolch_gewoehnlich: { a: ["geschick", 10], w: { ticks: 2, reich: 1, geschick: 10, staerke: 6 } }, eiddolch: { a: ["geschick", 20], w: { ticks: 2, reich: 1, geschick: 11, staerke: 11 } },
+  eidzweihaender_gewoehnlich: { a: ["staerke", 10], w: { ticks: 4, reich: 1, geschick: 27, staerke: 26 }, zweihand: true }, eidzweihaender: { a: ["staerke", 20], w: { ticks: 4, reich: 1, geschick: 38, staerke: 38 }, zweihand: true },
+  sternbrecher_gewoehnlich: { a: ["staerke", 10], w: { ticks: 3, reich: 1, geschick: 13, staerke: 14 } }, sternbrecher: { a: ["staerke", 20], w: { ticks: 3, reich: 1, geschick: 16, staerke: 20 } },
+  sterndorn_gewoehnlich: { a: ["geschick", 10], w: { ticks: 4, reich: 2, geschick: 11, staerke: 12 }, ab: [5, 5, 0], zweihand: true }, sterndorn: { a: ["geschick", 20], w: { ticks: 4, reich: 2, geschick: 15, staerke: 17 }, ab: [7, 7, 0], zweihand: true },
+  /* Fernkampf: Oak/Willow-Kurzbogen mit Eisen-/Stahlpfeilen, Langbogen, Armbrust mit Bolzen (Black/Mithril) */
+  mondkurzbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 3, reich: 5, fernAngriff: 14, fernStaerke: 16 } }, mondkurzbogen: { a: ["fernkampf", 20], w: { ticks: 3, reich: 5, fernAngriff: 20, fernStaerke: 22 } },
+  mondlangbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 5, reich: 7, fernAngriff: 14, fernStaerke: 20 } }, mondlangbogen: { a: ["fernkampf", 20], w: { ticks: 5, reich: 7, fernAngriff: 20, fernStaerke: 27 } },
+  sternarmbrust_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 6, reich: 6, fernAngriff: 42, fernStaerke: 46 } }, sternarmbrust: { a: ["fernkampf", 20], w: { ticks: 6, reich: 6, fernAngriff: 54, fernStaerke: 64 } },
+  /* Magie: Elementarstab; der eingebaute Zauber in der Magie-Stärke – Einfach trifft auf Magie 10 bis 4 (wie Water Strike), Selten auf Magie 20 bis 8 (wie Fire Strike) */
+  sternenszepter_gewoehnlich: { a: ["magie", 10], w: { ticks: 5, reich: 6, genau: 10, magieStaerke: 160 } }, sternenszepter: { a: ["magie", 20], w: { ticks: 5, reich: 6, genau: 12, magieStaerke: 176 } },
+  /* Schilde und Metallrüstung: Black (Einfach) / Mithril (Selten) */
+  sternenschild_gewoehnlich: { a: ["defense", 10], ab: [22, 22, -1], mal: KITE }, sternenschild: { a: ["defense", 20], ab: [25, 25, -1], mal: KITE },
+  eisenwachthelm_gewoehnlich: { a: ["defense", 10], ab: [12, 12, -1], mal: HELM }, eisenwacht_gewoehnlich: { a: ["defense", 10], ab: [37, 40, -6], mal: PANZER }, eisenbeinschienen_gewoehnlich: { a: ["defense", 10], ab: [20, 20, -4], mal: BEINE },
+  eisenwachthelm: { a: ["defense", 20], ab: [14, 14, -1], mal: HELM }, eisenwacht: { a: ["defense", 20], ab: [43, 44, -6], mal: PANZER }, eisenbeinschienen: { a: ["defense", 20], ab: [22, 22, -4], mal: BEINE },
+  /* Jäger: Hartleder (Einfach) / Beschlagenes Leder (Selten) – Fernkampf-Angriff plus, Magie minus */
+  jaegerkapuze: { a: ["defense", 10], ab: [6, 4, 4], mal: [2, -1] }, jaegerwams: { a: ["defense", 10], ab: [15, 15, 6], mal: [8, -4] }, jaegerhose: { a: ["defense", 10], ab: [4, 4, 2], mal: [4, -2] },
+  jaegerkapuze_selten: { a: ["defense", 20], ab: [8, 8, 4], mal: [4, -1] }, jaegerwams_selten: { a: ["defense", 20], ab: [22, 25, 8], mal: [8, -4] }, jaegerhose_selten: { a: ["defense", 20], ab: [16, 16, 6], mal: [6, -5] },
+  /* Magier: Zauberroben (Einfach) / leichte Mystik-Roben (Selten) – Magie-Angriff und Magie-Abwehr */
+  magierkapuze: { a: ["defense", 10], ab: [0, 0, 2], mal: [0, 2] }, magierrobe: { a: ["defense", 10], ab: [0, 0, 3], mal: [0, 3] }, magierrock: { a: ["defense", 10], ab: [0, 0, 2], mal: [0, 2] },
+  magierkapuze_selten: { a: ["defense", 20], ab: [2, 2, 4], mal: [0, 4] }, magierrobe_selten: { a: ["defense", 20], ab: [6, 6, 12], mal: [0, 12] }, magierrock_selten: { a: ["defense", 20], ab: [4, 4, 8], mal: [0, 8] },
+  /* ───── Episch (Level 35) ↔ Adamant · Legendär (Level 45) ↔ Rune · Mythisch (Level 65) ↔ Dragon (Vorgabe 23.11.2026) ─────
+     Nahkampf: Langschwert, Dolch, Zweihänder, Streitkolben, Speer. Fernkampf: Ahorn/Eibe/Magie-Bogen mit Adamant-/Runen-/Drachenpfeilen, Adamant-/Runen-/Drachen-Armbrust mit Bolzen.
+     Magie: Genauigkeit wie Mystik-/Alter/Kodai-Stäbe; die Zauberstärke steigt nur leicht (die Magie-Formel skaliert schon mit dem Level). Rüstung: Adamant/Rune/Dragon, Grüner/Blauer/Schwarzer Drachenleder-Satz, Mystik/Unendlichkeit/Ahrim. */
+  eidschwert_episch: { a: ["geschick", 35], w: { ticks: 3, reich: 1, geschick: 29, staerke: 28 } }, eidschwert_legendaer: { a: ["geschick", 45], w: { ticks: 3, reich: 1, geschick: 38, staerke: 39 } }, eidschwert_mythisch: { a: ["geschick", 65], w: { ticks: 3, reich: 1, geschick: 69, staerke: 71 } },
+  eiddolch_episch: { a: ["geschick", 35], w: { ticks: 2, reich: 1, geschick: 15, staerke: 14 } }, eiddolch_legendaer: { a: ["geschick", 45], w: { ticks: 2, reich: 1, geschick: 25, staerke: 24 } }, eiddolch_mythisch: { a: ["geschick", 65], w: { ticks: 2, reich: 1, geschick: 40, staerke: 40 } },
+  eidzweihaender_episch: { a: ["staerke", 35], w: { ticks: 4, reich: 1, geschick: 43, staerke: 44 }, zweihand: true }, eidzweihaender_legendaer: { a: ["staerke", 45], w: { ticks: 4, reich: 1, geschick: 69, staerke: 70 }, zweihand: true }, eidzweihaender_mythisch: { a: ["staerke", 65], w: { ticks: 4, reich: 1, geschick: 92, staerke: 93 }, zweihand: true },
+  sternbrecher_episch: { a: ["staerke", 35], w: { ticks: 3, reich: 1, geschick: 25, staerke: 23 } }, sternbrecher_legendaer: { a: ["staerke", 45], w: { ticks: 3, reich: 1, geschick: 36, staerke: 39 } }, sternbrecher_mythisch: { a: ["staerke", 65], w: { ticks: 3, reich: 1, geschick: 60, staerke: 55 } },
+  sterndorn_episch: { a: ["geschick", 35], w: { ticks: 4, reich: 2, geschick: 23, staerke: 24 }, ab: [9, 9, 0], zweihand: true }, sterndorn_legendaer: { a: ["geschick", 45], w: { ticks: 4, reich: 2, geschick: 36, staerke: 42 }, ab: [12, 12, 0], zweihand: true }, sterndorn_mythisch: { a: ["geschick", 65], w: { ticks: 4, reich: 2, geschick: 55, staerke: 60 }, ab: [15, 15, 0], zweihand: true },
+  mondkurzbogen_episch: { a: ["fernkampf", 35], w: { ticks: 3, reich: 5, fernAngriff: 29, fernStaerke: 31 } }, mondkurzbogen_legendaer: { a: ["fernkampf", 45], w: { ticks: 3, reich: 5, fernAngriff: 47, fernStaerke: 49 } }, mondkurzbogen_mythisch: { a: ["fernkampf", 65], w: { ticks: 3, reich: 5, fernAngriff: 69, fernStaerke: 60 } },
+  mondlangbogen_episch: { a: ["fernkampf", 35], w: { ticks: 5, reich: 7, fernAngriff: 31, fernStaerke: 38 } }, mondlangbogen_legendaer: { a: ["fernkampf", 45], w: { ticks: 5, reich: 7, fernAngriff: 49, fernStaerke: 60 } }, mondlangbogen_mythisch: { a: ["fernkampf", 65], w: { ticks: 5, reich: 7, fernAngriff: 69, fernStaerke: 73 } },
+  sternarmbrust_episch: { a: ["fernkampf", 35], w: { ticks: 6, reich: 6, fernAngriff: 55, fernStaerke: 82 } }, sternarmbrust_legendaer: { a: ["fernkampf", 45], w: { ticks: 6, reich: 6, fernAngriff: 90, fernStaerke: 100 } }, sternarmbrust_mythisch: { a: ["fernkampf", 65], w: { ticks: 6, reich: 6, fernAngriff: 94, fernStaerke: 122 } },
+  sternenszepter_episch: { a: ["magie", 35], w: { ticks: 5, reich: 6, genau: 15, magieStaerke: 184 } }, sternenszepter_legendaer: { a: ["magie", 45], w: { ticks: 5, reich: 6, genau: 20, magieStaerke: 192 } }, sternenszepter_mythisch: { a: ["magie", 65], w: { ticks: 5, reich: 6, genau: 25, magieStaerke: 208 } },
+  sternenschild_episch: { a: ["defense", 35], ab: [32, 32, -1], mal: KITE }, sternenschild_legendaer: { a: ["defense", 45], ab: [46, 46, -1], mal: KITE }, sternenschild_mythisch: { a: ["defense", 65], ab: [59, 60, 0], mal: KITE },
+  eisenwachthelm_episch: { a: ["defense", 35], ab: [19, 19, -1], mal: HELM }, eisenwacht_episch: { a: ["defense", 35], ab: [61, 63, -6], mal: PANZER }, eisenbeinschienen_episch: { a: ["defense", 35], ab: [31, 31, -4], mal: BEINE },
+  eisenwachthelm_legendaer: { a: ["defense", 45], ab: [30, 30, -1], mal: HELM }, eisenwacht_legendaer: { a: ["defense", 45], ab: [78, 80, -6], mal: PANZER }, eisenbeinschienen_legendaer: { a: ["defense", 45], ab: [49, 49, -4], mal: BEINE },
+  eisenwachthelm_mythisch: { a: ["defense", 65], ab: [45, 46, -1], mal: HELM }, eisenwacht_mythisch: { a: ["defense", 65], ab: [104, 106, -6], mal: PANZER }, eisenbeinschienen_mythisch: { a: ["defense", 65], ab: [66, 66, -4], mal: BEINE },
+  jaegerkapuze_episch: { a: ["defense", 35], ab: [9, 9, 6], mal: [4, -1] }, jaegerwams_episch: { a: ["defense", 35], ab: [31, 32, 24], mal: [15, -15] }, jaegerhose_episch: { a: ["defense", 35], ab: [18, 18, 10], mal: [8, -10] },
+  jaegerkapuze_legendaer: { a: ["defense", 45], ab: [10, 10, 8], mal: [6, -1] }, jaegerwams_legendaer: { a: ["defense", 45], ab: [40, 40, 40], mal: [20, -15] }, jaegerhose_legendaer: { a: ["defense", 45], ab: [20, 20, 14], mal: [11, -10] },
+  jaegerkapuze_mythisch: { a: ["defense", 65], ab: [12, 12, 10], mal: [10, -1] }, jaegerwams_mythisch: { a: ["defense", 65], ab: [54, 55, 50], mal: [30, -15] }, jaegerhose_mythisch: { a: ["defense", 65], ab: [25, 27, 24], mal: [17, -10] },
+  magierkapuze_episch: { a: ["defense", 35], ab: [0, 0, 4], mal: [0, 4] }, magierrobe_episch: { a: ["defense", 35], ab: [0, 0, 20], mal: [0, 20] }, magierrock_episch: { a: ["defense", 35], ab: [0, 0, 15], mal: [0, 15] },
+  magierkapuze_legendaer: { a: ["defense", 45], ab: [6, 6, 6], mal: [0, 6] }, magierrobe_legendaer: { a: ["defense", 45], ab: [10, 10, 22], mal: [0, 22] }, magierrock_legendaer: { a: ["defense", 45], ab: [8, 8, 17], mal: [0, 17] },
+  magierkapuze_mythisch: { a: ["defense", 65], ab: [15, 15, 6], mal: [0, 6] }, magierrobe_mythisch: { a: ["defense", 65], ab: [50, 50, 30], mal: [0, 30] }, magierrock_mythisch: { a: ["defense", 65], ab: [33, 33, 22], mal: [0, 22] },
+};
+for (const [id, b] of Object.entries(BALANCING)) { const G = GEGENSTAENDE[id]; if (!G) continue;
+  if (b.a) G.anforderung = { skill: b.a[0], level: b.a[1] }; if (b.w && G.waffe) G.waffe = { ...G.waffe, ...b.w }; if (b.ab) G.abwehr = { nah: b.ab[0], fern: b.ab[1], magie: b.ab[2] }; if (b.zweihand) G.zweihand = true;
+  if (b.mal) G.bonus = { ...G.bonus, ...(b.mal[0] ? { fernAngriff: b.mal[0] } : {}), ...(b.mal[1] ? { genau: b.mal[1] } : {}) }; }
+/* Bögen (Kurz-, Lang-, Jagdbogen …) brauchen beide Hände: kein Schild dazu – beim Anlegen geht die Nebenhand in den Rucksack (25.11.2026) */
+for (const G of Object.values(GEGENSTAENDE)) if (G.platz === "waffe" && /bogen/i.test(G.art || "") && !/armbrust/i.test(G.art || "")) G.zweihand = true;
+/* Angriffstakt je Waffenart in Ticks (26.11.2026, Vorgabe): gilt für alle Seltenheitsstufen. Der Stil „Schnell“ zieht davon wie bisher 1 Tick ab. */
+const TAKT_JE_ART: [RegExp, number][] = [[/^(hirtenstab|sternenszepter)/, 5], [/^(ritterschwert|eidschwert)/, 4], [/^waldsaebel/, 3], [/^eiddolch/, 3], [/^eidzweihaender/, 7], [/^sterndorn/, 7] /* Speer wie der Zweihänder */,
+  [/^sternbrecher/, 5], [/^(jagdbogen|mondkurzbogen)/, 4], [/^mondlangbogen/, 6], [/^sternarmbrust/, 6]];
+for (const G of Object.values(GEGENSTAENDE)) { if (!G.waffe) continue; const t = TAKT_JE_ART.find(([r]) => r.test(G.id)); if (t) G.waffe = { ...G.waffe, ticks: t[1] }; }
+/* Beil und Spitzhacke (26.11.2026, Vorgabe): Kampfwerte wie der Dolch eine Stufe darunter (Selten = Dolch Gewöhnlich …), immer 5 Ticks.
+   Training: die halben Werte des Trainingsschwerts. Gewöhnlich: darunter gibt es keinen Dolch – dort die Werte des Trainingsschwerts. */
+{ const W = (id: string) => GEGENSTAENDE[id] && GEGENSTAENDE[id].waffe, halb = (n: number) => Math.round(n / 2), T = W("ritterschwert");
+  const vorlage: Record<string, { geschick: number; staerke: number } | undefined> = { training: T && { geschick: halb(T.geschick ?? 0), staerke: halb(T.staerke ?? 0) }, einfach: T && { geschick: T.geschick ?? 0, staerke: T.staerke ?? 0 },
+    selten: W("eiddolch_gewoehnlich") as never, episch: W("eiddolch") as never, legendaer: W("eiddolch_episch") as never, mythisch: W("eiddolch_legendaer") as never };
+  for (const G of Object.values(GEGENSTAENDE)) { const m = /^(holzbeil|spitzhacke)_(training|einfach|selten|episch|legendaer|mythisch)$/.exec(G.id), v = m && vorlage[m[2]]; if (!m || !v || !G.waffe) continue;
+    G.waffe = { ...G.waffe, ticks: 5, geschick: v.geschick, staerke: v.staerke }; } }
+/** Darf ein Held mit diesen Skill-Leveln den Gegenstand anlegen? Zurück: Fehlertext oder null */
+export function anforderungFehlt(G: Gegenstand, level: (s: AnfSkill) => number): string | null {
+  const a = G.anforderung; return a && level(a.skill) < a.level ? `Dafür brauchst du ${ANF_NAME[a.skill]} ${a.level} (du hast ${level(a.skill)}).` : null; }
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {
-  return w === "schwert" ? { waffe: "ritterschwert", nebenhand: "rundschild" } : w === "bogen" ? { waffe: "jagdbogen" } : { waffe: "hirtenstab" };
+  return w === "schwert" ? { waffe: "ritterschwert", nebenhand: "rundschild" } : w === "bogen" ? { waffe: "jagdbogen", brust: "lederpanzer" } : { waffe: "hirtenstab", brust: "magiepanzer" };
 }
 export const RUCKSACK_PLAETZE = 24;
+/** Daten je Exemplar (Phase 5a): ladungen = Ladungen einer Waffe (Splitterbinden, Phase 5b); gebunden = Questlohn, gehört dem Spieler (nicht handelbar, #65) */
+export interface Daten { ladungen?: number; gebunden?: boolean }
+/** Ein Rucksackfach: eine Gegenstands-id oder ein Stapel { g, n }, mit Daten { g, n, d } (stapeln nur mit gleichen Daten; Geladenes nie) */
+export type Fach = string | { g: string; n: number; d?: Daten };
+export const fachG = (f: Fach): string => (typeof f === "string" ? f : f.g);
+export const fachN = (f: Fach): number => (typeof f === "string" ? 1 : f.n);
+export const fachD = (f: Fach): Daten | undefined => (typeof f === "string" ? undefined : f.d);
+/** Daten aus unbekannter Quelle prüfen (Speicherstand, Bank, Boden): nur bekannte Felder, Ladungen 1 … 1000; leer = undefined */
+export function datenPruefen(roh: unknown): Daten | undefined { if (!roh || typeof roh !== "object") return undefined; const o = roh as Record<string, unknown>, d: Daten = {};
+  const l = Math.floor(Number(o.ladungen)); if (l > 0) d.ladungen = Math.min(1000, l); if (o.gebunden === true) d.gebunden = true; return Object.keys(d).length ? d : undefined; }
+/** Gleiche Daten (beide ohne = gleich) */
+export const datenGleich = (a?: Daten, b?: Daten): boolean => (a?.ladungen || 0) === (b?.ladungen || 0) && Boolean(a?.gebunden) === Boolean(b?.gebunden);
+/** Geladen (Splitterbinden): Ladungen > 0 */
+export const geladen = (d?: Daten): boolean => Boolean(d && d.ladungen && d.ladungen > 0);
+/** Darf das gehandelt werden? Nicht: Questgegenstände (untauschbar), gebundener Questlohn, geladene Waffen */
+export const handelbar = (g: string, d?: Daten): boolean => Boolean(GEGENSTAENDE[g]) && !GEGENSTAENDE[g].untauschbar && !(d && (d.gebunden || geladen(d)));
+/** Darf das auf den Boden? Geladene Waffen nicht (Kanon) */
+export const ablegbar = (_g: string, d?: Daten): boolean => !geladen(d);
+/** Name zum Anzeigen: geladene Waffen heißen „… (s)“ */
+export const anzeigeName = (g: string, d?: Daten): string => (GEGENSTAENDE[g] ? GEGENSTAENDE[g].name : g) + (geladen(d) ? " (s)" : "");
 
 /* ---------- Verbrauchsgegenstände (Tränke) ----------
  * Noch nicht im Rucksack und noch ohne Wirkung im Kampf: das Leben im Kampf rechnet der Spielserver (shared/sim.ts) – das Trinken braucht dort einen eigenen Befehl.
  * Hier stehen schon Werte, Text und Modell (img/objekte3d, fabrik/drehobjekt.py: schwebt und dreht sich, Animation „drehen“). */
 /** Verbrauchsgegenstand. stapelbar: mehrere liegen in einem Rucksackfeld (false = jeder belegt ein eigenes Feld). Heilung nie über das maximale Leben hinaus */
-export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
+export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; /** Wirkung beim Essen (shared/wirkungen.ts) */ wirkung?: string;
+  /** Kräuterkunde (#133): Ausdauer sofort + so viele Prozent · kostet so viele LP beim Trinken (Nebenwirkung) · hebt Trank-Nebenwirkungen auf · gibt das leere Fläschchen zurück */
+  ausdauer?: number; kostet?: number; nebenAuf?: boolean; flaeschchen?: boolean; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
 export const VERBRAUCH: Record<string, Verbrauch> = {
+  apfel: { id: "apfel", name: "Apfel", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 2, anteil: 0 }, stapelbar: true, modell: "",
+    werte: [["Heilung", "2 (nicht über das maximale Leben)"], ["Stapelbar", "ja"]], text: "Ein Apfel aus Gisberts Obstwiesen." },
   kleiner_heiltrank: { id: "kleiner_heiltrank", name: "Kleiner Heiltrank", art: "Trank", seltenheit: "gewoehnlich", heilt: { fest: 5, anteil: 0 }, stapelbar: false, modell: "img/objekte3d/heiltrank-klein.glb",
     werte: [["Heilung", "5 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
     text: "Ein Fläschchen grüner Kräutersud. Lindert Kratzer – für mehr reicht es nicht." },
+  brot: { id: "brot", name: "Brot", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 4, anteil: 0 }, stapelbar: false, modell: "",
+    werte: [["Heilung", "4 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
+    text: "Ein runder Laib aus Gretes Ofen, die Kruste noch warm." },
+  fisch_bachling_gebraten: { id: "fisch_bachling_gebraten", name: "Gebratener Bachling", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 3, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "3 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Knusprig gebraten." },
+  fisch_muehlbarsch_gebraten: { id: "fisch_muehlbarsch_gebraten", name: "Gebratener Mühlbarsch", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 5, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "5 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Knusprig gebraten." },
+  fisch_moorhecht_gebraten: { id: "fisch_moorhecht_gebraten", name: "Moorhecht am Spieß", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 7, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "7 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Knusprig gebraten." },
+  fischsuppe: { id: "fischsuppe", name: "Fischsuppe", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 6, anteil: 0 }, stapelbar: false, modell: "", wirkung: "fischsuppe",
+    werte: [["Heilung", "6 (nicht über das maximale Leben)"], ["Wirkung", "Defense +2 für 5 Minuten (ersetzt anderes Essen)"], ["Stapelbar", "nein"]], text: "Mühlbarsch, Wasser und Geduld." },
+  bauerneintopf: { id: "bauerneintopf", name: "Bauerneintopf", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 8, anteil: 0 }, stapelbar: false, modell: "", wirkung: "bauerneintopf",
+    werte: [["Heilung", "8 (nicht über das maximale Leben)"], ["Wirkung", "Ausdauer erholt sich 10 Minuten lang 25 % schneller (ersetzt anderes Essen)"], ["Stapelbar", "nein"]], text: "Kuhfleisch, Mehl und Wasser." },
   heiltrank: { id: "heiltrank", name: "Heiltrank", art: "Trank", seltenheit: "gewoehnlich", heilt: { fest: 10, anteil: 0.05 }, stapelbar: true, modell: "img/objekte3d/heiltrank.glb",
     werte: [["Heilung", "10 + 5 % des maximalen Lebens (nicht darüber)"], ["Stapelbar", "ja"]],
     text: "Ein rotes Elixier in bauchiger Flasche, mit dem Kreuz der Heiler auf dem Beschlag. Schließt Wunden, ersetzt aber keinen Rückzug." },
@@ -242,3 +522,353 @@ export const ROHSTOFFE: Record<string, Rohstoff> = {
 export const trankHeilung = (v: Verbrauch, maxLp: number) => Math.round(v.heilt.fest + v.heilt.anteil * maxLp);
 /** Wie viel ein Trank bei diesem Leben tatsächlich heilt: nie über das maximale Leben hinaus (kein Überheilen) */
 export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math.max(0, Math.min(trankHeilung(v, maxLp), maxLp - lp));
+
+/* ───────── Phase 6 (#17, #18, #26): Beute des Rabenordens – Bilder img/objekte3d/beute/symbole/ (Figuren #20) ───────── */
+{ const B = "img/objekte3d/beute/symbole/";
+  GEGENSTAENDE.rabenfedern = { id: "rabenfedern", name: "Rabenfedern", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: B + "rabenfedern.webp",
+    text: "Schwarze Federn, länger als eine Hand, mit violettem Schimmer. Am Bindestein werden 25 davon mit 50 Splittern zu einem Federsiegel." };
+  GEGENSTAENDE.federsiegel = { id: "federsiegel", name: "Federsiegel", art: "Splitterbinden", seltenheit: "selten", stapel: 100, bild: B + "federsiegel.webp",
+    text: "Ein Siegel aus gepressten Rabenfedern um einen Splitter. Der Altar vor dem Thronsaal verlangt eines – für jeden Versuch." };
+  GEGENSTAENDE.splitterkern = { id: "splitterkern", name: "Splitterkern", art: "Splitterbinden", seltenheit: "episch", bild: B + "splitterkern.webp",
+    text: "Das pochende Herz eines großen Splitters. Am Bindestein in den Wegstein gesetzt, fasst er 200 statt 100 Ladungen – einmal je Held." };
+  GEGENSTAENDE.rabenschwinge = { id: "rabenschwinge", name: "Rabenschwinge", platz: "waffe", art: "Einhandschwert", seltenheit: "episch", ebenen: ["waffe.eidschwert"], bild: B + "rabenschwinge.webp",
+    anforderung: { skill: "geschick", level: 35 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 30, staerke: 29 }, abwehr: { nah: 0, fern: 0, magie: 12 },
+    text: "Eine Klinge, schwarz wie eine Feder, aus dem Hort des Obersten Rabenpriesters. Sie fängt Zauber, als wären sie Wind." };
+  GEGENSTAENDE.rabenkueken = { id: "rabenkueken", name: "Rabenküken", art: "Sammelstück", seltenheit: "legendaer", bild: B + "rabenkueken.webp",
+    text: "Ein winziger Rabe mit viel zu großen Augen. Er hat sich dich ausgesucht. (Als Begleiter folgt er dir, sobald es Begleiter gibt.)" };
+  /* C1 „Schwarze Federn“ (quest_c1.ts), Meilerpech auch für D1 „Die Fährkette“: Questgegenstände, Bilder aus dem Bestand */
+  GEGENSTAENDE.meilerpech = { id: "meilerpech", name: "Meilerpech", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/kohle.webp",
+    text: "Ein Topf schwarzes Pech aus Köhler Ulfs Meiler, noch warm. Es dichtet Fugen, Planken und Ketten – und klebt an allem." };
+  GEGENSTAENDE.novizenkapuze = { id: "novizenkapuze", name: "Novizenkapuze", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: B + "rabenfedern.webp",
+    text: "Eine Kapuze aus schwarzen Federn, sorgfältig vernäht. Innen ist ein Zeichen eingestickt: ein Rabe über einem Kreis aus Steinen." };
+  GEGENSTAENDE.brueckenplanke = { id: "brueckenplanke", name: "Brückenplanke", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 8, bild: "img/objekte3d/skilling/erzeugnisse/stamm_moorweide.webp",
+    text: "Eine dicke Planke aus Moorweide, an Harms Werkbank geschnitten. Für die alte Brücke nach Aschenwerth." };
+  /* C3 „Der Oberste Rabenpriester“: Schlüssel des Kerkermeisters, Heddas Moorwasser – erst an der Linde geweiht trübt es das Splitterbecken */
+  GEGENSTAENDE.kerkerschluessel = { id: "kerkerschluessel", name: "Kerkerschlüssel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: B + "schluesselbund.webp",
+    text: "Ein schwerer Ring mit vier rostigen Schlüsseln, einer für jeden Käfig im Kerker des Rabengrunds." };
+  GEGENSTAENDE.moorwasser = { id: "moorwasser", name: "Moorwasser", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/kraeuterkunde/symbole/trueber_sud.webp",
+    text: "Eine Phiole braunes Wasser aus Heddas Moor. Es riecht nach Torf. Hedda sagt, es muss erst an der Linde geweiht werden." };
+  GEGENSTAENDE.moorwasser_geweiht = { id: "moorwasser_geweiht", name: "Geweihtes Moorwasser", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/kraeuterkunde/symbole/lindentau_stark.webp",
+    text: "Das Moorwasser ist klar geworden und leuchtet schwach grün, wie das Licht unter der Linde. Es trübt das Splitterbecken." }; }
+
+/* ───────── #151 Waffen der Stufe 70 (doku/konzepte/waffen-70.md, Entscheidung des Nutzers): Echoschneide, Seelenbogen, Seelenfokus ─────────
+   Mythisch mit Anforderung 70 (Rahmen wie Mythisch). Am Bindestein mit 1 Splitter je Ladung laden (höchstens 1.000), Laden bindet die Waffe, jeder Angriff kostet 1 Ladung;
+   solange Ladung da ist: 15 % je Treffer die Passive (sim.ts treffen). Geladen wirkt nur die Passive (kein × 1,1 wie bei den anderen geladenen Waffen).
+   Herkunft: nur das Minispiel Rissgrube (später, Entscheidung des Nutzers 27.11.2026) – vorbereitet in STUFE70_BEUTE, noch in keiner Drop-Tabelle. Modelle aus den Vorlagen des Nutzers (Figuren d50193d6e): Teile waffe.<name>, Bilder img/objekte3d/ausruestung/stufe70/. */
+export type PassivId = "nachhall" | "seelenzug" | "seelenbrand";
+export interface Passiv { id: PassivId; name: string; chance: number; text: string }
+export const PASSIVE: Record<PassivId, Passiv> = {
+  nachhall: { id: "nachhall", name: "Nachhall", chance: 0.15, text: "Der Schlag trifft ein zweites Mal mit halbem Schaden." },
+  seelenzug: { id: "seelenzug", name: "Seelenzug", chance: 0.15, text: "Ein Viertel des Schadens heilt dich." },
+  seelenbrand: { id: "seelenbrand", name: "Seelenbrand", chance: 0.15, text: "Das Ziel brennt 6 s: alle 2 s 3 Schaden." },
+};
+/** Seelenbrand: Schaden je Sekunde und Dauer (der Dauerschaden der Simulation zahlt in Stößen zu 3 aus – alle 2 s) */
+export const SEELENBRAND = { jeSek: 1.5, dauer: 6 };
+export const WAFFEN_STUFE70 = ["echoschneide", "seelenbogen", "seelenfokus"];
+{ const B = "img/objekte3d/ausruestung/stufe70/", T = "Mit Splittern geladen erwacht in ihr eine Kraft – solange die Ladung reicht.";
+  GEGENSTAENDE.echoschneide = { id: "echoschneide", name: "Echoschneide", platz: "waffe", art: "Einhandschwert", seltenheit: "mythisch", ebenen: ["waffe.echoschneide"], bild: B + "echoschneide.webp",
+    anforderung: { skill: "geschick", level: 70 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 75, staerke: 77 }, passiv: PASSIVE.nachhall,
+    text: "Eine Klinge, die nachklingt. Jeder Hieb hallt in ihr wider. " + T };
+  GEGENSTAENDE.seelenbogen = { id: "seelenbogen", name: "Seelenbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "mythisch", ebenen: ["waffe.seelenbogen"], bild: B + "seelenbogen.webp", zweihand: true,
+    anforderung: { skill: "fernkampf", level: 70 }, waffe: { art: "fern", ticks: 4, reich: 5, flug: 18, fernAngriff: 75, fernStaerke: 66 }, passiv: PASSIVE.seelenzug,
+    text: "Die Sehne summt wie ein Atemzug. Was der Pfeil nimmt, gibt er dem Schützen zurück. " + T };
+  GEGENSTAENDE.seelenfokus = { id: "seelenfokus", name: "Seelenfokus", platz: "waffe", art: "Stab", seltenheit: "mythisch", ebenen: ["waffe.seelenfokus"], bild: B + "seelenfokus.webp", zweihand: true /* Zweihand-Stab (Figuren) */,
+    anforderung: { skill: "magie", level: 70 }, waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 30, magieStaerke: 216 }, passiv: PASSIVE.seelenbrand,
+    text: "Ein Stab mit einem Herz aus kaltem Feuer. Wen er trifft, der brennt von innen. " + T }; }
+/* ───────── #160 (Block H): Rüstung der Stufe 70 – je Hüter der Hochlande ein Satz (doku/konzepte/phase-11.md, Richtwerte aus gipfelgericht.md) ─────────
+   Anforderung Defense 70; Entscheidung des Nutzers (27.11.): defensiv etwa 85 % von Mythisch, dafür Angriffsboni in den Teilen, kein Set-Bonus, kein Schild –
+   Löwenwacht (Nahkampf, Kennungen steinvogt_*) +2/+3/+3 Stärke, Sturmfeder +2/+3/+3 Fernkampf-Stärke, Frostschleier +1/+2/+2 % Magieschaden (neu, kampfwerte.ts). Nur aus der starken Fassung der Hüter (HUETER_BEUTE in shared/bosse.ts, insgesamt 1 : 75 je Sieg), handelbar.
+   Teile und Rucksackbilder von Figuren (#159, abe4736cc: img/figuren-echt3d/<figur>.teile/<ebene>.glb, img/objekte3d/ausruestung/stufe70/<ebene>.webp). Namen sind Vorschläge. */
+export const RUESTUNG_STUFE70: Record<"steinvogt" | "sturmfeder" | "frostschleier", string[]> = {
+  steinvogt: ["steinvogt_helm", "steinvogt_platte", "steinvogt_beinschienen"],
+  sturmfeder: ["sturmfeder_haube", "sturmfeder_wams", "sturmfeder_hose"],
+  frostschleier: ["frostschleier_kapuze", "frostschleier_robe", "frostschleier_rock"] };
+{ const EBENE70: Record<string, string> = { steinvogt_helm: "kopf.helm.steinvogt", steinvogt_platte: "ruestung.brust.steinvogt", steinvogt_beinschienen: "ruestung.beine.steinvogt",
+    sturmfeder_haube: "kopf.helm.sturmfeder", sturmfeder_wams: "ruestung.brust.sturmfeder", sturmfeder_hose: "ruestung.beine.sturmfeder",
+    frostschleier_kapuze: "kopf.helm.frostschleier", frostschleier_robe: "ruestung.brust.frostschleier", frostschleier_rock: "ruestung.beine.frostschleier" };
+  const T = (id: string, name: string, platz: Platz, art: string, vorbild: string, ab: [number, number, number], bonus: Gegenstand["bonus"], text: string, gruppe: "nahkampf" | "fernkampf" | "magie") => {
+    const V = GEGENSTAENDE[vorbild], ebene = EBENE70[id]; /* #159: eigene Teile von Figuren (abe4736cc); sonst die mythischen */
+    GEGENSTAENDE[id] = { id, name, platz, art, seltenheit: "mythisch", ebenen: ebene ? [ebene] : V ? V.ebenen : [], ...(ebene ? { bild: "img/objekte3d/ausruestung/stufe70/" + ebene + ".webp" } : V && V.bild ? { bild: V.bild } : {}), anforderung: { skill: "defense", level: 70 },
+      abwehr: { nah: ab[0], fern: ab[1], magie: ab[2] }, bonus, text }; RUESTUNGSGRUPPE[id] = gruppe; };
+  const S = "Teil der Löwenwacht – Grumhold trug sie, ehe der Berg ihn verschluckte.", F = "Teil der Sturmfeder – aus dem Horst der Sturmschwinge.", E = "Teil des Frostschleiers – kalt wie der Atem der Frostwitwe.";
+  /* Entscheidung des Nutzers (27.11.): defensiv etwa 85 % von Mythisch, dafür Angriffsboni in den Teilen (+8 Stärke / +8 Fernkampf-Stärke / +5 % Magieschaden je Satz); Treffer-Boni und Abzüge wie Mythisch */
+  T("steinvogt_helm", "Löwenwacht-Helm", "kopf", "Schwere Rüstung", "eisenwachthelm_mythisch", [38, 39, -1], { fernAngriff: -3, genau: -6, staerke: 2 }, "Ein Helm mit Löwenkopf und Lorbeer, schwer wie ein Fels. " + S, "nahkampf");
+  T("steinvogt_platte", "Löwenwacht-Harnisch", "brust", "Schwere Rüstung", "eisenwacht_mythisch", [88, 90, -6], { fernAngriff: -15, genau: -30, staerke: 3 }, "Ein Harnisch mit Löwenköpfen auf den Schultern, darüber ein roter Umhang. " + S, "nahkampf");
+  T("steinvogt_beinschienen", "Löwenwacht-Beinschutz", "beine", "Schwere Rüstung", "eisenbeinschienen_mythisch", [56, 56, -4], { fernAngriff: -11, genau: -21, staerke: 3 }, "Beinschutz mit goldenem Lorbeer. " + S, "nahkampf");
+  T("sturmfeder_haube", "Sturmfeder-Haube", "kopf", "Leichte Rüstung", "jaegerkapuze_mythisch", [10, 10, 8], { fernAngriff: 10, genau: -1, fernStaerke: 2 }, "Leder mit grauen Schwungfedern, leicht wie ein Windstoß. " + F, "fernkampf");
+  T("sturmfeder_wams", "Sturmfeder-Wams", "brust", "Leichte Rüstung", "jaegerwams_mythisch", [46, 47, 42], { fernAngriff: 30, genau: -15, fernStaerke: 3 }, "Federn in Lagen, die jeden Windhauch spüren. " + F, "fernkampf");
+  T("sturmfeder_hose", "Sturmfeder-Hose", "beine", "Leichte Rüstung", "jaegerhose_mythisch", [21, 23, 20], { fernAngriff: 17, genau: -10, fernStaerke: 3 }, "Gehärtetes Leder, gesäumt mit Sturmfedern. " + F, "fernkampf");
+  T("frostschleier_kapuze", "Frostschleier-Kapuze", "kopf", "Stoffrüstung", "magierkapuze_mythisch", [13, 13, 5], { genau: 6, magieSchaden: 1 }, "Ein Schleier aus Eisfäden, der nie taut. " + E, "magie");
+  T("frostschleier_robe", "Frostschleier-Robe", "brust", "Stoffrüstung", "magierrobe_mythisch", [43, 43, 26], { genau: 30, magieSchaden: 2 }, "Eine Robe, auf der Raureif wächst. " + E, "magie");
+  T("frostschleier_rock", "Frostschleier-Rock", "beine", "Stoffrüstung", "magierrock_mythisch", [28, 28, 19], { genau: 22, magieSchaden: 2 }, "Weißer Stoff, schwer wie Schnee. " + E, "magie"); }
+
+/* Glutsteinschild (Entscheidung des Nutzers, 27.11.): seltener Schild, Defense 40, als einziger Schild mit Angriffsboni (+5 Geschick, +3 Stärke), handelbar.
+   Nur von der Sandmutter in der starken Fassung (nach F3), etwa 1 : 100 je Sieg (config.ts). Modell von Figuren (#165, e94e69282): Ebene schild.glutstein. */
+GEGENSTAENDE.glutsteinschild = { id: "glutsteinschild", name: "Glutsteinschild", platz: "nebenhand", art: "Schild", seltenheit: "selten", ebenen: ["schild.glutstein"],
+  bild: "img/objekte3d/ausruestung/stufe40/schild.glutstein.webp", anforderung: { skill: "defense", level: 40 }, abwehr: { nah: 34, fern: 34, magie: -1 }, bonus: { geschick: 5, staerke: 3 },
+  text: "Ein Schild aus Glutstein, in dem noch die Hitze des Tempels glimmt. Er schützt – und er treibt den Arm nach vorn." };
+
+/* #160 (Block H): Bausteine der Hochlande-Quests (shared/hochlande.ts, Kennungen nach doku/quests/h-bausteine.md) – Bilder vorerst aus dem Bestand */
+{ const E = "img/objekte3d/skilling/erzeugnisse/", K = "img/objekte3d/skilling/kochen/symbole/", P = (g: string, f: string) => (GEGENSTAENDE[g] && GEGENSTAENDE[g].bild) || f;
+  GEGENSTAENDE.ziegenmilch = { id: "ziegenmilch", name: "Ziegenmilch", art: "Rohstoff", seltenheit: "gewoehnlich", bild: P("krug_wasser", K + "krug_wasser.webp"), wert: 5,
+    text: "Ein Krug frischer Milch von den Ziegen der Hohen Alm. Mit Lab am Herd wird daraus Käse." };
+  GEGENSTAENDE.lab = { id: "lab", name: "Lab", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/kraeuterkunde/symbole/leeres_flaeschchen.webp" /* wie leeres_flaeschchen (#188) */,
+    text: "Ein Fläschchen Lab von Mette Heider. Ein paar Tropfen, und die Milch wird dick." };
+  GEGENSTAENDE.kaeselaib = { id: "kaeselaib", name: "Käselaib", art: "Essen", seltenheit: "selten", bild: P("bauerneintopf", K + "bauerneintopf.webp"), trank: "kaeselaib", wert: 30,
+    text: "Ein Laib Käse von der Hohen Alm, würzig und fest. Die Passwacht schwört darauf. Heilt 15 Lebenspunkte." };
+  VERBRAUCH.kaeselaib = { id: "kaeselaib", name: "Käselaib", art: "Essen", seltenheit: "selten", heilt: { fest: 15, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "15 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
+    text: "Ein Laib Käse von der Hohen Alm, würzig und fest." };
+  GEGENSTAENDE.grubenstempel = { id: "grubenstempel", name: "Grubenstempel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 10, bild: E + "stamm_kernbaum.webp",
+    text: "Ein zugeschnittener Stempel aus Kernbaum. Er hält einen Stollen, wenn der Berg drückt." };
+  GEGENSTAENDE.erzprobe_leuchtend = { id: "erzprobe_leuchtend", name: "Leuchtende Erzprobe", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: E + "erz_splittereisen.webp",
+    text: "Ein Brocken aus der Tiefe des Erzbergs. Im Dunkeln glimmt er – Hedda wird wissen, was das bedeutet." };
+  GEGENSTAENDE.eisrunen_abschrift = { id: "eisrunen_abschrift", name: "Abschrift der Eisrunen", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/schriften/symbole/hinweispergament.webp" /* wie hinweispergament (#188) */,
+    text: "Die Runen vom Höhlenmund am Hochpass, mit klammen Fingern abgezeichnet. Der Einsiedler kann sie lesen." }; }
+
+/** Vorbereitet für das Minispiel Rissgrube (später): Würfe je Waffe 1 : 100 – noch nicht eingetragen, bleibt inaktiv, bis die Rissgrube gebaut wird (nicht beim Mini-Boss der Hochlande) */
+export const STUFE70_BEUTE = { wurf: WAFFEN_STUFE70.map((g) => ({ g, chance: 1 })) };
+
+/* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
+/** Ist das eine Platzhalter-Beute („@<seltenheit>[:<Art>]“)? */
+export const beutePlatzhalter = (g: string): boolean => g.startsWith("@");
+/** Platzhalter auflösen: eine zufällige Waffe oder Rüstung dieser Seltenheit (ohne Werkzeuge, Questlohn und Set-Teile); Art-Filter über GegenstandDef.art (Teilwort) */
+export function beuteAufloesen(g: string, zufall: () => number = Math.random): string | null { if (!beutePlatzhalter(g)) return g;
+  const [sel, art] = g.slice(1).split(":"), werkzeug = /^(holzbeil|spitzhacke|angel)/;
+  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !G.passiv /* #151: Stufe 70 nur aus der Rissgrube (später) */ && !(G.anforderung && G.anforderung.level >= 70) /* #160: Rüstung 70 nur von den Hütern */ && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
+  return L.length ? L[Math.floor(zufall() * L.length)].id : null; }
+
+/* ───────── Phase 7 (#40): Graufurt, Ostufer, Turm – Bilder img/objekte3d/graufurt/symbole/ und Wels img/objekte3d/skilling/angeln/symbole/ (Figuren #37) ───────── */
+{ const G7 = "img/objekte3d/graufurt/symbole/", A7 = "img/objekte3d/skilling/angeln/symbole/";
+  GEGENSTAENDE.kettenglied = { id: "kettenglied", name: "Kettenglied", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 8, bild: G7 + "kettenglied.webp",
+    text: "Ein schweres Glied aus Splittereisen, frisch vom Amboss. Acht davon braucht die Winde am Westanleger." };
+  GEGENSTAENDE.kettenschloss = { id: "kettenschloss", name: "Kettenschloss", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G7 + "kettenschloss.webp",
+    text: "Ein Schloss, das zwei Kettenenden für immer verbindet. Von der Schmiedin aus Graufurt." };
+  GEGENSTAENDE.splitterkern_gruen = { id: "splitterkern_gruen", name: "Grüner Splitterkern", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: G7 + "splitterkern_gruen.webp",
+    text: "Der Kern des Signalfeuers. Er ist warm und pulsiert grün – als wartete er noch auf eine Antwort." };
+  GEGENSTAENDE.krebsschere = { id: "krebsschere", name: "Krebsschere", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: G7 + "krebsschere.webp", wert: 6,
+    text: "Die Schere eines Schlickkrebses, hart wie Stein. Köche sagen, das Fleisch darin sei das beste am ganzen Fluss." };
+  GEGENSTAENDE.wachtstein = { id: "wachtstein", name: "Wachtstein", art: "Rohstoff", seltenheit: "selten", stapel: 1000, bild: G7 + "wachtstein.webp", wert: 25,
+    text: "Ein Stück der Steinfiguren aus dem Turm, das Wappen der Wacht noch zu erkennen. Die Wacht in Grauwacht würde dafür bezahlen." };
+  GEGENSTAENDE.fisch_wels_roh = { id: "fisch_wels_roh", name: "Graufurter Wels (roh)", art: "Rohstoff", seltenheit: "gewoehnlich", bild: A7 + "fisch_wels_roh.webp",
+    text: "Ein großer Wels aus dem Fährhafen, schwer und glitschig. Am Feuer gebraten heilt er 11 Lebenspunkte – oder er wird zu Almas Welspastete." };
+  GEGENSTAENDE.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", bild: A7 + "fisch_wels_gebraten.webp", trank: "fisch_wels_gebraten",
+    text: "Dick, fett und knusprig. Heilt 11 Lebenspunkte." };
+  GEGENSTAENDE.fisch_wels_verbrannt = { id: "fisch_wels_verbrannt", name: "Verbrannter Wels", art: "Abfall", seltenheit: "anfaenger", bild: A7 + "fisch_wels_verbrannt.webp", text: "Schwarz bis auf die Gräten. Den will niemand essen." };
+  GEGENSTAENDE.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", bild: G7 + "welspastete.webp", trank: "welspastete",
+    text: "Almas Pastete aus Wels und Mehl, das Rezept der Taverne „Zur Furt“. Heilt 14 Lebenspunkte." };
+  VERBRAUCH.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 11, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "11 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Dick, fett und knusprig." };
+  VERBRAUCH.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", heilt: { fest: 14, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "14 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Almas Pastete aus Wels und Mehl." }; }
+
+/* ───────── Phase 8 (#58): Grauwacht – Klöppel (E2) und die Klinge des Grauen Hauptmanns (E4-Lohn); die Wachtrüstung vorerst nicht (Entscheidung 26.11.) ───────── */
+{ const G8 = "img/objekte3d/grauwacht/symbole/";
+  GEGENSTAENDE.kloeppel = { id: "kloeppel", name: "Klöppel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G8 + "kloeppel.webp",
+    text: "Ein Klöppel aus Kernbaum, schwer und gerade. Er gehört in die Glocke von Grauwacht." };
+  GEGENSTAENDE.klinge_hauptmann = { id: "klinge_hauptmann", name: "Klinge des Grauen Hauptmanns", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.klinge_hauptmann"], bild: G8 + "klinge_hauptmann.webp",
+    anforderung: { skill: "geschick", level: 40 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 33, staerke: 34 } /* Balancing 27.11.: zwischen Stufe 35 und 45, nur Lohn aus E4 */,
+    text: "Das Langschwert des letzten Hauptmanns von Grauwacht. Grau wie Nebel – und doch scharf wie am ersten Tag." }; }
+/* Ausgabe 1: zwei Quest-Waffen (Entscheidung des Nutzers, Quests 9d3174ba2, doku/quests/waffen-bausteine.md; Bilder und Handteile von Figuren) –
+   Questlohn, nicht handelbar; gegen: Schaden gegen eine Gegnerfamilie (config.ts → familie) wie beim Waldsäbel */
+{ const B = "img/objekte3d/ausruestung/bilder/";
+  GEGENSTAENDE.eibenbogen_hartwig = { id: "eibenbogen_hartwig", name: "Hartwigs Eibenbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.bogen.hartwig"], bild: B + "hartwigs_eibenbogen.webp",
+    anforderung: { skill: "fernkampf", level: 30 }, waffe: { art: "fern", ticks: 5, reich: 7, flug: 18, fernAngriff: 27, fernStaerke: 29, gegen: { wild: 0.15 } },
+    text: "Hartwigs alter Jagdbogen aus Kreuzwald-Eibe. Wolf, Bär und Widder kennen sein Lied – +15 % gegen Wildtiere." };
+  GEGENSTAENDE.lindenstab = { id: "lindenstab", name: "Lindenstab", platz: "waffe", art: "Stab", seltenheit: "selten", untauschbar: true, ebenen: ["waffe.lindenstab"], bild: B + "lindenstab.webp",
+    anforderung: { skill: "magie", level: 30 }, waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 14, magieStaerke: 182, gegen: { untot: 0.15 } },
+    text: "Der Stab der Linde, aus dem Holz des alten Baums geschnitten. Was nicht mehr leben sollte, weicht vor ihm – +15 % gegen Untote und den Rabenkult." }; }
+
+/* ───────── Phase 9 (#86): Glutsande und Glutbrunn – Bilder img/objekte3d/glutsande/symbole/, Glutwels img/objekte3d/skilling/angeln/symbole/ (Figuren #75) ───────── */
+{ const G9 = "img/objekte3d/glutsande/symbole/", A9 = "img/objekte3d/skilling/angeln/symbole/", R = ["I", "II", "III", "IV", "V"];
+  for (let i = 1; i <= 5; i++) GEGENSTAENDE["kartenstueck_" + i] = { id: "kartenstueck_" + i, name: `Kartenstück ${R[i - 1]}`, art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: G9 + `kartenstueck_${i}.webp`,
+    text: `Ein Stück einer alten Karte mit dem Siegel der Wacht, Nummer ${R[i - 1]}. Alle fünf zusammen ergeben die Reisekarte.` };
+  GEGENSTAENDE.reisekarte = { id: "reisekarte", name: "Reisekarte", art: "Splitterbinden", seltenheit: "episch", untauschbar: true, bild: G9 + "reisekarte.webp",
+    text: "Die ganze Karte mit dem Siegel der Wacht. Einmal am Tag bringt sie dich ohne Ladung zu einem Wegstein-Ziel – im Rucksack „Reisen“." };
+  GEGENSTAENDE.salz = { id: "salz", name: "Salz", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: G9 + "salz.webp", wert: 4,
+    text: "Grobes Salz aus der Salzpfanne der Glutsande. In Glutbrunn kocht man damit den Glutwels in der Kruste." };
+  GEGENSTAENDE.fisch_glutwels_roh = { id: "fisch_glutwels_roh", name: "Glutwels (roh)", art: "Rohstoff", seltenheit: "selten", bild: A9 + "fisch_glutwels_roh.webp",
+    text: "Ein Wels aus dem braunen Strom, die Haut rot wie Glut. Gebraten heilt er 15 Lebenspunkte, in der Salzkruste 18." };
+  GEGENSTAENDE.fisch_glutwels_gebraten = { id: "fisch_glutwels_gebraten", name: "Gebratener Glutwels", art: "Essen", seltenheit: "selten", bild: A9 + "fisch_glutwels_gebraten.webp", trank: "fisch_glutwels_gebraten",
+    text: "Feurig und fett. Heilt 15 Lebenspunkte." };
+  GEGENSTAENDE.fisch_glutwels_verbrannt = { id: "fisch_glutwels_verbrannt", name: "Verbrannter Glutwels", art: "Abfall", seltenheit: "anfaenger", bild: A9 + "fisch_glutwels_verbrannt.webp", text: "Kohle mit Gräten." };
+  GEGENSTAENDE.glutwels_salzkruste = { id: "glutwels_salzkruste", name: "Glutwels in Salzkruste", art: "Essen", seltenheit: "episch", bild: G9 + "glutwels_salzkruste.webp", trank: "glutwels_salzkruste",
+    text: "Das Gericht von Glutbrunn: Glutwels, im Salz gegart. Heilt 18 Lebenspunkte." };
+  VERBRAUCH.fisch_glutwels_gebraten = { id: "fisch_glutwels_gebraten", name: "Gebratener Glutwels", art: "Essen", seltenheit: "selten", heilt: { fest: 15, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "15 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Feurig und fett." };
+  VERBRAUCH.glutwels_salzkruste = { id: "glutwels_salzkruste", name: "Glutwels in Salzkruste", art: "Essen", seltenheit: "episch", heilt: { fest: 18, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "18 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Das Gericht von Glutbrunn." }; }
+
+/* ───────── Phase 10 (#92): Smaragdküste und Kielmund – Fische img/objekte3d/skilling/angeln/symbole/, Gerichte und Wrackkiste img/objekte3d/kueste/symbole/ (Figuren #83) ───────── */
+{ const A10 = "img/objekte3d/skilling/angeln/symbole/", K10 = "img/objekte3d/kueste/symbole/";
+  const F10: [string, string, string, number, string][] = [["hering", "Hering", "Gebratener Hering", 6, "Silbrig und fett, frisch vom Kai."], ["klippenbarsch", "Klippenbarsch", "Gebratener Klippenbarsch", 9, "Fest und weiß, aus dem Kehrwasser unter der Klippe."], ["seeaal", "Seeaal", "Gebratener Seeaal", 11, "Lang und zäh, aus dem Wrack gezogen."]];
+  for (const [f, n, nb, heil, t] of F10) {
+    GEGENSTAENDE[`fisch_${f}_roh`] = { id: `fisch_${f}_roh`, name: `${n} (roh)`, art: "Rohstoff", seltenheit: "gewoehnlich", bild: A10 + `fisch_${f}_roh.webp`, text: `${t} Gebraten heilt er ${heil} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", bild: A10 + `fisch_${f}_gebraten.webp`, trank: `fisch_${f}_gebraten`, text: `Knusprig gebraten. Heilt ${heil} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${n}`, art: "Abfall", seltenheit: "anfaenger", bild: A10 + `fisch_${f}_verbrannt.webp`, text: "Kohle mit Gräten." };
+    VERBRAUCH[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: nb, art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: heil, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ["Stapelbar", "nein"]], text: "Knusprig gebraten." }; }
+  /* #176 Zunft-Fische und ihre Gerichte: Heilung fest + Anteil des Höchstlebens (18 + 3 %, 20 + 4 %, 22 + 5 %) */
+  const F176: [string, string, string, string, string, number, number, Seltenheit, string][] = [
+    ["silberbarsch", "Silberbarsch", "fisch_silberbarsch_gebraten", "Gebratener Silberbarsch", "Glänzt wie eine neue Münze. Beißt nur am Steg der Fischerzunft.", 18, 0.03, "episch", "Am Feuer gebraten, mit Meersalz."],
+    ["sturmhecht", "Sturmhecht", "sturmhecht_kraeuterkruste", "Sturmhecht in Kräuterkruste", "Ein Hecht, der bei Sturm an die Oberfläche kommt. Zäh und kräftig.", 20, 0.04, "episch", "Am Herd in einer Kruste aus Wegerich gegart."],
+    ["tiefseeaal", "Tiefseeaal", "tiefseeaal_suppe", "Tiefseeaal-Suppe", "Ein Aal aus der Tiefe vor Kielmund, schwarz wie die See bei Nacht.", 22, 0.05, "legendaer", "Die Suppe der Zunftfischer, im Kessel gezogen."]];
+  /* Bilder und Modelle von Figuren (#176, claude/tender-heisenberg-bruby2): rohe Fische in skilling/angeln, Gerichte in skilling/kochen; verbrannt wie Klippenbarsch bzw. Seeaal */
+  const KO = "img/objekte3d/skilling/kochen/", AN = "img/objekte3d/skilling/angeln/";
+  for (const [f, n, gid, gname, t, fest, anteil, selt, gt] of F176) { const heil = `${fest} Lebenspunkte und ${Math.round(anteil * 100)} % des Höchstlebens`, datei = gid.replace(/^fisch_/, "");
+    GEGENSTAENDE[`fisch_${f}_roh`] = { id: `fisch_${f}_roh`, name: `${n} (roh)`, art: "Rohstoff", seltenheit: "selten", bild: A10 + `fisch_${f}_roh.webp`, modell3d: AN + `fisch_${f}_roh.glb`, text: `${t}` };
+    GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${n}`, art: "Abfall", seltenheit: "anfaenger", bild: A10 + (f === "silberbarsch" ? "fisch_klippenbarsch_verbrannt.webp" : "fisch_seeaal_verbrannt.webp"), text: "Kohle mit Gräten." };
+    GEGENSTAENDE[gid] = { id: gid, name: gname, art: "Essen", seltenheit: selt, bild: KO + "symbole/" + datei + ".webp", modell3d: KO + datei + ".glb", trank: gid, text: `${gt} Heilt ${heil}.` };
+    VERBRAUCH[gid] = { id: gid, name: gname, art: "Essen", seltenheit: selt, heilt: { fest, anteil }, stapelbar: false, modell: "", werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ["Stapelbar", "nein"]], text: gt }; }
+  GEGENSTAENDE.raeucherhering = { id: "raeucherhering", name: "Räucherhering", art: "Essen", seltenheit: "gewoehnlich", bild: K10 + "raeucherhering.webp", modell3d: "img/objekte3d/kueste/raeucherhering.glb", trank: "raeucherhering",
+    text: "Goldbraun aus der Räucherhütte der Möwenbucht, hält wochenlang. Heilt 8 Lebenspunkte; 20 Minuten lang erholt sich die Ausdauer 15 % schneller." };
+  GEGENSTAENDE.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", bild: K10 + "barsch_salzkruste.webp", modell3d: "img/objekte3d/kueste/barsch_salzkruste.glb", trank: "barsch_salzkruste",
+    text: "Klippenbarsch, in Salz aus den Glutsanden in der Glut gegart. Heilt 12 Lebenspunkte." };
+  GEGENSTAENDE.aalsuppe = { id: "aalsuppe", name: "Aalsuppe", art: "Essen", seltenheit: "selten", bild: K10 + "aalsuppe.webp", modell3d: "img/objekte3d/kueste/aalsuppe.glb", trank: "aalsuppe",
+    text: "Die Suppe der Hafenleute von Kielmund. Heilt 13 Lebenspunkte." };
+  GEGENSTAENDE.wrackkiste = { id: "wrackkiste", name: "Kiste mit dem Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: K10 + "wrackkiste.webp",
+    text: "Eine Kiste aus dem Wrack, versiegelt mit dem Zeichen des Rabenordens. Darin Rechnungen über Splitter – gekauft über Kielmund." };
+  VERBRAUCH.raeucherhering = { id: "raeucherhering", name: "Räucherhering", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 8, anteil: 0 }, wirkung: "raeucherhering", stapelbar: false, modell: "",
+    werte: [["Heilung", "8 (nicht über das maximale Leben)"], ["Wirkung", "Ausdauer erholt sich 20 Minuten lang 15 % schneller (ersetzt anderes Essen)"], ["Stapelbar", "nein"]], text: "Goldbraun geräuchert." };
+  VERBRAUCH.barsch_salzkruste = { id: "barsch_salzkruste", name: "Barsch in Salzkruste", art: "Essen", seltenheit: "selten", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "In der Glut gegart." };
+  VERBRAUCH.aalsuppe = { id: "aalsuppe", name: "Aalsuppe", art: "Essen", seltenheit: "selten", heilt: { fest: 13, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "13 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Die Suppe der Hafenleute." }; }
+
+/* ───────── Beute Phase 7–10 (doku/konzepte/beute.md, 27.11.): neue Rohstoffe – vorerst nur zum Verkauf an den Trödler (Verwendung kommt mit den Berufen); Bilder folgen (Figuren) ───────── */
+{ const R = (id: string, name: string, wert: number, text: string) => { GEGENSTAENDE[id] = { id, name, art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, wert, symbol: "kristall", text }; };
+  R("federn", "Federn", 3, "Weiße und graue Federn von Reihern und Seevögeln. Leicht, aber zu irgendetwas gut.");
+  R("wolfsfell", "Wolfsfell", 10, "Das graue Fell eines Heidewolfs, dicht und rau.");
+  R("chitin", "Chitin", 14, "Panzerplatten eines Sandkriechers, hart wie Horn.");
+  R("giftdruese", "Giftdrüse", 18, "Die Drüse aus dem Stachel eines Glutskorpions. Vorsichtig anfassen."); }
+GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /* Grundwert für den Trödler (#88) */
+
+/* ───────── Süden (#126, doku/konzepte/sueden.md „Fleisch und Gerichte“): Fleisch (einzige neue Rohstoffe), Braten und Gulasch; der alte Hecht (S3). Bilder folgen (Figuren) ───────── */
+{ const R = (id: string, name: string, wert: number, text: string) => { GEGENSTAENDE[id] = { id, name, art: "Rohstoff", seltenheit: "anfaenger", wert, symbol: "kristall", text }; };
+  R("hasenfleisch", "Hasenfleisch", 2, "Mageres Fleisch von einem Feldhasen. Am Feuer gebraten heilt es 3 Lebenspunkte.");
+  R("wildschweinfleisch", "Wildschweinfleisch", 6, "Dunkles, kräftiges Fleisch eines Keilers aus dem Erlengrund.");
+  R("wolfsfleisch", "Wolfsfleisch", 9, "Zähes Fleisch eines Wolfs. Lange im Kessel geschmort wird es ein gutes Gulasch.");
+  GEGENSTAENDE.fleisch_verbrannt = { id: "fleisch_verbrannt", name: "Verbranntes Fleisch", art: "Abfall", seltenheit: "anfaenger", symbol: "kristall", text: "Außen Kohle, innen nichts mehr." };
+  const E = (id: string, name: string, heil: number, wirkung: string | undefined, wtext: string | undefined, text: string, selten = false) => {
+    GEGENSTAENDE[id] = { id, name, art: "Essen", seltenheit: selten ? "gewoehnlich" : "anfaenger", symbol: "kristall", trank: id, text: `${text} Heilt ${heil} Lebenspunkte${wtext ? "; " + wtext : ""}.` };
+    VERBRAUCH[id] = { id, name, art: "Essen", seltenheit: selten ? "gewoehnlich" : "anfaenger", heilt: { fest: heil, anteil: 0 }, ...(wirkung ? { wirkung } : {}), stapelbar: false, modell: "",
+      werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ...(wtext ? [["Wirkung", `${wtext} (ersetzt anderes Essen)`] as [string, string]] : []), ["Stapelbar", "nein"]], text }; };
+  E("hasenbraten", "Hasenbraten", 3, undefined, undefined, "Ein kleiner Braten vom Feuer, knusprig und heiß.");
+  E("rinderbraten", "Rinderbraten", 5, undefined, undefined, "Kuhfleisch, lange auf dem Herd.");
+  E("wildschweinbraten", "Wildschweinbraten", 7, "wildschweinbraten", "Stärke +1 für 5 Minuten", "Kräftiger Braten vom Keiler.", true);
+  E("wolfsgulasch", "Wolfsgulasch", 9, "wolfsgulasch", "Defense +2 für 5 Minuten", "Wolfsfleisch, im Kessel geschmort.", true);
+  GEGENSTAENDE.alter_hecht = { id: "alter_hecht", name: "Der alte Hecht", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
+    text: "Ein Hecht, so lang wie ein Arm, mit Narben am Maul. Die Fischerin vom Schilfsee wird staunen – und Lambert erst." }; }
+
+/* ───────── Kräuterkunde (Phase 5c, #133): Kräuter, Sichel, leeres Fläschchen, Trüber Sud und die Tränke (schwach/stark) – Bilder von Figuren (#28) ───────── */
+{ const KS = "img/objekte3d/skilling/kraeuter/symbole/", TS = "img/objekte3d/kraeuterkunde/symbole/", TM = "img/objekte3d/kraeuterkunde/";
+  const KR: [string, string, number, string][] = [["wegerich", "Wegerich", 2, "Breite Blätter vom Wegrand. Die Grundlage jedes Heiltranks."], ["ringelblume", "Ringelblume", 4, "Orange Blüten aus den Obstwiesen. Heilt Wunden, sagt Mira."],
+    ["moorgloeckchen", "Moorglöckchen", 8, "Kleine blaue Glocken aus dem Rabenmoor. Wer daran riecht, atmet freier."], ["eisenhut", "Eisenhut", 12, "Dunkle Blüten vom Friedhof im Nordwald. Giftig – nur gebraut zu gebrauchen."],
+    ["nebelkraut", "Nebelkraut", 18, "Ein graues Kraut aus den Nebelfeldern des Rabenmoors. Es riecht nach Regen."], ["lindenbluete", "Lindenblüte", 30, "Eine Blüte der alten Linde in Weidenhain. Sie wächst nur langsam nach."]];
+  /* #176: Zunft-Kräuter (nur im Kräutergarten der Heilkundigen) */
+  KR.push(["mondsalbei", "Mondsalbei", 45, "Silbrige Blätter, die nachts schimmern. Wächst nur im Kräutergarten der Heilkundigen."],
+    ["glutwurz", "Glutwurz", 65, "Eine rote Wurzel, warm in der Hand. Wer sie kaut, spürt Feuer in den Armen."],
+    ["splitterlilie", "Splitterlilie", 90, "Eine Lilie, die blau leuchtet wie ein Splitter. Die Heilkundigen hüten sie wie einen Schatz."]);
+  for (const [id, name, wert, text] of KR) GEGENSTAENDE[id] = { id, name, art: "Kraut", seltenheit: "anfaenger", bild: KS + id + ".webp", wert, text };
+  /* Questgegenstände um die Kräuter: Miras Rezeptbuch (quest_mira.ts) und der Kräuterhof (quest_kraeuterhof.ts) */
+  GEGENSTAENDE.rezeptheft = { id: "rezeptheft", name: "Miras Rezeptheft", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+    text: "Ein dünnes Heft voller Flecken, die Ecken vom Kesseldampf gewellt. Auf dem Umschlag steht „Mira“, darunter: „Nicht für Hedda.“" };
+  GEGENSTAENDE.ringelblumensamen = { id: "ringelblumensamen", name: "Ringelblumensamen", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: KS + "ringelblume.webp",
+    text: "Ein Tütchen Samen, sorgfältig gefaltet. Nicht zu nass halten, steht darauf." };
+  GEGENSTAENDE.moorgloeckchen_ableger = { id: "moorgloeckchen_ableger", name: "Moorglöckchen-Ableger", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: KS + "moorgloeckchen.webp",
+    text: "Drei kleine Pflanzen mit Moorerde an den Wurzeln, in ein feuchtes Tuch geschlagen." };
+  GEGENSTAENDE.sichel = { id: "sichel", name: "Sichel", art: "Werkzeug", seltenheit: "anfaenger", bild: TS + "sichel.webp", modell3d: "img/figuren-echt3d/basemann3d.teile/waffe.sichel.glb", wert: 10,
+    text: "Eine kleine Sichel für Kräuter. Ohne sie reißt man die Pflanzen nur aus." };
+  GEGENSTAENDE.leeres_flaeschchen = { id: "leeres_flaeschchen", name: "Leeres Fläschchen", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: TS + "leeres_flaeschchen.webp", modell3d: TM + "leeres_flaeschchen.glb", wert: 2,
+    text: "Ein Fläschchen aus grünem Glas. Am Kessel wird ein Trank daraus; getrunken bekommt man es zurück." };
+  GEGENSTAENDE.trueber_sud = { id: "trueber_sud", name: "Trüber Sud", art: "Abfall", seltenheit: "anfaenger", bild: TS + "trueber_sud.webp", modell3d: TM + "trueber_sud.glb", text: "Ein Fläschchen grauer Brühe. Nicht trinkbar." };
+  const T: [string, string, string, number, string | undefined, Partial<Verbrauch>, string][] = [
+    ["atemtrank_schwach", "Atemtrank (schwach)", "gewoehnlich", 0, undefined, { ausdauer: 20 }, "Ausdauer sofort +20 %"],
+    ["atemtrank_stark", "Atemtrank (stark)", "gewoehnlich", 0, undefined, { ausdauer: 40 }, "Ausdauer sofort +40 %"],
+    ["steinhaut_schwach", "Steinhaut (schwach)", "gewoehnlich", 0, "steinhaut_schwach", {}, "Defense +2 für 3 Minuten"],
+    ["steinhaut_stark", "Steinhaut (stark)", "selten", 0, "steinhaut_stark", {}, "Defense +4 für 5 Minuten"],
+    ["moorfeuer_schwach", "Moorfeuer (schwach)", "gewoehnlich", 0, "moorfeuer_schwach", {}, "Stärke +2 für 3 Minuten"],
+    ["moorfeuer_stark", "Moorfeuer (stark)", "selten", 0, "moorfeuer_stark", { kostet: 5 }, "Stärke +5 für 3 Minuten · Nebenwirkung: kostet 5 Lebenspunkte"],
+    ["nebelschleier_schwach", "Nebelschleier (schwach)", "gewoehnlich", 0, "nebelschleier_schwach", {}, "Gegner bemerken dich ein Viertel später (5 Minuten)"],
+    ["nebelschleier_stark", "Nebelschleier (stark)", "selten", 0, "nebelschleier_stark", {}, "Gegner bemerken dich erst halb so weit (5 Minuten) · Nebenwirkung: Fernkampf −3"],
+    ["lindentau_schwach", "Lindentau (schwach)", "selten", 15, undefined, {}, "heilt 15"],
+    ["lindentau_stark", "Lindentau (stark)", "episch", 20, undefined, { nebenAuf: true }, "heilt 20 und hebt Nebenwirkungen auf"],
+    /* #176: Zunft-Tränke (Kräuterkunde 70–90) */
+    ["mondsalbei_elixier", "Mondsalbei-Elixier", "episch", 25, undefined, {}, "heilt 25"],
+    ["staerketrank_stark", "Trank der Stärke (stark)", "episch", 0, "staerketrank_stark", {}, "Stärke +7 für 5 Minuten"],
+    ["glutwurz_feuertrank", "Glutwurz-Feuertrank", "episch", 0, "glutwurz_feuertrank", {}, "Fernkampf +7 für 5 Minuten"],
+    ["splittersicht", "Splittersicht", "episch", 0, "splittersicht", {}, "Magieschaden +5 % für 5 Minuten"],
+    ["splitterlilien_trank", "Splitterlilien-Trank", "legendaer", 30, undefined, { nebenAuf: true }, "heilt 30 und hebt alle Nebenwirkungen auf"]];
+  for (const [id, name, selt, heil, wirkung, mehr, w] of T) {
+    GEGENSTAENDE[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, bild: TS + id + ".webp", modell3d: TM + id + ".glb", trank: id, text: `${w}.` };
+    VERBRAUCH[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, heilt: { fest: heil, anteil: 0 }, ...(wirkung ? { wirkung } : {}), ...mehr, flaeschchen: true, stapelbar: false, modell: TM + id + ".glb",
+      werte: [...(heil ? [["Heilung", `${heil} (nicht über das maximale Leben)`] as [string, string]] : []), ["Wirkung", w], ["Danach", "leeres Fläschchen"]], text: w }; }
+  VERBRAUCH.kleiner_heiltrank.flaeschchen = true; VERBRAUCH.heiltrank.flaeschchen = true; /* getrunkene Tränke geben das Fläschchen zurück */ }
+
+/* ───────── Vorbereitet (#130): Wildbret – Fleisch von Hyäne, Widder, Bär und Elch (einziger neuer Rohstoff der zehn neuen Gegner); Bild folgt (Figuren) ───────── */
+GEGENSTAENDE.wildbret = { id: "wildbret", name: "Wildbret", art: "Rohstoff", seltenheit: "gewoehnlich", wert: 12, symbol: "kristall", text: "Dunkles Fleisch vom Wild der Hochlande. Am Herd geschmort wird ein kräftiger Braten daraus." };
+GEGENSTAENDE.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", symbol: "kristall", trank: "wildbretbraten", text: "Ein kräftiger Braten aus den Hochlanden. Heilt 12 Lebenspunkte." };
+VERBRAUCH.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Ein kräftiger Braten aus den Hochlanden." };
+
+/* ───────── Phase 8, E-Quests (#118): Briefe, Glocke, Tjarks Eid, Mettes Schafe, Grablichter – Bilder aus dem Bestand, wo eines passt ───────── */
+{ const E = "img/objekte3d/skilling/erzeugnisse/", K = "img/objekte3d/skilling/kochen/symbole/";
+  GEGENSTAENDE.othmars_brief = { id: "othmars_brief", name: "Othmars Brief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/othmars_brief.webp",
+    text: "Ein gefaltetes Blatt, oft gestrichen, eng beschrieben. Außen steht nur: „Für Gunhild.“" };
+  GEGENSTAENDE.barren_glockenbronze = { id: "barren_glockenbronze", name: "Glockenbronze", art: "Rohstoff", seltenheit: "selten", untauschbar: true, stapel: 8, bild: "img/objekte3d/skilling/erzeugnisse/barren_glockenbronze.webp",
+    text: "Vier Teile Kupfer, ein Teil Splittereisen. Wenn man daran klopft, singt der Barren." };
+  GEGENSTAENDE.glocke_neu = { id: "glocke_neu", name: "Neue Glocke", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/grauwacht/symbole/glocke_neu.webp",
+    text: "Die neue Glocke von Grauwacht, noch warm aus der Form. Schwer genug, dass man sie mit beiden Armen tragen muss." };
+  GEGENSTAENDE.tjarks_eid = { id: "tjarks_eid", name: "Tjarks Eid", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/tjarks_eid.webp",
+    text: "Ein Eid, aufgeschrieben und mit „Tjark Sölde“ unterzeichnet: Die Freien vom Grenzposten kehren zur Wacht zurück." };
+  GEGENSTAENDE.hammelfleisch = { id: "hammelfleisch", name: "Hammelfleisch", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "kuhfleisch.webp", wert: 4,
+    text: "Fleisch von einem der Schafe aus Heidrast. Mit Wasser im Herd wird ein Eintopf daraus." };
+  GEGENSTAENDE.hammeleintopf = { id: "hammeleintopf", name: "Hammeleintopf", art: "Essen", seltenheit: "gewoehnlich", bild: K + "bauerneintopf.webp",
+    text: "Ein dicker Eintopf aus Hammelfleisch. Heilt 9 Lebenspunkte." };
+  VERBRAUCH.hammeleintopf = { id: "hammeleintopf", name: "Hammeleintopf", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 9, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "9 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Ein dicker Eintopf aus Hammelfleisch." };
+  GEGENSTAENDE.grablicht = { id: "grablicht", name: "Grablicht", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 3, bild: E + "seelenlicht.webp",
+    text: "Ein kaltes, blasses Licht aus den Hügelgräbern. Es will zurück auf seinen Stein." }; }
+
+/* ───────── Phase 9, F-Quests (#118): Kords Brief, Pfannenblech, Tempelabschrift ───────── */
+GEGENSTAENDE.kords_brief = { id: "kords_brief", name: "Kords Brief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/kords_brief.webp",
+  text: "Ein Brief von Kord Weller, dem Fährmann aus Graufurt, an seine Schwester in Glutbrunn. Der Umschlag ist voller Sand." };
+GEGENSTAENDE.pfannenblech = { id: "pfannenblech", name: "Pfannenblech", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/barren_splittereisen.webp",
+  text: "Ein breites, dickes Blech aus Splittereisen für Ruwens Siedepfanne. Es hält die Glut aus." };
+GEGENSTAENDE.tempelabschrift = { id: "tempelabschrift", name: "Tempelabschrift", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "pergament",
+  text: "Die Inschrift aus dem versandeten Tempel, Zeichen für Zeichen abgeschrieben. Lesen kann sie hier niemand." };
+
+/* ───────── Phase 10, G-Quests (#118): Frachtbrief, Lampenöl, Splitterglut, Fischernetz ───────── */
+GEGENSTAENDE.frachtbrief = { id: "frachtbrief", name: "Frachtbrief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/beute/symbole/karrenbrief.webp",
+  text: "Ein Frachtbrief aus dem umgestürzten Wagen: „Salz und Tuch, von Weidenhain nach Kielmund.“ Darunter ein Siegel der Küstenhäuser." };
+GEGENSTAENDE.lampenoel = { id: "lampenoel", name: "Lampenöl", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/lampenoel.webp",
+  text: "Ein Krug trübes, gelbes Öl, aus Heringen ausgekocht. Es riecht streng und brennt lange." };
+GEGENSTAENDE.splitterglut = { id: "splitterglut", name: "Splitterglut", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/seelenlicht.webp",
+  text: "Ein Seelenlicht, mit fünf Splittern zu einer Glut gebunden. Sie wärmt die Hand und erlischt nicht." };
+GEGENSTAENDE.fischernetz = { id: "fischernetz", name: "Fischernetz", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/garn.webp",
+  text: "Ein frisch geknüpftes Netz aus Garn, eng und fest. Für Bente in der Möwenbucht." };
+
+/* ───────── C2 „Der Gesang der Spiralsteine“ (#118): Moorglöckchen-Wachs von Hedda – Questgegenstand, nicht handelbar; Bild vorerst das Moorglöckchen ───────── */
+GEGENSTAENDE.moorwachs = { id: "moorwachs", name: "Moorglöckchen-Wachs", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/kraeuter/symbole/moorgloeckchen.webp",
+  text: "Ein Klumpen weiches Wachs, das nach Moorglöckchen riecht. Hedda sagt, man solle es sich in die Ohren drücken, bevor die Steine singen." };
+
+/* ───────── #166: feste Rucksackbilder für die Gegenstände, die bisher zur Laufzeit gezeichnet wurden (symbol) – Pfade aus fabrik/vorlagen/rucksackbilder_pfade.json (Figuren) ───────── */
+const RUCKSACKBILDER: Record<string, string> = {
+  splitter: "img/objekte3d/symbole/splitter.webp",
+  kleiner_heiltrank: "img/objekte3d/symbole/kleiner_heiltrank.webp",
+  heiltrank: "img/objekte3d/symbole/heiltrank.webp",
+  hinweispergament: "img/objekte3d/schriften/symbole/hinweispergament.webp",
+  pergament: "img/objekte3d/schriften/symbole/pergament.webp",
+  geweihter_splitter: "img/objekte3d/symbole/geweihter_splitter.webp",
+  federn: "img/objekte3d/rohstoffe/symbole/federn.webp",
+  wolfsfell: "img/objekte3d/rohstoffe/symbole/wolfsfell.webp",
+  chitin: "img/objekte3d/rohstoffe/symbole/chitin.webp",
+  giftdruese: "img/objekte3d/rohstoffe/symbole/giftdruese.webp",
+  hasenfleisch: "img/objekte3d/skilling/kochen/symbole/hasenfleisch.webp",
+  wildschweinfleisch: "img/objekte3d/skilling/kochen/symbole/wildschweinfleisch.webp",
+  wolfsfleisch: "img/objekte3d/skilling/kochen/symbole/wolfsfleisch.webp",
+  fleisch_verbrannt: "img/objekte3d/skilling/kochen/symbole/fleisch_verbrannt.webp",
+  hasenbraten: "img/objekte3d/skilling/kochen/symbole/hasenbraten.webp",
+  rinderbraten: "img/objekte3d/skilling/kochen/symbole/rinderbraten.webp",
+  wildschweinbraten: "img/objekte3d/skilling/kochen/symbole/wildschweinbraten.webp",
+  wolfsgulasch: "img/objekte3d/skilling/kochen/symbole/wolfsgulasch.webp",
+  alter_hecht: "img/objekte3d/skilling/angeln/symbole/alter_hecht.webp",
+  rezeptheft: "img/objekte3d/schriften/symbole/rezeptheft.webp",
+  wildbret: "img/objekte3d/skilling/kochen/symbole/wildbret.webp",
+  wildbretbraten: "img/objekte3d/skilling/kochen/symbole/wildbretbraten.webp",
+  tempelabschrift: "img/objekte3d/schriften/symbole/tempelabschrift.webp",
+};
+for (const [id, b] of Object.entries(RUCKSACKBILDER)) if (GEGENSTAENDE[id]) { GEGENSTAENDE[id].bild = b; delete GEGENSTAENDE[id].symbol; }
+/* ───────── #170 Pets als Gegenstände (KANON fd1014fd0): im Rucksack, „Folgen lassen“ oder „Wegschicken“, in die Bank – gebunden, festes Bild ───────── */
+for (const P of Object.values(PETS)) GEGENSTAENDE[petGegenstand(P.id)] = { id: petGegenstand(P.id), name: P.name, art: "Begleiter", seltenheit: "legendaer", untauschbar: true, bild: P.bild,
+  text: `Ein kleiner Begleiter, gefunden ${P.tat}. Aus dem Rucksack heraus folgt er dir – alle sehen ihn. Gebunden: nicht handelbar.` };

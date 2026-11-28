@@ -1,0 +1,222 @@
+{
+ "_hinweis": "Seelenlichter (shared/splitterbinden.ts): Weltfelder. Mattes Licht um die Linde im Steinring (Weidenhain), Wiesenlicht in den Riedwiesen und an der Quelle der Obstwiesen. Dazu Phase 5b/6 (Welt #45): Irrlicht 20 (Rabenmoor), Grablicht 35 (Friedhof/Obelisk Nordwald), Nebellicht 45 (Nebelfelder Rabenmoor), Splitterlicht 65 (Aschenwerth) – aus realtime/welt/seelenlicht_standorte.json übernommen. Phase 8 (#118, „Ruhelose Gräber“): fünf Grablichter an den Hügelgräbern von Grauwacht (hg_grab_*).",
+ "lichter": [
+  {
+   "id": "matt_1",
+   "art": "matt",
+   "x": 6448.5,
+   "y": 6679.5,
+   "region": "weidenhain"
+  },
+  {
+   "id": "matt_2",
+   "art": "matt",
+   "x": 6456.5,
+   "y": 6679.5,
+   "region": "weidenhain"
+  },
+  {
+   "id": "matt_3",
+   "art": "matt",
+   "x": 6449.5,
+   "y": 6683.5,
+   "region": "weidenhain"
+  },
+  {
+   "id": "matt_4",
+   "art": "matt",
+   "x": 6455.5,
+   "y": 6682.5,
+   "region": "weidenhain"
+  },
+  {
+   "id": "wiese_1",
+   "art": "wiese",
+   "x": 6228.5,
+   "y": 6428.5,
+   "region": "westried"
+  },
+  {
+   "id": "wiese_2",
+   "art": "wiese",
+   "x": 6233.5,
+   "y": 6432.5,
+   "region": "westried"
+  },
+  {
+   "id": "wiese_3",
+   "art": "wiese",
+   "x": 6251.5,
+   "y": 6479.5,
+   "region": "westried"
+  },
+  {
+   "id": "wiese_4",
+   "art": "wiese",
+   "x": 6564.5,
+   "y": 6699.5,
+   "region": "obstwiesen"
+  },
+  {
+   "id": "irr_1",
+   "art": "irrlicht",
+   "x": 6369.5,
+   "y": 6723,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "irr_2",
+   "art": "irrlicht",
+   "x": 6339,
+   "y": 6698,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "irr_3",
+   "art": "irrlicht",
+   "x": 6319,
+   "y": 6726.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "irr_4",
+   "art": "irrlicht",
+   "x": 6330.5,
+   "y": 6681,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "irr_5",
+   "art": "irrlicht",
+   "x": 6372,
+   "y": 6669.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "grab_1",
+   "art": "grablicht",
+   "x": 6365.5,
+   "y": 6358,
+   "region": "nordwald"
+  },
+  {
+   "id": "grab_2",
+   "art": "grablicht",
+   "x": 6382,
+   "y": 6358,
+   "region": "nordwald"
+  },
+  {
+   "id": "grab_3",
+   "art": "grablicht",
+   "x": 6361,
+   "y": 6364.5,
+   "region": "nordwald"
+  },
+  {
+   "id": "grab_4",
+   "art": "grablicht",
+   "x": 6385.5,
+   "y": 6365,
+   "region": "nordwald"
+  },
+  {
+   "id": "grab_5",
+   "art": "grablicht",
+   "x": 6370,
+   "y": 6376.5,
+   "region": "nordwald"
+  },
+  {
+   "id": "nebel_1",
+   "art": "nebellicht",
+   "x": 6300.5,
+   "y": 6716,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "nebel_2",
+   "art": "nebellicht",
+   "x": 6356,
+   "y": 6696,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "nebel_3",
+   "art": "nebellicht",
+   "x": 6366.5,
+   "y": 6685,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "nebel_4",
+   "art": "nebellicht",
+   "x": 6297,
+   "y": 6678.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "nebel_5",
+   "art": "nebellicht",
+   "x": 6350,
+   "y": 6679,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "splitter_1",
+   "art": "splitterlicht",
+   "x": 10655.4,
+   "y": 9667.6,
+   "region": "rabengrund"
+  },
+  {
+   "id": "splitter_2",
+   "art": "splitterlicht",
+   "x": 10645.5,
+   "y": 9662.2,
+   "region": "rabengrund"
+  },
+  {
+   "id": "splitter_3",
+   "art": "splitterlicht",
+   "x": 10655.1,
+   "y": 9656.3,
+   "region": "rabengrund"
+  },
+  {
+   "id": "hg_grab_1",
+   "art": "grablicht",
+   "x": 6464.5,
+   "y": 5764.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "hg_grab_2",
+   "art": "grablicht",
+   "x": 6476.5,
+   "y": 5763.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "hg_grab_3",
+   "art": "grablicht",
+   "x": 6467.5,
+   "y": 5772.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "hg_grab_4",
+   "art": "grablicht",
+   "x": 6478.5,
+   "y": 5770.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "hg_grab_5",
+   "art": "grablicht",
+   "x": 6471.5,
+   "y": 5775.5,
+   "region": "fl_201_169"
+  }
+ ]
+}

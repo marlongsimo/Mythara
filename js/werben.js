@@ -2,7 +2,7 @@
  * Mythara – Freunde werben: Kommt ein Freund über den Einladungslink ins Spiel und beendet seine erste Kampagne,
  * bekommen beide je einen Heldentoken (Datenbank: Migration 028; der Werber wird für höchstens fünf Freunde belohnt).
  *
- *   • Einladungslink: https://mythara-dungeon.de/?von=<Benutzername>. Startseite und Spiel merken sich den Namen im Browser.
+ *   • Einladungslink: https://riftmere.de/?von=<Benutzername>. Startseite und Spiel merken sich den Namen im Browser.
  *   • Sobald der neue Spieler mit einem Konto im Dorf steht, wird der Werber einmal eingetragen (rpg_referral_set).
  *   • Im Dorf zeigt ein Hinweis den Weg zum Fenster „Freunde einladen“ (Link kopieren/teilen, Stand).
  * Ohne Migration 028 bleibt alles unsichtbar; es gibt keine Fehlermeldungen.

@@ -1,0 +1,516 @@
+{
+ "start": [
+  [
+   240,
+   240
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 17,
+    "y0": 19,
+    "x1": 18,
+    "y1": 20
+   },
+   {
+    "art": "rechteck",
+    "x0": 12,
+    "y0": 18,
+    "x1": 13,
+    "y1": 19
+   },
+   {
+    "art": "rechteck",
+    "x0": 13,
+    "y0": 13,
+    "x1": 14,
+    "y1": 14
+   },
+   {
+    "art": "rechteck",
+    "x0": 18,
+    "y0": 14,
+    "x1": 19,
+    "y1": 15
+   },
+   {
+    "art": "rechteck",
+    "x0": 152,
+    "y0": 40,
+    "x1": 153,
+    "y1": 41
+   },
+   {
+    "art": "rechteck",
+    "x0": 147,
+    "y0": 38,
+    "x1": 148,
+    "y1": 39
+   },
+   {
+    "art": "rechteck",
+    "x0": 151,
+    "y0": 34,
+    "x1": 152,
+    "y1": 35
+   },
+   {
+    "art": "rechteck",
+    "x0": 214,
+    "y0": 145,
+    "x1": 215,
+    "y1": 146
+   },
+   {
+    "art": "rechteck",
+    "x0": 209,
+    "y0": 143,
+    "x1": 210,
+    "y1": 144
+   },
+   {
+    "art": "rechteck",
+    "x0": 213,
+    "y0": 139,
+    "x1": 214,
+    "y1": 140
+   },
+   {
+    "art": "rechteck",
+    "x0": 235,
+    "y0": 266,
+    "x1": 236,
+    "y1": 267
+   },
+   {
+    "art": "rechteck",
+    "x0": 230,
+    "y0": 264,
+    "x1": 231,
+    "y1": 265
+   },
+   {
+    "art": "rechteck",
+    "x0": 234,
+    "y0": 260,
+    "x1": 235,
+    "y1": 261
+   },
+   {
+    "art": "rechteck",
+    "x0": 255,
+    "y0": 368,
+    "x1": 256,
+    "y1": 369
+   },
+   {
+    "art": "rechteck",
+    "x0": 250,
+    "y0": 366,
+    "x1": 251,
+    "y1": 367
+   },
+   {
+    "art": "rechteck",
+    "x0": 255,
+    "y0": 362,
+    "x1": 256,
+    "y1": 363
+   },
+   {
+    "art": "rechteck",
+    "x0": 52,
+    "y0": 22,
+    "x1": 53,
+    "y1": 23
+   },
+   {
+    "art": "rechteck",
+    "x0": 47,
+    "y0": 20,
+    "x1": 48,
+    "y1": 21
+   },
+   {
+    "art": "rechteck",
+    "x0": 51,
+    "y0": 16,
+    "x1": 52,
+    "y1": 17
+   },
+   {
+    "art": "rechteck",
+    "x0": 207,
+    "y0": 116,
+    "x1": 208,
+    "y1": 117
+   },
+   {
+    "art": "rechteck",
+    "x0": 202,
+    "y0": 114,
+    "x1": 203,
+    "y1": 115
+   },
+   {
+    "art": "rechteck",
+    "x0": 206,
+    "y0": 110,
+    "x1": 207,
+    "y1": 111
+   },
+   {
+    "art": "rechteck",
+    "x0": 116,
+    "y0": 19,
+    "x1": 117,
+    "y1": 20
+   },
+   {
+    "art": "rechteck",
+    "x0": 111,
+    "y0": 17,
+    "x1": 112,
+    "y1": 18
+   },
+   {
+    "art": "rechteck",
+    "x0": 115,
+    "y0": 13,
+    "x1": 116,
+    "y1": 14
+   },
+   {
+    "art": "rechteck",
+    "x0": 472,
+    "y0": 47,
+    "x1": 473,
+    "y1": 48
+   },
+   {
+    "art": "rechteck",
+    "x0": 466,
+    "y0": 45,
+    "x1": 467,
+    "y1": 46
+   },
+   {
+    "art": "rechteck",
+    "x0": 471,
+    "y0": 41,
+    "x1": 472,
+    "y1": 42
+   },
+   {
+    "art": "rechteck",
+    "x0": 249,
+    "y0": 86,
+    "x1": 250,
+    "y1": 87
+   },
+   {
+    "art": "rechteck",
+    "x0": 245,
+    "y0": 86,
+    "x1": 246,
+    "y1": 87
+   },
+   {
+    "art": "rechteck",
+    "x0": 247,
+    "y0": 82,
+    "x1": 248,
+    "y1": 83
+   },
+   {
+    "art": "rechteck",
+    "x0": 238,
+    "y0": 70,
+    "x1": 239,
+    "y1": 71
+   },
+   {
+    "art": "rechteck",
+    "x0": 234,
+    "y0": 70,
+    "x1": 235,
+    "y1": 71
+   },
+   {
+    "art": "rechteck",
+    "x0": 235,
+    "y0": 66,
+    "x1": 236,
+    "y1": 67
+   },
+   {
+    "art": "rechteck",
+    "x0": 197,
+    "y0": 82,
+    "x1": 198,
+    "y1": 83
+   },
+   {
+    "art": "rechteck",
+    "x0": 192,
+    "y0": 83,
+    "x1": 193,
+    "y1": 84
+   },
+   {
+    "art": "rechteck",
+    "x0": 194,
+    "y0": 79,
+    "x1": 195,
+    "y1": 80
+   },
+   {
+    "art": "rechteck",
+    "x0": 226,
+    "y0": 204,
+    "x1": 227,
+    "y1": 205
+   },
+   {
+    "art": "rechteck",
+    "x0": 221,
+    "y0": 205,
+    "x1": 222,
+    "y1": 206
+   },
+   {
+    "art": "rechteck",
+    "x0": 223,
+    "y0": 201,
+    "x1": 224,
+    "y1": 202
+   },
+   {
+    "art": "rechteck",
+    "x0": 248,
+    "y0": 323,
+    "x1": 249,
+    "y1": 324
+   },
+   {
+    "art": "rechteck",
+    "x0": 243,
+    "y0": 324,
+    "x1": 244,
+    "y1": 325
+   },
+   {
+    "art": "rechteck",
+    "x0": 245,
+    "y0": 320,
+    "x1": 246,
+    "y1": 321
+   },
+   {
+    "art": "rechteck",
+    "x0": 275,
+    "y0": 416,
+    "x1": 276,
+    "y1": 417
+   },
+   {
+    "art": "rechteck",
+    "x0": 270,
+    "y0": 417,
+    "x1": 271,
+    "y1": 418
+   },
+   {
+    "art": "rechteck",
+    "x0": 272,
+    "y0": 413,
+    "x1": 273,
+    "y1": 414
+   }
+  ],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "grenzposten",
+   "art": "lesen",
+   "x": 206,
+   "y": 259.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Grenzposten der alten Wacht. Die Mauern sind eingefallen, aber jemand hat Zelte aufgeschlagen und das Feuer brennt noch."
+   }
+  },
+  {
+   "id": "grenzposten_wappen",
+   "art": "lesen",
+   "x": 219,
+   "y": 265.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Auf dem Turmstumpf ist ein Wappen in den Stein geschlagen: ein Turm über drei Wellen – jemand hat es mit dem Messer zerkratzt."
+   }
+  },
+  {
+   "id": "heidrast",
+   "art": "lesen",
+   "x": 165.5,
+   "y": 18.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Heidrast. Ein paar Katen im Wind, ein Brunnen, ein Pferch. Der Rauch steigt schräg auf, so stark weht es hier."
+   }
+  },
+  {
+   "id": "heidrast_wegstein",
+   "art": "lesen",
+   "x": 160,
+   "y": 18.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wegstein mit eingeritzten Splitterlinien. Hier kann man später den Wegstein binden."
+   }
+  },
+  {
+   "id": "schafpferch",
+   "art": "lesen",
+   "x": 184.8,
+   "y": 16,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Schafpferch. Im Zaun hängen Wollfetzen – und an einer Stelle ist er von außen eingedrückt."
+   }
+  },
+  {
+   "id": "brechstein_schmiede",
+   "art": "lesen",
+   "x": 222,
+   "y": 99.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Schmiede der Steinbrecher: Meißel schärfen, Keile richten, Hacken härten."
+   }
+  },
+  {
+   "id": "brechstein_bankkiste",
+   "art": "lesen",
+   "x": 229,
+   "y": 92.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Steinbrecher. Was du einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "brechstein",
+   "art": "lesen",
+   "x": 227,
+   "y": 88.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Brechstein. Hier wird der Graue Fels Stück für Stück abgetragen – und manchmal kommt eine Ader zum Vorschein."
+   }
+  },
+  {
+   "id": "heidrast_bankkiste",
+   "art": "lesen",
+   "x": 166,
+   "y": 11.9,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste von Heidrast, an den Brunnen gekettet. Was du einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "rast_nordweg",
+   "art": "lesen",
+   "x": 192.5,
+   "y": 158.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Asche im Steinring, ein Stamm zum Sitzen – Hirten und Händler ruhen hier."
+   }
+  },
+  {
+   "id": "wegweiser_heidrast_lesen",
+   "x": 171,
+   "y": 25.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Grauwacht ↗ · Nach Hügelgräber ↖ · Nach Graufurt ↓",
+    "ziele": [
+     "Nach Grauwacht ↗",
+     "Nach Hügelgräber ↖",
+     "Nach Graufurt ↓"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "rast_nordsaumweg",
+   "art": "lesen",
+   "x": 258,
+   "y": 378.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
+   }
+  }
+ ],
+ "senken": [
+  {
+   "x": 247.6,
+   "y": 85.4,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 236.3,
+   "y": 69.4,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 194.7,
+   "y": 81.7,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 223.7,
+   "y": 203.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 245.7,
+   "y": 322.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 272.7,
+   "y": 415.9,
+   "r": 5,
+   "tiefe": 1.1
+  }
+ ]
+}

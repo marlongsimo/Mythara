@@ -1,0 +1,16 @@
+{
+ "id": "wrack_kajuete",
+ "name": "Die Kajüte des Kapitäns",
+ "untertitel": "Instanz",
+ "ursprung": [
+  359,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 6,
+ "ebene": "untergrund"
+}

@@ -1,0 +1,2651 @@
+{
+ "rezepte": [
+  {
+   "werk": "Amboss",
+   "fam": "Dolch",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Eiddolch",
+   "level": 10,
+   "zutaten": [
+    [
+     "Eisenbarren",
+     1
+    ],
+    [
+     "Tannenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 55,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Dolch",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Eiddolch",
+   "level": 20,
+   "zutaten": [
+    [
+     "Schwarzeisenbarren",
+     1
+    ],
+    [
+     "Eibenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 95,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Dolch",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Eiddolch",
+   "level": 35,
+   "zutaten": [
+    [
+     "Sterneisenbarren",
+     1
+    ],
+    [
+     "Moorweidenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 155,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Dolch",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Eiddolch",
+   "level": 45,
+   "zutaten": [
+    [
+     "Splittereisenbarren",
+     1
+    ],
+    [
+     "Kernbaumstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 250,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Dolch",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Eiddolch",
+   "level": 65,
+   "zutaten": [
+    [
+     "Ureisenbarren",
+     1
+    ],
+    [
+     "Weltenbaumstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 505,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Holzbeil",
+   "stufe": "Training",
+   "t": 0,
+   "name": "Trainings-Holzbeil",
+   "level": 2,
+   "zutaten": [
+    [
+     "Kupferbarren",
+     1
+    ],
+    [
+     "Eichenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 20,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Holzbeil",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Holzbeil",
+   "level": 11,
+   "zutaten": [
+    [
+     "Eisenbarren",
+     1
+    ],
+    [
+     "Tannenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 55,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Holzbeil",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Holzbeil",
+   "level": 21,
+   "zutaten": [
+    [
+     "Schwarzeisenbarren",
+     1
+    ],
+    [
+     "Eibenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 95,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Holzbeil",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Holzbeil",
+   "level": 36,
+   "zutaten": [
+    [
+     "Sterneisenbarren",
+     1
+    ],
+    [
+     "Moorweidenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 155,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Holzbeil",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Holzbeil",
+   "level": 46,
+   "zutaten": [
+    [
+     "Splittereisenbarren",
+     1
+    ],
+    [
+     "Kernbaumstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 250,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Holzbeil",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Holzbeil",
+   "level": 66,
+   "zutaten": [
+    [
+     "Ureisenbarren",
+     1
+    ],
+    [
+     "Weltenbaumstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 505,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Spitzhacke",
+   "stufe": "Training",
+   "t": 0,
+   "name": "Trainings-Spitzhacke",
+   "level": 2,
+   "zutaten": [
+    [
+     "Kupferbarren",
+     1
+    ],
+    [
+     "Eichenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 20,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Spitzhacke",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Spitzhacke",
+   "level": 11,
+   "zutaten": [
+    [
+     "Eisenbarren",
+     1
+    ],
+    [
+     "Tannenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 55,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Spitzhacke",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Spitzhacke",
+   "level": 21,
+   "zutaten": [
+    [
+     "Schwarzeisenbarren",
+     1
+    ],
+    [
+     "Eibenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 95,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Spitzhacke",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Spitzhacke",
+   "level": 36,
+   "zutaten": [
+    [
+     "Sterneisenbarren",
+     1
+    ],
+    [
+     "Moorweidenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 155,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Spitzhacke",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Spitzhacke",
+   "level": 46,
+   "zutaten": [
+    [
+     "Splittereisenbarren",
+     1
+    ],
+    [
+     "Kernbaumstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 250,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Spitzhacke",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Spitzhacke",
+   "level": 66,
+   "zutaten": [
+    [
+     "Ureisenbarren",
+     1
+    ],
+    [
+     "Weltenbaumstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 505,
+   "ticks": 7
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Einhandschwert",
+   "stufe": "Training",
+   "t": 0,
+   "name": "Ritterschwert",
+   "level": 3,
+   "zutaten": [
+    [
+     "Kupferbarren",
+     2
+    ],
+    [
+     "Eichenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 30,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Einhandschwert",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Eidschwert",
+   "level": 12,
+   "zutaten": [
+    [
+     "Eisenbarren",
+     2
+    ],
+    [
+     "Tannenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 90,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Einhandschwert",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Eidschwert",
+   "level": 22,
+   "zutaten": [
+    [
+     "Schwarzeisenbarren",
+     2
+    ],
+    [
+     "Eibenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 155,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Einhandschwert",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Eidschwert",
+   "level": 37,
+   "zutaten": [
+    [
+     "Sterneisenbarren",
+     2
+    ],
+    [
+     "Moorweidenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 255,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Einhandschwert",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Eidschwert",
+   "level": 47,
+   "zutaten": [
+    [
+     "Splittereisenbarren",
+     2
+    ],
+    [
+     "Kernbaumstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 410,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Einhandschwert",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Eidschwert",
+   "level": 67,
+   "zutaten": [
+    [
+     "Ureisenbarren",
+     2
+    ],
+    [
+     "Weltenbaumstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 880,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Speer",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Sterndorn",
+   "level": 13,
+   "zutaten": [
+    [
+     "Eisenbarren",
+     1
+    ],
+    [
+     "Tannenstamm",
+     2
+    ]
+   ],
+   "splitter": 0,
+   "xp": 75,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Speer",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Sterndorn",
+   "level": 23,
+   "zutaten": [
+    [
+     "Schwarzeisenbarren",
+     1
+    ],
+    [
+     "Eibenstamm",
+     2
+    ]
+   ],
+   "splitter": 0,
+   "xp": 130,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Speer",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Sterndorn",
+   "level": 38,
+   "zutaten": [
+    [
+     "Sterneisenbarren",
+     1
+    ],
+    [
+     "Moorweidenstamm",
+     2
+    ]
+   ],
+   "splitter": 0,
+   "xp": 210,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Speer",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Sterndorn",
+   "level": 48,
+   "zutaten": [
+    [
+     "Splittereisenbarren",
+     1
+    ],
+    [
+     "Kernbaumstamm",
+     2
+    ]
+   ],
+   "splitter": 0,
+   "xp": 335,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Speer",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Sterndorn",
+   "level": 68,
+   "zutaten": [
+    [
+     "Ureisenbarren",
+     1
+    ],
+    [
+     "Weltenbaumstamm",
+     2
+    ]
+   ],
+   "splitter": 0,
+   "xp": 635,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Helm (schwer)",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Eisenwachthelm",
+   "level": 13,
+   "zutaten": [
+    [
+     "Eisenbarren",
+     2
+    ],
+    [
+     "Weiches Leder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 95,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Helm (schwer)",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Eisenwachthelm",
+   "level": 23,
+   "zutaten": [
+    [
+     "Schwarzeisenbarren",
+     2
+    ],
+    [
+     "Gehärtetes Leder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 165,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Helm (schwer)",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Eisenwachthelm",
+   "level": 38,
+   "zutaten": [
+    [
+     "Sterneisenbarren",
+     2
+    ],
+    [
+     "Moorleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 275,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Helm (schwer)",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Eisenwachthelm",
+   "level": 48,
+   "zutaten": [
+    [
+     "Splittereisenbarren",
+     2
+    ],
+    [
+     "Splitterleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 440,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Helm (schwer)",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Eisenwachthelm",
+   "level": 68,
+   "zutaten": [
+    [
+     "Ureisenbarren",
+     2
+    ],
+    [
+     "Urleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 940,
+   "ticks": 9
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Streitkolben",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Sternbrecher",
+   "level": 15,
+   "zutaten": [
+    [
+     "Eisenbarren",
+     3
+    ],
+    [
+     "Tannenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 125,
+   "ticks": 11
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Streitkolben",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Sternbrecher",
+   "level": 25,
+   "zutaten": [
+    [
+     "Schwarzeisenbarren",
+     3
+    ],
+    [
+     "Eibenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 215,
+   "ticks": 11
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Streitkolben",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Sternbrecher",
+   "level": 40,
+   "zutaten": [
+    [
+     "Sterneisenbarren",
+     3
+    ],
+    [
+     "Moorweidenstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 355,
+   "ticks": 11
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Streitkolben",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Sternbrecher",
+   "level": 50,
+   "zutaten": [
+    [
+     "Splittereisenbarren",
+     3
+    ],
+    [
+     "Kernbaumstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 570,
+   "ticks": 11
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Streitkolben",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Sternbrecher",
+   "level": 70,
+   "zutaten": [
+    [
+     "Ureisenbarren",
+     3
+    ],
+    [
+     "Weltenbaumstamm",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 1255,
+   "ticks": 11
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Beinschienen",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Eisenbeinschienen",
+   "level": 16,
+   "zutaten": [
+    [
+     "Eisenbarren",
+     3
+    ],
+    [
+     "Weiches Leder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 130,
+   "ticks": 11
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Beinschienen",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Eisenbeinschienen",
+   "level": 26,
+   "zutaten": [
+    [
+     "Schwarzeisenbarren",
+     3
+    ],
+    [
+     "Gehärtetes Leder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 225,
+   "ticks": 11
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Beinschienen",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Eisenbeinschienen",
+   "level": 41,
+   "zutaten": [
+    [
+     "Sterneisenbarren",
+     3
+    ],
+    [
+     "Moorleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 375,
+   "ticks": 11
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Beinschienen",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Eisenbeinschienen",
+   "level": 51,
+   "zutaten": [
+    [
+     "Splittereisenbarren",
+     3
+    ],
+    [
+     "Splitterleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 600,
+   "ticks": 11
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Beinschienen",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Eisenbeinschienen",
+   "level": 71,
+   "zutaten": [
+    [
+     "Ureisenbarren",
+     3
+    ],
+    [
+     "Urleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 1315,
+   "ticks": 11
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Zweihänder",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Eidzweihänder",
+   "level": 17,
+   "zutaten": [
+    [
+     "Eisenbarren",
+     3
+    ],
+    [
+     "Tannenstamm",
+     1
+    ],
+    [
+     "Weiches Leder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 150,
+   "ticks": 13
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Zweihänder",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Eidzweihänder",
+   "level": 27,
+   "zutaten": [
+    [
+     "Schwarzeisenbarren",
+     3
+    ],
+    [
+     "Eibenstamm",
+     1
+    ],
+    [
+     "Gehärtetes Leder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 260,
+   "ticks": 13
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Zweihänder",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Eidzweihänder",
+   "level": 42,
+   "zutaten": [
+    [
+     "Sterneisenbarren",
+     3
+    ],
+    [
+     "Moorweidenstamm",
+     1
+    ],
+    [
+     "Moorleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 430,
+   "ticks": 13
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Zweihänder",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Eidzweihänder",
+   "level": 52,
+   "zutaten": [
+    [
+     "Splittereisenbarren",
+     3
+    ],
+    [
+     "Kernbaumstamm",
+     1
+    ],
+    [
+     "Splitterleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 690,
+   "ticks": 13
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Zweihänder",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Eidzweihänder",
+   "level": 72,
+   "zutaten": [
+    [
+     "Ureisenbarren",
+     3
+    ],
+    [
+     "Weltenbaumstamm",
+     1
+    ],
+    [
+     "Urleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 1445,
+   "ticks": 13
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Brustpanzer (schwer)",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Eisenwacht",
+   "level": 19,
+   "zutaten": [
+    [
+     "Eisenbarren",
+     5
+    ],
+    [
+     "Weiches Leder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 200,
+   "ticks": 15
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Brustpanzer (schwer)",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Eisenwacht",
+   "level": 29,
+   "zutaten": [
+    [
+     "Schwarzeisenbarren",
+     5
+    ],
+    [
+     "Gehärtetes Leder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 345,
+   "ticks": 15
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Brustpanzer (schwer)",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Eisenwacht",
+   "level": 44,
+   "zutaten": [
+    [
+     "Sterneisenbarren",
+     5
+    ],
+    [
+     "Moorleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 575,
+   "ticks": 15
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Brustpanzer (schwer)",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Eisenwacht",
+   "level": 54,
+   "zutaten": [
+    [
+     "Splittereisenbarren",
+     5
+    ],
+    [
+     "Splitterleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 920,
+   "ticks": 15
+  },
+  {
+   "werk": "Amboss",
+   "fam": "Brustpanzer (schwer)",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Eisenwacht",
+   "level": 74,
+   "zutaten": [
+    [
+     "Ureisenbarren",
+     5
+    ],
+    [
+     "Urleder",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 2065,
+   "ticks": 15
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kurzbogen",
+   "stufe": "Training",
+   "t": 0,
+   "name": "Jagdbogen",
+   "level": 2,
+   "zutaten": [
+    [
+     "Eichenstamm",
+     2
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 35,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kurzbogen",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Mondkurzbogen",
+   "level": 11,
+   "zutaten": [
+    [
+     "Tannenstamm",
+     2
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 50,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kurzbogen",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Mondkurzbogen",
+   "level": 21,
+   "zutaten": [
+    [
+     "Eibenstamm",
+     2
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 80,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kurzbogen",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Mondkurzbogen",
+   "level": 36,
+   "zutaten": [
+    [
+     "Moorweidenstamm",
+     2
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 120,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kurzbogen",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Mondkurzbogen",
+   "level": 46,
+   "zutaten": [
+    [
+     "Kernbaumstamm",
+     2
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 185,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kurzbogen",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Mondkurzbogen",
+   "level": 66,
+   "zutaten": [
+    [
+     "Weltenbaumstamm",
+     2
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 270,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Langbogen",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Mondlangbogen",
+   "level": 14,
+   "zutaten": [
+    [
+     "Tannenstamm",
+     3
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 70,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Langbogen",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Mondlangbogen",
+   "level": 24,
+   "zutaten": [
+    [
+     "Eibenstamm",
+     3
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 115,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Langbogen",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Mondlangbogen",
+   "level": 39,
+   "zutaten": [
+    [
+     "Moorweidenstamm",
+     3
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 175,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Langbogen",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Mondlangbogen",
+   "level": 49,
+   "zutaten": [
+    [
+     "Kernbaumstamm",
+     3
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 275,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Langbogen",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Mondlangbogen",
+   "level": 69,
+   "zutaten": [
+    [
+     "Weltenbaumstamm",
+     3
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 400,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Schild",
+   "stufe": "Training",
+   "t": 0,
+   "name": "Rundschild",
+   "level": 6,
+   "zutaten": [
+    [
+     "Eichenstamm",
+     3
+    ],
+    [
+     "Kupferbarren",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 50,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Schild",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Sternenschild",
+   "level": 15,
+   "zutaten": [
+    [
+     "Tannenstamm",
+     3
+    ],
+    [
+     "Eisenbarren",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 95,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Schild",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Sternenschild",
+   "level": 25,
+   "zutaten": [
+    [
+     "Eibenstamm",
+     3
+    ],
+    [
+     "Schwarzeisenbarren",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 165,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Schild",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Sternenschild",
+   "level": 40,
+   "zutaten": [
+    [
+     "Moorweidenstamm",
+     3
+    ],
+    [
+     "Sterneisenbarren",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 265,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Schild",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Sternenschild",
+   "level": 50,
+   "zutaten": [
+    [
+     "Kernbaumstamm",
+     3
+    ],
+    [
+     "Splittereisenbarren",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 420,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Schild",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Sternenschild",
+   "level": 70,
+   "zutaten": [
+    [
+     "Weltenbaumstamm",
+     3
+    ],
+    [
+     "Ureisenbarren",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 765,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Stab",
+   "stufe": "Training",
+   "t": 0,
+   "name": "Hirtenstab",
+   "level": 7,
+   "zutaten": [
+    [
+     "Eichenstamm",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 50,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Stab",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Sternenszepter",
+   "level": 16,
+   "zutaten": [
+    [
+     "Tannenstamm",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 70,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Stab",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Sternenszepter",
+   "level": 26,
+   "zutaten": [
+    [
+     "Eibenstamm",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 115,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Stab",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Sternenszepter",
+   "level": 41,
+   "zutaten": [
+    [
+     "Moorweidenstamm",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 175,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Stab",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Sternenszepter",
+   "level": 51,
+   "zutaten": [
+    [
+     "Kernbaumstamm",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 275,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Stab",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Sternenszepter",
+   "level": 71,
+   "zutaten": [
+    [
+     "Weltenbaumstamm",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 400,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Armbrust",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Sternarmbrust",
+   "level": 16,
+   "zutaten": [
+    [
+     "Tannenstamm",
+     2
+    ],
+    [
+     "Eisenbarren",
+     1
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 85,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Armbrust",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Sternarmbrust",
+   "level": 26,
+   "zutaten": [
+    [
+     "Eibenstamm",
+     2
+    ],
+    [
+     "Schwarzeisenbarren",
+     1
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 140,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Armbrust",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Sternarmbrust",
+   "level": 41,
+   "zutaten": [
+    [
+     "Moorweidenstamm",
+     2
+    ],
+    [
+     "Sterneisenbarren",
+     1
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 220,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Armbrust",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Sternarmbrust",
+   "level": 51,
+   "zutaten": [
+    [
+     "Kernbaumstamm",
+     2
+    ],
+    [
+     "Splittereisenbarren",
+     1
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 345,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Armbrust",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Sternarmbrust",
+   "level": 71,
+   "zutaten": [
+    [
+     "Weltenbaumstamm",
+     2
+    ],
+    [
+     "Ureisenbarren",
+     1
+    ],
+    [
+     "Bogensehne",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 645,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (leicht)",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Jägerkapuze",
+   "level": 11,
+   "zutaten": [
+    [
+     "Weiches Leder",
+     2
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 60,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (leicht)",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Jägerkapuze",
+   "level": 21,
+   "zutaten": [
+    [
+     "Gehärtetes Leder",
+     2
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 100,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (leicht)",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Jägerkapuze",
+   "level": 36,
+   "zutaten": [
+    [
+     "Moorleder",
+     2
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 160,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (leicht)",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Jägerkapuze",
+   "level": 46,
+   "zutaten": [
+    [
+     "Splitterleder",
+     2
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 250,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (leicht)",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Jägerkapuze",
+   "level": 66,
+   "zutaten": [
+    [
+     "Urleder",
+     2
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 390,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (Stoff)",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Magierkapuze",
+   "level": 11,
+   "zutaten": [
+    [
+     "Grobtuch",
+     2
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 55,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (Stoff)",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Magierkapuze",
+   "level": 21,
+   "zutaten": [
+    [
+     "Feintuch",
+     2
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 90,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (Stoff)",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Magierkapuze",
+   "level": 36,
+   "zutaten": [
+    [
+     "Mondtuch",
+     2
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 140,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (Stoff)",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Magierkapuze",
+   "level": 46,
+   "zutaten": [
+    [
+     "Splittertuch",
+     2
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 220,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (Stoff)",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Magierkapuze",
+   "level": 66,
+   "zutaten": [
+    [
+     "Weltentuch",
+     2
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 350,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Hose (leicht)",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Jägerhose",
+   "level": 13,
+   "zutaten": [
+    [
+     "Weiches Leder",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 85,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Hose (leicht)",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Jägerhose",
+   "level": 23,
+   "zutaten": [
+    [
+     "Gehärtetes Leder",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 145,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Hose (leicht)",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Jägerhose",
+   "level": 38,
+   "zutaten": [
+    [
+     "Moorleder",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 235,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Hose (leicht)",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Jägerhose",
+   "level": 48,
+   "zutaten": [
+    [
+     "Splitterleder",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 370,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Hose (leicht)",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Jägerhose",
+   "level": 68,
+   "zutaten": [
+    [
+     "Urleder",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 580,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Rock (Stoff)",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Magierrock",
+   "level": 13,
+   "zutaten": [
+    [
+     "Grobtuch",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 80,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Rock (Stoff)",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Magierrock",
+   "level": 23,
+   "zutaten": [
+    [
+     "Feintuch",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 130,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Rock (Stoff)",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Magierrock",
+   "level": 38,
+   "zutaten": [
+    [
+     "Mondtuch",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 205,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Rock (Stoff)",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Magierrock",
+   "level": 48,
+   "zutaten": [
+    [
+     "Splittertuch",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 325,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Rock (Stoff)",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Magierrock",
+   "level": 68,
+   "zutaten": [
+    [
+     "Weltentuch",
+     3
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 520,
+   "ticks": 11
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Wams (leicht)",
+   "stufe": "Training",
+   "t": 0,
+   "name": "Lederpanzer",
+   "level": 9,
+   "zutaten": [
+    [
+     "Raues Leder",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 70,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Wams (leicht)",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Jägerwams",
+   "level": 18,
+   "zutaten": [
+    [
+     "Weiches Leder",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 110,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Wams (leicht)",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Jägerwams",
+   "level": 28,
+   "zutaten": [
+    [
+     "Gehärtetes Leder",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 190,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Wams (leicht)",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Jägerwams",
+   "level": 43,
+   "zutaten": [
+    [
+     "Moorleder",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 310,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Wams (leicht)",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Jägerwams",
+   "level": 53,
+   "zutaten": [
+    [
+     "Splitterleder",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 490,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Wams (leicht)",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Jägerwams",
+   "level": 73,
+   "zutaten": [
+    [
+     "Urleder",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 770,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Robe (Stoff)",
+   "stufe": "Training",
+   "t": 0,
+   "name": "Magiepanzer",
+   "level": 9,
+   "zutaten": [
+    [
+     "Hanftuch",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 60,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Robe (Stoff)",
+   "stufe": "Einfach",
+   "t": 1,
+   "name": "Magierrobe",
+   "level": 18,
+   "zutaten": [
+    [
+     "Grobtuch",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 100,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Robe (Stoff)",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Magierrobe",
+   "level": 28,
+   "zutaten": [
+    [
+     "Feintuch",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 170,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Robe (Stoff)",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Magierrobe",
+   "level": 43,
+   "zutaten": [
+    [
+     "Mondtuch",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 270,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Robe (Stoff)",
+   "stufe": "Legendär",
+   "t": 4,
+   "name": "Magierrobe",
+   "level": 53,
+   "zutaten": [
+    [
+     "Splittertuch",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 430,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Robe (Stoff)",
+   "stufe": "Mythisch",
+   "t": 5,
+   "name": "Magierrobe",
+   "level": 73,
+   "zutaten": [
+    [
+     "Weltentuch",
+     4
+    ],
+    [
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 690,
+   "ticks": 13
+  }
+ ],
+ "vor": [
+  {
+   "art": "Pflücken (Flachsfeld)",
+   "name": "Flachs",
+   "level": 1,
+   "zutaten": "Flachsfeld in der Welt, kein Werkzeug",
+   "xp": 8,
+   "ticks": 3
+  },
+  {
+   "art": "Pflücken (Hanffeld)",
+   "name": "Hanf",
+   "level": 1,
+   "zutaten": "Hanffeld in der Welt, kein Werkzeug",
+   "xp": 8,
+   "ticks": 3
+  },
+  {
+   "art": "Sehne drehen (Werkbank)",
+   "name": "Bogensehne",
+   "level": 1,
+   "zutaten": "1 Flachs",
+   "xp": 4,
+   "ticks": 2
+  },
+  {
+   "art": "Garn drehen (Werkbank)",
+   "name": "Garn",
+   "level": 1,
+   "zutaten": "1 Hanf",
+   "xp": 4,
+   "ticks": 2
+  },
+  {
+   "art": "Schmelzen (Esse)",
+   "name": "Kupferbarren",
+   "level": 1,
+   "zutaten": "1 Kupfererz + 1 Stamm (Brennholz, jede Sorte ab Eichenstamm)",
+   "xp": 6,
+   "ticks": 3
+  },
+  {
+   "art": "Schmelzen (Esse)",
+   "name": "Eisenbarren",
+   "level": 10,
+   "zutaten": "2 Eisenerz + 1 Stamm (Brennholz, jede Sorte ab Eichenstamm)",
+   "xp": 20,
+   "ticks": 3
+  },
+  {
+   "art": "Schmelzen (Esse)",
+   "name": "Schwarzeisenbarren",
+   "level": 20,
+   "zutaten": "2 Schwarzeisenerz + 1 Stamm (Brennholz, jede Sorte ab Eichenstamm)",
+   "xp": 35,
+   "ticks": 3
+  },
+  {
+   "art": "Schmelzen (Esse)",
+   "name": "Sterneisenbarren",
+   "level": 35,
+   "zutaten": "2 Sterneisenerz + 1 Stamm (Brennholz, jede Sorte ab Tannenstamm)",
+   "xp": 60,
+   "ticks": 3
+  },
+  {
+   "art": "Schmelzen (Esse)",
+   "name": "Splittereisenbarren",
+   "level": 45,
+   "zutaten": "2 Splittereisenerz + 1 Stamm (Brennholz, jede Sorte ab Eibenstamm)",
+   "xp": 95,
+   "ticks": 3
+  },
+  {
+   "art": "Schmelzen (Esse)",
+   "name": "Ureisenbarren",
+   "level": 65,
+   "zutaten": "3 Ureisenerz + 1 Stamm (Brennholz, jede Sorte ab Moorweidenstamm)",
+   "xp": 225,
+   "ticks": 3
+  },
+  {
+   "art": "Gerben (Werkbank)",
+   "name": "Raues Leder",
+   "level": 1,
+   "zutaten": "1 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
+   "xp": 15,
+   "ticks": 3
+  },
+  {
+   "art": "Gerben (Werkbank)",
+   "name": "Weiches Leder",
+   "level": 10,
+   "zutaten": "1 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
+   "xp": 25,
+   "ticks": 3
+  },
+  {
+   "art": "Gerben (Werkbank)",
+   "name": "Gehärtetes Leder",
+   "level": 20,
+   "zutaten": "2 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
+   "xp": 45,
+   "ticks": 3
+  },
+  {
+   "art": "Gerben (Werkbank)",
+   "name": "Moorleder",
+   "level": 35,
+   "zutaten": "2 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
+   "xp": 75,
+   "ticks": 3
+  },
+  {
+   "art": "Gerben (Werkbank)",
+   "name": "Splitterleder",
+   "level": 45,
+   "zutaten": "3 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
+   "xp": 120,
+   "ticks": 3
+  },
+  {
+   "art": "Gerben (Werkbank)",
+   "name": "Urleder",
+   "level": 65,
+   "zutaten": "4 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
+   "xp": 190,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Hanftuch",
+   "level": 1,
+   "zutaten": "2 Garn",
+   "xp": 12,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Grobtuch",
+   "level": 10,
+   "zutaten": "3 Garn",
+   "xp": 22,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Feintuch",
+   "level": 20,
+   "zutaten": "4 Garn",
+   "xp": 40,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Mondtuch",
+   "level": 35,
+   "zutaten": "5 Garn",
+   "xp": 65,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Splittertuch",
+   "level": 45,
+   "zutaten": "6 Garn",
+   "xp": 105,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Weltentuch",
+   "level": 65,
+   "zutaten": "8 Garn",
+   "xp": 170,
+   "ticks": 3
+  }
+ ],
+ "proh": [
+  {
+   "stufe": "Training",
+   "rezept": "Lederpanzer (Wams (leicht))",
+   "xph": 34900
+  },
+  {
+   "stufe": "Einfach",
+   "rezept": "Eisenwacht (Brustpanzer (schwer))",
+   "xph": 86400
+  },
+  {
+   "stufe": "Selten",
+   "rezept": "Eisenwacht (Brustpanzer (schwer))",
+   "xph": 149000
+  },
+  {
+   "stufe": "Episch",
+   "rezept": "Eisenwacht (Brustpanzer (schwer))",
+   "xph": 248400
+  },
+  {
+   "stufe": "Legendär",
+   "rezept": "Eisenwacht (Brustpanzer (schwer))",
+   "xph": 397400
+  },
+  {
+   "stufe": "Mythisch",
+   "rezept": "Eisenwacht (Brustpanzer (schwer))",
+   "xph": 892100
+  }
+ ],
+ "zeiten": {
+  "10": 0.0,
+  "20": 0.1,
+  "35": 0.2,
+  "45": 0.3,
+  "65": 1.1,
+  "99": 13.1
+ },
+ "sammeln": {
+  "10": 2000,
+  "20": 6000,
+  "35": 32000,
+  "45": 87000,
+  "65": 637000,
+  "99": 18465000
+ },
+ "kurve": {
+  "10": 981,
+  "20": 3800,
+  "35": 19045,
+  "45": 52285,
+  "65": 382014,
+  "99": 11079266
+ }
+}

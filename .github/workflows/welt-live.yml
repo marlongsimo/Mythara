@@ -8,12 +8,13 @@ on:
   workflow_dispatch:
     inputs:
       quellen:
-        description: "Arbeitszweige (durch Leerzeichen getrennt; leer = Standard)"
+        description: "Arbeitszweige (durch Leerzeichen getrennt; leer = nichts einmischen, nur neu bauen)"
         required: false
         default: ""
 
 permissions:
   contents: write
+  checks: read   # Zweige nur mit grünem Lauf von „Tests“ zusammenführen (#22)
 
 concurrency:
   group: welt-live

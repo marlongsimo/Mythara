@@ -1,0 +1,46 @@
+{
+ "start": [
+  [
+   16,
+   24
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "kaesekeller_hinauf",
+   "art": "eingang",
+   "x": 16,
+   "y": 26.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinauf in die Käserei.",
+    "tat": "kaesekeller_hinauf",
+    "knopf": "Hinauf",
+    "ziel": [
+     7193.5,
+     6001.6
+    ]
+   }
+  },
+  {
+   "id": "kaeseregal",
+   "art": "lesen",
+   "x": 16,
+   "y": 11.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Regale mit den Käselaiben. Manche brauchen noch Wochen.",
+    "questobjekt": "kaeseregal"
+   }
+  }
+ ]
+}

@@ -1,0 +1,414 @@
+{
+ "hinweis": "Phase 10 (Welt #82): NPC-Plätze, Fischplätze, Adern und Eiben als Vorschlag (Weltfelder).",
+ "orte": {
+  "suedstrasse": [
+   6446,
+   6770
+  ],
+  "kielmund": [
+   6426,
+   7314
+  ],
+  "moewenbucht": [
+   6214,
+   7160
+  ],
+  "kraeuterhof": [
+   6418,
+   7064
+  ],
+  "leuchtturm": [
+   6176,
+   7034
+  ],
+  "wrack": [
+   6282,
+   7262
+  ],
+  "klippenhoehlen": [
+   6180,
+   7090
+  ],
+  "mangroven": [
+   6508,
+   7590
+  ]
+ },
+ "npc": [
+  {
+   "id": "wache_suedstrasse",
+   "rolle": "Wache an der Südstraße (keine Sperre)",
+   "x": 6444,
+   "y": 6770
+  },
+  {
+   "id": "zunftfischer",
+   "rolle": "Meisterfischer der Zunft",
+   "x": 6390.5,
+   "y": 7352
+  },
+  {
+   "id": "fischerzunft_wache",
+   "rolle": "Wache am Tor der Fischerzunft (ab Stufe 60)",
+   "x": 6403.5,
+   "y": 7354.5
+  },
+  {
+   "id": "hafenmeister",
+   "rolle": "Hafenmeister",
+   "x": 6383,
+   "y": 7314
+  },
+  {
+   "id": "wirtin_ankerkraut",
+   "rolle": "Taverne",
+   "x": 6437,
+   "y": 7298.4
+  },
+  {
+   "id": "fischhaendler",
+   "rolle": "Fischmarkt",
+   "x": 6422,
+   "y": 7322.8
+  },
+  {
+   "id": "bankier_kielmund",
+   "rolle": "Bank",
+   "x": 6452,
+   "y": 7298
+  },
+  {
+   "id": "schmied_kielmund",
+   "rolle": "Werkstatt",
+   "x": 6451,
+   "y": 7326
+  },
+  {
+   "id": "schiffbauer",
+   "rolle": "Werft",
+   "x": 6380,
+   "y": 7330
+  },
+  {
+   "id": "leuchtturmwaerter",
+   "rolle": "Leuchtturmwärter",
+   "x": 6188,
+   "y": 7037
+  },
+  {
+   "id": "fischerin_moewenbucht",
+   "rolle": "Fischerin",
+   "x": 6217,
+   "y": 7163
+  },
+  {
+   "id": "raeucherer",
+   "rolle": "Räucherhütte",
+   "x": 6216.5,
+   "y": 7168.6
+  },
+  {
+   "id": "kraeuterbaeuerin",
+   "rolle": "Kräuterhof",
+   "x": 6419,
+   "y": 7065
+  }
+ ],
+ "fischplaetze": [
+  {
+   "id": "fischplatz_kai",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 6383.5,
+   "y": 7310.5,
+   "stehplatz": [
+    6384.5,
+    7310.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_1",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6386.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6386.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_2",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6384.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6384.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_3",
+   "fisch": "klippenbarsch",
+   "stufe": 35,
+   "x": 6382.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6382.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_4",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6380.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6380.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_5",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6378.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6378.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_fang_6",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 6377.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6377.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_silberbarsch_1",
+   "fisch": "silberbarsch",
+   "stufe": 70,
+   "x": 6375.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6375.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_silberbarsch_2",
+   "fisch": "silberbarsch",
+   "stufe": 70,
+   "x": 6374.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6374.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_sturmhecht_1",
+   "fisch": "sturmhecht",
+   "stufe": 80,
+   "x": 6373.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6373.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_sturmhecht_2",
+   "fisch": "sturmhecht",
+   "stufe": 80,
+   "x": 6372.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6372.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischerzunft_tiefseeaal_1",
+   "fisch": "tiefseeaal",
+   "stufe": 90,
+   "x": 6371.5,
+   "y": 7350.5,
+   "stehplatz": [
+    6371.5,
+    7351.5
+   ]
+  },
+  {
+   "id": "fischerzunft_tiefseeaal_2",
+   "fisch": "tiefseeaal",
+   "stufe": 90,
+   "x": 6370.5,
+   "y": 7353.5,
+   "stehplatz": [
+    6370.5,
+    7352.5
+   ]
+  },
+  {
+   "id": "fischplatz_klippe",
+   "fisch": "klippenbarsch",
+   "stufe": 35,
+   "x": 6150,
+   "y": 7105,
+   "stehplatz": [
+    6150.5,
+    7104.5
+   ]
+  },
+  {
+   "id": "fischplatz_moewenbucht",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 6189.5,
+   "y": 7158.5,
+   "stehplatz": [
+    6190.5,
+    7158.5
+   ]
+  },
+  {
+   "id": "fischplatz_wrack",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6273.5,
+   "y": 7258.5,
+   "stehplatz": [
+    6274,
+    7258
+   ]
+  },
+  {
+   "id": "fischplatz_mangroven",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6506,
+   "y": 7590,
+   "stehplatz": [
+    6505,
+    7590
+   ]
+  }
+ ],
+ "adern": [
+  {
+   "id": "kupfer_klippe_1",
+   "art": "kupfer",
+   "x": 6184.5,
+   "y": 7080.5
+  },
+  {
+   "id": "kupfer_klippe_2",
+   "art": "kupfer",
+   "x": 6186.5,
+   "y": 7096.5
+  },
+  {
+   "id": "eisen_klippe_1",
+   "art": "eisen",
+   "x": 6160.5,
+   "y": 7036.5
+  },
+  {
+   "id": "eisen_klippe_2",
+   "art": "eisen",
+   "x": 6166.5,
+   "y": 7032.5
+  }
+ ],
+ "eiben": [
+  {
+   "id": "eibe_kueste_1",
+   "art": "eibe",
+   "x": 6372,
+   "y": 7040
+  },
+  {
+   "id": "eibe_kueste_2",
+   "art": "eibe",
+   "x": 6382,
+   "y": 7030
+  },
+  {
+   "id": "eibe_kueste_3",
+   "art": "eibe",
+   "x": 6392,
+   "y": 7046
+  },
+  {
+   "id": "eibe_kueste_4",
+   "art": "eibe",
+   "x": 6366,
+   "y": 7056
+  },
+  {
+   "id": "eibe_kueste_5",
+   "art": "eibe",
+   "x": 6380,
+   "y": 7062
+  }
+ ],
+ "fischerzunft": {
+  "zunft": "fischerzunft",
+  "name": "Fischerzunft",
+  "ort": "Kielmund",
+  "beruf": "fischen",
+  "ab": 60,
+  "flaeche": [
+   6365,
+   7345,
+   6402,
+   7360
+  ],
+  "tor": [
+   6399,
+   7350,
+   6401,
+   7354
+  ],
+  "wache": [
+   6403.5,
+   7353
+  ],
+  "bankkiste": {
+   "id": "fischerzunft_bankkiste",
+   "x": 6399,
+   "y": 7359
+  },
+  "stationen": [
+   {
+    "id": "raeucherhuette_fischerzunft",
+    "station": "raeucherhuette",
+    "x": 6396,
+    "y": 7351
+   }
+  ],
+  "fang": [
+   "fischerzunft_fang_1",
+   "fischerzunft_fang_2",
+   "fischerzunft_fang_3",
+   "fischerzunft_fang_4",
+   "fischerzunft_fang_5",
+   "fischerzunft_fang_6",
+   "fischerzunft_silberbarsch_1",
+   "fischerzunft_silberbarsch_2",
+   "fischerzunft_sturmhecht_1",
+   "fischerzunft_sturmhecht_2",
+   "fischerzunft_tiefseeaal_1",
+   "fischerzunft_tiefseeaal_2"
+  ]
+ }
+}

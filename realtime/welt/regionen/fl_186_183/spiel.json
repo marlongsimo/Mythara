@@ -1,0 +1,116 @@
+{
+ "start": [
+  [
+   240,
+   240
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 444,
+    "y0": 13,
+    "x1": 445,
+    "y1": 14
+   },
+   {
+    "art": "rechteck",
+    "x0": 439,
+    "y0": 10,
+    "x1": 440,
+    "y1": 11
+   },
+   {
+    "art": "rechteck",
+    "x0": 443,
+    "y0": 7,
+    "x1": 444,
+    "y1": 8
+   }
+  ],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "kohlstatt_bankkiste",
+   "art": "lesen",
+   "x": 472,
+   "y": 26.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Köhler – rußig, aber dicht. Was du einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "kohlstatt",
+   "art": "lesen",
+   "x": 469.5,
+   "y": 25.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Kohlstatt. Die Meiler qualmen Tag und Nacht, und alles hier riecht nach Rauch und Harz."
+   }
+  },
+  {
+   "id": "gehoeft",
+   "art": "lesen",
+   "x": 198,
+   "y": 381.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein einsames Gehöft am Rand des Grenzlands. Der Bauer grüßt mit der Mistgabel."
+   }
+  },
+  {
+   "id": "muehle_am_bach",
+   "art": "lesen",
+   "x": 275,
+   "y": 424.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine kleine Mühle am Bach. Das Rad dreht sich gemächlich, drinnen klappert der Mahlstein."
+   }
+  },
+  {
+   "id": "koehlerhuette",
+   "art": "lesen",
+   "x": 233,
+   "y": 406.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Köhlerhütte. Der Meiler qualmt, und alles hier riecht nach Rauch und Harz."
+   }
+  },
+  {
+   "id": "schrein",
+   "art": "lesen",
+   "x": 468,
+   "y": 445.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein kleiner Schrein am Weg. Jemand hat frische Blumen und einen Splitter hineingelegt."
+   }
+  },
+  {
+   "id": "ruine",
+   "art": "lesen",
+   "x": 368,
+   "y": 376.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Ruine eines Wachhauses der alten Wacht. Im Mörtel stecken Pfeilspitzen."
+   }
+  }
+ ]
+}

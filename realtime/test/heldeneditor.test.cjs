@@ -8,7 +8,7 @@ const BILD = process.env.BILD || '';
   const b = await chromium.launch({ args: ['--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessPermissionPrompt'] });
   const kontext = async () => { const c = await b.newContext({ viewport: { width: 1280, height: 800 } });
     await c.route('http://localhost:8765/**', (r) => { let u = new URL(r.request().url()).pathname; if (u.endsWith('/')) u += 'index.html'; const fl = path.join(WURZEL, decodeURIComponent(u)); if (!fs.existsSync(fl)) return r.fulfill({ status: 404, body: '' }); r.fulfill({ status: 200, body: fs.readFileSync(fl), headers: { 'content-type': TYP[path.extname(fl)] || 'application/octet-stream' } }); });
-    await c.route('https://**', (r) => r.abort()); await c.addInitScript(() => { sessionStorage.setItem('ez__gefragt', '1'); sessionStorage.setItem('ez__hilfe', '1'); }); return c; };
+    await c.route('https://**', (r) => r.abort()); await c.addInitScript(() => { sessionStorage.setItem('ez__gefragt', '1'); sessionStorage.setItem('ez__hilfe', '1'); sessionStorage.setItem('ez__lager', '1'); /* wie nach „Ins Spiel“ auf der Willkommensseite */ }); return c; };
   const fehler = []; const c1 = await kontext(), p = await c1.newPage(); p.on('pageerror', (e) => fehler.push(String(e)));
   /* 1. ohne Helden ins Spiel → Heldeneditor */
   await p.goto('http://localhost:8765/echtzeit/'); await p.waitForURL(/held\.html/, { timeout: 20000 }).catch(() => {});

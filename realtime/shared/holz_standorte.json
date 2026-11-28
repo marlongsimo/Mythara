@@ -1,0 +1,2730 @@
+{
+ "_hinweis": "Holzfäller-Bäume (Weltfelder). Erzeugt mit werkzeug/welt/lichtungen.mjs-Vorbereitung; Lichtungen und Feldwege trägt werkzeug/welt/lichtungen.mjs in die Gebiete ein.",
+ "lichtungen": [
+  {
+   "name": "Lichtung am Westrand",
+   "baeume": [
+    {
+     "id": "eiche_1",
+     "art": "eiche",
+     "x": 6369.5,
+     "y": 6429.5,
+     "region": "nordwald"
+    },
+    {
+     "id": "eiche_2",
+     "art": "eiche",
+     "x": 6369.5,
+     "y": 6433.5,
+     "region": "nordwald"
+    },
+    {
+     "id": "eiche_3",
+     "art": "eiche",
+     "x": 6373.5,
+     "y": 6429.5,
+     "region": "nordwald"
+    },
+    {
+     "id": "eiche_4",
+     "art": "eiche",
+     "x": 6373.5,
+     "y": 6425.5,
+     "region": "nordwald"
+    }
+   ]
+  },
+  {
+   "name": "Lichtung im Nordsaum",
+   "baeume": [
+    {
+     "id": "eiche_5",
+     "art": "eiche",
+     "x": 6443.5,
+     "y": 6384.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "eiche_6",
+     "art": "eiche",
+     "x": 6446.5,
+     "y": 6387.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "eiche_7",
+     "art": "eiche",
+     "x": 6438.5,
+     "y": 6382.5,
+     "region": "nordsaum"
+    }
+   ]
+  },
+  {
+   "name": "Lichtung am Kreuzwald",
+   "baeume": [
+    {
+     "id": "eiche_8",
+     "art": "eiche",
+     "x": 6408.5,
+     "y": 6479.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eiche_9",
+     "art": "eiche",
+     "x": 6408.5,
+     "y": 6475.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eiche_10",
+     "art": "eiche",
+     "x": 6411.5,
+     "y": 6481.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eiche_11",
+     "art": "eiche",
+     "x": 6411.5,
+     "y": 6477.5,
+     "region": "waldweg"
+    }
+   ]
+  },
+  {
+   "name": "Lichtung im östlichen Nordsaum",
+   "baeume": [
+    {
+     "id": "eiche_12",
+     "art": "eiche",
+     "x": 6503.5,
+     "y": 6380.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "eiche_13",
+     "art": "eiche",
+     "x": 6496.5,
+     "y": 6380.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "eiche_14",
+     "art": "eiche",
+     "x": 6499.5,
+     "y": 6382.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "tanne_1",
+     "art": "tanne",
+     "x": 6508.5,
+     "y": 6385.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "tanne_2",
+     "art": "tanne",
+     "x": 6499.5,
+     "y": 6378.5,
+     "region": "nordsaum"
+    }
+   ]
+  },
+  {
+   "name": "Lichtung südlich der Waldmark",
+   "baeume": [
+    {
+     "id": "eiche_15",
+     "art": "eiche",
+     "x": 6475.5,
+     "y": 6503.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eiche_16",
+     "art": "eiche",
+     "x": 6471.5,
+     "y": 6503.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eiche_17",
+     "art": "eiche",
+     "x": 6473.5,
+     "y": 6500.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "tanne_3",
+     "art": "tanne",
+     "x": 6477.5,
+     "y": 6500.5,
+     "region": "waldweg"
+    }
+   ]
+  },
+  {
+   "name": "Tannenlichtung im Kreuzwald",
+   "baeume": [
+    {
+     "id": "tanne_4",
+     "art": "tanne",
+     "x": 6498.5,
+     "y": 6529.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "tanne_5",
+     "art": "tanne",
+     "x": 6502.5,
+     "y": 6525.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "tanne_6",
+     "art": "tanne",
+     "x": 6504.5,
+     "y": 6529.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eibe_1",
+     "art": "eibe",
+     "x": 6498.5,
+     "y": 6525.5,
+     "region": "waldweg"
+    }
+   ]
+  },
+  {
+   "name": "Moorweiden im Rabenmoor 1",
+   "baeume": [
+    {
+     "id": "moorweide_1",
+     "art": "moorweide",
+     "x": 6332.5,
+     "y": 6691.5,
+     "region": "rabenmoor"
+    },
+    {
+     "id": "moorweide_2",
+     "art": "moorweide",
+     "x": 6336.5,
+     "y": 6691.5,
+     "region": "rabenmoor"
+    },
+    {
+     "id": "moorweide_3",
+     "art": "moorweide",
+     "x": 6331.5,
+     "y": 6695.5,
+     "region": "rabenmoor"
+    }
+   ]
+  },
+  {
+   "name": "Moorweiden im Rabenmoor 2",
+   "baeume": [
+    {
+     "id": "moorweide_4",
+     "art": "moorweide",
+     "x": 6378.5,
+     "y": 6740.5,
+     "region": "rabenmoor"
+    },
+    {
+     "id": "moorweide_5",
+     "art": "moorweide",
+     "x": 6382.5,
+     "y": 6744.5,
+     "region": "rabenmoor"
+    }
+   ]
+  },
+  {
+   "name": "Moorweiden im Rabenmoor 3",
+   "baeume": [
+    {
+     "id": "moorweide_6",
+     "art": "moorweide",
+     "x": 6381.5,
+     "y": 6663.5,
+     "region": "rabenmoor"
+    },
+    {
+     "id": "moorweide_7",
+     "art": "moorweide",
+     "x": 6384.5,
+     "y": 6661.5,
+     "region": "rabenmoor"
+    },
+    {
+     "id": "moorweide_8",
+     "art": "moorweide",
+     "x": 6380.5,
+     "y": 6659.5,
+     "region": "rabenmoor"
+    }
+   ]
+  },
+  {
+   "name": "Hain des Waldgottes",
+   "x": 6360.5,
+   "y": 6446.5,
+   "r": 14,
+   "baeume": [
+    {
+     "id": "waldgott_1",
+     "art": "waldgott",
+     "x": 6350.5,
+     "y": 6442.5,
+     "region": "nordwald"
+    }
+   ]
+  },
+  {
+   "name": "Linde im Steinring",
+   "x": 6452.5,
+   "y": 6679.5,
+   "r": 6,
+   "baeume": [
+    {
+     "id": "linde_totholz_1",
+     "art": "linde_totholz",
+     "x": 6446.5,
+     "y": 6677.5,
+     "region": "weidenhain"
+    }
+   ]
+  },
+  {
+   "name": "Eichen am Heckenhof",
+   "ort": "heckenhof",
+   "baeume": [
+    {
+     "id": "eichen_am_heckenhof_eiche_1",
+     "art": "eiche",
+     "x": 6497.5,
+     "y": 6797.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "eichen_am_heckenhof_eiche_2",
+     "art": "eiche",
+     "x": 6493.5,
+     "y": 6797.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "eichen_am_heckenhof_eiche_3",
+     "art": "eiche",
+     "x": 6493.5,
+     "y": 6792.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "eichen_am_heckenhof_eiche_4",
+     "art": "eiche",
+     "x": 6498.5,
+     "y": 6792.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Hain an der Summweide",
+   "ort": "summweide",
+   "baeume": [
+    {
+     "id": "hain_an_der_summweide_eiche_1",
+     "art": "eiche",
+     "x": 6418.5,
+     "y": 6888.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "hain_an_der_summweide_eiche_2",
+     "art": "eiche",
+     "x": 6413.5,
+     "y": 6888.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "hain_an_der_summweide_tanne_3",
+     "art": "tanne",
+     "x": 6414.5,
+     "y": 6883.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "hain_an_der_summweide_tanne_4",
+     "art": "tanne",
+     "x": 6419.5,
+     "y": 6883.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Eichen am Halben Weg",
+   "ort": "halber_weg",
+   "baeume": [
+    {
+     "id": "eichen_am_halben_weg_eiche_1",
+     "art": "eiche",
+     "x": 6474.5,
+     "y": 6994.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "eichen_am_halben_weg_eiche_2",
+     "art": "eiche",
+     "x": 6468.5,
+     "y": 6992.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "eichen_am_halben_weg_tanne_3",
+     "art": "tanne",
+     "x": 6473.5,
+     "y": 6988.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Holzfällerschlag am Erlengrund",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "erlengrund_eiche_1",
+     "art": "eiche",
+     "x": 6378.5,
+     "y": 6992.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "erlengrund_eiche_2",
+     "art": "eiche",
+     "x": 6384.5,
+     "y": 6990.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "erlengrund_tanne_3",
+     "art": "tanne",
+     "x": 6392.5,
+     "y": 6989.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "erlengrund_tanne_4",
+     "art": "tanne",
+     "x": 6398.5,
+     "y": 6990.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Tannen hinter der Sägemühle",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "tannen_hinter_der_sagemuhle_tanne_1",
+     "art": "tanne",
+     "x": 6395.5,
+     "y": 7024.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "tannen_hinter_der_sagemuhle_tanne_2",
+     "art": "tanne",
+     "x": 6391.5,
+     "y": 7024.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "tannen_hinter_der_sagemuhle_tanne_3",
+     "art": "tanne",
+     "x": 6391.5,
+     "y": 7019.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "tannen_hinter_der_sagemuhle_eibe_4",
+     "art": "eibe",
+     "x": 6396.5,
+     "y": 7019.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Eibenhain beim Kräuterhof",
+   "ort": "kraeuterhof",
+   "baeume": [
+    {
+     "id": "eibenhain_beim_krauterhof_eibe_1",
+     "art": "eibe",
+     "x": 6422.5,
+     "y": 7048.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eibenhain_beim_krauterhof_eibe_2",
+     "art": "eibe",
+     "x": 6417.5,
+     "y": 7048.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eibenhain_beim_krauterhof_eibe_3",
+     "art": "eibe",
+     "x": 6417.5,
+     "y": 7043.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eibenhain_beim_krauterhof_eibe_4",
+     "art": "eibe",
+     "x": 6422.5,
+     "y": 7044.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Eiben am Erlengrund",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "eiben_am_erlengrund_eibe_1",
+     "art": "eibe",
+     "x": 6414.5,
+     "y": 7015.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eiben_am_erlengrund_eibe_2",
+     "art": "eibe",
+     "x": 6409.5,
+     "y": 7015.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eiben_am_erlengrund_eibe_3",
+     "art": "eibe",
+     "x": 6409.5,
+     "y": 7010.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eiben_am_erlengrund_moorweide_4",
+     "art": "moorweide",
+     "x": 6414.5,
+     "y": 7010.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Tannen am Kreuzstein",
+   "ort": "kreuzstein",
+   "baeume": [
+    {
+     "id": "tannen_am_kreuzstein_tanne_1",
+     "art": "tanne",
+     "x": 6495.5,
+     "y": 7097.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "tannen_am_kreuzstein_tanne_2",
+     "art": "tanne",
+     "x": 6491.5,
+     "y": 7096.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "tannen_am_kreuzstein_tanne_3",
+     "art": "tanne",
+     "x": 6491.5,
+     "y": 7091.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "tannen_am_kreuzstein_eiche_4",
+     "art": "eiche",
+     "x": 6496.5,
+     "y": 7092.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Moorweiden am Schilfsee",
+   "ort": "schilfsee",
+   "baeume": [
+    {
+     "id": "moorweiden_am_schilfsee_moorweide_1",
+     "art": "moorweide",
+     "x": 6461.5,
+     "y": 7175.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "moorweiden_am_schilfsee_moorweide_2",
+     "art": "moorweide",
+     "x": 6455.5,
+     "y": 7173.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "moorweiden_am_schilfsee_moorweide_3",
+     "art": "moorweide",
+     "x": 6460.5,
+     "y": 7169.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Wäldchen bei Lehmfurt",
+   "ort": "lehmfurt",
+   "baeume": [
+    {
+     "id": "waldchen_bei_lehmfurt_eiche_1",
+     "art": "eiche",
+     "x": 6450.5,
+     "y": 7250.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "waldchen_bei_lehmfurt_tanne_2",
+     "art": "tanne",
+     "x": 6445.5,
+     "y": 7248.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "waldchen_bei_lehmfurt_tanne_3",
+     "art": "tanne",
+     "x": 6449.5,
+     "y": 7244.5,
+     "region": "fl_201_225"
+    }
+   ]
+  },
+  {
+   "name": "Eichen am Distelhof",
+   "ort": "distelhof",
+   "baeume": [
+    {
+     "id": "eichen_am_distelhof_eiche_1",
+     "art": "eiche",
+     "x": 6564.5,
+     "y": 6950.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "eichen_am_distelhof_eiche_2",
+     "art": "eiche",
+     "x": 6558.5,
+     "y": 6948.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "eichen_am_distelhof_tanne_3",
+     "art": "tanne",
+     "x": 6563.5,
+     "y": 6944.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Jägerschlag am Fährtenlager",
+   "ort": "faehrtenlager",
+   "baeume": [
+    {
+     "id": "jagerschlag_am_fahrtenlager_tanne_1",
+     "art": "tanne",
+     "x": 6627.5,
+     "y": 6833.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "jagerschlag_am_fahrtenlager_tanne_2",
+     "art": "tanne",
+     "x": 6623.5,
+     "y": 6832.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "jagerschlag_am_fahrtenlager_eibe_3",
+     "art": "eibe",
+     "x": 6623.5,
+     "y": 6827.5,
+     "region": "fl_201_211"
+    },
+    {
+     "id": "jagerschlag_am_fahrtenlager_eibe_4",
+     "art": "eibe",
+     "x": 6628.5,
+     "y": 6828.5,
+     "region": "fl_201_211"
+    }
+   ]
+  },
+  {
+   "name": "Eichen am Lämmerhang",
+   "ort": "laemmerhang",
+   "baeume": [
+    {
+     "id": "eichen_am_lammerhang_eiche_1",
+     "art": "eiche",
+     "x": 6311.5,
+     "y": 7095.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eichen_am_lammerhang_eiche_2",
+     "art": "eiche",
+     "x": 6306.5,
+     "y": 7093.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eichen_am_lammerhang_eiche_3",
+     "art": "eiche",
+     "x": 6310.5,
+     "y": 7089.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Gehölz bei Kielmund",
+   "ort": "kielmund",
+   "baeume": [
+    {
+     "id": "geholz_bei_kielmund_eiche_1",
+     "art": "eiche",
+     "x": 6356.5,
+     "y": 7316.5,
+     "region": "fl_186_225"
+    },
+    {
+     "id": "geholz_bei_kielmund_tanne_2",
+     "art": "tanne",
+     "x": 6351.5,
+     "y": 7315.5,
+     "region": "fl_186_225"
+    },
+    {
+     "id": "geholz_bei_kielmund_tanne_3",
+     "art": "tanne",
+     "x": 6351.5,
+     "y": 7310.5,
+     "region": "fl_186_225"
+    },
+    {
+     "id": "geholz_bei_kielmund_eibe_4",
+     "art": "eibe",
+     "x": 6356.5,
+     "y": 7311.5,
+     "region": "fl_186_225"
+    }
+   ]
+  },
+  {
+   "name": "Eiben an der Möwenbucht",
+   "ort": "moewenbucht",
+   "baeume": [
+    {
+     "id": "eiben_an_der_mowenbucht_eibe_1",
+     "art": "eibe",
+     "x": 6214.5,
+     "y": 7144.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eiben_an_der_mowenbucht_eibe_2",
+     "art": "eibe",
+     "x": 6208.5,
+     "y": 7142.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eiben_an_der_mowenbucht_eiche_3",
+     "art": "eiche",
+     "x": 6213.5,
+     "y": 7138.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Eichen bei Haferstedt",
+   "ort": "haferstedt",
+   "baeume": [
+    {
+     "id": "eichen_bei_haferstedt_eiche_1",
+     "art": "eiche",
+     "x": 6259.5,
+     "y": 6964.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eichen_bei_haferstedt_eiche_2",
+     "art": "eiche",
+     "x": 6254.5,
+     "y": 6964.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eichen_bei_haferstedt_eiche_3",
+     "art": "eiche",
+     "x": 6255.5,
+     "y": 6959.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eichen_bei_haferstedt_tanne_4",
+     "art": "tanne",
+     "x": 6259.5,
+     "y": 6959.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Gehölz nördlich von Haferstedt",
+   "ort": "haferstedt",
+   "baeume": [
+    {
+     "id": "geholz_nordlich_von_haferstedt_tanne_1",
+     "art": "tanne",
+     "x": 6231.5,
+     "y": 6939.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "geholz_nordlich_von_haferstedt_eibe_2",
+     "art": "eibe",
+     "x": 6226.5,
+     "y": 6936.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "geholz_nordlich_von_haferstedt_eibe_3",
+     "art": "eibe",
+     "x": 6231.5,
+     "y": 6933.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Eiben an der Netzbucht",
+   "ort": "netzbucht",
+   "baeume": [
+    {
+     "id": "eiben_an_der_netzbucht_eibe_1",
+     "art": "eibe",
+     "x": 6164.5,
+     "y": 6921.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eiben_an_der_netzbucht_eibe_2",
+     "art": "eibe",
+     "x": 6158.5,
+     "y": 6918.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "eiben_an_der_netzbucht_eiche_3",
+     "art": "eiche",
+     "x": 6163.5,
+     "y": 6915.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Weltenbaum in der Oase",
+   "ort": "oase",
+   "baeume": [
+    {
+     "id": "weltenbaum_oase",
+     "art": "weltenbaum",
+     "x": 7263.5,
+     "y": 6796.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Kernbäume an der Quelle",
+   "ort": "sandquell",
+   "baeume": [
+    {
+     "id": "kernbaume_an_der_quelle_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7382.5,
+     "y": 6702.5,
+     "region": "fl_216_198"
+    },
+    {
+     "id": "kernbaume_an_der_quelle_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7376.5,
+     "y": 6700.5,
+     "region": "fl_216_198"
+    },
+    {
+     "id": "kernbaume_an_der_quelle_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7381.5,
+     "y": 6697.5,
+     "region": "fl_216_198"
+    }
+   ]
+  },
+  {
+   "name": "Bäume im Flusstal bei Glutbrunn",
+   "ort": "glutbrunn",
+   "baeume": [
+    {
+     "id": "baume_im_flusstal_bei_glutbrunn_moorweide_1",
+     "art": "moorweide",
+     "x": 7209.5,
+     "y": 6938.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_im_flusstal_bei_glutbrunn_moorweide_2",
+     "art": "moorweide",
+     "x": 7205.5,
+     "y": 6937.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_im_flusstal_bei_glutbrunn_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7205.5,
+     "y": 6932.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_im_flusstal_bei_glutbrunn_kernbaum_4",
+     "art": "kernbaum",
+     "x": 7210.5,
+     "y": 6933.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Bäume an der Siederei",
+   "ort": "salzpfanne",
+   "baeume": [
+    {
+     "id": "baume_an_der_siederei_moorweide_1",
+     "art": "moorweide",
+     "x": 7311.5,
+     "y": 6629.5,
+     "region": "fl_216_198"
+    },
+    {
+     "id": "baume_an_der_siederei_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7305.5,
+     "y": 6627.5,
+     "region": "fl_216_198"
+    },
+    {
+     "id": "baume_an_der_siederei_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7310.5,
+     "y": 6623.5,
+     "region": "fl_216_198"
+    }
+   ]
+  },
+  {
+   "name": "Kernbäume am Nordstrand",
+   "ort": "nordstrand",
+   "baeume": [
+    {
+     "id": "kernbaume_am_nordstrand_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7469.5,
+     "y": 6499.5,
+     "region": "fl_231_198"
+    },
+    {
+     "id": "kernbaume_am_nordstrand_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7464.5,
+     "y": 6497.5,
+     "region": "fl_231_198"
+    },
+    {
+     "id": "kernbaume_am_nordstrand_moorweide_3",
+     "art": "moorweide",
+     "x": 7468.5,
+     "y": 6493.5,
+     "region": "fl_231_198"
+    }
+   ]
+  },
+  {
+   "name": "Einsame Eibe hinter dem Heckenhof",
+   "ort": "heckenhof",
+   "baeume": [
+    {
+     "id": "einsame_eibe_hinter_dem_heckenhof_eibe_1",
+     "art": "eibe",
+     "x": 6535.5,
+     "y": 6803.5,
+     "region": "fl_201_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Alte Moorweide im Wiesengrund",
+   "ort": "summweide",
+   "baeume": [
+    {
+     "id": "alte_moorweide_im_wiesengrund_moorweide_1",
+     "art": "moorweide",
+     "x": 6441.5,
+     "y": 6864.5,
+     "region": "fl_201_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Kernbaum im Wald über Haferstedt",
+   "ort": "haferstedt",
+   "baeume": [
+    {
+     "id": "kernbaum_im_wald_uber_haferstedt_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6287.5,
+     "y": 6965.5,
+     "region": "fl_186_211"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Bergwald unter Steinhag",
+   "ort": "steinhag",
+   "baeume": [
+    {
+     "id": "bergwald_unter_steinhag_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6984.5,
+     "y": 5968.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "bergwald_unter_steinhag_kernbaum_2",
+     "art": "kernbaum",
+     "x": 6979.5,
+     "y": 5967.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "bergwald_unter_steinhag_eibe_3",
+     "art": "eibe",
+     "x": 6979.5,
+     "y": 5962.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "bergwald_unter_steinhag_eibe_4",
+     "art": "eibe",
+     "x": 6984.5,
+     "y": 5963.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Kernbäume an der Hohen Alm",
+   "ort": "alm",
+   "baeume": [
+    {
+     "id": "kernbaume_an_der_hohen_alm_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7219.5,
+     "y": 5997.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "kernbaume_an_der_hohen_alm_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7214.5,
+     "y": 5996.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "kernbaume_an_der_hohen_alm_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7215.5,
+     "y": 5991.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "kernbaume_an_der_hohen_alm_eibe_4",
+     "art": "eibe",
+     "x": 7220.5,
+     "y": 5992.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Spiegelsee",
+   "ort": "einsiedelei",
+   "baeume": [
+    {
+     "id": "baume_am_spiegelsee_eibe_1",
+     "art": "eibe",
+     "x": 7359.5,
+     "y": 5663.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_spiegelsee_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7354.5,
+     "y": 5661.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_spiegelsee_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7358.5,
+     "y": 5657.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Der alte Baum über dem Spiegelsee",
+   "ort": "einsiedelei",
+   "baeume": [
+    {
+     "id": "der_alte_baum_uber_dem_spiegelsee_weltenbaum_1",
+     "art": "weltenbaum",
+     "x": 7382.5,
+     "y": 5645.5,
+     "region": "fl_216_169"
+    }
+   ],
+   "einzeln": true,
+   "ohneWeg": true
+  },
+  {
+   "name": "Eichen und Tannen bei Steinhag",
+   "ort": "steinhag",
+   "baeume": [
+    {
+     "id": "eichen_und_tannen_bei_steinhag_eiche_1",
+     "art": "eiche",
+     "x": 6984.5,
+     "y": 5811.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "eichen_und_tannen_bei_steinhag_eiche_2",
+     "art": "eiche",
+     "x": 6979.5,
+     "y": 5810.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "eichen_und_tannen_bei_steinhag_tanne_3",
+     "art": "tanne",
+     "x": 6980.5,
+     "y": 5805.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "eichen_und_tannen_bei_steinhag_tanne_4",
+     "art": "tanne",
+     "x": 6984.5,
+     "y": 5806.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Eiben am Steinhagsee",
+   "ort": "steinhag",
+   "baeume": [
+    {
+     "id": "eiben_am_steinhagsee_eibe_1",
+     "art": "eibe",
+     "x": 6965.5,
+     "y": 5974.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "eiben_am_steinhagsee_eibe_2",
+     "art": "eibe",
+     "x": 6960.5,
+     "y": 5972.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "eiben_am_steinhagsee_moorweide_3",
+     "art": "moorweide",
+     "x": 6964.5,
+     "y": 5968.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 1)",
+   "ort": "hlweg_1",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_1_eiche_1",
+     "art": "eiche",
+     "x": 6926.5,
+     "y": 5875.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_1_tanne_2",
+     "art": "tanne",
+     "x": 6920.5,
+     "y": 5873.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_1_tanne_3",
+     "art": "tanne",
+     "x": 6925.5,
+     "y": 5869.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 3)",
+   "ort": "hlweg_3",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_3_tanne_1",
+     "art": "tanne",
+     "x": 7002.5,
+     "y": 5962.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_3_eibe_2",
+     "art": "eibe",
+     "x": 6997.5,
+     "y": 5959.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_3_eibe_3",
+     "art": "eibe",
+     "x": 7001.5,
+     "y": 5956.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 7)",
+   "ort": "hlweg_7",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_7_tanne_1",
+     "art": "tanne",
+     "x": 6849.5,
+     "y": 5785.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_7_eibe_2",
+     "art": "eibe",
+     "x": 6844.5,
+     "y": 5783.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_7_eibe_3",
+     "art": "eibe",
+     "x": 6848.5,
+     "y": 5779.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 9)",
+   "ort": "hlweg_9",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_9_eiche_1",
+     "art": "eiche",
+     "x": 6923.5,
+     "y": 5847.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_9_tanne_2",
+     "art": "tanne",
+     "x": 6918.5,
+     "y": 5845.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_9_tanne_3",
+     "art": "tanne",
+     "x": 6922.5,
+     "y": 5841.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 11)",
+   "ort": "hlweg_11",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_11_tanne_1",
+     "art": "tanne",
+     "x": 7118.5,
+     "y": 5845.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_11_eibe_2",
+     "art": "eibe",
+     "x": 7113.5,
+     "y": 5843.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_11_eibe_3",
+     "art": "eibe",
+     "x": 7117.5,
+     "y": 5839.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 13)",
+   "ort": "hlweg_13",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_13_eiche_1",
+     "art": "eiche",
+     "x": 7078.5,
+     "y": 5967.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_13_tanne_2",
+     "art": "tanne",
+     "x": 7073.5,
+     "y": 5965.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_13_tanne_3",
+     "art": "tanne",
+     "x": 7077.5,
+     "y": 5961.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 15)",
+   "ort": "hlweg_15",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_15_tanne_1",
+     "art": "tanne",
+     "x": 7150.5,
+     "y": 5980.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_15_eibe_2",
+     "art": "eibe",
+     "x": 7144.5,
+     "y": 5978.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_15_eibe_3",
+     "art": "eibe",
+     "x": 7149.5,
+     "y": 5974.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 17)",
+   "ort": "hlweg_17",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_17_eiche_1",
+     "art": "eiche",
+     "x": 6967.5,
+     "y": 5750.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_17_tanne_2",
+     "art": "tanne",
+     "x": 6962.5,
+     "y": 5748.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_17_tanne_3",
+     "art": "tanne",
+     "x": 6966.5,
+     "y": 5744.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 19)",
+   "ort": "hlweg_19",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_19_tanne_1",
+     "art": "tanne",
+     "x": 6981.5,
+     "y": 5649.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_19_eibe_2",
+     "art": "eibe",
+     "x": 6976.5,
+     "y": 5647.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_19_eibe_3",
+     "art": "eibe",
+     "x": 6980.5,
+     "y": 5643.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 21)",
+   "ort": "hlweg_21",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_21_eiche_1",
+     "art": "eiche",
+     "x": 7191.5,
+     "y": 5773.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_21_tanne_2",
+     "art": "tanne",
+     "x": 7186.5,
+     "y": 5771.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_21_tanne_3",
+     "art": "tanne",
+     "x": 7191.5,
+     "y": 5767.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 23)",
+   "ort": "hlweg_23",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_23_tanne_1",
+     "art": "tanne",
+     "x": 7287.5,
+     "y": 5720.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_23_eibe_2",
+     "art": "eibe",
+     "x": 7282.5,
+     "y": 5718.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_23_eibe_3",
+     "art": "eibe",
+     "x": 7286.5,
+     "y": 5714.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 25)",
+   "ort": "hlweg_25",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_25_eiche_1",
+     "art": "eiche",
+     "x": 7248.5,
+     "y": 5663.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_25_tanne_2",
+     "art": "tanne",
+     "x": 7243.5,
+     "y": 5661.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_25_tanne_3",
+     "art": "tanne",
+     "x": 7247.5,
+     "y": 5657.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 27)",
+   "ort": "hlweg_27",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_27_tanne_1",
+     "art": "tanne",
+     "x": 7269.5,
+     "y": 5559.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_27_eibe_2",
+     "art": "eibe",
+     "x": 7264.5,
+     "y": 5557.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_27_eibe_3",
+     "art": "eibe",
+     "x": 7268.5,
+     "y": 5553.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 29)",
+   "ort": "hlweg_29",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_29_eiche_1",
+     "art": "eiche",
+     "x": 7289.5,
+     "y": 5441.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_29_tanne_2",
+     "art": "tanne",
+     "x": 7284.5,
+     "y": 5439.5,
+     "region": "fl_216_169"
+    },
+    {
+     "id": "baume_am_weg_hochlande_29_tanne_3",
+     "art": "tanne",
+     "x": 7288.5,
+     "y": 5435.5,
+     "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 31)",
+   "ort": "hlweg_31",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_31_tanne_1",
+     "art": "tanne",
+     "x": 7096.5,
+     "y": 5917.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_31_eibe_2",
+     "art": "eibe",
+     "x": 7090.5,
+     "y": 5914.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_31_eibe_3",
+     "art": "eibe",
+     "x": 7095.5,
+     "y": 5911.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume vor dem Westtor",
+   "ort": "steinhag_westtor",
+   "baeume": [
+    {
+     "id": "baume_vor_dem_westtor_eiche_1",
+     "art": "eiche",
+     "x": 6904.5,
+     "y": 5903.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_vor_dem_westtor_tanne_2",
+     "art": "tanne",
+     "x": 6898.5,
+     "y": 5901.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_vor_dem_westtor_tanne_3",
+     "art": "tanne",
+     "x": 6903.5,
+     "y": 5897.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Hain des Holzfällerhofs: Kernbäume",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "holzfaellerhof_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6393.5,
+     "y": 7013.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_kernbaum_2",
+     "art": "kernbaum",
+     "x": 6399.5,
+     "y": 7014.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_kernbaum_3",
+     "art": "kernbaum",
+     "x": 6405.5,
+     "y": 7013.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_eibe_4",
+     "art": "eibe",
+     "x": 6407.5,
+     "y": 7018.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Hain des Holzfällerhofs: Weltenbaum-Setzlinge",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "holzfaellerhof_weltenbaum_5",
+     "art": "weltenbaum",
+     "x": 6394.5,
+     "y": 7019.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_weltenbaum_6",
+     "art": "weltenbaum",
+     "x": 6400.5,
+     "y": 7020.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_eibe_7",
+     "art": "eibe",
+     "x": 6404.5,
+     "y": 7022.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Eichen bei Hügelgrund",
+   "ort": "huegelgrund",
+   "baeume": [
+    {
+     "id": "eichen_bei_hugelgrund_eiche_1",
+     "art": "eiche",
+     "x": 6202.5,
+     "y": 5795.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "eichen_bei_hugelgrund_eiche_2",
+     "art": "eiche",
+     "x": 6196.5,
+     "y": 5793.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "eichen_bei_hugelgrund_tanne_3",
+     "art": "tanne",
+     "x": 6201.5,
+     "y": 5789.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Köhlerwald bei Kohlstatt",
+   "ort": "kohlstatt",
+   "baeume": [
+    {
+     "id": "kohlerwald_bei_kohlstatt_eiche_1",
+     "art": "eiche",
+     "x": 6449.5,
+     "y": 5875.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "kohlerwald_bei_kohlstatt_tanne_2",
+     "art": "tanne",
+     "x": 6444.5,
+     "y": 5874.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "kohlerwald_bei_kohlstatt_tanne_3",
+     "art": "tanne",
+     "x": 6445.5,
+     "y": 5869.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "kohlerwald_bei_kohlstatt_eibe_4",
+     "art": "eibe",
+     "x": 6450.5,
+     "y": 5870.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Eiben hinter den Meilern",
+   "ort": "kohlstatt",
+   "baeume": [
+    {
+     "id": "eiben_hinter_den_meilern_eibe_1",
+     "art": "eibe",
+     "x": 6396.5,
+     "y": 5869.5,
+     "region": "fl_186_183"
+    },
+    {
+     "id": "eiben_hinter_den_meilern_eibe_2",
+     "art": "eibe",
+     "x": 6391.5,
+     "y": 5866.5,
+     "region": "fl_186_183"
+    },
+    {
+     "id": "eiben_hinter_den_meilern_moorweide_3",
+     "art": "moorweide",
+     "x": 6395.5,
+     "y": 5863.5,
+     "region": "fl_186_183"
+    }
+   ]
+  },
+  {
+   "name": "Windbäume bei Wollhag",
+   "ort": "wollhag",
+   "baeume": [
+    {
+     "id": "windbaume_bei_wollhag_tanne_1",
+     "art": "tanne",
+     "x": 6599.5,
+     "y": 5735.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "windbaume_bei_wollhag_tanne_2",
+     "art": "tanne",
+     "x": 6594.5,
+     "y": 5733.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "windbaume_bei_wollhag_eiche_3",
+     "art": "eiche",
+     "x": 6598.5,
+     "y": 5729.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Weiden am Weiher",
+   "ort": "weiherhof",
+   "baeume": [
+    {
+     "id": "weiden_am_weiher_moorweide_1",
+     "art": "moorweide",
+     "x": 6373.5,
+     "y": 5830.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "weiden_am_weiher_moorweide_2",
+     "art": "moorweide",
+     "x": 6368.5,
+     "y": 5828.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "weiden_am_weiher_eibe_3",
+     "art": "eibe",
+     "x": 6372.5,
+     "y": 5824.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 1)",
+   "ort": "fwweg_alt_1",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_1_eiche_1",
+     "art": "eiche",
+     "x": 6584.5,
+     "y": 5896.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_1_eiche_2",
+     "art": "eiche",
+     "x": 6579.5,
+     "y": 5894.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_1_tanne_3",
+     "art": "tanne",
+     "x": 6583.5,
+     "y": 5890.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 3)",
+   "ort": "fwweg_alt_3",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_3_tanne_1",
+     "art": "tanne",
+     "x": 6646.5,
+     "y": 6001.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_3_eibe_2",
+     "art": "eibe",
+     "x": 6641.5,
+     "y": 5999.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_3_eibe_3",
+     "art": "eibe",
+     "x": 6645.5,
+     "y": 5995.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 5)",
+   "ort": "fwweg_alt_5",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_5_eiche_1",
+     "art": "eiche",
+     "x": 6667.5,
+     "y": 6122.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_5_eiche_2",
+     "art": "eiche",
+     "x": 6662.5,
+     "y": 6120.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_5_tanne_3",
+     "art": "tanne",
+     "x": 6666.5,
+     "y": 6116.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 7)",
+   "ort": "fwweg_alt_7",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_7_tanne_1",
+     "art": "tanne",
+     "x": 6687.5,
+     "y": 6224.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_7_eibe_2",
+     "art": "eibe",
+     "x": 6682.5,
+     "y": 6222.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_7_eibe_3",
+     "art": "eibe",
+     "x": 6687.5,
+     "y": 6218.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 9)",
+   "ort": "fwweg_alt_9",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_9_eiche_1",
+     "art": "eiche",
+     "x": 6641.5,
+     "y": 5845.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_9_eiche_2",
+     "art": "eiche",
+     "x": 6636.5,
+     "y": 5843.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_9_tanne_3",
+     "art": "tanne",
+     "x": 6640.5,
+     "y": 5839.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 11)",
+   "ort": "fwweg_alt_11",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_11_tanne_1",
+     "art": "tanne",
+     "x": 6571.5,
+     "y": 5848.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_11_eibe_2",
+     "art": "eibe",
+     "x": 6565.5,
+     "y": 5846.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_11_eibe_3",
+     "art": "eibe",
+     "x": 6570.5,
+     "y": 5842.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 13)",
+   "ort": "fwweg_alt_13",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_13_eiche_1",
+     "art": "eiche",
+     "x": 6513.5,
+     "y": 5799.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_13_eiche_2",
+     "art": "eiche",
+     "x": 6508.5,
+     "y": 5797.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_13_tanne_3",
+     "art": "tanne",
+     "x": 6512.5,
+     "y": 5793.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 15)",
+   "ort": "fwweg_alt_15",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_15_tanne_1",
+     "art": "tanne",
+     "x": 6418.5,
+     "y": 5773.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_15_eibe_2",
+     "art": "eibe",
+     "x": 6413.5,
+     "y": 5771.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_15_eibe_3",
+     "art": "eibe",
+     "x": 6417.5,
+     "y": 5767.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 17)",
+   "ort": "fwweg_alt_17",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_17_eiche_1",
+     "art": "eiche",
+     "x": 6306.5,
+     "y": 5779.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_17_eiche_2",
+     "art": "eiche",
+     "x": 6301.5,
+     "y": 5777.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_17_tanne_3",
+     "art": "tanne",
+     "x": 6305.5,
+     "y": 5773.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 19)",
+   "ort": "fwweg_alt_19",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_19_tanne_1",
+     "art": "tanne",
+     "x": 6269.5,
+     "y": 5801.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_19_eibe_2",
+     "art": "eibe",
+     "x": 6264.5,
+     "y": 5799.5,
+     "region": "fl_186_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_19_eibe_3",
+     "art": "eibe",
+     "x": 6268.5,
+     "y": 5795.5,
+     "region": "fl_186_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 21)",
+   "ort": "fwweg_alt_21",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_21_eiche_1",
+     "art": "eiche",
+     "x": 6484.5,
+     "y": 5878.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_21_eiche_2",
+     "art": "eiche",
+     "x": 6479.5,
+     "y": 5876.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_21_tanne_3",
+     "art": "tanne",
+     "x": 6483.5,
+     "y": 5872.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 23)",
+   "ort": "fwweg_alt_23",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_23_tanne_1",
+     "art": "tanne",
+     "x": 6622.5,
+     "y": 5785.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_23_eibe_2",
+     "art": "eibe",
+     "x": 6617.5,
+     "y": 5783.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_23_eibe_3",
+     "art": "eibe",
+     "x": 6621.5,
+     "y": 5780.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 25)",
+   "ort": "fwweg_alt_25",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_25_eiche_1",
+     "art": "eiche",
+     "x": 6639.5,
+     "y": 5972.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_25_eiche_2",
+     "art": "eiche",
+     "x": 6634.5,
+     "y": 5970.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_25_tanne_3",
+     "art": "tanne",
+     "x": 6638.5,
+     "y": 5966.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 27)",
+   "ort": "fwweg_alt_27",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_27_tanne_1",
+     "art": "tanne",
+     "x": 6548.5,
+     "y": 5875.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_27_eibe_2",
+     "art": "eibe",
+     "x": 6543.5,
+     "y": 5873.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_27_eibe_3",
+     "art": "eibe",
+     "x": 6547.5,
+     "y": 5869.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Reifbach",
+   "ort": "reifbach",
+   "baeume": [
+    {
+     "id": "baume_am_reifbach_tanne_1",
+     "art": "tanne",
+     "x": 6451.5,
+     "y": 5719.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_reifbach_eibe_2",
+     "art": "eibe",
+     "x": 6446.5,
+     "y": 5717.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_reifbach_eibe_3",
+     "art": "eibe",
+     "x": 6450.5,
+     "y": 5713.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Weiden am Ockerstrom",
+   "ort": "rotlehm",
+   "baeume": [
+    {
+     "id": "weiden_am_ockerstrom_moorweide_1",
+     "art": "moorweide",
+     "x": 6890.5,
+     "y": 7279.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "weiden_am_ockerstrom_moorweide_2",
+     "art": "moorweide",
+     "x": 6885.5,
+     "y": 7277.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "weiden_am_ockerstrom_kernbaum_3",
+     "art": "kernbaum",
+     "x": 6889.5,
+     "y": 7273.5,
+     "region": "fl_201_225"
+    }
+   ]
+  },
+  {
+   "name": "Akazien am Brunnenkreis",
+   "ort": "brunnenkreis",
+   "baeume": [
+    {
+     "id": "akazien_am_brunnenkreis_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7097.5,
+     "y": 7171.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "akazien_am_brunnenkreis_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7092.5,
+     "y": 7169.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "akazien_am_brunnenkreis_moorweide_3",
+     "art": "moorweide",
+     "x": 7097.5,
+     "y": 7165.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Akazienhain bei Dornhag",
+   "ort": "dornhag",
+   "baeume": [
+    {
+     "id": "akazienhain_bei_dornhag_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7330.5,
+     "y": 7449.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "akazienhain_bei_dornhag_moorweide_2",
+     "art": "moorweide",
+     "x": 7325.5,
+     "y": 7447.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "akazienhain_bei_dornhag_moorweide_3",
+     "art": "moorweide",
+     "x": 7329.5,
+     "y": 7444.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Akazien unter dem Roten Tisch",
+   "ort": "tafelrast",
+   "baeume": [
+    {
+     "id": "akazien_unter_dem_roten_tisch_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7489.5,
+     "y": 7496.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "akazien_unter_dem_roten_tisch_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7484.5,
+     "y": 7494.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "akazien_unter_dem_roten_tisch_weltenbaum_3",
+     "art": "weltenbaum",
+     "x": 7488.5,
+     "y": 7490.5,
+     "region": "fl_231_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 29)",
+   "ort": "fwweg_alt_29",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_29_eiche_1",
+     "art": "eiche",
+     "x": 6499.5,
+     "y": 5729.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_29_eiche_2",
+     "art": "eiche",
+     "x": 6494.5,
+     "y": 5727.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_29_tanne_3",
+     "art": "tanne",
+     "x": 6498.5,
+     "y": 5723.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 1)",
+   "ort": "okweg_alt_1",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_1_moorweide_1",
+     "art": "moorweide",
+     "x": 7113.5,
+     "y": 6976.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_1_moorweide_2",
+     "art": "moorweide",
+     "x": 7107.5,
+     "y": 6973.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_1_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7112.5,
+     "y": 6970.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 3)",
+   "ort": "okweg_alt_3",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_3_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7082.5,
+     "y": 7069.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_3_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7077.5,
+     "y": 7067.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_3_moorweide_3",
+     "art": "moorweide",
+     "x": 7081.5,
+     "y": 7063.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 19)",
+   "ort": "okweg_alt_19",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_19_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7010.5,
+     "y": 7593.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_19_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7005.5,
+     "y": 7590.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_19_moorweide_3",
+     "art": "moorweide",
+     "x": 7009.5,
+     "y": 7587.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 21)",
+   "ort": "okweg_alt_21",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_21_moorweide_1",
+     "art": "moorweide",
+     "x": 7030.5,
+     "y": 7192.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_21_moorweide_2",
+     "art": "moorweide",
+     "x": 7025.5,
+     "y": 7190.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_21_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7030.5,
+     "y": 7186.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 23)",
+   "ort": "okweg_alt_23",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_23_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6951.5,
+     "y": 7275.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_23_kernbaum_2",
+     "art": "kernbaum",
+     "x": 6946.5,
+     "y": 7273.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_23_moorweide_3",
+     "art": "moorweide",
+     "x": 6950.5,
+     "y": 7269.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 25)",
+   "ort": "okweg_alt_25",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_25_moorweide_1",
+     "art": "moorweide",
+     "x": 7174.5,
+     "y": 7254.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_25_moorweide_2",
+     "art": "moorweide",
+     "x": 7169.5,
+     "y": 7252.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_25_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7173.5,
+     "y": 7248.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 27)",
+   "ort": "okweg_alt_27",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_27_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7250.5,
+     "y": 7335.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_27_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7245.5,
+     "y": 7333.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_27_moorweide_3",
+     "art": "moorweide",
+     "x": 7249.5,
+     "y": 7329.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 29)",
+   "ort": "okweg_alt_29",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_29_moorweide_1",
+     "art": "moorweide",
+     "x": 7384.5,
+     "y": 7450.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_29_moorweide_2",
+     "art": "moorweide",
+     "x": 7378.5,
+     "y": 7448.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_29_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7383.5,
+     "y": 7445.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 31)",
+   "ort": "okweg_alt_31",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_31_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6884.5,
+     "y": 7422.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_31_kernbaum_2",
+     "art": "kernbaum",
+     "x": 6879.5,
+     "y": 7420.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_31_moorweide_3",
+     "art": "moorweide",
+     "x": 6883.5,
+     "y": 7416.5,
+     "region": "fl_201_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 33)",
+   "ort": "okweg_alt_33",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_33_moorweide_1",
+     "art": "moorweide",
+     "x": 6936.5,
+     "y": 7506.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_33_moorweide_2",
+     "art": "moorweide",
+     "x": 6931.5,
+     "y": 7504.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_33_kernbaum_3",
+     "art": "kernbaum",
+     "x": 6935.5,
+     "y": 7500.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 35)",
+   "ort": "okweg_alt_35",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_35_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7073.5,
+     "y": 7634.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_35_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7068.5,
+     "y": 7632.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_35_moorweide_3",
+     "art": "moorweide",
+     "x": 7072.5,
+     "y": 7628.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 37)",
+   "ort": "okweg_alt_37",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_37_moorweide_1",
+     "art": "moorweide",
+     "x": 7513.5,
+     "y": 7561.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_37_moorweide_2",
+     "art": "moorweide",
+     "x": 7508.5,
+     "y": 7559.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_37_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7513.5,
+     "y": 7556.5,
+     "region": "fl_231_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 39)",
+   "ort": "okweg_alt_39",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_39_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7566.5,
+     "y": 7578.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_39_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7560.5,
+     "y": 7576.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_39_moorweide_3",
+     "art": "moorweide",
+     "x": 7565.5,
+     "y": 7572.5,
+     "region": "fl_231_225"
+    }
+   ]
+  }
+ ]
+}

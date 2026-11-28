@@ -69,7 +69,7 @@ export type Kollision =
   | { art: "rechteck"; x: number; y: number; b: number; h: number }
   | { art: "vieleck"; punkte: number[][] }
   /** Räumliches Gebäude: Baukörper als Rechtecke (y nach Süden, 0 = Fußlinie); begehbare nur mit Wänden, Türlücken in der Südwand */
-  | { art: "gebaeude"; koerper: { x0: number; x1: number; y0: number; y1: number; voll: boolean }[]; tueren: { x0: number; x1: number; y: number }[] };
+  | { art: "gebaeude"; koerper: { x0: number; x1: number; y0: number; y1: number; voll: boolean }[]; tueren: { x0: number; x1: number; y: number }[]; /** Möbel im Haus (Hindernisse) */ moebel?: { x0: number; x1: number; y0: number; y1: number }[] };
 /** Eine Ebene eines räumlichen Gebäudes: eigenes Bild, eigene Tiefe (Felder relativ zum Fuß, + = weiter vorn) */
 export interface GebaeudeEbene { name: string; bild: string; /** Lage des zugeschnittenen Bildes im Gesamtrahmen (Bildpunkte) */ versatz?: number[]; tiefe: number; rolle: "schatten" | "innen" | "seite" | "vorn" | "dach" | "vordach" | "tuer_zu" | "tuer_offen"; koerper?: number; tuer?: number }
 /** Was ein Objekt kann, wenn man davorsteht. Die Logik dazu liegt in den bestehenden Systemen; hier steht nur, was wo auslöst. */
@@ -130,7 +130,7 @@ export interface ObjektBibliothek { objekte: ObjektDef[] }
 
 /* ───────────── Region ───────────── */
 
-export type Biom = "wald" | "wiese" | "dorf" | "sumpf" | "gebirge" | "ufer" | "hoehle";
+export type Biom = "wald" | "wiese" | "dorf" | "sumpf" | "gebirge" | "ufer" | "hoehle" | "innen" | "tundra" | "kueste" | "wueste" | "tropen" | "schnee" | "meer";
 export interface Region {
   id: string;
   name: string;
@@ -160,9 +160,13 @@ export interface Platzierung {
   /** Zusätzlicher Maßstab (1 = wie in der Bibliothek) */
   s?: number;
   spiegeln?: boolean;
+  /** Drehung um den Fußpunkt in Grad, im Uhrzeigersinn von oben gesehen (#148; ohne Angabe 0). Reihenfolge: spiegeln → Maßstab → drehen */
+  dreh?: 0 | 90 | 180 | 270;
   zustand?: string;
   /** Kollision nur für dieses eine Objekt überschreiben (null = keine) */
   kollision?: Kollision | null;
+  /** Stadtstufen (shared/stadtstufen.ts): zeigt sich ab dieser Stufe / verschwindet mit dieser Stufe – je Spieler */
+  ausbau?: string; ausbau_bis?: string;
 }
 
 /** Wie ein Stück Welt zwischen Server und Spielern abgeglichen wird */
@@ -249,6 +253,8 @@ export interface ChunkDaten {
   geh: string[];
   /** Objekte, deren Fußpunkt in diesem Chunk liegt */
   objekte: Platzierung[];
+  /** Sperrfelder der Objekte mit Stadtstufe (nicht im geh): Marke „ab|bis“ und Felder [i, j] in Weltkoordinaten */
+  ausbau?: { m: string; f: number[][] }[];
   figuren: Figur[];
   interaktionen: Interaktion[];
 }

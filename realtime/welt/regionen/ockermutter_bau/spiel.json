@@ -1,0 +1,45 @@
+{
+ "start": [
+  [
+   16,
+   27
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "ockermutter_hinaus",
+   "art": "eingang",
+   "x": 16,
+   "y": 30.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinaus in die Ockerlande.",
+    "tat": "ockermutter_hinaus",
+    "knopf": "Hinaus",
+    "ziel": [
+     7150,
+     7507.7
+    ]
+   }
+  },
+  {
+   "id": "ockermutter_kessel",
+   "art": "lesen",
+   "x": 16,
+   "y": 23.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein runder Kessel unter dem Tafelberg, der Boden festgetreten und glatt. In den Nischen ringsum glimmen Augen."
+   }
+  }
+ ]
+}

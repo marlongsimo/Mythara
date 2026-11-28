@@ -1,0 +1,55 @@
+# Riftmere – Server-Tests nach jedem Push (Arbeitszweige der Claude-Sitzungen und feature/realtime-engine).
+# Prüft Spielserver, Quests, Inventar, Berufe und Welt-Daten ohne Browser. Ergebnis: Haken oder Kreuz neben dem Commit,
+# Einzelheiten unter „Actions“. Ein rotes Kreuz heißt: vor dem Zusammenführen reparieren.
+# Lokal dasselbe:  cd realtime && npm ci && node build.mjs && node test/parallel.mjs   (nacheinander: bash test/server-tests.sh)
+name: Tests
+
+on:
+  push:
+    branches: ["claude/**", "feature/realtime-engine"]
+    paths: ["realtime/**", "supabase/**", ".github/workflows/tests.yml"]
+  pull_request:
+    branches: ["feature/realtime-engine"]
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # nur was die Tests brauchen – fabrik/ (1,5 GB Modellquellen) wird nicht geholt
+          sparse-checkout: |
+            realtime
+            echtzeit
+            img
+            UI
+          filter: blob:none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: realtime/package-lock.json
+      - name: Abhängigkeiten
+        working-directory: realtime
+        run: npm ci --include=dev
+      - name: Kampfraster aus den Weltdaten (weltzonen.ts, wie die Pipeline „Welt live“)
+        working-directory: realtime
+        run: python3 werkzeug/weltzonen.py > /dev/null
+      - name: Typprüfung
+        working-directory: realtime
+        run: npx tsc --noEmit
+      - name: Bauen
+        working-directory: realtime
+        run: node build.mjs
+      - name: Server-Tests (gleichzeitig, wo sich keine Ports teilen)
+        working-directory: realtime
+        run: GLEICHZEITIG=4 node test/parallel.mjs

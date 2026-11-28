@@ -1,0 +1,384 @@
+{
+ "hinweis": "Welt beleben (#140): neue Orte (Weltfelder), Ortsnamen für grenzland.mjs, NPC-Plätze als Vorschlag (Figuren/Quests verteilt die Leitstelle).",
+ "orte": {
+  "haferstedt": [
+   6215,
+   6980
+  ],
+  "netzbucht": [
+   6146,
+   6930
+  ],
+  "sandquell": [
+   7384,
+   6740
+  ],
+  "nordstrand": [
+   7450,
+   6500
+  ]
+ },
+ "namen": [
+  [
+   "Haferstedt",
+   "Dorf",
+   6215,
+   6980
+  ],
+  [
+   "Netzbucht",
+   "Ort",
+   6146,
+   6930
+  ],
+  [
+   "Sandquell",
+   "Dorf",
+   7384,
+   6740
+  ],
+  [
+   "Nordstrand",
+   "Ort",
+   7450,
+   6500
+  ]
+ ],
+ "npc": [
+  {
+   "id": "marktvogt_haferstedt",
+   "rolle": "Marktvogt (Markt)",
+   "x": 6217,
+   "y": 6981.5
+  },
+  {
+   "id": "bankier_haferstedt",
+   "rolle": "Bank (Schalter, Systeme)",
+   "x": 6246,
+   "y": 6979.4
+  },
+  {
+   "id": "wirtin_haferstedt",
+   "rolle": "Wirtin (Taverne)",
+   "x": 6211,
+   "y": 6972.5
+  },
+  {
+   "id": "baecker_haferstedt",
+   "rolle": "Bäcker",
+   "x": 6235,
+   "y": 6979.4
+  },
+  {
+   "id": "schmiedin_haferstedt",
+   "rolle": "Schmiedin",
+   "x": 6203,
+   "y": 6996.5
+  },
+  {
+   "id": "mueller_haferstedt",
+   "rolle": "Müller",
+   "x": 6245,
+   "y": 6951.5
+  },
+  {
+   "id": "haendler_haferstedt_1",
+   "rolle": "Händler am Marktstand",
+   "x": 6207,
+   "y": 6987.4
+  },
+  {
+   "id": "haendler_haferstedt_2",
+   "rolle": "Händlerin am Marktstand",
+   "x": 6223,
+   "y": 6987.4
+  },
+  {
+   "id": "fischer_netzbucht",
+   "rolle": "Fischer (Räucherfisch)",
+   "x": 6134,
+   "y": 6933.5
+  },
+  {
+   "id": "netzflickerin_netzbucht",
+   "rolle": "Netzflickerin",
+   "x": 6148,
+   "y": 6930.5
+  },
+  {
+   "id": "quellwaechterin_sandquell",
+   "rolle": "Quellwächterin",
+   "x": 7386,
+   "y": 6745
+  },
+  {
+   "id": "bankier_sandquell",
+   "rolle": "Bank (Schalter, Systeme)",
+   "x": 7406.5,
+   "y": 6731.4
+  },
+  {
+   "id": "wirt_sandquell",
+   "rolle": "Wirt der Herberge",
+   "x": 7372,
+   "y": 6727.4
+  },
+  {
+   "id": "karawanenmeister_sandquell",
+   "rolle": "Karawanenmeister",
+   "x": 7370,
+   "y": 6759.6
+  },
+  {
+   "id": "haendler_sandquell",
+   "rolle": "Händler am Marktstand",
+   "x": 7378,
+   "y": 6753.4
+  }
+ ],
+ "wege": [
+  {
+   "punkte": [
+    [
+     6169,
+     6981
+    ],
+    [
+     6261,
+     6981
+    ]
+   ],
+   "breite": 3
+  },
+  {
+   "punkte": [
+    [
+     6179,
+     6997
+    ],
+    [
+     6253,
+     6997
+    ]
+   ],
+   "breite": 2.4
+  },
+  {
+   "punkte": [
+    [
+     6215,
+     6990
+    ],
+    [
+     6215,
+     6997
+    ]
+   ],
+   "breite": 2.6
+  },
+  {
+   "punkte": [
+    [
+     6218,
+     6962
+    ],
+    [
+     6218,
+     6971
+    ]
+   ],
+   "breite": 1.6
+  },
+  {
+   "punkte": [
+    [
+     6245,
+     6951
+    ],
+    [
+     6249,
+     6971
+    ]
+   ],
+   "breite": 1.6
+  },
+  {
+   "punkte": [
+    [
+     6261,
+     6981
+    ],
+    [
+     6290,
+     6992
+    ],
+    [
+     6340,
+     7004
+    ],
+    [
+     6378,
+     7010
+    ]
+   ],
+   "breite": 1.8
+  },
+  {
+   "punkte": [
+    [
+     6215,
+     6997
+    ],
+    [
+     6211,
+     7016
+    ],
+    [
+     6204,
+     7040
+    ],
+    [
+     6197,
+     7070
+    ]
+   ],
+   "breite": 1.8
+  },
+  {
+   "punkte": [
+    [
+     6169,
+     6981
+    ],
+    [
+     6168,
+     6960
+    ],
+    [
+     6152,
+     6940
+    ]
+   ],
+   "breite": 1.6
+  },
+  {
+   "punkte": [
+    [
+     6262,
+     6981
+    ],
+    [
+     6280,
+     6950
+    ],
+    [
+     6330,
+     6926
+    ],
+    [
+     6400,
+     6912
+    ]
+   ],
+   "breite": 1.4
+  },
+  {
+   "punkte": [
+    [
+     6215,
+     7016
+    ],
+    [
+     6260,
+     7040
+    ],
+    [
+     6300,
+     7090
+    ]
+   ],
+   "breite": 1.4
+  },
+  {
+   "punkte": [
+    [
+     7246,
+     6806
+    ],
+    [
+     7300,
+     6790
+    ],
+    [
+     7340,
+     6770
+    ],
+    [
+     7372,
+     6744
+    ]
+   ],
+   "breite": 1.8
+  },
+  {
+   "punkte": [
+    [
+     7322,
+     6646
+    ],
+    [
+     7350,
+     6680
+    ],
+    [
+     7370,
+     6712
+    ],
+    [
+     7382,
+     6730
+    ]
+   ],
+   "breite": 1.8
+  },
+  {
+   "punkte": [
+    [
+     7388,
+     6718
+    ],
+    [
+     7410,
+     6640
+    ],
+    [
+     7428,
+     6580
+    ],
+    [
+     7446,
+     6520
+    ]
+   ],
+   "breite": 1.6
+  }
+ ],
+ "zaehlung": {
+  "Felder": 7,
+  "Teiche": 9,
+  "Feldstücke": 14,
+  "Hecken": 30,
+  "Baumgruppen": 70,
+  "Einzelbäume": 150,
+  "Büsche": 160,
+  "Steine": 30,
+  "Bachläufe": 5,
+  "Senken": 10,
+  "Grasflecken": 45,
+  "Felsgruppen": 55,
+  "Ruinen": 9,
+  "Tote Bäume": 70,
+  "Trockenbüsche": 260,
+  "Ölbäume": 40
+ }
+}

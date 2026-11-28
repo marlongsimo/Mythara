@@ -1,0 +1,16 @@
+{
+ "id": "ockerhoehle",
+ "name": "Die Höhle im Roten Tisch",
+ "untertitel": "Unter dem Tafelberg (Ureisen)",
+ "ursprung": [
+  373,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 12,
+ "ebene": "untergrund"
+}

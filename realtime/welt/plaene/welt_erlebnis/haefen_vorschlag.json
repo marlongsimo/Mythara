@@ -1,0 +1,5 @@
+{"kielmund": {"name": "Kielmund", "box": [6330, 6450, 7290, 7370], "kapitaen": [6367, 7337.6], "schiff": [6357, 7346], "steg": "vorhanden: Leuchtturm-Mole kielmund_mole_1–4 (6357–6378 | 7338)", "neu": []},
+ "moewenbucht": {"name": "Möwenbucht", "box": [6150, 6240, 7130, 7190], "kapitaen": [6187, 7161.3], "schiff": [6172, 7161], "steg": "vorhanden: moewenbucht_steg (6189 | 7161), um ein Stück nach Westen verlängern", "neu": [[6182.6, 7161.3]]},
+ "netzbucht": {"name": "Netzbucht", "box": [6090, 6180, 6900, 6970], "kapitaen": [6122, 6936.3], "schiff": [6106, 6942], "steg": "neu: 2 Stegstücke vom Strand nach Westen", "neu": [[6124.5, 6936.3], [6117.7, 6936.3]]},
+ "grauwacht": {"name": "Grauwacht", "box": [6680, 6790, 5715, 5800], "kapitaen": [6744, 5752.3], "schiff": [6760, 5744], "steg": "neu: 3 Stegstücke vom Ostufer der Stadt in die Bucht (nördlich der Brücke)", "neu": [[6741.4, 5752.3], [6748.2, 5752.3], [6755, 5752.3]]},
+ "graufurt": {"name": "Graufurt (Fähre)", "box": [6690, 6770, 6490, 6550], "kapitaen": [6716.5, 6516.5], "schiff": [6727.5, 6518.4], "steg": "vorhanden: Fähre faehre_189 mit Stegen bruecke_188/192", "neu": []}}

@@ -2,7 +2,7 @@
  "start": [
   [
    88,
-   60
+   124
   ]
  ],
  "figuren": [],
@@ -12,7 +12,7 @@
    "id": "meiler",
    "art": "lesen",
    "x": 91.5,
-   "y": 30.9,
+   "y": 94.9,
    "radius": 1.6,
    "abgleich": "keiner",
    "daten": {
@@ -23,17 +23,112 @@
    "id": "ruine",
    "art": "lesen",
    "x": 83.2,
-   "y": 36.4,
+   "y": 100.4,
    "radius": 1.6,
    "abgleich": "keiner",
    "daten": {
     "text": "Mauerreste aus einer Zeit vor der Waldmark, halb vom Efeu verschluckt."
    }
+  },
+  {
+   "id": "feste",
+   "art": "lesen",
+   "x": 58.4,
+   "y": 50.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die verfallene Feste. Wer sie erbaut hat, weiß in der Waldmark niemand mehr – nur, dass hier einst eine Belagerung endete."
+   }
+  },
+  {
+   "id": "katapult",
+   "art": "lesen",
+   "x": 45.5,
+   "y": 43.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein zerschlagenes Katapult. Die Belagerer kamen bis in den Hof – weiter nicht."
+   }
+  },
+  {
+   "id": "gruft",
+   "art": "lesen",
+   "x": 101.5,
+   "y": 28.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine alte Gruft. Die Inschrift über der Tür ist verwittert, nur ein Wappen mit Turm ist noch zu erkennen."
+   }
+  },
+  {
+   "id": "obelisk",
+   "art": "lesen",
+   "x": 101.5,
+   "y": 38.2,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Obelisk für die Gefallenen der Feste. Hunderte Namen, kaum noch lesbar."
+   }
   }
  ],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 97,
+    "y0": 93,
+    "x1": 98,
+    "y1": 94
+   },
+   {
+    "art": "rechteck",
+    "x0": 97,
+    "y0": 97,
+    "x1": 98,
+    "y1": 98
+   },
+   {
+    "art": "rechteck",
+    "x0": 101,
+    "y0": 93,
+    "x1": 102,
+    "y1": 94
+   },
+   {
+    "art": "rechteck",
+    "x0": 101,
+    "y0": 89,
+    "x1": 102,
+    "y1": 90
+   },
+   {
+    "art": "rechteck",
+    "x0": 78,
+    "y0": 106,
+    "x1": 79,
+    "y1": 107
+   },
+   {
+    "art": "rechteck",
+    "x0": 98,
+    "y0": 104,
+    "x1": 99,
+    "y1": 105
+   }
+  ],
   "freigeben": []
- }
+ },
+ "senken": [
+  {
+   "x": 98.5,
+   "y": 104.5,
+   "r": 3,
+   "tiefe": 1.1
+  }
+ ]
 }

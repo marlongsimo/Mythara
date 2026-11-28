@@ -1,0 +1,248 @@
+{
+ "hinweis": "Phase 8 (Welt #50): Grauwacht in drei Ausbaustufen je Spieler. Objekte im Festland tragen \"ausbau\" (zeigt sich ab Stufe) bzw. \"ausbau_bis\" (verschwindet mit Stufe). Hier die NPC-Plätze (Weltfelder), Adern, Grablichter und Kernbäume als Vorschlag.",
+ "stufen": [
+  "verlassen",
+  "abtei",
+  "burg"
+ ],
+ "npc": [
+  {
+   "id": "mette_heider",
+   "rolle": "Hirtin (E1, „Mettes Schafe“)",
+   "x": 6598.5,
+   "y": 5875,
+   "ausbau": "verlassen"
+  },
+  {
+   "id": "hirte_1",
+   "rolle": "Hirte",
+   "x": 6622,
+   "y": 5873,
+   "ausbau": "verlassen"
+  },
+  {
+   "id": "wigand_fels",
+   "rolle": "Burgvogt (E3, E4)",
+   "x": 6708,
+   "y": 5706,
+   "ausbau": "abtei"
+  },
+  {
+   "id": "burgwache_1",
+   "rolle": "Wache am Burgtor",
+   "x": 6703.6,
+   "y": 5713,
+   "ausbau": "burg"
+  },
+  {
+   "id": "burgwache_2",
+   "rolle": "Wache am Burgtor",
+   "x": 6708.4,
+   "y": 5713,
+   "ausbau": "burg"
+  },
+  {
+   "id": "haendlerin_markt",
+   "rolle": "Händlerin (Markt)",
+   "x": 6702,
+   "y": 5746.6,
+   "ausbau": "abtei"
+  },
+  {
+   "id": "waffenhaendler",
+   "rolle": "Waffenladen (E3)",
+   "x": 6710.5,
+   "y": 5754.6,
+   "ausbau": "burg"
+  },
+  {
+   "id": "bankier",
+   "rolle": "Bank (E3)",
+   "x": 6716,
+   "y": 5732,
+   "ausbau": "burg"
+  },
+  {
+   "id": "schmied",
+   "rolle": "Werkstatt (E4)",
+   "x": 6703,
+   "y": 5790,
+   "ausbau": "burg"
+  },
+  {
+   "id": "aebtissin_gunhild",
+   "rolle": "Äbtissin (E1, E2, E4)",
+   "x": 6669,
+   "y": 5765,
+   "ausbau": "verlassen"
+  },
+  {
+   "id": "nonne_1",
+   "rolle": "Nonne",
+   "x": 6674,
+   "y": 5779,
+   "ausbau": "verlassen"
+  },
+  {
+   "id": "nonne_2",
+   "rolle": "Nonne (Küche)",
+   "x": 6682,
+   "y": 5785.6,
+   "ausbau": "abtei"
+  },
+  {
+   "id": "nonne_3",
+   "rolle": "Nonne (Garten)",
+   "x": 6662,
+   "y": 5772,
+   "ausbau": "abtei"
+  }
+ ],
+ "adern": [
+  {
+   "id": "eisen_gw_1",
+   "art": "eisen",
+   "x": 6686.5,
+   "y": 5699.5
+  },
+  {
+   "id": "eisen_gw_2",
+   "art": "eisen",
+   "x": 6686.5,
+   "y": 5708.5
+  },
+  {
+   "id": "eisen_gw_3",
+   "art": "eisen",
+   "x": 6692.5,
+   "y": 5694.5
+  },
+  {
+   "id": "schwarzeisen_gw_1",
+   "art": "schwarzeisen",
+   "x": 6712.5,
+   "y": 5692.5
+  },
+  {
+   "id": "schwarzeisen_gw_2",
+   "art": "schwarzeisen",
+   "x": 6699.5,
+   "y": 5692.5
+  }
+ ],
+ "grablichter": [
+  {
+   "id": "grab_grabkammer_1_1",
+   "art": "grablicht",
+   "x": 11084.5,
+   "y": 9611.5,
+   "region": "grabkammer_1"
+  },
+  {
+   "id": "grab_grabkammer_1_2",
+   "art": "grablicht",
+   "x": 11091.5,
+   "y": 9611.5,
+   "region": "grabkammer_1"
+  },
+  {
+   "id": "grab_grabkammer_2_3",
+   "art": "grablicht",
+   "x": 11116.5,
+   "y": 9611.5,
+   "region": "grabkammer_2"
+  },
+  {
+   "id": "grab_grabkammer_2_4",
+   "art": "grablicht",
+   "x": 11123.5,
+   "y": 9611.5,
+   "region": "grabkammer_2"
+  },
+  {
+   "id": "grab_hauptmann_5",
+   "art": "grablicht",
+   "x": 11158.5,
+   "y": 9640.5,
+   "region": "hauptmann_grab"
+  },
+  {
+   "id": "grab_hauptmann_6",
+   "art": "grablicht",
+   "x": 11177.5,
+   "y": 9640.5,
+   "region": "hauptmann_grab"
+  },
+  {
+   "id": "grab_hauptmann_7",
+   "art": "grablicht",
+   "x": 11168.5,
+   "y": 9626.5,
+   "region": "hauptmann_grab"
+  }
+ ],
+ "kernbaeume": [
+  {
+   "id": "kernbaum_tal_1",
+   "art": "kernbaum",
+   "x": 6228,
+   "y": 5772
+  },
+  {
+   "id": "kernbaum_tal_2",
+   "art": "kernbaum",
+   "x": 6236,
+   "y": 5766
+  },
+  {
+   "id": "kernbaum_tal_3",
+   "art": "kernbaum",
+   "x": 6244,
+   "y": 5774
+  },
+  {
+   "id": "kernbaum_tal_4",
+   "art": "kernbaum",
+   "x": 6232,
+   "y": 5782
+  }
+ ],
+ "eisenhut": [
+  {
+   "id": "eisenhut_1",
+   "art": "eisenhut",
+   "x": 6438.5,
+   "y": 5752.5
+  },
+  {
+   "id": "eisenhut_2",
+   "art": "eisenhut",
+   "x": 6458.5,
+   "y": 5742.5
+  },
+  {
+   "id": "eisenhut_3",
+   "art": "eisenhut",
+   "x": 6481.5,
+   "y": 5750.5
+  },
+  {
+   "id": "eisenhut_4",
+   "art": "eisenhut",
+   "x": 6500.5,
+   "y": 5764.5
+  },
+  {
+   "id": "eisenhut_5",
+   "art": "eisenhut",
+   "x": 6445.5,
+   "y": 5776.5
+  },
+  {
+   "id": "eisenhut_6",
+   "art": "eisenhut",
+   "x": 6475.5,
+   "y": 5778.5
+  }
+ ]
+}

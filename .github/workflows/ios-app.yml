@@ -1,0 +1,82 @@
+# Riftmere iOS-App: baut die App (Ordner app/ im Zweig „quelle“) auf einem Mac von GitHub, signiert sie automatisch
+# über den App-Store-Connect-API-Schlüssel und lädt sie zu TestFlight hoch. Von Hand starten: Actions → „iOS-App“ → Run workflow.
+# Nötige Secrets (Settings → Secrets and variables → Actions): APPLE_TEAM_ID, ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 (Inhalt der .p8-Datei).
+name: iOS-App
+on:
+  workflow_dispatch:
+    inputs:
+      quelle:
+        description: "Zweig mit dem Ordner app/"
+        default: "claude/welt3d"
+      version:
+        description: "Versionsnummer im App Store (z. B. 1.0)"
+        default: "1.0"
+permissions:
+  contents: read
+jobs:
+  bauen:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.quelle }}
+          sparse-checkout: app
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Xcode wählen
+        run: |
+          X=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1); if [ -n "$X" ]; then sudo xcode-select -s "$X"; fi
+          xcodebuild -version
+      - name: Pakete und Capacitor
+        working-directory: app
+        run: |
+          npm ci --no-audit --no-fund
+          npx cap sync ios
+      - name: API-Schlüssel ablegen
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+        run: |
+          if [ -z "$ASC_KEY_P8" ] || [ -z "$ASC_KEY_ID" ]; then echo "::error::Secrets ASC_KEY_P8/ASC_KEY_ID fehlen"; exit 1; fi
+          mkdir -p "$RUNNER_TEMP/keys"; printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/keys/AuthKey_$ASC_KEY_ID.p8"
+      - name: Archiv bauen (signiert)
+        working-directory: app/ios/App
+        env:
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Riftmere.xcarchive" archive \
+            DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Automatic MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            -allowProvisioningUpdates -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$ASC_KEY_ID.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" | tail -40
+          test -d "$RUNNER_TEMP/Riftmere.xcarchive"
+      - name: Zu TestFlight hochladen
+        env:
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          cat > "$RUNNER_TEMP/Export.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$TEAM</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/Riftmere.xcarchive" -exportOptionsPlist "$RUNNER_TEMP/Export.plist" \
+            -exportPath "$RUNNER_TEMP/export" -allowProvisioningUpdates -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$ASC_KEY_ID.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+          echo "Hochgeladen: Version ${{ inputs.version }} (Build ${{ github.run_number }}). In App Store Connect → TestFlight erscheint sie nach einigen Minuten." >> "$GITHUB_STEP_SUMMARY"
+      - name: Schlüssel entfernen
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/keys"

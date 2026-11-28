@@ -1,0 +1,90 @@
+{
+ "fl_186_198": {
+  "name": "Das Grenzland",
+  "land": 29010,
+  "leer_anteil": 0.063,
+  "wegfelder": 0,
+  "weg_max": null,
+  "weg_mittel": null,
+  "weg_ueber_12": null,
+  "objekte": 315,
+  "bewuchs": 315
+ },
+ "westried": {
+  "name": "Die Riedwiesen",
+  "land": 32351,
+  "leer_anteil": 0.065,
+  "wegfelder": 417,
+  "weg_max": 8.6,
+  "weg_mittel": 5.2,
+  "weg_ueber_12": 0.0,
+  "objekte": 363,
+  "bewuchs": 346
+ },
+ "nordwald": {
+  "name": "Der Nordwald",
+  "land": 15612,
+  "leer_anteil": 0.001,
+  "wegfelder": 772,
+  "weg_max": 13.6,
+  "weg_mittel": 3.8,
+  "weg_ueber_12": 0.008,
+  "objekte": 738,
+  "bewuchs": 601
+ },
+ "nordsaum": {
+  "name": "Der Nordsaum",
+  "land": 22712,
+  "leer_anteil": 0.007,
+  "wegfelder": 1047,
+  "weg_max": 11.0,
+  "weg_mittel": 5.6,
+  "weg_ueber_12": 0.0,
+  "objekte": 1113,
+  "bewuchs": 1081
+ },
+ "osthof": {
+  "name": "Der Osthof",
+  "land": 5748,
+  "leer_anteil": 0.0,
+  "wegfelder": 396,
+  "weg_max": 10.2,
+  "weg_mittel": 4.4,
+  "weg_ueber_12": 0.0,
+  "objekte": 229,
+  "bewuchs": 146
+ },
+ "obstwiesen": {
+  "name": "Die Obstwiesen",
+  "land": 5850,
+  "leer_anteil": 0.026,
+  "wegfelder": 139,
+  "weg_max": 10.4,
+  "weg_mittel": 4.6,
+  "weg_ueber_12": 0.0,
+  "objekte": 209,
+  "bewuchs": 163
+ },
+ "osthang": {
+  "name": "Der Osthang",
+  "land": 22129,
+  "leer_anteil": 0.005,
+  "wegfelder": 399,
+  "weg_max": 12.8,
+  "weg_mittel": 6.9,
+  "weg_ueber_12": 0.008,
+  "objekte": 989,
+  "bewuchs": 916
+ },
+ "weidenhain": {
+  "name": "Weidenhain",
+  "land": 10134,
+  "leer_anteil": 0.0,
+  "wegfelder": 1733,
+  "weg_max": 12.2,
+  "weg_mittel": 3.2,
+  "weg_ueber_12": 0.001,
+  "objekte": 343,
+  "bewuchs": 200
+ }
+}

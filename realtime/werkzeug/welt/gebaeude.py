@@ -351,6 +351,18 @@ MOEBEL = {
     'loch':   lambda B, x, d: (B.vieleck(PROJ, [(x + math.cos(t) * 0.95, d + math.sin(t) * 0.7, 0.01) for t in np.linspace(0, 2 * math.pi, 24)], (64, 50, 38)),
                            B.vieleck(PROJ, [(x + math.cos(t) * 0.8, d + math.sin(t) * 0.58, 0.02) for t in np.linspace(0, 2 * math.pi, 24)], (14, 12, 12)),
                            B.flaeche(PROJ, [(x - 0.25, d + 0.5, 0.03), (x + 0.25, d + 0.5, 0.03), (x + 0.25, d + 0.1, 0.03), (x - 0.25, d + 0.1, 0.03)], 'maserung', 0.5, 0.2)),
+    # Nias Salon: Zauberspiegel (Goldrahmen, violetter Schimmer) und Frisierstuhl (Leder, violettes Polster)
+    # Bank der Waldmark: Schalter (Theke mit Messinggitter) und Tresor
+    'schalter': lambda B, x, d: (quader(B, x - 0.8, d - 0.25, 0, 1.6, 0.5, 1.0, 'maserung', 0.18), quader(B, x - 0.8, d - 0.05, 1.0, 1.6, 0.06, 0.9, 'putz', 0.2, farbe=(196, 160, 82), hell_faktor=0.9),
+                                 B.vieleck(PROJ, [(x - 0.35, d - 0.06, 1.25), (x + 0.35, d - 0.06, 1.25), (x + 0.35, d - 0.06, 1.75), (x - 0.35, d - 0.06, 1.75)], (34, 26, 22))),
+    'tresor': lambda B, x, d: (quader(B, x - 0.55, d - 0.4, 0, 1.1, 0.8, 1.2, 'putz', 0.2, farbe=(52, 54, 60)), B.vieleck(PROJ, [(x + math.cos(t) * 0.22, d - 0.41, 0.6 + math.sin(t) * 0.22) for t in np.linspace(0, 2 * math.pi, 16)], (204, 168, 90))),
+    'spiegel': lambda B, x, d: (quader(B, x - 0.5, d - 0.1, 0, 1.0, 0.2, 1.9, 'putz', 0.2, farbe=(196, 156, 70)), B.vieleck(PROJ, [(x - 0.38, d - 0.11, 0.2), (x + 0.38, d - 0.11, 0.2), (x + 0.38, d - 0.11, 1.75), (x - 0.38, d - 0.11, 1.75)], (176, 142, 214))),
+    'frisierstuhl': lambda B, x, d: (quader(B, x - 0.35, d - 0.35, 0, 0.7, 0.7, 0.45, 'maserung', 0.18), quader(B, x - 0.32, d - 0.32, 0.45, 0.64, 0.64, 0.12, 'putz', 0.2, farbe=(116, 66, 140)), quader(B, x - 0.35, d + 0.25, 0.45, 0.7, 0.1, 0.8, 'putz', 0.2, farbe=(116, 66, 140))),
+    # Treppe ins Obergeschoss (steigt nach Norden; Fuß bei d − 1,2) und die Öffnung oben mit Geländer
+    'treppe': lambda B, x, d: tuple(quader(B, x - 0.55, d - 1.2 + i * 0.4, 0, 1.1, 0.4, 0.35 * (i + 1), 'maserung', 0.18, hell_faktor=0.8 + i * 0.05) for i in range(6)),
+    'treppe_oben': lambda B, x, d: (B.vieleck(PROJ, [(x - 0.6, d - 1.2, 0.01), (x + 0.6, d - 1.2, 0.01), (x + 0.6, d + 1.2, 0.01), (x - 0.6, d + 1.2, 0.01)], (24, 18, 14)),
+                                   quader(B, x - 0.55, d - 1.2, 0, 1.1, 0.4, 0.12, 'maserung', 0.18, hell_faktor=0.7),
+                                   quader(B, x + 0.6, d - 1.2, 0, 0.1, 2.4, 0.9, 'maserung', 0.18), quader(B, x - 0.7, d - 1.2, 0, 0.1, 2.4, 0.9, 'maserung', 0.18)),
     'kessel': lambda B, x, d: (quader(B, x - 0.35, d - 0.35, 0, 0.7, 0.7, 0.6, 'putz', 0.2, farbe=(56, 58, 62)), B.vieleck(PROJ, [(x - 0.28, d - 0.28, 0.61), (x + 0.28, d - 0.28, 0.61), (x + 0.28, d + 0.28, 0.61), (x - 0.28, d + 0.28, 0.61)], (96, 150, 70))),
 }
 
@@ -380,6 +392,21 @@ def fenster_zeichnen(B, f, k):
     if art == 'gruen':     # unheimliches grünes Licht (der Turm am Ostufer von Graufurt)
         B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (40, 60, 44))
         B.vieleck(PROJ, rechteck(a0 + 0.07, a1 - 0.07, z0 + 0.07, z1 - 0.07, 0.025), (150, 255, 170))
+        return
+    if art == 'schalter':  # Bankschalter: dunkle Öffnung, Messinggitter, vorstehendes Brett (Weidenhain, 24.11.2026)
+        B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (34, 26, 22))
+        for i in range(1, 6):
+            am = a0 + (a1 - a0) * i / 6
+            B.linie(PROJ, [pt(am, z0 + 0.12, 0.03), pt(am, z1, 0.03)], (196, 160, 82), 3)
+        B.linie(PROJ, [pt(a0, z1 - 0.12, 0.03), pt(a1, z1 - 0.12, 0.03)], (196, 160, 82), 3)
+        B.flaeche(PROJ, [pt(a0 - 0.12, z0, 0.0), pt(a1 + 0.12, z0, 0.0), pt(a1 + 0.12, z0, 0.38), pt(a0 - 0.12, z0, 0.38)], 'maserung', 1.0, 0.2)
+        B.flaeche(PROJ, rechteck(a0 - 0.12, a1 + 0.12, z0 - 0.12, z0, 0.38), 'maserung', 0.75, 0.2)
+        return
+    if art == 'violett':   # violett schimmerndes Glas mit goldenen Sprossen (Nias Salon)
+        B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (58, 34, 72))
+        B.vieleck(PROJ, rechteck(a0 + 0.07, a1 - 0.07, z0 + 0.07, z1 - 0.07, 0.025), (196, 146, 232), 170)
+        am = (a0 + a1) / 2; zm = (z0 + z1) / 2
+        B.linie(PROJ, [pt(am, z0, 0.03), pt(am, z1, 0.03)], (214, 176, 86), 3); B.linie(PROJ, [pt(a0, zm, 0.03), pt(a1, zm, 0.03)], (214, 176, 86), 3)
         return
     if art == 'glut':
         B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (40, 26, 22))
@@ -437,7 +464,7 @@ def zubehoer_vorn(B, z, k):
         B.vieleck(PROJ, [(x - 0.12, dw - 0.15, h - 0.2), (x + 0.12, dw - 0.15, h - 0.2), (x + 0.12, dw - 0.15, h + 0.12), (x - 0.12, dw - 0.15, h + 0.12)], (40, 38, 40))
         B.vieleck(PROJ, [(x - 0.08, dw - 0.16, h - 0.16), (x + 0.08, dw - 0.16, h - 0.16), (x + 0.08, dw - 0.16, h + 0.08), (x - 0.08, dw - 0.16, h + 0.08)], (255, 214, 120))
     elif a == 'banner':
-        x, h = z['x'], z.get('z', 2.0); farbe = (46, 70, 142) if STIL == 'gemalt' else tuple(z.get('farbe', (150, 40, 38)))   # Malstil: Königsblau wie Umhang und Schild
+        x, h = z['x'], z.get('z', 2.0); farbe = tuple(z['farbe']) if z.get('eigenfarbe') else (46, 70, 142) if STIL == 'gemalt' else tuple(z.get('farbe', (150, 40, 38)))   # Malstil: Königsblau wie Umhang und Schild (eigenfarbe: die Farbe des Bauplans)
         B.vieleck(PROJ, [(x - 0.22, dw - 0.02, h), (x + 0.22, dw - 0.02, h), (x + 0.22, dw - 0.02, h - 1.1), (x, dw - 0.02, h - 0.85), (x - 0.22, dw - 0.02, h - 1.1)], farbe)
         B.vieleck(PROJ, [(x - 0.22, dw - 0.03, h - 0.1), (x + 0.22, dw - 0.03, h - 0.1), (x + 0.22, dw - 0.03, h - 0.16), (x - 0.22, dw - 0.03, h - 0.16)], (214, 176, 86))
         ring = [(x + math.cos(t) * 0.09, dw - 0.03, h - 0.45 + math.sin(t) * 0.09) for t in np.linspace(0, 2 * math.pi, 12)]
@@ -665,7 +692,17 @@ def kollision(plan):
     kk = [{'x0': k['x'], 'x1': k['x'] + k['b'], 'y0': -(k['d'] + k['t']), 'y1': -k['d'], 'voll': not k.get('betretbar')} for k in plan['koerper']]
     kmap = {k['id']: k for k in plan['koerper']}
     tt = [{'x0': t['x'] - t['b'] / 2, 'x1': t['x'] + t['b'] / 2, 'y': -kmap[t.get('koerper', plan['koerper'][0]['id'])]['d']} for t in plan.get('tueren', [])]
-    return {'art': 'gebaeude', 'koerper': kk, 'tueren': tt}
+    # Möbel im Haus sind Hindernisse (Größe wie client/src/welt3d/bauten.ts MOEBEL); Treppen, Spiegel an der Wand und Löcher bleiben begehbar
+    mm = [{'x0': round(m['x'] - MOEBEL_MASS.get(m['art'], (0.8, 0.8))[0] / 2, 3), 'x1': round(m['x'] + MOEBEL_MASS.get(m['art'], (0.8, 0.8))[0] / 2, 3),
+           'y0': round(-m['d'] - MOEBEL_MASS.get(m['art'], (0.8, 0.8))[1] / 2, 3), 'y1': round(-m['d'] + MOEBEL_MASS.get(m['art'], (0.8, 0.8))[1] / 2, 3)}
+          for m in plan.get('innen', {}).get('moebel', []) if m['art'] not in MOEBEL_FREI]
+    return {'art': 'gebaeude', 'koerper': kk, 'tueren': tt, **({'moebel': mm} if mm else {})}
+
+
+# Grundfläche der Möbel (Breite in x, Tiefe in y) – wie client/src/welt3d/bauten.ts MOEBEL
+MOEBEL_MASS = {'tisch': (1.2, 0.8), 'bett': (1.0, 2.0), 'theke': (2.4, 0.6), 'fass': (0.6, 0.6), 'amboss': (0.7, 0.4), 'regal': (1.2, 0.4), 'ofen': (1.0, 1.0), 'altar': (1.4, 0.7),
+               'bank': (1.5, 0.4), 'kessel': (0.7, 0.7), 'heu': (1.2, 1.0), 'saecke': (0.9, 0.6), 'muehlstein': (1.2, 1.2), 'frisierstuhl': (0.7, 0.7)}
+MOEBEL_FREI = {'treppe', 'treppe_oben', 'spiegel', 'loch'}
 
 
 def sichtbarer_bereich(im):

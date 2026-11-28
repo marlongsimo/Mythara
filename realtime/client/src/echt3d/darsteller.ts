@@ -7,7 +7,7 @@
  * Alle Darsteller teilen sich einen WebGL-Zeichner; jede Figur hat nur ihre eigene 2D-Leinwand.
  */
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { gltfLader } from "../welt3d/gltf";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { Aufladung } from "./aufladung";
 
@@ -20,14 +20,14 @@ interface Vorlage { szene: THREE.Object3D; clips: Map<string, THREE.AnimationCli
 const vorlagen = new Map<string, Promise<Vorlage>>();
 function vorlageLaden(url: string): Promise<Vorlage> {
   let p = vorlagen.get(url);
-  if (!p) { p = new GLTFLoader().loadAsync(url).then((g) => ({ szene: g.scene, clips: new Map(g.animations.map((c) => [c.name, c])) })); vorlagen.set(url, p); }
+  if (!p) { p = gltfLader().loadAsync(url).then((g) => ({ szene: g.scene, clips: new Map(g.animations.map((c) => [c.name, c])) })); vorlagen.set(url, p); }
   return p;
 }
 /* ausgelagerte Teile (Rüstungen, Helme): eigene Dateien <figur>.teile/<id>.glb aus fabrik/export3d.py auslagern=…, erst beim Anlegen geladen */
 const AUSGELAGERT = /^(ruestung|kopf\.helm|waffe|schild)\./;   /* was nicht in der Grundfigur steckt, wird aus <figur>.teile/ nachgeladen */
 const teilVorlagen = new Map<string, Promise<THREE.Object3D>>();
 function teilVorlage(url: string): Promise<THREE.Object3D> {
-  let p = teilVorlagen.get(url); if (!p) { p = new GLTFLoader().loadAsync(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p;
+  let p = teilVorlagen.get(url); if (!p) { p = gltfLader().loadAsync(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p;
 }
 const name3 = (id: string) => id.replace(/[.[\]:/]/g, "");
 /** Leuchtende Stufen (legendär, mythisch): das Glühen der Kanten pulsiert langsam */
@@ -84,7 +84,7 @@ export class Darsteller {
       this.wurzel.traverse((o) => { if ((o as THREE.Bone).isBone) knochen.set(o.name, o as THREE.Bone); });
       const koerper = (() => { let k: THREE.Object3D | null = null; this.wurzel.traverse((o) => { if (!k && (o as THREE.SkinnedMesh).isSkinnedMesh && /^koerper/.test(o.name)) k = o; }); return k as THREE.Object3D | null; })();
       quelle.traverse((o) => { const m = o as THREE.Mesh;                                        /* starre Teile (Waffen, Schilde): Kind eines Knochens – an denselben Knochen dieser Figur hängen */
-        if (!m.isMesh || (m as THREE.SkinnedMesh).isSkinnedMesh || this.teile.has(n)) return; let p = m.parent; while (p && !(p as THREE.Bone).isBone) p = p.parent;
+        if (!m.isMesh || (m as THREE.SkinnedMesh).isSkinnedMesh || this.teile.has(n)) return; let p = m.parent; while (p && !knochen.has(p.name)) p = p.parent; /* Knochen über den Namen: komprimierte Teile (ohne Skin) laden ihre Knochen als einfache Knoten */
         const ziel = p && knochen.get(p.name); if (!ziel) return; const g = new THREE.Group(); g.name = n; p!.updateWorldMatrix(true, true);
         const rel = new THREE.Matrix4().copy(p!.matrixWorld).invert().multiply(m.matrixWorld); rel.decompose(g.position, g.quaternion, g.scale);
         const kopie = new THREE.Mesh(m.geometry, m.material); kopie.frustumCulled = false; g.add(kopie); ziel.add(g); g.visible = this.soll.has(n); this.teile.set(n, g); });
@@ -195,7 +195,7 @@ class StabGlut {
   }
   weg(): void { for (const o of [this.kern, this.hof, ...this.funken]) { o.removeFromParent(); (o.material as THREE.Material).dispose(); } }
 }
-class TeleportEffekt {
+export class TeleportEffekt {
   readonly gruppe = new THREE.Group(); vergangen = false; private t = 0;
   private saeule: THREE.Mesh; private kern: THREE.Mesh; private ring: THREE.Mesh; private funken: THREE.Points; private fp: Float32Array; private fv: { w: number; r: number; s: number; d: number }[] = [];
   private mats: { m: THREE.MeshStandardMaterial; alt: THREE.Material | THREE.Material[]; mesh: THREE.Mesh }[] = [];
@@ -319,7 +319,7 @@ vec3 baum_hsv2rgb(vec3 c){ vec4 K=vec4(1.,2./3.,1./3.,3.); vec3 p=abs(fract(c.xx
 const baumVorlagen = new Map<string, Promise<{ szene: THREE.Object3D; hoehe: number; radius: number }>>();
 function baumVorlage(url: string) {
   let p = baumVorlagen.get(url);
-  if (!p) { p = new GLTFLoader().loadAsync(url).then((g) => {
+  if (!p) { p = gltfLader().loadAsync(url).then((g) => {
       const szene = g.scene, box = new THREE.Box3().setFromObject(szene); let radius = 0;
       szene.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.frustumCulled = false; const pos = m.geometry.getAttribute("position");
         for (let i = 0; i < pos.count; i++) radius = Math.max(radius, Math.hypot(pos.getX(i), pos.getZ(i)));

@@ -1,0 +1,16 @@
+{
+ "id": "hochlande_bergwerk",
+ "name": "Das Erzberg-Bergwerk",
+ "untertitel": "Unter dem Erzberg",
+ "ursprung": [
+  362,
+  300
+ ],
+ "chunks": [
+  3,
+  2
+ ],
+ "biom": "hoehle",
+ "stufe": 12,
+ "ebene": "untergrund"
+}

@@ -3,7 +3,7 @@
  * Alle Werkzeuge der Pipeline (Prüfung, Bodenbäcker, Chunk-Bau, Editor-Dienst) holen ihre Daten hierüber.
  */
 import { build } from "esbuild";
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, rmSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { join } from "node:path";
 
@@ -12,9 +12,10 @@ export const REALTIME = join(HIER, "..", ".."), WURZEL = join(REALTIME, ".."), W
 
 /** shared/welt (und die Gegnerarten aus shared/config) für Node bündeln und laden */
 export async function gemeinsam() {
-  const aus = join(HIER, ".welt.gebaut.mjs");
+  /* je Prozess eine eigene Datei: parallel laufende Tests überschreiben sich sonst die halb geschriebene Datei */
+  const aus = join(HIER, `.welt.gebaut.${process.pid}.${Date.now()}.mjs`);
   await build({ stdin: { contents: 'export * from "./shared/welt"; export { MONSTER } from "./shared/config"; export * as karte from "./shared/karte";', resolveDir: REALTIME, loader: "ts" }, bundle: true, format: "esm", platform: "node", outfile: aus, logLevel: "silent" });
-  return import(pathToFileURL(aus).href + "?t=" + Date.now());
+  try { return await import(pathToFileURL(aus).href); } finally { rmSync(aus, { force: true }); }
 }
 
 const json = (pfad) => { try { return JSON.parse(readFileSync(pfad, "utf8")); } catch (e) { throw new Error(`${pfad}: ${e.message}`); } };
@@ -24,13 +25,13 @@ export function bibliothek() {
 }
 export const regionNamen = () => readdirSync(join(WELT, "regionen"), { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name).sort();
 /** Eine Region so, wie sie im Repository liegt (RegionDaten) */
-export function region(name) {
+export function region(name, roh = false) /* roh: die vollständigen Objekte (für Werkzeuge, die objekte.json zurückschreiben) */ {
   const ordner = join(WELT, "regionen", name);
   if (!existsSync(ordner)) throw new Error(`Region „${name}“ gibt es nicht (${ordner})`);
   return {
     region: json(join(ordner, "region.json")),
     gelaende: readFileSync(join(ordner, "gelaende.txt"), "utf8").split(/\r?\n/).filter((z, i, a) => z.length > 0 || i < a.length - 1),
-    objekte: json(join(ordner, "objekte.json")),
+    objekte: roh ? json(join(ordner, "objekte.json")) : auslichten(json(join(ordner, "objekte.json"))),
     spiel: json(join(ordner, "spiel.json")),
   };
 }
@@ -54,3 +55,11 @@ export async function formPruefen(namen = regionNamen()) {
   }
   return aus;
 }
+
+/* Deko-Bäume auf 2/3 (25.11.2026, für flüssigeres Spielen am Handy): jeder dritte reine Deko-Baum fällt weg – immer derselbe (aus der Stelle berechnet).
+   Weil alle Werkzeuge die Regionen hier laden, passen Bild (drei.mjs), Gehraster (bauen.mjs) und Kampfraster (weltzonen.py) zusammen – keine unsichtbaren Wände.
+   Nicht betroffen: Holzfäller- und Questbäume (holz_…), Sammelpflanzen, Büsche, Hecken, Schilf, liegende Stämme und alles mit eigenem Namen als Kennung (nicht nur „b0123“). */
+const DEKO_BAUM = /^(wald_baum\d|stil_(eiche|linde|herbst|tanne|birke|erle_tot|apfel|tot|laub)_)/;
+function auslichten(liste) { if (!Array.isArray(liste)) return liste;
+  return liste.filter((p) => { if (!p || (p.id && !/^b\d+$/.test(String(p.id))) || !DEKO_BAUM.test(String(p.objekt || ""))) return true; /* durchnummerierte Bäume (b0123) ja, benannte nicht */
+    let h = Math.imul(Math.round(p.x * 8) | 0, 73856093) ^ Math.imul(Math.round(p.y * 8) | 0, 19349663); h = Math.imul(h ^ (h >>> 13), 0x5bd1e995); return ((h >>> 0) % 3) !== 0; }); }

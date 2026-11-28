@@ -15,34 +15,11 @@
  ],
  "figuren": [
   {
-   "id": "hanne",
-   "rolle": "npc",
-   "figur": "hanne",
-   "x": 33.4,
-   "y": 23.4
-  },
-  {
    "id": "lene",
    "rolle": "npc",
    "figur": "lene",
    "x": 40.6,
    "y": 25.2
-  },
-  {
-   "id": "tebbe",
-   "rolle": "npc",
-   "figur": "tebbe",
-   "x": 58.6,
-   "y": 36.6,
-   "links": true
-  },
-  {
-   "id": "agnes",
-   "rolle": "npc",
-   "figur": "agnes",
-   "x": 50.2,
-   "y": 33.2,
-   "links": true
   },
   {
    "id": "mette",
@@ -121,6 +98,19 @@
    }
   },
   {
+   "id": "bankschalter",
+   "art": "lesen",
+   "x": 36.5,
+   "y": 20.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Bankschalter von Weidenhain. Hinter dem Messinggitter wird bald Gold eingezahlt und abgehoben – dasselbe Konto wie in der Bank der Waldmark.",
+    "tat": "bald",
+    "knopf": "Bankschalter – öffnet bald"
+   }
+  },
+  {
    "id": "wehr",
    "art": "lesen",
    "x": 60,
@@ -145,7 +135,15 @@
  ],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 46,
+    "y0": 21,
+    "x1": 47,
+    "y1": 22
+   }
+  ],
   "freigeben": [
    {
     "art": "rechteck",

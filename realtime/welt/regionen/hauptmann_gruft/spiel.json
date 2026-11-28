@@ -1,0 +1,45 @@
+{
+ "start": [
+  [
+   16,
+   27
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "hauptmann_gruft_ausgang",
+   "art": "eingang",
+   "x": 16,
+   "y": 29,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Zurück in die Siegelkammer.",
+    "tat": "hauptmann_gruft_zurueck",
+    "knopf": "Zurück",
+    "ziel": [
+     11168,
+     9606.5
+    ]
+   }
+  },
+  {
+   "id": "hauptmann_sarkophag",
+   "art": "lesen",
+   "x": 16,
+   "y": 16.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Sarkophag des Grauen Hauptmanns. Auf dem Deckel liegt eine Klinge aus grauem Stahl."
+   }
+  }
+ ]
+}

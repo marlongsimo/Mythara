@@ -1,0 +1,16 @@
+{
+ "id": "rathaus_archiv",
+ "name": "Das Archiv",
+ "untertitel": "Im Rathaus der Waldmark",
+ "ursprung": [
+  356,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "innen",
+ "stufe": 1,
+ "ebene": "innen"
+}

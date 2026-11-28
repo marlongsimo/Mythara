@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Riftmere – Wache</title>
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <link rel="icon" href="../img/favicon.png" type="image/png">
+  <link rel="stylesheet" href="start.css?v=mx064th3">
+  <style>
+    /* Admin-Seite „Wache“ (25.11.2026): eigener Link, eigene Anmeldung. Zugriff nur für Konten in rpg_admins – das prüft die Datenbank
+       (rpg_admin_feedback, rpg_admin_feedback_read aus Migration 032), nicht diese Seite. Eigene Sitzung (rift-wache-auth), nur bis der Tab zu ist. */
+    body { background: #0d0b0a; }
+    .buehne { justify-content: flex-start; }
+    .wache { width: min(980px, 100%); padding: 44px clamp(16px, 4vw, 40px) 28px; margin-top: 52px; display: flex; flex-direction: column; gap: 14px; }
+    .wache.klein { width: min(560px, 100%); }
+    .wache h1 { margin: 0; text-align: center; font: 600 22px/1.2 var(--titel); letter-spacing: .1em; color: var(--gold); }
+    .wache .unter { margin: -6px 0 0; text-align: center; font: 400 16px var(--schrift); color: var(--leise); }
+    .kopfzeile { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+    .reiter { display: flex; gap: 6px; flex-wrap: wrap; }
+    .reiter button, .klein-knopf { font: 600 13px var(--titel); letter-spacing: .05em; color: var(--text); background: linear-gradient(#2a2420, #171412); border: 1px solid #5d4c35; border-radius: 7px; padding: 8px 12px; cursor: pointer; }
+    .reiter button.an { color: #ffe7a8; border-color: var(--gold); background: linear-gradient(#5b4426, #3b2c19); }
+    .reiter button b { display: inline-block; min-width: 18px; margin-left: 6px; padding: 1px 6px; border-radius: 9px; background: #8a2a1a; color: #fff; font: 700 11px var(--klein); }
+    .klein-knopf:hover, .reiter button:hover { filter: brightness(1.15); }
+    .schalter { display: flex; align-items: center; gap: 8px; font: 400 16px var(--schrift); color: var(--text); cursor: pointer; }
+    .liste { display: grid; gap: 10px; }
+    .karte { border: 1px solid #5d4c35; border-radius: 10px; background: rgba(10,8,7,.55); padding: 12px 14px; display: grid; gap: 6px; font: 400 14px/1.45 var(--klein); color: var(--text); }
+    .karte.neu { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(217,178,95,.25); }
+    .karte .oben { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; justify-content: space-between; }
+    .karte h3 { margin: 0; font: 600 16px var(--titel); color: #ffd98a; letter-spacing: .03em; }
+    .karte .zeit { color: var(--leise); font-size: 12.5px; }
+    .karte .etikett { display: inline-block; padding: 1px 8px; border-radius: 9px; font-size: 12px; font-weight: 600; background: #3b2c19; color: #ffd98a; border: 1px solid #6a5232; }
+    .karte .etikett.bug { background: #3a1a14; color: #ffb4a0; border-color: #8a3a28; } .karte .etikett.offen { background: #8a2a1a; color: #fff; border-color: #c0503a; }
+    .karte .text { white-space: pre-wrap; word-break: break-word; }
+    .karte .chat { margin: 2px 0 0; padding: 8px 10px; background: rgba(0,0,0,.35); border-left: 3px solid #8a6a3a; border-radius: 4px; font: 13px/1.5 ui-monospace, Menlo, monospace; color: #e8dcc0; }
+    .karte .chat div { white-space: pre-wrap; word-break: break-word; } .karte .chat span { color: #b7aa8e; }
+    .karte details { color: var(--leise); font-size: 12.5px; } .karte details pre { white-space: pre-wrap; word-break: break-word; margin: 4px 0 0; }
+    .karte .unten { display: flex; gap: 8px; justify-content: flex-end; }
+    .leer { text-align: center; color: var(--leise); font: 400 18px var(--schrift); padding: 20px 0; }
+    @media (max-width: 560px) { .wache { margin-top: 40px; padding-top: 36px; } .karte { padding: 10px; } }
+  </style>
+</head>
+<body>
+  <main class="buehne">
+    <section class="tafel wache klein" id="tafel" aria-labelledby="titel">
+      <i class="ranke lo"></i><i class="ranke ro"></i><i class="ranke lu"></i><i class="ranke ru"></i>
+      <h1 id="titel">Wache</h1>
+      <p class="unter">Riftmere · Meldungen und Feedback</p>
+      <div id="inhalt"></div>
+      <p class="meldung" id="meldung" role="status"></p>
+    </section>
+  </main>
+  <script src="../vendor/supabase-js-2.45.4.js"></script>
+  <script src="../verbindung.js"></script>
+  <script>
+  (() => {
+    "use strict";
+    const $ = (s) => document.querySelector(s), NAME = /^[A-Za-z0-9_ÄÖÜäöüß]{3,20}$/;
+    const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const fb = (t, art = "") => { const e = $("#meldung"); e.textContent = t; e.dataset.art = art; };
+    let db = null; const c = window.MR_MULTIPLAYER_CONFIG;
+    /* eigene Sitzung, getrennt vom Spiel; nur im Tab (sessionStorage) */
+    try { if (window.supabase && c) db = window.supabase.createClient(c.supabaseUrl, c.supabasePublishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: "rift-wache-auth", storage: window.sessionStorage } }); } catch (e) { db = null; }
+    const rpc = async (fn, args) => { const { data, error } = await db.rpc(fn, args); if (error) throw new Error(error.message); return data; };
+    let reiter = "meldungen", nurOffen = true, daten = null, uhr = 0;
+
+    function anmeldeFenster() {
+      $("#tafel").classList.add("klein");
+      $("#inhalt").innerHTML = `<form id="form" style="display:grid;gap:14px">
+        <label class="feld"><input type="text" id="name" autocomplete="username" placeholder="Benutzername" aria-label="Benutzername"></label>
+        <label class="feld"><input type="password" id="pw" autocomplete="current-password" placeholder="Passwort" aria-label="Passwort"></label>
+        <button type="submit" class="knopf haupt" id="los">Anmelden</button></form>`;
+      $("#form").onsubmit = (e) => { e.preventDefault(); anmelden(); }; $("#name").focus(); }
+
+    async function anmelden() {
+      const name = $("#name").value.trim(), pw = $("#pw").value; if (!name || !pw) return fb("Bitte Benutzername und Passwort eingeben.", "fehler");
+      const knopf = $("#los"); knopf.disabled = true; fb("Anmeldung …");
+      try {
+        const s = (await db.auth.getSession()).data.session; if (!s) { const r = await db.auth.signInAnonymously(); if (r.error) throw new Error(r.error.message); }
+        const adresse = NAME.test(name) ? await rpc("rpg_login_email", { p_handle: name }) : null; if (!adresse) throw new Error("Benutzername oder Passwort ist falsch.");
+        const { error } = await db.auth.signInWithPassword({ email: adresse, password: pw }); if (error) throw new Error(/invalid/i.test(error.message) ? "Benutzername oder Passwort ist falsch." : error.message);
+        fb(""); await laden(true);
+      } catch (e) { fb(e.message, "fehler"); knopf.disabled = false; }
+    }
+
+    async function abmelden() { clearInterval(uhr); try { await db.auth.signOut(); } catch (e) { /* egal */ } try { sessionStorage.removeItem("rift-wache-auth"); } catch (e) { /* privat */ } fb("Abgemeldet."); anmeldeFenster(); }
+
+    async function laden(ersteMal) {
+      try { daten = await rpc("rpg_admin_feedback", { p_nur_neu: false }); }
+      catch (e) { if (/Nur Admins/i.test(e.message)) { await db.auth.signOut().catch(() => {}); try { sessionStorage.removeItem("rift-wache-auth"); } catch (x) { /* privat */ } anmeldeFenster(); fb("Kein Zugriff – dieses Konto ist kein Admin.", "fehler"); return; }
+        fb(e.message, "fehler"); return; }
+      if (ersteMal) { clearInterval(uhr); uhr = setInterval(() => laden(false), 60000); }
+      zeichnen(); }
+
+    const istMeldung = (f) => Boolean(f.kontext && f.kontext.meldung);
+    const zeitText = (t) => { const d = new Date(t); return isNaN(d) ? "" : d.toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }); };
+    function karte(f) {
+      const k = f.kontext || {}, offen = !f.gelesen;
+      if (istMeldung(f)) {
+        const eigen = String(f.text || "").replace(/^Spielermeldung: .*? – [^:]*:?\s*/, "").trim();
+        const chat = Array.isArray(k.chat) ? k.chat : [];
+        return `<article class="karte${offen ? " neu" : ""}"><div class="oben"><h3>${esc(k.gemeldet || "?")} <span class="etikett">${esc(k.grund || "Meldung")}</span>${offen ? ` <span class="etikett offen">offen</span>` : ""}</h3><span class="zeit">${zeitText(f.am)} · gemeldet von <b>${esc(f.von || "?")}</b>${k.ort ? " · " + esc(k.ort) : ""}</span></div>
+          ${eigen ? `<div class="text">„${esc(eigen)}“</div>` : `<div class="text" style="color:var(--leise)">Ohne eigene Worte.</div>`}
+          ${chat.length ? `<div class="chat">${chat.map((z) => `<div><span>[${esc(zeitText(z.zeit).slice(-5))}${z.kanal && z.kanal !== "oeffentlich" ? " · " + esc(z.kanal) : ""}]</span> ${esc(k.gemeldet || "")}: ${esc(z.text)}</div>`).join("")}</div>` : `<div class="text" style="color:var(--leise)">Keine Chatzeilen mitgeschickt.</div>`}
+          <div class="unten"><button type="button" class="klein-knopf" data-id="${esc(f.id)}" data-g="${offen ? "1" : "0"}">${offen ? "Erledigt" : "Wieder offen"}</button></div></article>`;
+      }
+      const technik = Object.keys(k).length ? `<details><summary>Technische Angaben</summary><pre>${esc(JSON.stringify(k, null, 2))}</pre></details>` : "";
+      return `<article class="karte${offen ? " neu" : ""}"><div class="oben"><h3>${esc(f.von || "Unbekannt")} <span class="etikett${f.art === "bug" ? " bug" : ""}">${f.art === "bug" ? "Bug" : "Feedback"}</span>${offen ? ` <span class="etikett offen">offen</span>` : ""}</h3><span class="zeit">${zeitText(f.am)}</span></div>
+        <div class="text">${esc(f.text)}</div>${technik}
+        <div class="unten"><button type="button" class="klein-knopf" data-id="${esc(f.id)}" data-g="${offen ? "1" : "0"}">${offen ? "Gelesen" : "Wieder offen"}</button></div></article>`;
+    }
+    function zeichnen() {
+      $("#tafel").classList.remove("klein");
+      const alle = (daten && daten.liste) || [], meld = alle.filter(istMeldung), rest = alle.filter((f) => !istMeldung(f));
+      const offenM = meld.filter((f) => !f.gelesen).length, offenF = rest.filter((f) => !f.gelesen).length;
+      const zeig = (reiter === "meldungen" ? meld : rest).filter((f) => !nurOffen || !f.gelesen);
+      $("#inhalt").innerHTML = `<div class="kopfzeile"><div class="reiter" role="tablist">
+          <button type="button" role="tab" data-r="meldungen" class="${reiter === "meldungen" ? "an" : ""}">Spielermeldungen${offenM ? `<b>${offenM}</b>` : ""}</button>
+          <button type="button" role="tab" data-r="feedback" class="${reiter === "feedback" ? "an" : ""}">Feedback &amp; Bugs${offenF ? `<b>${offenF}</b>` : ""}</button></div>
+        <div class="reiter"><label class="schalter"><input type="checkbox" id="offen" ${nurOffen ? "checked" : ""}> nur offene</label>
+          <button type="button" class="klein-knopf" id="neu">Aktualisieren</button><button type="button" class="klein-knopf" id="ab">Abmelden</button></div></div>
+        <div class="liste">${zeig.map(karte).join("") || `<p class="leer">${nurOffen ? "Nichts Offenes – alles erledigt." : "Noch nichts eingegangen."}</p>`}</div>
+        <p class="unter" style="margin:4px 0 0;font-size:14px">Die neuesten 200 Einträge · aktualisiert sich jede Minute</p>`;
+      document.querySelectorAll("[data-r]").forEach((b) => b.onclick = () => { reiter = b.dataset.r; zeichnen(); });
+      $("#offen").onchange = (e) => { nurOffen = e.target.checked; zeichnen(); };
+      $("#neu").onclick = () => laden(false); $("#ab").onclick = abmelden;
+      document.querySelectorAll(".karte [data-id]").forEach((b) => b.onclick = async () => { b.disabled = true;
+        try { daten = await rpc("rpg_admin_feedback_read", { p_id: b.dataset.id, p_gelesen: b.dataset.g === "1" }); zeichnen(); } catch (e) { fb(e.message, "fehler"); b.disabled = false; } });
+    }
+
+    if (!db) { fb("Keine Verbindung zur Datenbank.", "fehler"); return; }
+    db.auth.getSession().then(({ data }) => { if (data.session && data.session.user && !data.session.user.is_anonymous) laden(true); else anmeldeFenster(); }).catch(anmeldeFenster);
+  })();
+  </script>
+</body>
+</html>

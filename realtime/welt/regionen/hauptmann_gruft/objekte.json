@@ -1,0 +1,12 @@
+[
+ {"id":"altar_stein_1","objekt":"k_altar_stein","x":16,"y":13.79},
+ {"id":"grabstein_breit_2","objekt":"k_grabstein_breit","x":9.5,"y":9.5},
+ {"id":"grabstein_kreuz_3","objekt":"k_grabstein_kreuz","x":23.5,"y":9.5},
+ {"id":"grabstein_rund_4","objekt":"k_grabstein_rund","x":7.5,"y":17.5},
+ {"id":"grabstein_breit_5","objekt":"k_grabstein_breit","x":25.5,"y":17.5},
+ {"id":"grabstein_kreuz_6","objekt":"k_grabstein_kreuz","x":11.5,"y":22.5},
+ {"id":"grabstein_rund_7","objekt":"k_grabstein_rund","x":21.5,"y":22.5},
+ {"id":"feuerkorb_01_8","objekt":"moor_feuerkorb_01","x":6.5,"y":12.5},
+ {"id":"feuerkorb_01_9","objekt":"moor_feuerkorb_01","x":26.5,"y":12.5},
+ {"id":"feuerkorb_01_10","objekt":"moor_feuerkorb_01","x":16.5,"y":4.5}
+]

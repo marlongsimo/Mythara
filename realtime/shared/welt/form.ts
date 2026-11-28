@@ -125,7 +125,7 @@ export function regionFehler(roh: unknown, gelaende: GelaendeBibliothek, objekte
   if (L.wenn(!istObj(d.region), "region.json", "fehlt")) return L.fehler;
   const r = d.region as Roh;
   L.id(r.id, "region.id"); L.text(r.name, "region.name"); L.zahl(r.stufe, "region.stufe", 1, 20);
-  L.eins(r.biom, ["wald", "wiese", "dorf", "sumpf", "gebirge", "ufer", "hoehle"] as const, "region.biom");
+  L.eins(r.biom, ["wald", "wiese", "dorf", "sumpf", "gebirge", "ufer", "hoehle", "innen", "tundra", "kueste", "wueste", "tropen", "schnee", "meer"] as const, "region.biom");
   const formOk = !L.wenn(!istPaar(r.ursprung) || !r.ursprung.every(Number.isInteger), "region.ursprung", "[cx, cy] in ganzen Chunks erwartet")
     && !L.wenn(!istPaar(r.chunks) || !r.chunks.every((v) => Number.isInteger(v) && v >= 1 && v <= 64), "region.chunks", "[breit, hoch] in ganzen Chunks (1 bis 64) erwartet");
   if (!formOk) return L.fehler;
@@ -160,6 +160,7 @@ export function regionFehler(roh: unknown, gelaende: GelaendeBibliothek, objekte
       L.zahl(p.x, wo + ".x", -4, B + 4); L.zahl(p.y, wo + ".y", -4, H + 8);
       if (p.s !== undefined) L.zahl(p.s, wo + ".s", 0.3, 3);
       if (p.spiegeln !== undefined) L.wenn(typeof p.spiegeln !== "boolean", wo + ".spiegeln", "wahr oder falsch erwartet");
+      if (p.dreh !== undefined) L.wenn(![0, 90, 180, 270].includes(p.dreh as number), wo + ".dreh", "0, 90, 180 oder 270 erwartet"); /* #148 */
       if (p.spiegeln === true && def && def.ebenen) L.wenn(true, wo + ".spiegeln", "räumliche Gebäude dürfen nicht gespiegelt werden");
       if (p.zustand !== undefined) L.wenn(!def || !def.zustaende || !(String(p.zustand) in def.zustaende), wo + ".zustand", `Zustand „${String(p.zustand)}“ kennt das Objekt nicht`);
       if (p.kollision !== undefined) kollisionPruefen(L, p.kollision, wo + ".kollision");

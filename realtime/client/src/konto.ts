@@ -12,6 +12,7 @@
  */
 import { HELDEN, HELDENREIHE } from "../../shared/config";
 import { geschaffteKampagnen } from "../../shared/karten";
+import { kontoFreigeben } from "./abmeldung";
 interface Db { auth: { getSession(): Promise<{ data: { session: { access_token?: string; user: { is_anonymous?: boolean } } | null } }>; signInAnonymously(): Promise<{ error: { message: string } | null }>; signInWithPassword(a: { email: string; password: string }): Promise<{ error: { message: string } | null }>; signOut(): Promise<unknown>; updateUser(a: { email: string; password: string }): Promise<{ error: { message: string } | null }> };
   rpc(name: string, args?: Record<string, unknown>): Promise<{ data: unknown; error: { message: string } | null }> }
 const W = window as unknown as { supabase?: { createClient(url: string, key: string, o: unknown): Db }; MR_MULTIPLAYER_CONFIG?: { supabaseUrl: string; supabasePublishableKey: string } };
@@ -79,7 +80,10 @@ export function kontoFenster(zu?: () => void) { fenster(zu); }
 export function kontoAbmelden() { return abmelden(); }
 export function kontoAnmelden() { zurAnmeldung(); }
 /** Vor dem Spiel: Wer nicht angemeldet ist, kommt einmal je Besuch auf die Anmeldeseite (anmelden.html, gestaltet wie die des Würfelspiels). Dort meldet man sich an, legt ein Konto an oder spielt als Gast weiter. */
-export function kontoSeite(): Promise<void> { if (name || !verbindung()) return Promise.resolve(); try { if (sessionStorage.getItem("ez__gefragt") === "1") return Promise.resolve(); } catch { return Promise.resolve(); } zurAnmeldung(); return new Promise(() => { /* die Seite wechselt */ }); }
+/* Seit 24.11.2026: Vor jedem Besuch des Spiels kommt die Landing-Page (willkommen.html) – auch mit gespeicherter Anmeldung. Sie prüft die Anmeldung
+   (sonst weiter zum Login) und setzt mit „Ins Spiel“ „ez__lager“ für diesen Tab, damit Neuladen im Spiel (Heldenwechsel) nicht wieder dorthin führt. */
+export function kontoSeite(): Promise<void> { if (!verbindung()) return Promise.resolve(); try { if (sessionStorage.getItem("ez__lager") === "1") return Promise.resolve(); } catch { return Promise.resolve(); } zurLandung(); return new Promise(() => { /* die Seite wechselt */ }); }
+function zurLandung() { location.replace("willkommen.html" + (location.search ? "?weiter=" + encodeURIComponent(location.search) : "")); }
 function zurAnmeldung() { location.replace("anmelden.html" + (location.search ? "?weiter=" + encodeURIComponent(location.search) : "")); }
 /** Das Profil als Tafel: Name, Seelensplitter, Kampagnen – und die Wahl des Bildnisses. Das gewählte Bildnis ist auch die Figur, mit der man durch die Waldmark läuft (in Kampagnen läuft immer der Anführer des Teams). */
 function fenster(danach?: () => void) {
@@ -105,8 +109,9 @@ function fenster(danach?: () => void) {
   f.onclick = (e) => { const el = (e.target as HTMLElement).closest("[data-t],[data-held]") as HTMLElement | null; if (e.target === f) { fertig(); return; } if (!el) return;
     if (el.dataset.held) { held = el.dataset.held; zeige(); } /* gemerkt wird erst beim Schließen – und nur, wenn der Wechsel gilt */ else if (el.dataset.t === "zu") fertig(); else if (el.dataset.t === "aussehen") location.href = "held.html?weiter=" + encodeURIComponent(location.search); else if (el.dataset.t === "ab") void abmelden(); else if (el.dataset.t === "hin") zurAnmeldung(); };
 }
+/** Abmelden im Spiel (wie der Logout in OSRS): speichern und zur Willkommensseite – angemeldet bleibt man dort; erst ihr Abmelde-Knopf meldet ab und führt zur Anmeldeseite */
 async function abmelden() {
-  clearTimeout(takt); await speichern(); const d = verbindung(); if (d) await d.auth.signOut();
-  /* der Fortschritt gehört zum Konto: Auf dem Gerät bleibt nichts zurück, sonst landete er beim nächsten Anmelden in einem fremden Konto */
-  name = ""; setze({}); try { roh.entfernen("ez__offen"); roh.entfernen("ez__version"); sessionStorage.removeItem("ez__neu"); sessionStorage.removeItem("ez__gefragt"); } catch { /* privat */ } location.replace("anmelden.html"); /* nach dem Abmelden zurück zur Anmeldeseite */
+  clearTimeout(takt); await speichern();
+  kontoFreigeben(); /* Verbindungen mit „abmelden“ schließen: das Konto ist sofort frei für ein anderes Gerät (Server: sitz.ts) */
+  try { sessionStorage.removeItem("ez__lager"); /* „Ins Spiel“ auf der Willkommensseite setzt ihn wieder */ } catch { /* privat */ } location.replace("willkommen.html");
 }

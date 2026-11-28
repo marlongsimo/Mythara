@@ -1,0 +1,533 @@
+{
+ "start": [
+  [
+   240,
+   224
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 473,
+    "y0": 44.5,
+    "x1": 476,
+    "y1": 48.5,
+    "schalter": "lehmfurt_trittsteine"
+   },
+   {
+    "art": "rechteck",
+    "x0": 404,
+    "y0": 116,
+    "x1": 405,
+    "y1": 117
+   },
+   {
+    "art": "rechteck",
+    "x0": 399,
+    "y0": 115,
+    "x1": 400,
+    "y1": 116
+   },
+   {
+    "art": "rechteck",
+    "x0": 399,
+    "y0": 110,
+    "x1": 400,
+    "y1": 111
+   },
+   {
+    "art": "rechteck",
+    "x0": 404,
+    "y0": 111,
+    "x1": 405,
+    "y1": 112
+   },
+   {
+    "art": "rechteck",
+    "x0": 439,
+    "y0": 48,
+    "x1": 440,
+    "y1": 49
+   },
+   {
+    "art": "rechteck",
+    "x0": 434,
+    "y0": 49,
+    "x1": 435,
+    "y1": 50
+   },
+   {
+    "art": "rechteck",
+    "x0": 436,
+    "y0": 45,
+    "x1": 437,
+    "y1": 46
+   }
+  ],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 421,
+    "y0": 114.7,
+    "x1": 428.9,
+    "y1": 117.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 432.5,
+    "y0": 98.7,
+    "x1": 441.5,
+    "y1": 101.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 437,
+    "y0": 150.7,
+    "x1": 444.9,
+    "y1": 153.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 430.2,
+    "y0": 150.7,
+    "x1": 438.1,
+    "y1": 153.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 423.4,
+    "y0": 150.7,
+    "x1": 431.3,
+    "y1": 153.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 416.6,
+    "y0": 150.7,
+    "x1": 424.5,
+    "y1": 153.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 420.54,
+    "y0": 135.7,
+    "x1": 428.44,
+    "y1": 138.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 413.21,
+    "y0": 135.7,
+    "x1": 421.11,
+    "y1": 138.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 405.89,
+    "y0": 135.7,
+    "x1": 413.79,
+    "y1": 138.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 398.56,
+    "y0": 135.7,
+    "x1": 406.46,
+    "y1": 138.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 394.6,
+    "y0": 133.3,
+    "x1": 403.2,
+    "y1": 140.3
+   }
+  ]
+ },
+ "interaktionen": [
+  {
+   "id": "werft",
+   "art": "lesen",
+   "x": 427,
+   "y": 121.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werft von Kielmund. Auf der Helling liegt ein halbfertiger Rumpf, daneben Spanten und Pech."
+   }
+  },
+  {
+   "id": "kielmund_neues_boot",
+   "art": "lesen",
+   "x": 426,
+   "y": 119.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das neue Boot aus der Werft von Kielmund, frisch geteert. Am Bug steht in weißer Farbe ein Name.",
+    "ausbau": "kielmund_boot"
+   }
+  },
+  {
+   "id": "kai",
+   "art": "lesen",
+   "x": 433.5,
+   "y": 110,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Kai an der Kiel. Fässer, Taue, Möwen – und der Geruch von Hering."
+   }
+  },
+  {
+   "id": "fischplatz_kai",
+   "art": "lesen",
+   "x": 432.5,
+   "y": 110.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Kai beißen die Heringe.",
+    "fisch": "hering",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "kuestenhaus",
+   "art": "lesen",
+   "x": 462,
+   "y": 96.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Haus der Küstenhäuser – hier sitzen die Familien, die den Hafen verwalten."
+   }
+  },
+  {
+   "id": "fischmarkt",
+   "art": "lesen",
+   "x": 474,
+   "y": 123.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Fischmarkt. Hering, Klippenbarsch, Seeaal – und ein Händler, der schwört, einen Glutwels zu haben."
+   }
+  },
+  {
+   "id": "kielmund",
+   "art": "lesen",
+   "x": 474,
+   "y": 116.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Kielmund, wo die Kiel ins Meer fällt. Möwen über den Dächern, Salz in der Luft."
+   }
+  },
+  {
+   "id": "kielmund_wegstein",
+   "art": "lesen",
+   "x": 468,
+   "y": 172.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Wegstein von Kielmund."
+   }
+  },
+  {
+   "id": "kielmund_bindestein",
+   "art": "lesen",
+   "x": 476,
+   "y": 172.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Bindestein am Südplatz von Kielmund. Von hier sieht man das Leuchtfeuer auf der Mole."
+   }
+  },
+  {
+   "id": "fischerzunft_fang_1",
+   "art": "lesen",
+   "x": 434.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "fischerzunft_fang_2",
+   "art": "lesen",
+   "x": 432.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "fischerzunft_fang_3",
+   "art": "lesen",
+   "x": 430.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Klippenbarsche.",
+    "fisch": "klippenbarsch",
+    "stufe": 35
+   }
+  },
+  {
+   "id": "fischerzunft_fang_4",
+   "art": "lesen",
+   "x": 428.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "fischerzunft_fang_5",
+   "art": "lesen",
+   "x": 426.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "fischerzunft_fang_6",
+   "art": "lesen",
+   "x": 425.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Vom Privatsteg der Fischerzunft aus beißen Heringe.",
+    "fisch": "hering",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "fischerzunft_silberbarsch_1",
+   "art": "lesen",
+   "x": 423.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Silberbarsche.",
+    "fisch": "silberbarsch",
+    "stufe": 70
+   }
+  },
+  {
+   "id": "fischerzunft_silberbarsch_2",
+   "art": "lesen",
+   "x": 422.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Silberbarsche.",
+    "fisch": "silberbarsch",
+    "stufe": 70
+   }
+  },
+  {
+   "id": "fischerzunft_sturmhecht_1",
+   "art": "lesen",
+   "x": 421.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Sturmhechte.",
+    "fisch": "sturmhecht",
+    "stufe": 80
+   }
+  },
+  {
+   "id": "fischerzunft_sturmhecht_2",
+   "art": "lesen",
+   "x": 420.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Sturmhechte.",
+    "fisch": "sturmhecht",
+    "stufe": 80
+   }
+  },
+  {
+   "id": "fischerzunft_tiefseeaal_1",
+   "art": "lesen",
+   "x": 419.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Tiefseeaale.",
+    "fisch": "tiefseeaal",
+    "stufe": 90
+   }
+  },
+  {
+   "id": "fischerzunft_tiefseeaal_2",
+   "art": "lesen",
+   "x": 418.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Tiefseeaale.",
+    "fisch": "tiefseeaal",
+    "stufe": 90
+   }
+  },
+  {
+   "id": "fischerzunft_bankkiste",
+   "art": "lesen",
+   "x": 447,
+   "y": 159,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Fischerzunft. Was du hier einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "fischerzunft",
+   "art": "lesen",
+   "x": 451.6,
+   "y": 150.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Privatsteg der Fischerzunft. „Nur für Meister des Fischens – ab Stufe 60.“"
+   }
+  },
+  {
+   "id": "wrack",
+   "art": "lesen",
+   "x": 331,
+   "y": 64.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Schiffswrack, halb im Sand. Am Bug noch lesbar: „Morgenstern“. Der Kapitän, sagen sie, ist nie von Bord gegangen."
+   }
+  },
+  {
+   "id": "fischplatz_wrack",
+   "art": "lesen",
+   "x": 322,
+   "y": 58,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Zwischen den Spanten des Wracks lauern Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "kielmund_mole",
+   "art": "lesen",
+   "x": 422,
+   "y": 137,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Leuchtturm-Mole von Kielmund. Am Ende brennt das Feuer, das die Boote heimholt – man sieht es bis zur Möwenbucht."
+   }
+  },
+  {
+   "id": "kielmund_leuchtturm",
+   "art": "lesen",
+   "x": 399.2,
+   "y": 137,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Leuchtturm am Ende der Mole. Der Wärter hat Salz in den Bart und Rost an den Händen."
+   }
+  },
+  {
+   "id": "kielmund_hafenbank_tuer",
+   "art": "lesen",
+   "x": 462,
+   "y": 132.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Hafenbank von Kielmund. Kapitäne zahlen hier ihre Heuer aus."
+   }
+  },
+  {
+   "id": "kielmund_hafenmeisterei",
+   "art": "lesen",
+   "x": 454.5,
+   "y": 148.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Hafenmeisterei. Wer hier anlegt, zahlt Liegegeld – und wer ablegen will, fragt nach dem Wetter."
+   }
+  },
+  {
+   "id": "furt",
+   "art": "lesen",
+   "x": 476.5,
+   "y": 46.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Furt durch die Kiel. Mit ein paar Trittsteinen käme man trocken hinüber.",
+    "questobjekt": "trittsteine"
+   }
+  },
+  {
+   "id": "rast_kuestenweg",
+   "art": "lesen",
+   "x": 348,
+   "y": 28.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
+   }
+  }
+ ],
+ "senken": [
+  {
+   "x": 436.7,
+   "y": 47.8,
+   "r": 5,
+   "tiefe": 1.1
+  }
+ ]
+}
