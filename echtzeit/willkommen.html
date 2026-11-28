@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <link rel="manifest" href="mythara.webmanifest?v=mx082in9">
+  <link rel="manifest" href="mythara.webmanifest?v=mx093v90">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,9 +12,9 @@
   <title>Riftmere – Willkommen</title>
   <meta name="robots" content="noindex">
   <link rel="icon" href="../img/favicon.png" type="image/png">
-  <link rel="stylesheet" href="start.css?v=mx082in9">
-  <script src="start-passen.js?v=mx082in9"></script>
-  <script src="quer.js?v=mx082in9" defer></script>
+  <link rel="stylesheet" href="start.css?v=mx093v90">
+  <script src="start-passen.js?v=mx093v90"></script>
+  <script src="quer.js?v=mx093v90" defer></script>
   <style>
     /* Landing-Page: kommt bei jedem Besuch vor dem Spiel – Neuigkeiten, Nachrichten, „Ins Spiel“ */
     .lager { width: min(1120px, 96vw); padding: 56px clamp(16px, 3vw, 40px) 30px;
@@ -158,7 +158,7 @@
       $("#neuigkeiten").innerHTML = (d.neuigkeiten || []).map((n) => `<li class="neu"><img src="../img/echtzeit/start/${esc(n.bild || "kristall")}.webp" alt="" loading="lazy"><div><h3>${esc(n.titel)}</h3><p>${esc(n.text)}</p></div><time datetime="${esc(n.datum)}">${datum(n.datum)}</time></li>`).join("");
       let gelesen = []; try { gelesen = JSON.parse(lies("ez_gelesen") || "[]"); } catch (e) { gelesen = []; }
       const post = d.nachrichten || [], neu = post.filter((m) => !gelesen.includes(m.id));
-      $("#nachrichten").innerHTML = post.map((m) => `<li class="nachricht${neu.includes(m) ? " neu-gelesen" : ""}" data-art="${esc(m.art || "info")}"><h3>${esc(m.titel)}</h3><p>${esc(m.text)}</p></li>`).join("");
+      $("#nachrichten").innerHTML = post.length ? post.map((m) => `<li class="nachricht${neu.includes(m) ? " neu-gelesen" : ""}" data-art="${esc(m.art || "info")}"><h3>${esc(m.titel)}</h3><p>${esc(m.text)}</p></li>`).join("") : '<li class="leer" style="list-style:none;opacity:.75"><p>Keine Nachrichten</p></li>';
       const z = $("#zahl"); z.hidden = neu.length === 0; z.textContent = String(neu.length);
       $("#post").onclick = (e) => { e.stopPropagation(); const pm = $("#post-menue"); pm.hidden = !pm.hidden; $("#menue").hidden = true; /* Nachrichten als Fenster (ihr alter Platz ist jetzt die Weltenwahl) */
         schreib("ez_gelesen", JSON.stringify([...new Set([...gelesen, ...post.map((m) => m.id)])])); z.hidden = true; };

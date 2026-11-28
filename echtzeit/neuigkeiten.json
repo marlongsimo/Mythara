@@ -9,9 +9,5 @@
   { "id": "n-unterschlupf", "datum": "2026-11-21", "bild": "lager", "titel": "Der Unterschlupf der Banditen", "text": "Unter der verlassenen Hütte in der Westmark führt ein Loch hinab in sechs Räume – das Hauptquartier der Banditen." },
   { "id": "n-rabe", "datum": "2026-11-20", "bild": "rabe", "titel": "Die Splitterlande in Erprobung", "text": "Willkommen in der Beta! Die Welt wächst fast täglich. Fortschritt kann sich bis zum Start noch ändern." }
  ],
- "nachrichten": [
-  { "id": "m-beta", "art": "system", "titel": "System", "text": "Beta: Fortschritt kann bis zum Start zurückgesetzt werden." },
-  { "id": "m-3d", "art": "info", "titel": "Entwickler-Update", "text": "Die Welt in 3D wird erprobt – ein Blick hinter die Kulissen." },
-  { "id": "m-gemeinschaft", "art": "info", "titel": "Gemeinschaft", "text": "Lade Freunde ein: In der Waldmark seht ihr euch gegenseitig." }
- ]
+ "nachrichten": []
 }
