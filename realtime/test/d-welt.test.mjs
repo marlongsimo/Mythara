@@ -6,7 +6,7 @@
 import { starte, starkerHeld, roh, LEGENDAER, QUESTS, QB } from "./questwelt.mjs";
 const D1 = QUESTS.find((q) => q.id === "graufurt_die_faehrkette"), D2 = QUESTS.find((q) => q.id === "ostufer_das_gruene_licht"), D3 = QUESTS.find((q) => q.id === "graufurt_wels_im_trueben");
 const kai = starkerHeld({ fertig: ["nordwald_das_wappen_mit_dem_turm"], berufe: { bergbau: 50, schmieden: 50, fischen: 50, kochen: 50 },
-  rucksack: ["hammer", "spitzhacke_legendaer", "angelrute", "wappenabrieb", { g: "wurm", n: 40 }, ...Array(3).fill("stamm_tanne"), ...Array(8).fill("barren_splittereisen"), { g: "mehl", n: 5 } /* zwei mehr: eine Pastete kann anbrennen */] });
+  rucksack: ["hammer", "spitzhacke_legendaer", "angelrute", "wappenabrieb", { g: "wurm", n: 40 }, ...Array(3).fill("stamm_tanne"), ...Array(8).fill("barren_splittereisen"), { g: "mehl", n: 8 }] }); /* angebrannte Pasteten kosten auch Mehl (Rezept ab Kochen 45) */
 kai.inventar.angelegt = { ...LEGENDAER }; /* Ausrüstung in passender Stufe: mit dem Trainingsschwert heilt das Grünlicht den Turmwächter schneller, als man trifft */
 const W = await starte({ sb: 8811, srv: 8812, helden: { kai, lea: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: [{ g: "splitter", n: 20 }], v: 2 } } } });
 /* Ports für parallel.mjs: localhost:8811, localhost:8812 */
@@ -49,7 +49,7 @@ try {
 
   console.log("D3 „Wels im Trüben“");
   check(await sprich(k, D3, "alma", "annehmen") && stand(k, D3).phase === "laeuft", "Kai nimmt D3 an");
-  check(await fischen(k, "faehrhafen", "fisch_wels_roh", 5, 240000) /* zwei mehr: eine Pastete kann anbrennen */ && erl(k, D3, "welse"), `Drei Graufurter Welse im Fährhafen (${anzahl(k, "fisch_wels_roh")})`);
+  check(await fischen(k, "faehrhafen", "fisch_wels_roh", 3, 180000) && erl(k, D3, "welse"), `Drei Graufurter Welse im Fährhafen (${anzahl(k, "fisch_wels_roh")})`);
   { let r = ""; for (let i = 0; i < 6 && anzahl(k, "welspastete") < 2; i++) { r = await herstellen(k, 6698.2, 6537.2, "welspastete", 2 - anzahl(k, "welspastete"));
       if (/fehlt.*Wels/.test(r) && anzahl(k, "welspastete") < 2) await fischen(k, "faehrhafen", "fisch_wels_roh", anzahl(k, "fisch_wels_roh") + 1, 90000); } /* eine angebrannte Pastete verbraucht einen Wels: einen nachangeln */ check(r === "ok" && anzahl(k, "welspastete") >= 2 && erl(k, D3, "pasteten"), `Zwei Welspasteten am Herd „Zur Furt“ (${r}, ${anzahl(k, "welspastete")})`); }
   check(await sprich(k, D3, "alma", "abgeben") && fertig(k, D3), "D3 fertig, Lohn abgeholt");
