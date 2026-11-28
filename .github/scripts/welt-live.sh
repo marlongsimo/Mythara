@@ -13,7 +13,9 @@
 set -euo pipefail
 
 ZIEL="feature/realtime-engine"
-QUELLEN="${QUELLEN:-claude/mythara-world-pipeline-z4ynx5 claude/tender-heisenberg-bruby2 claude/riftmere-quests claude/relaxed-sagan-erl6lf}"
+# Ausgaben (Entscheidung des Nutzers, 28.11.): ohne Angabe wird nichts eingemischt – der Zeitplan baut nur feature neu und bringt es nach main.
+# Neue Inhalte sammeln sich auf ausgabe/naechste und kommen auf Knopfdruck (Eingabe „quellen“), Hotfixes über claude/hotfix-<nr>.
+QUELLEN="${QUELLEN:-}"
 # Zweige mit Änderungen unter diesen Pfaden haben einen Lauf des Workflows „Tests“ (Job „server“) – sie kommen nur mit grünem Lauf
 # auf ihrem Kopf-Commit durch (#22). Zweige, die nur Bilder, Modelle oder Doku ändern, brauchen keinen.
 GETESTET='^(realtime|supabase)/'
