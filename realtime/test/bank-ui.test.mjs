@@ -78,7 +78,7 @@ try {
   check(await anna.evaluate(() => (document.querySelector('.tafel.bank .braster .bfach[data-g="splitter"] b') || {}).textContent === "12"), "Im Bankraster steht die Menge (12, gelb wie in OSRS)");
   /* Reiter: Splitter per Rechtsklick „In neuen Reiter“ – oben erscheint Reiter 1 mit dem Bild der Splitter */
   await anna.click('.tafel.bank .braster .bfach[data-g="splitter"]', { button: "right" }); await anna.click('.ez-aktionen button:has-text("In neuen Reiter")');
-  check(await anna.waitForSelector('.tafel.bank .breiter .breit[data-r="1"] canvas', { timeout: 10000 }).then(() => true).catch(() => false), "Bank-Reiter: „In neuen Reiter“ legt Reiter 1 an (mit Bild)");
+  check(await anna.waitForSelector('.tafel.bank .breiter .breit[data-r="1"] :is(canvas,img.dbild)', { timeout: 10000 }).then(() => true).catch(() => false), "Bank-Reiter: „In neuen Reiter“ legt Reiter 1 an (mit Bild)");
   await anna.click('.tafel.bank .breiter .breit[data-r="1"]'); await anna.waitForTimeout(300);
   check(await anna.evaluate(() => [...document.querySelectorAll(".tafel.bank .braster .bfach")].map((b) => b.dataset.g).join() === "splitter"), "Reiter 1 zeigt nur die Splitter");
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "bank-reiter.png" });
