@@ -76,7 +76,8 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 
 | Ausgabe | Inhalt | Stand |
 |---|---|---|
-| **1 – App-Start** | Ockerlande (Orte, Läden, I1/I2), Kielmund-Stadtquests, Gegnerstufe + Gefahrenfarbe, Reifbach, Figuren-Gebäude, Sperren Drachenarm/Frostkrone (#185/#186), Pets als Gegenstände, Händler-Staffel (Episch in Rotlehm), Legendär-/Mythisch-Drops, Glutsteinschild 1:60, Waffen-Quests Eibenbogen/Lindenstab, Verdichtung Grenzland/Waldland/Westmark, Weltkarte flüssig (#183, Detailstufen) | 🟡 zusammengebaut auf claude/welt3d (Tests laufen) – wartet auf Freigabe Grenzland-Verdichtung; Weltkarte #183 erledigt (Hotfix 3 live, vom Nutzer auf dem iPhone bestätigt); **offen: #188 Rucksackbilder nach dem Anmelden (Rückfall, Bugs)**; App-Screenshots fertig |
+| **1 – App-Start** | Ockerlande, Kielmund-Quests, Gegnerstufe + Gefahrenfarbe, Pets als Gegenstände, Sperren + Schneesturm, Weltkarte mit Zoomstufen, Händler-Staffel, Legendär-/Mythisch-Drops, Quest-Waffen, Brücken, Kielmund-Mole, Grenzland-Verdichtung | ✅ **live** (28.11., main 9582f6a60) |
+| **1b** | volle Verdichtung aller Länder, Kleinorte Schritt 1 (167), Ockerton C, Pechtann + 2 Aufgaben | 🟡 Welt/Quests bauen, live direkt nach Fertigstellung |
 | **2** | 2–3 Midgame-Bosse (#178), Schiffslinien (Schiff + Kapitän fertig) | 🟡 vorbereitet |
 | läuft | Leere Flächen füllen (KANON 28.11.): Dorf Pechtann im Westwald, danach die größten Flächen der Reihe nach; Dichte nach MMO-Vorbild | 🟡 Welt baut |
 | später | übrige Midgame-Bosse, Block I I3/I4 (Ockermutter), Gegnerbeute #180, weitere Verdichtung | ⏳ |
