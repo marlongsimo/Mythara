@@ -67,6 +67,8 @@ try {
     check(gesehen.some((g) => g.art === "ich" && g.name === "Du") && o && o.antworten.includes("annehmen") && o.passt, `Aussage für Aussage (${gesehen.map((g) => g.name).join(" → ")}), dann „Wähle eine Antwort“: ${o && o.antworten.join(", ")}`); }
   await klick(anna, '#ez-gespraech [data-a="annehmen"]'); await anna.waitForTimeout(800);
   { const a = await offen(anna); check(a && a.art === "ich", "Die gewählte Antwort sagt der eigene Held (Bildnis rechts)"); if (BILD) await anna.screenshot({ path: BILD + "quest-ich.png" }); }
+  /* erst weiter, wenn die Antwort des Servers da ist („…“ → „Weiter“) – solange wartet, nimmt das Gespräch absichtlich keine Taste an */
+  await anna.waitForFunction(() => (document.querySelector("#ez-gespraech .weiter") || {}).textContent === "Weiter", null, { timeout: 20000 }).catch(() => {});
   await anna.keyboard.press(" "); await anna.waitForTimeout(500);
   { const a = await offen(anna); check(a && a.name === "Jori" && /Rathaus/.test(a.text), `Jori: „${a && a.text}“`); }
   await anna.keyboard.press(" "); await anna.waitForTimeout(400); check(!(await offen(anna)), "Nach der letzten Aussage schließt sich das Gespräch");
@@ -137,7 +139,7 @@ try {
     const m = await ben.evaluate(() => [...document.querySelectorAll(".ez-aktionen button")].map((b) => b.textContent)); check(m[0] === "💬Sprechen", `Rechtsklick auf Raban (ganze Figur, Brusthöhe): ${JSON.stringify(m)}`);
     await menueKlick(ben, "Sprechen"); } /* kurz antippen läuft nur hin; reden über lange drücken / Rechtsklick */
   await ben.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && d.offsetHeight > 0; }, null, { timeout: 60000 }).catch(() => {});
-  { const { gesehen, o } = await bisWahl(ben); check(gesehen.some((g) => /Bestätigung/.test(g.text)) && o && o.antworten.includes("durch"), "Raban: „Der Bote aus Waldmark hat uns die Bestätigung gebracht“ – Antwort „Nach Weidenhain weitergehen“");
+  { const { gesehen, o } = await bisWahl(ben); check(gesehen.some((g) => /Bestätigung/.test(g.text)) && o && o.antworten.includes("durch"), `Raban: „Der Bote aus Waldmark hat uns die Bestätigung gebracht“ – Antwort „Nach Weidenhain weitergehen“${o && o.antworten.includes("durch") ? "" : " (" + JSON.stringify({ gesehen: gesehen.map((g) => g.name + ": " + g.text.slice(0, 40)), o }) + ")"}`);
     if (o) await ben.keyboard.press(String(o.antworten.indexOf("durch") + 1)); }
   await ben.waitForFunction(() => !window.EZW.welt3d.quest.sperreZu, null, { timeout: 60000, polling: 250 }).catch(() => {}); /* die Antwort braucht unter Last (zwei Browser mit Software-Grafik) bis über 20 s (#99) */ await ben.waitForTimeout(500);
   check(await durch(ben) && await kreuzung(ben) && await ben.evaluate(() => !window.EZW.welt3d.quest.sperreZu), "Danach sind beide Wege für Ben frei (Baumstämme weg, Gehraster offen)");
