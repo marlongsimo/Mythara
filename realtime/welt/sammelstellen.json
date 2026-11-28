@@ -2301,7 +2301,7 @@
   },
   {
    "name": "Bäume am Weg (Fahle Weiten 45)",
-   "ort": "fwweg_45",
+   "ort": "fwweg_alt_45",
    "baeume": [
     {
      "id": "baume_am_weg_fahle_weiten_45_eiche_1",

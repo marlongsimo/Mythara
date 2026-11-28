@@ -622,6 +622,1175 @@
    "art": "Dorf",
    "x": 7490,
    "y": 7520
+  },
+  {
+   "name": "Der Hängende Stein",
+   "art": "Ort",
+   "x": 6095.0,
+   "y": 6542.6,
+   "ko": "ko_1"
+  },
+  {
+   "name": "Galgenhügel",
+   "art": "Ruine",
+   "x": 6283.0,
+   "y": 6523.0,
+   "ko": "ko_2"
+  },
+  {
+   "name": "Die Sieben Linden",
+   "art": "Ort",
+   "x": 6041.0,
+   "y": 6374.0,
+   "ko": "ko_3"
+  },
+  {
+   "name": "Hohe Heide",
+   "art": "Gehöft",
+   "x": 6207.0,
+   "y": 6469.0,
+   "ko": "ko_4"
+  },
+  {
+   "name": "Brandstätte",
+   "art": "Ruine",
+   "x": 6566.1,
+   "y": 6557.7,
+   "ko": "ko_5"
+  },
+  {
+   "name": "Moosschrein",
+   "art": "Ort",
+   "x": 6583.1,
+   "y": 6457.0,
+   "ko": "ko_6"
+  },
+  {
+   "name": "Rübenkreuz",
+   "art": "Ort",
+   "x": 6383.3,
+   "y": 6492.8,
+   "ko": "ko_7"
+  },
+  {
+   "name": "Kiefernwarte",
+   "art": "Ort",
+   "x": 6666.0,
+   "y": 6619.0,
+   "ko": "ko_8"
+  },
+  {
+   "name": "Hof am Dorfteich",
+   "art": "Gehöft",
+   "x": 6387.9,
+   "y": 6570.9,
+   "ko": "ko_9"
+  },
+  {
+   "name": "Nesselnest",
+   "art": "Lager",
+   "x": 6118.0,
+   "y": 6382.0,
+   "ko": "ko_10"
+  },
+  {
+   "name": "Versteck am Schwarzwasser",
+   "art": "Lager",
+   "x": 6760.0,
+   "y": 6451.0,
+   "ko": "ko_11"
+  },
+  {
+   "name": "Krummer Turm",
+   "art": "Ort",
+   "x": 6129.0,
+   "y": 6598.0,
+   "ko": "ko_12"
+  },
+  {
+   "name": "Eschenau",
+   "art": "Ort",
+   "x": 6503.0,
+   "y": 6385.0,
+   "ko": "ko_13"
+  },
+  {
+   "name": "Hopfenhof",
+   "art": "Gehöft",
+   "x": 6188.0,
+   "y": 6630.0,
+   "ko": "ko_14"
+  },
+  {
+   "name": "Rübenschrein",
+   "art": "Ort",
+   "x": 6307.3,
+   "y": 6394.9,
+   "ko": "ko_15"
+  },
+  {
+   "name": "Stiller Schrein",
+   "art": "Ort",
+   "x": 6693.0,
+   "y": 6374.8,
+   "ko": "ko_16"
+  },
+  {
+   "name": "Hinterm Moor",
+   "art": "Ort",
+   "x": 6708.0,
+   "y": 6709.0,
+   "ko": "ko_17"
+  },
+  {
+   "name": "Leere Mauern",
+   "art": "Ruine",
+   "x": 6375.3,
+   "y": 6655.9,
+   "ko": "ko_18"
+  },
+  {
+   "name": "Distelbrunnen",
+   "art": "Ort",
+   "x": 6780.0,
+   "y": 6574.0,
+   "ko": "ko_19"
+  },
+  {
+   "name": "Bruns Meiler",
+   "art": "Ort",
+   "x": 6545.1,
+   "y": 6646.6,
+   "ko": "ko_20"
+  },
+  {
+   "name": "Hungerhof",
+   "art": "Gehöft",
+   "x": 6643.1,
+   "y": 6488.8,
+   "ko": "ko_21"
+  },
+  {
+   "name": "Hilles Turm",
+   "art": "Ort",
+   "x": 6650.0,
+   "y": 6744.8,
+   "ko": "ko_22"
+  },
+  {
+   "name": "Igelwarte",
+   "art": "Ort",
+   "x": 6451.4,
+   "y": 6577.6,
+   "ko": "ko_23"
+  },
+  {
+   "name": "Alkes Schrein",
+   "art": "Ort",
+   "x": 6397.1,
+   "y": 6388.7,
+   "ko": "ko_24"
+  },
+  {
+   "name": "Spukhof",
+   "art": "Gehöft",
+   "x": 6448.7,
+   "y": 6490.4,
+   "ko": "ko_25"
+  },
+  {
+   "name": "Telses Schrein",
+   "art": "Ort",
+   "x": 6195.0,
+   "y": 6358.0,
+   "ko": "ko_26"
+  },
+  {
+   "name": "Neusiedel",
+   "art": "Ort",
+   "x": 6197.0,
+   "y": 6547.0,
+   "ko": "ko_27"
+  },
+  {
+   "name": "Eilerts Meiler",
+   "art": "Ort",
+   "x": 6627.0,
+   "y": 6352.0,
+   "ko": "ko_28"
+  },
+  {
+   "name": "Gerstenhof",
+   "art": "Gehöft",
+   "x": 6120.0,
+   "y": 6472.0,
+   "ko": "ko_29"
+  },
+  {
+   "name": "Erlenbrunnen",
+   "art": "Ort",
+   "x": 6639.0,
+   "y": 6565.0,
+   "ko": "ko_30"
+  },
+  {
+   "name": "Jagdlager",
+   "art": "Ort",
+   "x": 6521.0,
+   "y": 6748.0,
+   "ko": "ko_31"
+  },
+  {
+   "name": "Eschenhof",
+   "art": "Gehöft",
+   "x": 6604.8,
+   "y": 6710.2,
+   "ko": "ko_32"
+  },
+  {
+   "name": "Lerchenhof",
+   "art": "Gehöft",
+   "x": 6264.0,
+   "y": 6577.0,
+   "ko": "ko_33"
+  },
+  {
+   "name": "Bettlerschrein",
+   "art": "Ort",
+   "x": 6390.0,
+   "y": 6751.0,
+   "ko": "ko_34"
+  },
+  {
+   "name": "Immes Turm",
+   "art": "Ort",
+   "x": 6165.0,
+   "y": 6508.0,
+   "ko": "ko_35"
+  },
+  {
+   "name": "Kleindorf",
+   "art": "Ort",
+   "x": 6235.0,
+   "y": 6722.0,
+   "ko": "ko_36"
+  },
+  {
+   "name": "Bienenschrein",
+   "art": "Ort",
+   "x": 6471.1,
+   "y": 6342.1,
+   "ko": "ko_37"
+  },
+  {
+   "name": "Ruprechts Schrein",
+   "art": "Ort",
+   "x": 6776.7,
+   "y": 6750.5,
+   "ko": "ko_38"
+  },
+  {
+   "name": "Birkennest",
+   "art": "Lager",
+   "x": 6763.0,
+   "y": 6667.0,
+   "ko": "ko_39"
+  },
+  {
+   "name": "Martens Schrein",
+   "art": "Ort",
+   "x": 6237.0,
+   "y": 6418.0,
+   "ko": "ko_40"
+  },
+  {
+   "name": "Rußiger Meiler",
+   "art": "Ort",
+   "x": 6273.0,
+   "y": 6466.0,
+   "ko": "ko_41"
+  },
+  {
+   "name": "Tinis Hof",
+   "art": "Gehöft",
+   "x": 6321.0,
+   "y": 6613.0,
+   "ko": "ko_42"
+  },
+  {
+   "name": "Flachskreuz",
+   "art": "Ort",
+   "x": 6171.0,
+   "y": 6412.0,
+   "ko": "ko_43"
+  },
+  {
+   "name": "Hinter den Birken",
+   "art": "Gehöft",
+   "x": 6278.0,
+   "y": 6351.0,
+   "ko": "ko_44"
+  },
+  {
+   "name": "Hasellager",
+   "art": "Ort",
+   "x": 6480.0,
+   "y": 6632.9,
+   "ko": "ko_45"
+  },
+  {
+   "name": "Gretes Turm",
+   "art": "Ort",
+   "x": 6507.0,
+   "y": 6583.0,
+   "ko": "ko_46"
+  },
+  {
+   "name": "Hof am Rotbach",
+   "art": "Gehöft",
+   "x": 6618.0,
+   "y": 6655.0,
+   "ko": "ko_47"
+  },
+  {
+   "name": "Bernds Hof",
+   "art": "Gehöft",
+   "x": 6656.0,
+   "y": 6411.1,
+   "ko": "ko_48"
+  },
+  {
+   "name": "Schlehenlager",
+   "art": "Ort",
+   "x": 6337.4,
+   "y": 6342.1,
+   "ko": "ko_49"
+  },
+  {
+   "name": "Hirschlager",
+   "art": "Ort",
+   "x": 6551.0,
+   "y": 6340.0,
+   "ko": "ko_50"
+  },
+  {
+   "name": "Fallenstellerlager",
+   "art": "Ort",
+   "x": 6383.0,
+   "y": 6439.0,
+   "ko": "ko_51"
+  },
+  {
+   "name": "Kiefernmeiler",
+   "art": "Ort",
+   "x": 6419.4,
+   "y": 6620.7,
+   "ko": "ko_52"
+  },
+  {
+   "name": "Holunderschrein",
+   "art": "Ort",
+   "x": 6328.9,
+   "y": 6444.9,
+   "ko": "ko_53"
+  },
+  {
+   "name": "Tammes Meiler",
+   "art": "Ort",
+   "x": 6591.9,
+   "y": 6397.2,
+   "ko": "ko_54"
+  },
+  {
+   "name": "Holunderhof",
+   "art": "Gehöft",
+   "x": 6758.0,
+   "y": 6516.0,
+   "ko": "ko_55"
+  },
+  {
+   "name": "Leerer Turm",
+   "art": "Ort",
+   "x": 6330.0,
+   "y": 6562.0,
+   "ko": "ko_56"
+  },
+  {
+   "name": "Birkenwinkel",
+   "art": "Ort",
+   "x": 6708.0,
+   "y": 6645.7,
+   "ko": "ko_57"
+  },
+  {
+   "name": "Altes Gemäuer",
+   "art": "Ruine",
+   "x": 6599.9,
+   "y": 6601.3,
+   "ko": "ko_58"
+  },
+  {
+   "name": "Schlehenkate",
+   "art": "Ort",
+   "x": 6078.0,
+   "y": 6427.0,
+   "ko": "ko_59"
+  },
+  {
+   "name": "Grenzstein",
+   "art": "Ort",
+   "x": 6082.0,
+   "y": 6340.0,
+   "ko": "ko_60"
+  },
+  {
+   "name": "Ansgars Brunnen",
+   "art": "Ort",
+   "x": 6273.0,
+   "y": 6634.0,
+   "ko": "ko_61"
+  },
+  {
+   "name": "Hünengrab",
+   "art": "Ort",
+   "x": 6298.0,
+   "y": 5415.0,
+   "ko": "ko_62"
+  },
+  {
+   "name": "Die Windharfe",
+   "art": "Ort",
+   "x": 6184.0,
+   "y": 5582.0,
+   "ko": "ko_63"
+  },
+  {
+   "name": "Krähenbaum",
+   "art": "Ort",
+   "x": 5998.0,
+   "y": 5754.0,
+   "ko": "ko_64"
+  },
+  {
+   "name": "Der Versunkene Hof",
+   "art": "Ruine",
+   "x": 6759.0,
+   "y": 6225.0,
+   "ko": "ko_65"
+  },
+  {
+   "name": "Hirtenrast",
+   "art": "Ort",
+   "x": 6699.0,
+   "y": 5851.0,
+   "ko": "ko_66"
+  },
+  {
+   "name": "Binsenruh",
+   "art": "Ruine",
+   "x": 6292.0,
+   "y": 5884.0,
+   "ko": "ko_67"
+  },
+  {
+   "name": "Ottos Kate",
+   "art": "Ort",
+   "x": 6552.0,
+   "y": 6049.0,
+   "ko": "ko_68"
+  },
+  {
+   "name": "Stille Mühle",
+   "art": "Ort",
+   "x": 6675.0,
+   "y": 6187.0,
+   "ko": "ko_69"
+  },
+  {
+   "name": "Kate am Ententeich",
+   "art": "Ort",
+   "x": 6171.0,
+   "y": 5947.0,
+   "ko": "ko_70"
+  },
+  {
+   "name": "Volkers Hof",
+   "art": "Gehöft",
+   "x": 6369.0,
+   "y": 6286.0,
+   "ko": "ko_71"
+  },
+  {
+   "name": "Schwarzhof",
+   "art": "Gehöft",
+   "x": 6402.0,
+   "y": 5782.0,
+   "ko": "ko_72"
+  },
+  {
+   "name": "Ödes Feld",
+   "art": "Ort",
+   "x": 6595.0,
+   "y": 6220.0,
+   "ko": "ko_73"
+  },
+  {
+   "name": "Wolfsnest",
+   "art": "Lager",
+   "x": 6229.0,
+   "y": 5719.0,
+   "ko": "ko_74"
+  },
+  {
+   "name": "Borstkreuz",
+   "art": "Ort",
+   "x": 6759.0,
+   "y": 6028.0,
+   "ko": "ko_75"
+  },
+  {
+   "name": "Elsternest",
+   "art": "Lager",
+   "x": 6121.0,
+   "y": 5893.0,
+   "ko": "ko_76"
+  },
+  {
+   "name": "Mettes Kate",
+   "art": "Ort",
+   "x": 6153.0,
+   "y": 6082.0,
+   "ko": "ko_77"
+  },
+  {
+   "name": "Hirtenschrein",
+   "art": "Ort",
+   "x": 6513.0,
+   "y": 6250.0,
+   "ko": "ko_78"
+  },
+  {
+   "name": "Lager am Moorgraben",
+   "art": "Ort",
+   "x": 6902.0,
+   "y": 6634.0,
+   "ko": "ko_79"
+  },
+  {
+   "name": "Moornest",
+   "art": "Lager",
+   "x": 6463.0,
+   "y": 5971.0,
+   "ko": "ko_80"
+  },
+  {
+   "name": "Wiebkes Hof",
+   "art": "Gehöft",
+   "x": 6681.0,
+   "y": 6061.0,
+   "ko": "ko_81"
+  },
+  {
+   "name": "Hinterm Wald",
+   "art": "Ort",
+   "x": 6139.0,
+   "y": 5728.0,
+   "ko": "ko_82"
+  },
+  {
+   "name": "Wolfswarte",
+   "art": "Ort",
+   "x": 6627.0,
+   "y": 5680.0,
+   "ko": "ko_83"
+  },
+  {
+   "name": "Torfkate",
+   "art": "Ort",
+   "x": 6225.0,
+   "y": 5494.0,
+   "ko": "ko_84"
+  },
+  {
+   "name": "Sumpfschrein",
+   "art": "Ort",
+   "x": 6288.0,
+   "y": 5959.0,
+   "ko": "ko_85"
+  },
+  {
+   "name": "Rabenhof",
+   "art": "Gehöft",
+   "x": 6537.0,
+   "y": 5803.0,
+   "ko": "ko_86"
+  },
+  {
+   "name": "Fennas Jagdhütte",
+   "art": "Ort",
+   "x": 6344.0,
+   "y": 6091.0,
+   "ko": "ko_87"
+  },
+  {
+   "name": "Föhrenfeld",
+   "art": "Ort",
+   "x": 6539.0,
+   "y": 6136.0,
+   "ko": "ko_88"
+  },
+  {
+   "name": "Pfeifenhof",
+   "art": "Gehöft",
+   "x": 6210.0,
+   "y": 6208.0,
+   "ko": "ko_89"
+  },
+  {
+   "name": "Ginsterwarte",
+   "art": "Ort",
+   "x": 6450.0,
+   "y": 6031.0,
+   "ko": "ko_90"
+  },
+  {
+   "name": "Dörtes Turm",
+   "art": "Ort",
+   "x": 6864.0,
+   "y": 6703.0,
+   "ko": "ko_91"
+  },
+  {
+   "name": "Binsenstein",
+   "art": "Ort",
+   "x": 6457.0,
+   "y": 6232.0,
+   "ko": "ko_92"
+  },
+  {
+   "name": "Elsterstein",
+   "art": "Ort",
+   "x": 6331.0,
+   "y": 5722.0,
+   "ko": "ko_93"
+  },
+  {
+   "name": "Tiefer Brunnen",
+   "art": "Ort",
+   "x": 6558.0,
+   "y": 5911.0,
+   "ko": "ko_94"
+  },
+  {
+   "name": "Lerchenbrunnen",
+   "art": "Ort",
+   "x": 6837.0,
+   "y": 6622.0,
+   "ko": "ko_95"
+  },
+  {
+   "name": "Bei den Steinen",
+   "art": "Ort",
+   "x": 6748.0,
+   "y": 5902.0,
+   "ko": "ko_96"
+  },
+  {
+   "name": "Rolfs Schrein",
+   "art": "Ort",
+   "x": 6261.0,
+   "y": 6088.0,
+   "ko": "ko_97"
+  },
+  {
+   "name": "Konrads Schrein",
+   "art": "Ort",
+   "x": 6486.0,
+   "y": 5902.0,
+   "ko": "ko_98"
+  },
+  {
+   "name": "Bleichruh",
+   "art": "Ruine",
+   "x": 6754.0,
+   "y": 6097.0,
+   "ko": "ko_99"
+  },
+  {
+   "name": "Harms Jagdhütte",
+   "art": "Ort",
+   "x": 6386.0,
+   "y": 6052.0,
+   "ko": "ko_100"
+  },
+  {
+   "name": "Am Dornbusch",
+   "art": "Ort",
+   "x": 6847.0,
+   "y": 6466.0,
+   "ko": "ko_101"
+  },
+  {
+   "name": "Meiler am Eulenbach",
+   "art": "Ort",
+   "x": 6708.0,
+   "y": 5965.0,
+   "ko": "ko_102"
+  },
+  {
+   "name": "Josts Turm",
+   "art": "Ort",
+   "x": 6681.0,
+   "y": 5650.0,
+   "ko": "ko_103"
+  },
+  {
+   "name": "Alte Warte",
+   "art": "Ort",
+   "x": 6516.0,
+   "y": 5725.0,
+   "ko": "ko_104"
+  },
+  {
+   "name": "Nebelau",
+   "art": "Ort",
+   "x": 6614.0,
+   "y": 6163.0,
+   "ko": "ko_105"
+  },
+  {
+   "name": "Am Stillen Teich",
+   "art": "Ruine",
+   "x": 6226.0,
+   "y": 5917.0,
+   "ko": "ko_106"
+  },
+  {
+   "name": "Erikalager",
+   "art": "Ort",
+   "x": 6680.0,
+   "y": 6259.0,
+   "ko": "ko_107"
+  },
+  {
+   "name": "Diebeslager",
+   "art": "Lager",
+   "x": 6232.0,
+   "y": 5986.0,
+   "ko": "ko_108"
+  },
+  {
+   "name": "Am Krummen Pfad",
+   "art": "Ort",
+   "x": 6292.0,
+   "y": 5782.0,
+   "ko": "ko_109"
+  },
+  {
+   "name": "Kranichhof",
+   "art": "Gehöft",
+   "x": 6570.0,
+   "y": 5977.0,
+   "ko": "ko_110"
+  },
+  {
+   "name": "Ginsterturm",
+   "art": "Ort",
+   "x": 6207.0,
+   "y": 5857.0,
+   "ko": "ko_111"
+  },
+  {
+   "name": "Borstschrein",
+   "art": "Ort",
+   "x": 6078.0,
+   "y": 5845.0,
+   "ko": "ko_112"
+  },
+  {
+   "name": "Wacholderstein",
+   "art": "Ort",
+   "x": 6157.0,
+   "y": 6307.0,
+   "ko": "ko_113"
+  },
+  {
+   "name": "Schrein der Ertrunkenen",
+   "art": "Ort",
+   "x": 6078.0,
+   "y": 5713.0,
+   "ko": "ko_114"
+  },
+  {
+   "name": "Kranichnest",
+   "art": "Lager",
+   "x": 6907.0,
+   "y": 6523.0,
+   "ko": "ko_115"
+  },
+  {
+   "name": "Dornwarte",
+   "art": "Ort",
+   "x": 6399.0,
+   "y": 6229.0,
+   "ko": "ko_116"
+  },
+  {
+   "name": "Rabenau",
+   "art": "Ort",
+   "x": 6653.0,
+   "y": 6007.0,
+   "ko": "ko_117"
+  },
+  {
+   "name": "Langes Feld",
+   "art": "Ruine",
+   "x": 6151.0,
+   "y": 6151.0,
+   "ko": "ko_118"
+  },
+  {
+   "name": "Drei Höfe",
+   "art": "Ort",
+   "x": 6455.0,
+   "y": 6157.0,
+   "ko": "ko_119"
+  },
+  {
+   "name": "Hof am Kreuzbach",
+   "art": "Gehöft",
+   "x": 6297.0,
+   "y": 6298.0,
+   "ko": "ko_120"
+  },
+  {
+   "name": "Hof am Weidengraben",
+   "art": "Gehöft",
+   "x": 6507.0,
+   "y": 6004.0,
+   "ko": "ko_121"
+  },
+  {
+   "name": "Hof am Hasenbach",
+   "art": "Gehöft",
+   "x": 6618.0,
+   "y": 6058.0,
+   "ko": "ko_122"
+  },
+  {
+   "name": "Lerchenlager",
+   "art": "Ort",
+   "x": 6281.0,
+   "y": 6037.0,
+   "ko": "ko_123"
+  },
+  {
+   "name": "Versteck am Erlenbach",
+   "art": "Lager",
+   "x": 6094.0,
+   "y": 6265.0,
+   "ko": "ko_124"
+  },
+  {
+   "name": "Torfturm",
+   "art": "Ort",
+   "x": 6423.0,
+   "y": 6112.0,
+   "ko": "ko_125"
+  },
+  {
+   "name": "Krüppelstein",
+   "art": "Ort",
+   "x": 6625.0,
+   "y": 5770.0,
+   "ko": "ko_126"
+  },
+  {
+   "name": "Wegelagerer",
+   "art": "Lager",
+   "x": 6175.0,
+   "y": 5674.0,
+   "ko": "ko_127"
+  },
+  {
+   "name": "Krüppelhof",
+   "art": "Gehöft",
+   "x": 6342.0,
+   "y": 6157.0,
+   "ko": "ko_128"
+  },
+  {
+   "name": "Alter Turm",
+   "art": "Ort",
+   "x": 6114.0,
+   "y": 5797.0,
+   "ko": "ko_129"
+  },
+  {
+   "name": "Föhrenau",
+   "art": "Ort",
+   "x": 6254.0,
+   "y": 6250.0,
+   "ko": "ko_130"
+  },
+  {
+   "name": "Riekes Turm",
+   "art": "Ort",
+   "x": 6483.0,
+   "y": 5827.0,
+   "ko": "ko_131"
+  },
+  {
+   "name": "Erikahof",
+   "art": "Gehöft",
+   "x": 6189.0,
+   "y": 5761.0,
+   "ko": "ko_132"
+  },
+  {
+   "name": "Totenstein",
+   "art": "Ort",
+   "x": 6598.0,
+   "y": 6289.0,
+   "ko": "ko_133"
+  },
+  {
+   "name": "Bleichschrein",
+   "art": "Ort",
+   "x": 6366.0,
+   "y": 5911.0,
+   "ko": "ko_134"
+  },
+  {
+   "name": "Galgenvogelnest",
+   "art": "Lager",
+   "x": 6532.0,
+   "y": 6193.0,
+   "ko": "ko_135"
+  },
+  {
+   "name": "Am Kahlen Berg",
+   "art": "Gehöft",
+   "x": 6627.0,
+   "y": 5830.0,
+   "ko": "ko_136"
+  },
+  {
+   "name": "Hohe Wacht",
+   "art": "Ort",
+   "x": 6867.0,
+   "y": 6568.0,
+   "ko": "ko_137"
+  },
+  {
+   "name": "Wacholderwarte",
+   "art": "Ort",
+   "x": 6153.0,
+   "y": 5848.0,
+   "ko": "ko_138"
+  },
+  {
+   "name": "Sumpfkreuz",
+   "art": "Ort",
+   "x": 6531.0,
+   "y": 5860.0,
+   "ko": "ko_139"
+  },
+  {
+   "name": "Schwarzkate",
+   "art": "Ort",
+   "x": 6174.0,
+   "y": 6025.0,
+   "ko": "ko_140"
+  },
+  {
+   "name": "Pfeifenstein",
+   "art": "Ort",
+   "x": 6037.0,
+   "y": 5794.0,
+   "ko": "ko_141"
+  },
+  {
+   "name": "Netzhütte",
+   "art": "Ort",
+   "x": 6633.0,
+   "y": 5596.0,
+   "ko": "ko_142"
+  },
+  {
+   "name": "Heideturm",
+   "art": "Ort",
+   "x": 6807.0,
+   "y": 6697.0,
+   "ko": "ko_143"
+  },
+  {
+   "name": "Am Wolfsbuckel",
+   "art": "Ort",
+   "x": 6686.0,
+   "y": 6130.0,
+   "ko": "ko_144"
+  },
+  {
+   "name": "Im Grund",
+   "art": "Ort",
+   "x": 6412.0,
+   "y": 5956.0,
+   "ko": "ko_145"
+  },
+  {
+   "name": "Witwenschrein",
+   "art": "Ort",
+   "x": 6534.0,
+   "y": 5674.0,
+   "ko": "ko_146"
+  },
+  {
+   "name": "Fuchsloch",
+   "art": "Ruine",
+   "x": 6117.0,
+   "y": 5665.0,
+   "ko": "ko_147"
+  },
+  {
+   "name": "Räubernest",
+   "art": "Lager",
+   "x": 6826.0,
+   "y": 6751.0,
+   "ko": "ko_148"
+  },
+  {
+   "name": "Alte Schanze",
+   "art": "Ruine",
+   "x": 6706.0,
+   "y": 6016.0,
+   "ko": "ko_149"
+  },
+  {
+   "name": "Kalte Höhle",
+   "art": "Ruine",
+   "x": 6756.0,
+   "y": 5824.0,
+   "ko": "ko_150"
+  },
+  {
+   "name": "Versteck am Steinbach",
+   "art": "Lager",
+   "x": 6109.0,
+   "y": 6205.0,
+   "ko": "ko_151"
+  },
+  {
+   "name": "Hof am Mühlbach",
+   "art": "Gehöft",
+   "x": 6732.0,
+   "y": 6169.0,
+   "ko": "ko_152"
+  },
+  {
+   "name": "Blutstein",
+   "art": "Ort",
+   "x": 6259.0,
+   "y": 5839.0,
+   "ko": "ko_153"
+  },
+  {
+   "name": "Hof am Schwarzwasser",
+   "art": "Gehöft",
+   "x": 6672.0,
+   "y": 5902.0,
+   "ko": "ko_154"
+  },
+  {
+   "name": "Brandhof",
+   "art": "Gehöft",
+   "x": 6468.0,
+   "y": 5695.0,
+   "ko": "ko_155"
+  },
+  {
+   "name": "Reusenhütte",
+   "art": "Ort",
+   "x": 6234.0,
+   "y": 5572.0,
+   "ko": "ko_156"
+  },
+  {
+   "name": "Ilsabes Schrein",
+   "art": "Ort",
+   "x": 6519.0,
+   "y": 5950.0,
+   "ko": "ko_157"
+  },
+  {
+   "name": "Heidefeuer",
+   "art": "Ort",
+   "x": 6264.0,
+   "y": 5458.0,
+   "ko": "ko_158"
+  },
+  {
+   "name": "Nebelkate",
+   "art": "Ort",
+   "x": 6384.0,
+   "y": 5698.0,
+   "ko": "ko_159"
+  },
+  {
+   "name": "Strandfeuer",
+   "art": "Ort",
+   "x": 6030.0,
+   "y": 5881.0,
+   "ko": "ko_160"
+  },
+  {
+   "name": "Feuer am Kap",
+   "art": "Ort",
+   "x": 6285.0,
+   "y": 5701.0,
+   "ko": "ko_161"
+  },
+  {
+   "name": "Pilgerschrein",
+   "art": "Ort",
+   "x": 6800.7,
+   "y": 6489.7,
+   "ko": "ko_162"
+  },
+  {
+   "name": "Moorschrein",
+   "art": "Ort",
+   "x": 6759.0,
+   "y": 5974.0,
+   "ko": "ko_163"
+  },
+  {
+   "name": "Eddas Turm",
+   "art": "Ort",
+   "x": 6432.0,
+   "y": 5827.0,
+   "ko": "ko_164"
+  },
+  {
+   "name": "Dornlager",
+   "art": "Ort",
+   "x": 6581.0,
+   "y": 6094.0,
+   "ko": "ko_165"
+  },
+  {
+   "name": "Alte Mühle",
+   "art": "Ort",
+   "x": 6610.0,
+   "y": 5934.0,
+   "ko": "ko_166"
+  },
+  {
+   "name": "Aalkate",
+   "art": "Ort",
+   "x": 6732.0,
+   "y": 6280.0,
+   "ko": "ko_167"
   }
  ]
 }

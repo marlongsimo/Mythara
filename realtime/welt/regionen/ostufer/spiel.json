@@ -83,6 +83,105 @@
    "daten": {
     "text": "Der Turm mit dem grünen Licht. Oben brennt es, still und ohne zu flackern."
    }
+  },
+  {
+   "id": "ko_79_l",
+   "art": "lesen",
+   "x": 118.0,
+   "y": 236.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Lager am Moorgraben. Ein Jägerlager: Feuerstelle, ein Zelt und Spuren, die in den Wald führen."
+   }
+  },
+  {
+   "id": "ko_91_l",
+   "art": "lesen",
+   "x": 80.0,
+   "y": 305.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Dörtes Turm. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_95_l",
+   "art": "lesen",
+   "x": 54.1,
+   "y": 223.91,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Lerchenbrunnen. Ein Brunnen am Wegrand. Das Wasser ist klar und kalt."
+   }
+  },
+  {
+   "id": "ko_101_l",
+   "art": "lesen",
+   "x": 63.0,
+   "y": 68.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Dornbusch. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  },
+  {
+   "id": "ko_115_l",
+   "art": "lesen",
+   "x": 123.0,
+   "y": 125.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Kranichnest. Ein verlassenes Lager. Die Asche ist noch warm – sie sind nicht weit."
+   }
+  },
+  {
+   "id": "ko_137_l",
+   "art": "lesen",
+   "x": 83.0,
+   "y": 170.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hohe Wacht. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_143_l",
+   "art": "lesen",
+   "x": 23.0,
+   "y": 299.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Heideturm. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_148_l",
+   "art": "lesen",
+   "x": 39.8,
+   "y": 351.0,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Räubernest. Ein verlassenes Lager. Die Asche ist noch warm – sie sind nicht weit."
+   }
+  },
+  {
+   "id": "ko_162_l",
+   "art": "lesen",
+   "x": 16.72,
+   "y": 91.92,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Pilgerschrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
   }
  ]
 }

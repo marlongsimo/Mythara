@@ -1,0 +1,3016 @@
+{
+ "hinweis": "Kleinorte (kleinorte_bauen.py): gebaute Orte der freigegebenen Schritte – Namen (auch in ortsnamen.json mit „ko“), Lesestellen, Lage. Weltfelder.",
+ "schritte": [
+  "schritt1"
+ ],
+ "orte": [
+  {
+   "id": "ko_1",
+   "name": "Der Hängende Stein",
+   "art": "stein",
+   "land": "Grenzland",
+   "x": 6095.0,
+   "y": 6542.6,
+   "lesestelle": "ko_1_l",
+   "besonders": true,
+   "abseits": true,
+   "region": "fl_186_198"
+  },
+  {
+   "id": "ko_2",
+   "name": "Galgenhügel",
+   "art": "ruine",
+   "land": "Grenzland",
+   "x": 6283.0,
+   "y": 6523.0,
+   "lesestelle": "ko_2_l",
+   "besonders": true,
+   "abseits": false,
+   "region": "westmark"
+  },
+  {
+   "id": "ko_3",
+   "name": "Die Sieben Linden",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6041.0,
+   "y": 6374.0,
+   "lesestelle": "ko_3_l",
+   "besonders": true,
+   "abseits": true,
+   "region": "fl_186_198"
+  },
+  {
+   "id": "ko_4",
+   "name": "Hohe Heide",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6207.0,
+   "y": 6469.0,
+   "lesestelle": "ko_4_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "westried"
+  },
+  {
+   "id": "ko_5",
+   "name": "Brandstätte",
+   "art": "ruine",
+   "land": "Grenzland",
+   "x": 6566.1,
+   "y": 6557.7,
+   "lesestelle": "ko_5_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "waldweg"
+  },
+  {
+   "id": "ko_6",
+   "name": "Moosschrein",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6583.1,
+   "y": 6457.0,
+   "lesestelle": "ko_6_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "osthof"
+  },
+  {
+   "id": "ko_7",
+   "name": "Rübenkreuz",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6383.3,
+   "y": 6492.8,
+   "lesestelle": "ko_7_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "waldweg"
+  },
+  {
+   "id": "ko_8",
+   "name": "Kiefernwarte",
+   "art": "turm",
+   "land": "Grenzland",
+   "x": 6666.0,
+   "y": 6619.0,
+   "lesestelle": "ko_8_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "graufurt"
+  },
+  {
+   "id": "ko_9",
+   "name": "Hof am Dorfteich",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6387.9,
+   "y": 6570.9,
+   "lesestelle": "ko_9_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "waldweg"
+  },
+  {
+   "id": "ko_10",
+   "name": "Nesselnest",
+   "art": "banditen",
+   "land": "Grenzland",
+   "x": 6118.0,
+   "y": 6382.0,
+   "lesestelle": "ko_10_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_198"
+  },
+  {
+   "id": "ko_11",
+   "name": "Versteck am Schwarzwasser",
+   "art": "banditen",
+   "land": "Grenzland",
+   "x": 6760.0,
+   "y": 6451.0,
+   "lesestelle": "ko_11_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "graufurt"
+  },
+  {
+   "id": "ko_12",
+   "name": "Krummer Turm",
+   "art": "turm",
+   "land": "Grenzland",
+   "x": 6129.0,
+   "y": 6598.0,
+   "lesestelle": "ko_12_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_198"
+  },
+  {
+   "id": "ko_13",
+   "name": "Eschenau",
+   "art": "weiler",
+   "land": "Grenzland",
+   "x": 6503.0,
+   "y": 6385.0,
+   "lesestelle": "ko_13_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordsaum"
+  },
+  {
+   "id": "ko_14",
+   "name": "Hopfenhof",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6188.0,
+   "y": 6630.0,
+   "lesestelle": "ko_14_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "aschenwerth"
+  },
+  {
+   "id": "ko_15",
+   "name": "Rübenschrein",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6307.3,
+   "y": 6394.9,
+   "lesestelle": "ko_15_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordwald"
+  },
+  {
+   "id": "ko_16",
+   "name": "Stiller Schrein",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6693.0,
+   "y": 6374.8,
+   "lesestelle": "ko_16_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordsaum"
+  },
+  {
+   "id": "ko_17",
+   "name": "Hinterm Moor",
+   "art": "brunnen",
+   "land": "Grenzland",
+   "x": 6708.0,
+   "y": 6709.0,
+   "lesestelle": "ko_17_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "graufurt"
+  },
+  {
+   "id": "ko_18",
+   "name": "Leere Mauern",
+   "art": "ruine",
+   "land": "Grenzland",
+   "x": 6375.3,
+   "y": 6655.9,
+   "lesestelle": "ko_18_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "waldweg"
+  },
+  {
+   "id": "ko_19",
+   "name": "Distelbrunnen",
+   "art": "brunnen",
+   "land": "Grenzland",
+   "x": 6780.0,
+   "y": 6574.0,
+   "lesestelle": "ko_19_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "graufurt"
+  },
+  {
+   "id": "ko_20",
+   "name": "Bruns Meiler",
+   "art": "koehler",
+   "land": "Grenzland",
+   "x": 6545.1,
+   "y": 6646.6,
+   "lesestelle": "ko_20_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "waldweg"
+  },
+  {
+   "id": "ko_21",
+   "name": "Hungerhof",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6643.1,
+   "y": 6488.8,
+   "lesestelle": "ko_21_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "osthang"
+  },
+  {
+   "id": "ko_22",
+   "name": "Hilles Turm",
+   "art": "turm",
+   "land": "Grenzland",
+   "x": 6650.0,
+   "y": 6744.8,
+   "lesestelle": "ko_22_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "osthang"
+  },
+  {
+   "id": "ko_23",
+   "name": "Igelwarte",
+   "art": "turm",
+   "land": "Grenzland",
+   "x": 6451.4,
+   "y": 6577.6,
+   "lesestelle": "ko_23_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "waldweg"
+  },
+  {
+   "id": "ko_24",
+   "name": "Alkes Schrein",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6397.1,
+   "y": 6388.7,
+   "lesestelle": "ko_24_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordwald"
+  },
+  {
+   "id": "ko_25",
+   "name": "Spukhof",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6448.7,
+   "y": 6490.4,
+   "lesestelle": "ko_25_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "waldweg"
+  },
+  {
+   "id": "ko_26",
+   "name": "Telses Schrein",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6195.0,
+   "y": 6358.0,
+   "lesestelle": "ko_26_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "westried"
+  },
+  {
+   "id": "ko_27",
+   "name": "Neusiedel",
+   "art": "weiler",
+   "land": "Grenzland",
+   "x": 6197.0,
+   "y": 6547.0,
+   "lesestelle": "ko_27_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "westried"
+  },
+  {
+   "id": "ko_28",
+   "name": "Eilerts Meiler",
+   "art": "koehler",
+   "land": "Grenzland",
+   "x": 6627.0,
+   "y": 6352.0,
+   "lesestelle": "ko_28_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordsaum"
+  },
+  {
+   "id": "ko_29",
+   "name": "Gerstenhof",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6120.0,
+   "y": 6472.0,
+   "lesestelle": "ko_29_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_198"
+  },
+  {
+   "id": "ko_30",
+   "name": "Erlenbrunnen",
+   "art": "brunnen",
+   "land": "Grenzland",
+   "x": 6639.0,
+   "y": 6565.0,
+   "lesestelle": "ko_30_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "osthang"
+  },
+  {
+   "id": "ko_31",
+   "name": "Jagdlager",
+   "art": "jaeger",
+   "land": "Grenzland",
+   "x": 6521.0,
+   "y": 6748.0,
+   "lesestelle": "ko_31_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "weidenhain"
+  },
+  {
+   "id": "ko_32",
+   "name": "Eschenhof",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6604.8,
+   "y": 6710.2,
+   "lesestelle": "ko_32_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "osthang"
+  },
+  {
+   "id": "ko_33",
+   "name": "Lerchenhof",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6264.0,
+   "y": 6577.0,
+   "lesestelle": "ko_33_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "westried"
+  },
+  {
+   "id": "ko_34",
+   "name": "Bettlerschrein",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6390.0,
+   "y": 6751.0,
+   "lesestelle": "ko_34_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "ko_35",
+   "name": "Immes Turm",
+   "art": "turm",
+   "land": "Grenzland",
+   "x": 6165.0,
+   "y": 6508.0,
+   "lesestelle": "ko_35_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "westried"
+  },
+  {
+   "id": "ko_36",
+   "name": "Kleindorf",
+   "art": "weiler",
+   "land": "Grenzland",
+   "x": 6235.0,
+   "y": 6722.0,
+   "lesestelle": "ko_36_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "aschenwerth"
+  },
+  {
+   "id": "ko_37",
+   "name": "Bienenschrein",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6471.1,
+   "y": 6342.1,
+   "lesestelle": "ko_37_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordsaum"
+  },
+  {
+   "id": "ko_38",
+   "name": "Ruprechts Schrein",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6776.7,
+   "y": 6750.5,
+   "lesestelle": "ko_38_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "graufurt"
+  },
+  {
+   "id": "ko_39",
+   "name": "Birkennest",
+   "art": "banditen",
+   "land": "Grenzland",
+   "x": 6763.0,
+   "y": 6667.0,
+   "lesestelle": "ko_39_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "graufurt"
+  },
+  {
+   "id": "ko_40",
+   "name": "Martens Schrein",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6237.0,
+   "y": 6418.0,
+   "lesestelle": "ko_40_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "westried"
+  },
+  {
+   "id": "ko_41",
+   "name": "Rußiger Meiler",
+   "art": "koehler",
+   "land": "Grenzland",
+   "x": 6273.0,
+   "y": 6466.0,
+   "lesestelle": "ko_41_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "westmark"
+  },
+  {
+   "id": "ko_42",
+   "name": "Tinis Hof",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6321.0,
+   "y": 6613.0,
+   "lesestelle": "ko_42_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "westmark"
+  },
+  {
+   "id": "ko_43",
+   "name": "Flachskreuz",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6171.0,
+   "y": 6412.0,
+   "lesestelle": "ko_43_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "westried"
+  },
+  {
+   "id": "ko_44",
+   "name": "Hinter den Birken",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6278.0,
+   "y": 6351.0,
+   "lesestelle": "ko_44_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordwald"
+  },
+  {
+   "id": "ko_45",
+   "name": "Hasellager",
+   "art": "jaeger",
+   "land": "Grenzland",
+   "x": 6480.0,
+   "y": 6632.9,
+   "lesestelle": "ko_45_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "waldweg"
+  },
+  {
+   "id": "ko_46",
+   "name": "Gretes Turm",
+   "art": "turm",
+   "land": "Grenzland",
+   "x": 6507.0,
+   "y": 6583.0,
+   "lesestelle": "ko_46_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "waldweg"
+  },
+  {
+   "id": "ko_47",
+   "name": "Hof am Rotbach",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6618.0,
+   "y": 6655.0,
+   "lesestelle": "ko_47_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "osthang"
+  },
+  {
+   "id": "ko_48",
+   "name": "Bernds Hof",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6656.0,
+   "y": 6411.1,
+   "lesestelle": "ko_48_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "osthang"
+  },
+  {
+   "id": "ko_49",
+   "name": "Schlehenlager",
+   "art": "jaeger",
+   "land": "Grenzland",
+   "x": 6337.4,
+   "y": 6342.1,
+   "lesestelle": "ko_49_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordwald"
+  },
+  {
+   "id": "ko_50",
+   "name": "Hirschlager",
+   "art": "jaeger",
+   "land": "Grenzland",
+   "x": 6551.0,
+   "y": 6340.0,
+   "lesestelle": "ko_50_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordsaum"
+  },
+  {
+   "id": "ko_51",
+   "name": "Fallenstellerlager",
+   "art": "jaeger",
+   "land": "Grenzland",
+   "x": 6383.0,
+   "y": 6439.0,
+   "lesestelle": "ko_51_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordwald"
+  },
+  {
+   "id": "ko_52",
+   "name": "Kiefernmeiler",
+   "art": "koehler",
+   "land": "Grenzland",
+   "x": 6419.4,
+   "y": 6620.7,
+   "lesestelle": "ko_52_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "waldweg"
+  },
+  {
+   "id": "ko_53",
+   "name": "Holunderschrein",
+   "art": "schrein",
+   "land": "Grenzland",
+   "x": 6328.9,
+   "y": 6444.9,
+   "lesestelle": "ko_53_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordwald"
+  },
+  {
+   "id": "ko_54",
+   "name": "Tammes Meiler",
+   "art": "koehler",
+   "land": "Grenzland",
+   "x": 6591.9,
+   "y": 6397.2,
+   "lesestelle": "ko_54_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "nordsaum"
+  },
+  {
+   "id": "ko_55",
+   "name": "Holunderhof",
+   "art": "hof",
+   "land": "Grenzland",
+   "x": 6758.0,
+   "y": 6516.0,
+   "lesestelle": "ko_55_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "graufurt"
+  },
+  {
+   "id": "ko_56",
+   "name": "Leerer Turm",
+   "art": "turm",
+   "land": "Grenzland",
+   "x": 6330.0,
+   "y": 6562.0,
+   "lesestelle": "ko_56_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "westmark"
+  },
+  {
+   "id": "ko_57",
+   "name": "Birkenwinkel",
+   "art": "weiler",
+   "land": "Grenzland",
+   "x": 6708.0,
+   "y": 6645.7,
+   "lesestelle": "ko_57_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "graufurt"
+  },
+  {
+   "id": "ko_58",
+   "name": "Altes Gemäuer",
+   "art": "ruine",
+   "land": "Grenzland",
+   "x": 6599.9,
+   "y": 6601.3,
+   "lesestelle": "ko_58_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "osthang"
+  },
+  {
+   "id": "ko_59",
+   "name": "Schlehenkate",
+   "art": "fischer",
+   "land": "Grenzland",
+   "x": 6078.0,
+   "y": 6427.0,
+   "lesestelle": "ko_59_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_198"
+  },
+  {
+   "id": "ko_60",
+   "name": "Grenzstein",
+   "art": "stein",
+   "land": "Grenzland",
+   "x": 6082.0,
+   "y": 6340.0,
+   "lesestelle": "ko_60_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_198"
+  },
+  {
+   "id": "ko_61",
+   "name": "Ansgars Brunnen",
+   "art": "brunnen",
+   "land": "Grenzland",
+   "x": 6273.0,
+   "y": 6634.0,
+   "lesestelle": "ko_61_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "westmark"
+  },
+  {
+   "id": "ko_62",
+   "name": "Hünengrab",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6298.0,
+   "y": 5415.0,
+   "lesestelle": "ko_62_l",
+   "besonders": true,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_63",
+   "name": "Die Windharfe",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6184.0,
+   "y": 5582.0,
+   "lesestelle": "ko_63_l",
+   "besonders": true,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_64",
+   "name": "Krähenbaum",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 5998.0,
+   "y": 5754.0,
+   "lesestelle": "ko_64_l",
+   "besonders": true,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_65",
+   "name": "Der Versunkene Hof",
+   "art": "ruine",
+   "land": "Fahle Weiten",
+   "x": 6759.0,
+   "y": 6225.0,
+   "lesestelle": "ko_65_l",
+   "besonders": true,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_66",
+   "name": "Hirtenrast",
+   "art": "hirten",
+   "land": "Fahle Weiten",
+   "x": 6699.0,
+   "y": 5851.0,
+   "lesestelle": "ko_66_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_67",
+   "name": "Binsenruh",
+   "art": "ruine",
+   "land": "Fahle Weiten",
+   "x": 6292.0,
+   "y": 5884.0,
+   "lesestelle": "ko_67_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_68",
+   "name": "Ottos Kate",
+   "art": "fischer",
+   "land": "Fahle Weiten",
+   "x": 6552.0,
+   "y": 6049.0,
+   "lesestelle": "ko_68_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_69",
+   "name": "Stille Mühle",
+   "art": "muehle",
+   "land": "Fahle Weiten",
+   "x": 6675.0,
+   "y": 6187.0,
+   "lesestelle": "ko_69_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_70",
+   "name": "Kate am Ententeich",
+   "art": "fischer",
+   "land": "Fahle Weiten",
+   "x": 6171.0,
+   "y": 5947.0,
+   "lesestelle": "ko_70_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_71",
+   "name": "Volkers Hof",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6369.0,
+   "y": 6286.0,
+   "lesestelle": "ko_71_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_72",
+   "name": "Schwarzhof",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6402.0,
+   "y": 5782.0,
+   "lesestelle": "ko_72_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_73",
+   "name": "Ödes Feld",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6595.0,
+   "y": 6220.0,
+   "lesestelle": "ko_73_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_74",
+   "name": "Wolfsnest",
+   "art": "banditen",
+   "land": "Fahle Weiten",
+   "x": 6229.0,
+   "y": 5719.0,
+   "lesestelle": "ko_74_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_75",
+   "name": "Borstkreuz",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6759.0,
+   "y": 6028.0,
+   "lesestelle": "ko_75_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_76",
+   "name": "Elsternest",
+   "art": "banditen",
+   "land": "Fahle Weiten",
+   "x": 6121.0,
+   "y": 5893.0,
+   "lesestelle": "ko_76_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_77",
+   "name": "Mettes Kate",
+   "art": "fischer",
+   "land": "Fahle Weiten",
+   "x": 6153.0,
+   "y": 6082.0,
+   "lesestelle": "ko_77_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_78",
+   "name": "Hirtenschrein",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6513.0,
+   "y": 6250.0,
+   "lesestelle": "ko_78_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_79",
+   "name": "Lager am Moorgraben",
+   "art": "jaeger",
+   "land": "Fahle Weiten",
+   "x": 6902.0,
+   "y": 6634.0,
+   "lesestelle": "ko_79_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "ostufer"
+  },
+  {
+   "id": "ko_80",
+   "name": "Moornest",
+   "art": "banditen",
+   "land": "Fahle Weiten",
+   "x": 6463.0,
+   "y": 5971.0,
+   "lesestelle": "ko_80_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_81",
+   "name": "Wiebkes Hof",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6681.0,
+   "y": 6061.0,
+   "lesestelle": "ko_81_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_82",
+   "name": "Hinterm Wald",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6139.0,
+   "y": 5728.0,
+   "lesestelle": "ko_82_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_83",
+   "name": "Wolfswarte",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6627.0,
+   "y": 5680.0,
+   "lesestelle": "ko_83_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_84",
+   "name": "Torfkate",
+   "art": "fischer",
+   "land": "Fahle Weiten",
+   "x": 6225.0,
+   "y": 5494.0,
+   "lesestelle": "ko_84_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_85",
+   "name": "Sumpfschrein",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6288.0,
+   "y": 5959.0,
+   "lesestelle": "ko_85_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_86",
+   "name": "Rabenhof",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6537.0,
+   "y": 5803.0,
+   "lesestelle": "ko_86_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_87",
+   "name": "Fennas Jagdhütte",
+   "art": "jaeger",
+   "land": "Fahle Weiten",
+   "x": 6344.0,
+   "y": 6091.0,
+   "lesestelle": "ko_87_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_88",
+   "name": "Föhrenfeld",
+   "art": "weiler",
+   "land": "Fahle Weiten",
+   "x": 6539.0,
+   "y": 6136.0,
+   "lesestelle": "ko_88_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_89",
+   "name": "Pfeifenhof",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6210.0,
+   "y": 6208.0,
+   "lesestelle": "ko_89_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_90",
+   "name": "Ginsterwarte",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6450.0,
+   "y": 6031.0,
+   "lesestelle": "ko_90_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_91",
+   "name": "Dörtes Turm",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6864.0,
+   "y": 6703.0,
+   "lesestelle": "ko_91_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "ostufer"
+  },
+  {
+   "id": "ko_92",
+   "name": "Binsenstein",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6457.0,
+   "y": 6232.0,
+   "lesestelle": "ko_92_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_93",
+   "name": "Elsterstein",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6331.0,
+   "y": 5722.0,
+   "lesestelle": "ko_93_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_94",
+   "name": "Tiefer Brunnen",
+   "art": "brunnen",
+   "land": "Fahle Weiten",
+   "x": 6558.0,
+   "y": 5911.0,
+   "lesestelle": "ko_94_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_95",
+   "name": "Lerchenbrunnen",
+   "art": "brunnen",
+   "land": "Fahle Weiten",
+   "x": 6837.0,
+   "y": 6622.0,
+   "lesestelle": "ko_95_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "ostufer"
+  },
+  {
+   "id": "ko_96",
+   "name": "Bei den Steinen",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6748.0,
+   "y": 5902.0,
+   "lesestelle": "ko_96_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_97",
+   "name": "Rolfs Schrein",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6261.0,
+   "y": 6088.0,
+   "lesestelle": "ko_97_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_98",
+   "name": "Konrads Schrein",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6486.0,
+   "y": 5902.0,
+   "lesestelle": "ko_98_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_99",
+   "name": "Bleichruh",
+   "art": "ruine",
+   "land": "Fahle Weiten",
+   "x": 6754.0,
+   "y": 6097.0,
+   "lesestelle": "ko_99_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_100",
+   "name": "Harms Jagdhütte",
+   "art": "jaeger",
+   "land": "Fahle Weiten",
+   "x": 6386.0,
+   "y": 6052.0,
+   "lesestelle": "ko_100_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_101",
+   "name": "Am Dornbusch",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6847.0,
+   "y": 6466.0,
+   "lesestelle": "ko_101_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "ostufer"
+  },
+  {
+   "id": "ko_102",
+   "name": "Meiler am Eulenbach",
+   "art": "koehler",
+   "land": "Fahle Weiten",
+   "x": 6708.0,
+   "y": 5965.0,
+   "lesestelle": "ko_102_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_103",
+   "name": "Josts Turm",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6681.0,
+   "y": 5650.0,
+   "lesestelle": "ko_103_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_104",
+   "name": "Alte Warte",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6516.0,
+   "y": 5725.0,
+   "lesestelle": "ko_104_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_105",
+   "name": "Nebelau",
+   "art": "weiler",
+   "land": "Fahle Weiten",
+   "x": 6614.0,
+   "y": 6163.0,
+   "lesestelle": "ko_105_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_106",
+   "name": "Am Stillen Teich",
+   "art": "ruine",
+   "land": "Fahle Weiten",
+   "x": 6226.0,
+   "y": 5917.0,
+   "lesestelle": "ko_106_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_107",
+   "name": "Erikalager",
+   "art": "jaeger",
+   "land": "Fahle Weiten",
+   "x": 6680.0,
+   "y": 6259.0,
+   "lesestelle": "ko_107_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_108",
+   "name": "Diebeslager",
+   "art": "banditen",
+   "land": "Fahle Weiten",
+   "x": 6232.0,
+   "y": 5986.0,
+   "lesestelle": "ko_108_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_109",
+   "name": "Am Krummen Pfad",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6292.0,
+   "y": 5782.0,
+   "lesestelle": "ko_109_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_110",
+   "name": "Kranichhof",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6570.0,
+   "y": 5977.0,
+   "lesestelle": "ko_110_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_111",
+   "name": "Ginsterturm",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6207.0,
+   "y": 5857.0,
+   "lesestelle": "ko_111_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_112",
+   "name": "Borstschrein",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6078.0,
+   "y": 5845.0,
+   "lesestelle": "ko_112_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_113",
+   "name": "Wacholderstein",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6157.0,
+   "y": 6307.0,
+   "lesestelle": "ko_113_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_114",
+   "name": "Schrein der Ertrunkenen",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6078.0,
+   "y": 5713.0,
+   "lesestelle": "ko_114_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_115",
+   "name": "Kranichnest",
+   "art": "banditen",
+   "land": "Fahle Weiten",
+   "x": 6907.0,
+   "y": 6523.0,
+   "lesestelle": "ko_115_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "ostufer"
+  },
+  {
+   "id": "ko_116",
+   "name": "Dornwarte",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6399.0,
+   "y": 6229.0,
+   "lesestelle": "ko_116_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_117",
+   "name": "Rabenau",
+   "art": "weiler",
+   "land": "Fahle Weiten",
+   "x": 6653.0,
+   "y": 6007.0,
+   "lesestelle": "ko_117_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_118",
+   "name": "Langes Feld",
+   "art": "ruine",
+   "land": "Fahle Weiten",
+   "x": 6151.0,
+   "y": 6151.0,
+   "lesestelle": "ko_118_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_119",
+   "name": "Drei Höfe",
+   "art": "weiler",
+   "land": "Fahle Weiten",
+   "x": 6455.0,
+   "y": 6157.0,
+   "lesestelle": "ko_119_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_120",
+   "name": "Hof am Kreuzbach",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6297.0,
+   "y": 6298.0,
+   "lesestelle": "ko_120_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_121",
+   "name": "Hof am Weidengraben",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6507.0,
+   "y": 6004.0,
+   "lesestelle": "ko_121_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_122",
+   "name": "Hof am Hasenbach",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6618.0,
+   "y": 6058.0,
+   "lesestelle": "ko_122_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_123",
+   "name": "Lerchenlager",
+   "art": "jaeger",
+   "land": "Fahle Weiten",
+   "x": 6281.0,
+   "y": 6037.0,
+   "lesestelle": "ko_123_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_124",
+   "name": "Versteck am Erlenbach",
+   "art": "banditen",
+   "land": "Fahle Weiten",
+   "x": 6094.0,
+   "y": 6265.0,
+   "lesestelle": "ko_124_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_125",
+   "name": "Torfturm",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6423.0,
+   "y": 6112.0,
+   "lesestelle": "ko_125_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_126",
+   "name": "Krüppelstein",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6625.0,
+   "y": 5770.0,
+   "lesestelle": "ko_126_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_127",
+   "name": "Wegelagerer",
+   "art": "banditen",
+   "land": "Fahle Weiten",
+   "x": 6175.0,
+   "y": 5674.0,
+   "lesestelle": "ko_127_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_128",
+   "name": "Krüppelhof",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6342.0,
+   "y": 6157.0,
+   "lesestelle": "ko_128_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_129",
+   "name": "Alter Turm",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6114.0,
+   "y": 5797.0,
+   "lesestelle": "ko_129_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_130",
+   "name": "Föhrenau",
+   "art": "weiler",
+   "land": "Fahle Weiten",
+   "x": 6254.0,
+   "y": 6250.0,
+   "lesestelle": "ko_130_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_131",
+   "name": "Riekes Turm",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6483.0,
+   "y": 5827.0,
+   "lesestelle": "ko_131_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_132",
+   "name": "Erikahof",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6189.0,
+   "y": 5761.0,
+   "lesestelle": "ko_132_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_133",
+   "name": "Totenstein",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6598.0,
+   "y": 6289.0,
+   "lesestelle": "ko_133_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_134",
+   "name": "Bleichschrein",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6366.0,
+   "y": 5911.0,
+   "lesestelle": "ko_134_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_135",
+   "name": "Galgenvogelnest",
+   "art": "banditen",
+   "land": "Fahle Weiten",
+   "x": 6532.0,
+   "y": 6193.0,
+   "lesestelle": "ko_135_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_136",
+   "name": "Am Kahlen Berg",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6627.0,
+   "y": 5830.0,
+   "lesestelle": "ko_136_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_137",
+   "name": "Hohe Wacht",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6867.0,
+   "y": 6568.0,
+   "lesestelle": "ko_137_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "ostufer"
+  },
+  {
+   "id": "ko_138",
+   "name": "Wacholderwarte",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6153.0,
+   "y": 5848.0,
+   "lesestelle": "ko_138_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_139",
+   "name": "Sumpfkreuz",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6531.0,
+   "y": 5860.0,
+   "lesestelle": "ko_139_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_140",
+   "name": "Schwarzkate",
+   "art": "fischer",
+   "land": "Fahle Weiten",
+   "x": 6174.0,
+   "y": 6025.0,
+   "lesestelle": "ko_140_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_141",
+   "name": "Pfeifenstein",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6037.0,
+   "y": 5794.0,
+   "lesestelle": "ko_141_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_142",
+   "name": "Netzhütte",
+   "art": "fischer",
+   "land": "Fahle Weiten",
+   "x": 6633.0,
+   "y": 5596.0,
+   "lesestelle": "ko_142_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_143",
+   "name": "Heideturm",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6807.0,
+   "y": 6697.0,
+   "lesestelle": "ko_143_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "ostufer"
+  },
+  {
+   "id": "ko_144",
+   "name": "Am Wolfsbuckel",
+   "art": "weiler",
+   "land": "Fahle Weiten",
+   "x": 6686.0,
+   "y": 6130.0,
+   "lesestelle": "ko_144_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_145",
+   "name": "Im Grund",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6412.0,
+   "y": 5956.0,
+   "lesestelle": "ko_145_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_146",
+   "name": "Witwenschrein",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6534.0,
+   "y": 5674.0,
+   "lesestelle": "ko_146_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_147",
+   "name": "Fuchsloch",
+   "art": "hoehle",
+   "land": "Fahle Weiten",
+   "x": 6117.0,
+   "y": 5665.0,
+   "lesestelle": "ko_147_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_148",
+   "name": "Räubernest",
+   "art": "banditen",
+   "land": "Fahle Weiten",
+   "x": 6826.0,
+   "y": 6751.0,
+   "lesestelle": "ko_148_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "ostufer"
+  },
+  {
+   "id": "ko_149",
+   "name": "Alte Schanze",
+   "art": "ruine",
+   "land": "Fahle Weiten",
+   "x": 6706.0,
+   "y": 6016.0,
+   "lesestelle": "ko_149_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_150",
+   "name": "Kalte Höhle",
+   "art": "hoehle",
+   "land": "Fahle Weiten",
+   "x": 6756.0,
+   "y": 5824.0,
+   "lesestelle": "ko_150_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_151",
+   "name": "Versteck am Steinbach",
+   "art": "banditen",
+   "land": "Fahle Weiten",
+   "x": 6109.0,
+   "y": 6205.0,
+   "lesestelle": "ko_151_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_152",
+   "name": "Hof am Mühlbach",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6732.0,
+   "y": 6169.0,
+   "lesestelle": "ko_152_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_153",
+   "name": "Blutstein",
+   "art": "stein",
+   "land": "Fahle Weiten",
+   "x": 6259.0,
+   "y": 5839.0,
+   "lesestelle": "ko_153_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_154",
+   "name": "Hof am Schwarzwasser",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6672.0,
+   "y": 5902.0,
+   "lesestelle": "ko_154_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_155",
+   "name": "Brandhof",
+   "art": "hof",
+   "land": "Fahle Weiten",
+   "x": 6468.0,
+   "y": 5695.0,
+   "lesestelle": "ko_155_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_156",
+   "name": "Reusenhütte",
+   "art": "fischer",
+   "land": "Fahle Weiten",
+   "x": 6234.0,
+   "y": 5572.0,
+   "lesestelle": "ko_156_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_157",
+   "name": "Ilsabes Schrein",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6519.0,
+   "y": 5950.0,
+   "lesestelle": "ko_157_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_158",
+   "name": "Heidefeuer",
+   "art": "leuchtfeuer",
+   "land": "Fahle Weiten",
+   "x": 6264.0,
+   "y": 5458.0,
+   "lesestelle": "ko_158_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_159",
+   "name": "Nebelkate",
+   "art": "fischer",
+   "land": "Fahle Weiten",
+   "x": 6384.0,
+   "y": 5698.0,
+   "lesestelle": "ko_159_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_160",
+   "name": "Strandfeuer",
+   "art": "leuchtfeuer",
+   "land": "Fahle Weiten",
+   "x": 6030.0,
+   "y": 5881.0,
+   "lesestelle": "ko_160_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_183"
+  },
+  {
+   "id": "ko_161",
+   "name": "Feuer am Kap",
+   "art": "leuchtfeuer",
+   "land": "Fahle Weiten",
+   "x": 6285.0,
+   "y": 5701.0,
+   "lesestelle": "ko_161_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "ko_162",
+   "name": "Pilgerschrein",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6800.7,
+   "y": 6489.7,
+   "lesestelle": "ko_162_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "ostufer"
+  },
+  {
+   "id": "ko_163",
+   "name": "Moorschrein",
+   "art": "schrein",
+   "land": "Fahle Weiten",
+   "x": 6759.0,
+   "y": 5974.0,
+   "lesestelle": "ko_163_l",
+   "besonders": false,
+   "abseits": true,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_164",
+   "name": "Eddas Turm",
+   "art": "turm",
+   "land": "Fahle Weiten",
+   "x": 6432.0,
+   "y": 5827.0,
+   "lesestelle": "ko_164_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "ko_165",
+   "name": "Dornlager",
+   "art": "jaeger",
+   "land": "Fahle Weiten",
+   "x": 6581.0,
+   "y": 6094.0,
+   "lesestelle": "ko_165_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_166",
+   "name": "Alte Mühle",
+   "art": "muehle",
+   "land": "Fahle Weiten",
+   "x": 6610.0,
+   "y": 5934.0,
+   "lesestelle": "ko_166_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  },
+  {
+   "id": "ko_167",
+   "name": "Aalkate",
+   "art": "fischer",
+   "land": "Fahle Weiten",
+   "x": 6732.0,
+   "y": 6280.0,
+   "lesestelle": "ko_167_l",
+   "besonders": false,
+   "abseits": false,
+   "region": "fl_201_183"
+  }
+ ],
+ "namen": [
+  [
+   "Der Hängende Stein",
+   "Ort",
+   6095.0,
+   6542.6
+  ],
+  [
+   "Galgenhügel",
+   "Ruine",
+   6283.0,
+   6523.0
+  ],
+  [
+   "Die Sieben Linden",
+   "Ort",
+   6041.0,
+   6374.0
+  ],
+  [
+   "Hohe Heide",
+   "Gehöft",
+   6207.0,
+   6469.0
+  ],
+  [
+   "Brandstätte",
+   "Ruine",
+   6566.1,
+   6557.7
+  ],
+  [
+   "Moosschrein",
+   "Ort",
+   6583.1,
+   6457.0
+  ],
+  [
+   "Rübenkreuz",
+   "Ort",
+   6383.3,
+   6492.8
+  ],
+  [
+   "Kiefernwarte",
+   "Ort",
+   6666.0,
+   6619.0
+  ],
+  [
+   "Hof am Dorfteich",
+   "Gehöft",
+   6387.9,
+   6570.9
+  ],
+  [
+   "Nesselnest",
+   "Lager",
+   6118.0,
+   6382.0
+  ],
+  [
+   "Versteck am Schwarzwasser",
+   "Lager",
+   6760.0,
+   6451.0
+  ],
+  [
+   "Krummer Turm",
+   "Ort",
+   6129.0,
+   6598.0
+  ],
+  [
+   "Eschenau",
+   "Ort",
+   6503.0,
+   6385.0
+  ],
+  [
+   "Hopfenhof",
+   "Gehöft",
+   6188.0,
+   6630.0
+  ],
+  [
+   "Rübenschrein",
+   "Ort",
+   6307.3,
+   6394.9
+  ],
+  [
+   "Stiller Schrein",
+   "Ort",
+   6693.0,
+   6374.8
+  ],
+  [
+   "Hinterm Moor",
+   "Ort",
+   6708.0,
+   6709.0
+  ],
+  [
+   "Leere Mauern",
+   "Ruine",
+   6375.3,
+   6655.9
+  ],
+  [
+   "Distelbrunnen",
+   "Ort",
+   6780.0,
+   6574.0
+  ],
+  [
+   "Bruns Meiler",
+   "Ort",
+   6545.1,
+   6646.6
+  ],
+  [
+   "Hungerhof",
+   "Gehöft",
+   6643.1,
+   6488.8
+  ],
+  [
+   "Hilles Turm",
+   "Ort",
+   6650.0,
+   6744.8
+  ],
+  [
+   "Igelwarte",
+   "Ort",
+   6451.4,
+   6577.6
+  ],
+  [
+   "Alkes Schrein",
+   "Ort",
+   6397.1,
+   6388.7
+  ],
+  [
+   "Spukhof",
+   "Gehöft",
+   6448.7,
+   6490.4
+  ],
+  [
+   "Telses Schrein",
+   "Ort",
+   6195.0,
+   6358.0
+  ],
+  [
+   "Neusiedel",
+   "Ort",
+   6197.0,
+   6547.0
+  ],
+  [
+   "Eilerts Meiler",
+   "Ort",
+   6627.0,
+   6352.0
+  ],
+  [
+   "Gerstenhof",
+   "Gehöft",
+   6120.0,
+   6472.0
+  ],
+  [
+   "Erlenbrunnen",
+   "Ort",
+   6639.0,
+   6565.0
+  ],
+  [
+   "Jagdlager",
+   "Ort",
+   6521.0,
+   6748.0
+  ],
+  [
+   "Eschenhof",
+   "Gehöft",
+   6604.8,
+   6710.2
+  ],
+  [
+   "Lerchenhof",
+   "Gehöft",
+   6264.0,
+   6577.0
+  ],
+  [
+   "Bettlerschrein",
+   "Ort",
+   6390.0,
+   6751.0
+  ],
+  [
+   "Immes Turm",
+   "Ort",
+   6165.0,
+   6508.0
+  ],
+  [
+   "Kleindorf",
+   "Ort",
+   6235.0,
+   6722.0
+  ],
+  [
+   "Bienenschrein",
+   "Ort",
+   6471.1,
+   6342.1
+  ],
+  [
+   "Ruprechts Schrein",
+   "Ort",
+   6776.7,
+   6750.5
+  ],
+  [
+   "Birkennest",
+   "Lager",
+   6763.0,
+   6667.0
+  ],
+  [
+   "Martens Schrein",
+   "Ort",
+   6237.0,
+   6418.0
+  ],
+  [
+   "Rußiger Meiler",
+   "Ort",
+   6273.0,
+   6466.0
+  ],
+  [
+   "Tinis Hof",
+   "Gehöft",
+   6321.0,
+   6613.0
+  ],
+  [
+   "Flachskreuz",
+   "Ort",
+   6171.0,
+   6412.0
+  ],
+  [
+   "Hinter den Birken",
+   "Gehöft",
+   6278.0,
+   6351.0
+  ],
+  [
+   "Hasellager",
+   "Ort",
+   6480.0,
+   6632.9
+  ],
+  [
+   "Gretes Turm",
+   "Ort",
+   6507.0,
+   6583.0
+  ],
+  [
+   "Hof am Rotbach",
+   "Gehöft",
+   6618.0,
+   6655.0
+  ],
+  [
+   "Bernds Hof",
+   "Gehöft",
+   6656.0,
+   6411.1
+  ],
+  [
+   "Schlehenlager",
+   "Ort",
+   6337.4,
+   6342.1
+  ],
+  [
+   "Hirschlager",
+   "Ort",
+   6551.0,
+   6340.0
+  ],
+  [
+   "Fallenstellerlager",
+   "Ort",
+   6383.0,
+   6439.0
+  ],
+  [
+   "Kiefernmeiler",
+   "Ort",
+   6419.4,
+   6620.7
+  ],
+  [
+   "Holunderschrein",
+   "Ort",
+   6328.9,
+   6444.9
+  ],
+  [
+   "Tammes Meiler",
+   "Ort",
+   6591.9,
+   6397.2
+  ],
+  [
+   "Holunderhof",
+   "Gehöft",
+   6758.0,
+   6516.0
+  ],
+  [
+   "Leerer Turm",
+   "Ort",
+   6330.0,
+   6562.0
+  ],
+  [
+   "Birkenwinkel",
+   "Ort",
+   6708.0,
+   6645.7
+  ],
+  [
+   "Altes Gemäuer",
+   "Ruine",
+   6599.9,
+   6601.3
+  ],
+  [
+   "Schlehenkate",
+   "Ort",
+   6078.0,
+   6427.0
+  ],
+  [
+   "Grenzstein",
+   "Ort",
+   6082.0,
+   6340.0
+  ],
+  [
+   "Ansgars Brunnen",
+   "Ort",
+   6273.0,
+   6634.0
+  ],
+  [
+   "Hünengrab",
+   "Ort",
+   6298.0,
+   5415.0
+  ],
+  [
+   "Die Windharfe",
+   "Ort",
+   6184.0,
+   5582.0
+  ],
+  [
+   "Krähenbaum",
+   "Ort",
+   5998.0,
+   5754.0
+  ],
+  [
+   "Der Versunkene Hof",
+   "Ruine",
+   6759.0,
+   6225.0
+  ],
+  [
+   "Hirtenrast",
+   "Ort",
+   6699.0,
+   5851.0
+  ],
+  [
+   "Binsenruh",
+   "Ruine",
+   6292.0,
+   5884.0
+  ],
+  [
+   "Ottos Kate",
+   "Ort",
+   6552.0,
+   6049.0
+  ],
+  [
+   "Stille Mühle",
+   "Ort",
+   6675.0,
+   6187.0
+  ],
+  [
+   "Kate am Ententeich",
+   "Ort",
+   6171.0,
+   5947.0
+  ],
+  [
+   "Volkers Hof",
+   "Gehöft",
+   6369.0,
+   6286.0
+  ],
+  [
+   "Schwarzhof",
+   "Gehöft",
+   6402.0,
+   5782.0
+  ],
+  [
+   "Ödes Feld",
+   "Ort",
+   6595.0,
+   6220.0
+  ],
+  [
+   "Wolfsnest",
+   "Lager",
+   6229.0,
+   5719.0
+  ],
+  [
+   "Borstkreuz",
+   "Ort",
+   6759.0,
+   6028.0
+  ],
+  [
+   "Elsternest",
+   "Lager",
+   6121.0,
+   5893.0
+  ],
+  [
+   "Mettes Kate",
+   "Ort",
+   6153.0,
+   6082.0
+  ],
+  [
+   "Hirtenschrein",
+   "Ort",
+   6513.0,
+   6250.0
+  ],
+  [
+   "Lager am Moorgraben",
+   "Ort",
+   6902.0,
+   6634.0
+  ],
+  [
+   "Moornest",
+   "Lager",
+   6463.0,
+   5971.0
+  ],
+  [
+   "Wiebkes Hof",
+   "Gehöft",
+   6681.0,
+   6061.0
+  ],
+  [
+   "Hinterm Wald",
+   "Ort",
+   6139.0,
+   5728.0
+  ],
+  [
+   "Wolfswarte",
+   "Ort",
+   6627.0,
+   5680.0
+  ],
+  [
+   "Torfkate",
+   "Ort",
+   6225.0,
+   5494.0
+  ],
+  [
+   "Sumpfschrein",
+   "Ort",
+   6288.0,
+   5959.0
+  ],
+  [
+   "Rabenhof",
+   "Gehöft",
+   6537.0,
+   5803.0
+  ],
+  [
+   "Fennas Jagdhütte",
+   "Ort",
+   6344.0,
+   6091.0
+  ],
+  [
+   "Föhrenfeld",
+   "Ort",
+   6539.0,
+   6136.0
+  ],
+  [
+   "Pfeifenhof",
+   "Gehöft",
+   6210.0,
+   6208.0
+  ],
+  [
+   "Ginsterwarte",
+   "Ort",
+   6450.0,
+   6031.0
+  ],
+  [
+   "Dörtes Turm",
+   "Ort",
+   6864.0,
+   6703.0
+  ],
+  [
+   "Binsenstein",
+   "Ort",
+   6457.0,
+   6232.0
+  ],
+  [
+   "Elsterstein",
+   "Ort",
+   6331.0,
+   5722.0
+  ],
+  [
+   "Tiefer Brunnen",
+   "Ort",
+   6558.0,
+   5911.0
+  ],
+  [
+   "Lerchenbrunnen",
+   "Ort",
+   6837.0,
+   6622.0
+  ],
+  [
+   "Bei den Steinen",
+   "Ort",
+   6748.0,
+   5902.0
+  ],
+  [
+   "Rolfs Schrein",
+   "Ort",
+   6261.0,
+   6088.0
+  ],
+  [
+   "Konrads Schrein",
+   "Ort",
+   6486.0,
+   5902.0
+  ],
+  [
+   "Bleichruh",
+   "Ruine",
+   6754.0,
+   6097.0
+  ],
+  [
+   "Harms Jagdhütte",
+   "Ort",
+   6386.0,
+   6052.0
+  ],
+  [
+   "Am Dornbusch",
+   "Ort",
+   6847.0,
+   6466.0
+  ],
+  [
+   "Meiler am Eulenbach",
+   "Ort",
+   6708.0,
+   5965.0
+  ],
+  [
+   "Josts Turm",
+   "Ort",
+   6681.0,
+   5650.0
+  ],
+  [
+   "Alte Warte",
+   "Ort",
+   6516.0,
+   5725.0
+  ],
+  [
+   "Nebelau",
+   "Ort",
+   6614.0,
+   6163.0
+  ],
+  [
+   "Am Stillen Teich",
+   "Ruine",
+   6226.0,
+   5917.0
+  ],
+  [
+   "Erikalager",
+   "Ort",
+   6680.0,
+   6259.0
+  ],
+  [
+   "Diebeslager",
+   "Lager",
+   6232.0,
+   5986.0
+  ],
+  [
+   "Am Krummen Pfad",
+   "Ort",
+   6292.0,
+   5782.0
+  ],
+  [
+   "Kranichhof",
+   "Gehöft",
+   6570.0,
+   5977.0
+  ],
+  [
+   "Ginsterturm",
+   "Ort",
+   6207.0,
+   5857.0
+  ],
+  [
+   "Borstschrein",
+   "Ort",
+   6078.0,
+   5845.0
+  ],
+  [
+   "Wacholderstein",
+   "Ort",
+   6157.0,
+   6307.0
+  ],
+  [
+   "Schrein der Ertrunkenen",
+   "Ort",
+   6078.0,
+   5713.0
+  ],
+  [
+   "Kranichnest",
+   "Lager",
+   6907.0,
+   6523.0
+  ],
+  [
+   "Dornwarte",
+   "Ort",
+   6399.0,
+   6229.0
+  ],
+  [
+   "Rabenau",
+   "Ort",
+   6653.0,
+   6007.0
+  ],
+  [
+   "Langes Feld",
+   "Ruine",
+   6151.0,
+   6151.0
+  ],
+  [
+   "Drei Höfe",
+   "Ort",
+   6455.0,
+   6157.0
+  ],
+  [
+   "Hof am Kreuzbach",
+   "Gehöft",
+   6297.0,
+   6298.0
+  ],
+  [
+   "Hof am Weidengraben",
+   "Gehöft",
+   6507.0,
+   6004.0
+  ],
+  [
+   "Hof am Hasenbach",
+   "Gehöft",
+   6618.0,
+   6058.0
+  ],
+  [
+   "Lerchenlager",
+   "Ort",
+   6281.0,
+   6037.0
+  ],
+  [
+   "Versteck am Erlenbach",
+   "Lager",
+   6094.0,
+   6265.0
+  ],
+  [
+   "Torfturm",
+   "Ort",
+   6423.0,
+   6112.0
+  ],
+  [
+   "Krüppelstein",
+   "Ort",
+   6625.0,
+   5770.0
+  ],
+  [
+   "Wegelagerer",
+   "Lager",
+   6175.0,
+   5674.0
+  ],
+  [
+   "Krüppelhof",
+   "Gehöft",
+   6342.0,
+   6157.0
+  ],
+  [
+   "Alter Turm",
+   "Ort",
+   6114.0,
+   5797.0
+  ],
+  [
+   "Föhrenau",
+   "Ort",
+   6254.0,
+   6250.0
+  ],
+  [
+   "Riekes Turm",
+   "Ort",
+   6483.0,
+   5827.0
+  ],
+  [
+   "Erikahof",
+   "Gehöft",
+   6189.0,
+   5761.0
+  ],
+  [
+   "Totenstein",
+   "Ort",
+   6598.0,
+   6289.0
+  ],
+  [
+   "Bleichschrein",
+   "Ort",
+   6366.0,
+   5911.0
+  ],
+  [
+   "Galgenvogelnest",
+   "Lager",
+   6532.0,
+   6193.0
+  ],
+  [
+   "Am Kahlen Berg",
+   "Gehöft",
+   6627.0,
+   5830.0
+  ],
+  [
+   "Hohe Wacht",
+   "Ort",
+   6867.0,
+   6568.0
+  ],
+  [
+   "Wacholderwarte",
+   "Ort",
+   6153.0,
+   5848.0
+  ],
+  [
+   "Sumpfkreuz",
+   "Ort",
+   6531.0,
+   5860.0
+  ],
+  [
+   "Schwarzkate",
+   "Ort",
+   6174.0,
+   6025.0
+  ],
+  [
+   "Pfeifenstein",
+   "Ort",
+   6037.0,
+   5794.0
+  ],
+  [
+   "Netzhütte",
+   "Ort",
+   6633.0,
+   5596.0
+  ],
+  [
+   "Heideturm",
+   "Ort",
+   6807.0,
+   6697.0
+  ],
+  [
+   "Am Wolfsbuckel",
+   "Ort",
+   6686.0,
+   6130.0
+  ],
+  [
+   "Im Grund",
+   "Ort",
+   6412.0,
+   5956.0
+  ],
+  [
+   "Witwenschrein",
+   "Ort",
+   6534.0,
+   5674.0
+  ],
+  [
+   "Fuchsloch",
+   "Ruine",
+   6117.0,
+   5665.0
+  ],
+  [
+   "Räubernest",
+   "Lager",
+   6826.0,
+   6751.0
+  ],
+  [
+   "Alte Schanze",
+   "Ruine",
+   6706.0,
+   6016.0
+  ],
+  [
+   "Kalte Höhle",
+   "Ruine",
+   6756.0,
+   5824.0
+  ],
+  [
+   "Versteck am Steinbach",
+   "Lager",
+   6109.0,
+   6205.0
+  ],
+  [
+   "Hof am Mühlbach",
+   "Gehöft",
+   6732.0,
+   6169.0
+  ],
+  [
+   "Blutstein",
+   "Ort",
+   6259.0,
+   5839.0
+  ],
+  [
+   "Hof am Schwarzwasser",
+   "Gehöft",
+   6672.0,
+   5902.0
+  ],
+  [
+   "Brandhof",
+   "Gehöft",
+   6468.0,
+   5695.0
+  ],
+  [
+   "Reusenhütte",
+   "Ort",
+   6234.0,
+   5572.0
+  ],
+  [
+   "Ilsabes Schrein",
+   "Ort",
+   6519.0,
+   5950.0
+  ],
+  [
+   "Heidefeuer",
+   "Ort",
+   6264.0,
+   5458.0
+  ],
+  [
+   "Nebelkate",
+   "Ort",
+   6384.0,
+   5698.0
+  ],
+  [
+   "Strandfeuer",
+   "Ort",
+   6030.0,
+   5881.0
+  ],
+  [
+   "Feuer am Kap",
+   "Ort",
+   6285.0,
+   5701.0
+  ],
+  [
+   "Pilgerschrein",
+   "Ort",
+   6800.7,
+   6489.7
+  ],
+  [
+   "Moorschrein",
+   "Ort",
+   6759.0,
+   5974.0
+  ],
+  [
+   "Eddas Turm",
+   "Ort",
+   6432.0,
+   5827.0
+  ],
+  [
+   "Dornlager",
+   "Ort",
+   6581.0,
+   6094.0
+  ],
+  [
+   "Alte Mühle",
+   "Ort",
+   6610.0,
+   5934.0
+  ],
+  [
+   "Aalkate",
+   "Ort",
+   6732.0,
+   6280.0
+  ]
+ ]
+}

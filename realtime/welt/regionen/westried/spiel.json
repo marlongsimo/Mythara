@@ -41,5 +41,83 @@
   ],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "ko_4_l",
+   "art": "lesen",
+   "x": 63.0,
+   "y": 135.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hohe Heide. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_26_l",
+   "art": "lesen",
+   "x": 51.0,
+   "y": 24.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Telses Schrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_27_l",
+   "art": "lesen",
+   "x": 53.0,
+   "y": 213.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Neusiedel. Ein paar Hütten um einen Brunnen – hier kennt jeder jeden."
+   }
+  },
+  {
+   "id": "ko_33_l",
+   "art": "lesen",
+   "x": 120.0,
+   "y": 243.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Lerchenhof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_35_l",
+   "art": "lesen",
+   "x": 21.0,
+   "y": 174.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Immes Turm. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_40_l",
+   "art": "lesen",
+   "x": 93.0,
+   "y": 84.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Martens Schrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_43_l",
+   "art": "lesen",
+   "x": 27.0,
+   "y": 78.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Flachskreuz. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  }
+ ]
 }

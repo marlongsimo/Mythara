@@ -429,6 +429,248 @@
    "daten": {
     "text": "Ein Rastplatz am Weg. Asche im Steinring, ein Stamm zum Sitzen – Hirten und Händler ruhen hier."
    }
+  },
+  {
+   "id": "ko_62_l",
+   "art": "lesen",
+   "x": 346.0,
+   "y": 9.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hünengrab. Ein Grab aus Steinplatten, älter als jede Karte. Der Wind pfeift durch die Fugen."
+   }
+  },
+  {
+   "id": "ko_63_l",
+   "art": "lesen",
+   "x": 232.0,
+   "y": 176.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Windharfe. Ein verlassener Turm, durch dessen Ritzen der Wind singt. In Sturmnächten hört man ihn bis Grauwacht."
+   }
+  },
+  {
+   "id": "ko_64_l",
+   "art": "lesen",
+   "x": 46.0,
+   "y": 348.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Krähenbaum. Ein toter Baum voller Krähen. Die Heideleute hängen Knochen hinein – gegen den Frost."
+   }
+  },
+  {
+   "id": "ko_72_l",
+   "art": "lesen",
+   "x": 450.0,
+   "y": 376.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Schwarzhof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_74_l",
+   "art": "lesen",
+   "x": 277.0,
+   "y": 313.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Wolfsnest. Ein verlassenes Lager. Die Asche ist noch warm – sie sind nicht weit."
+   }
+  },
+  {
+   "id": "ko_82_l",
+   "art": "lesen",
+   "x": 187.0,
+   "y": 322.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinterm Wald. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  },
+  {
+   "id": "ko_84_l",
+   "art": "lesen",
+   "x": 273.0,
+   "y": 88.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Torfkate. Eine Fischerhütte. Netze hängen zum Trocknen, es riecht nach Salz und Tang."
+   }
+  },
+  {
+   "id": "ko_93_l",
+   "art": "lesen",
+   "x": 379.0,
+   "y": 316.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Elsterstein. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  },
+  {
+   "id": "ko_109_l",
+   "art": "lesen",
+   "x": 340.0,
+   "y": 376.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Krummen Pfad. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  },
+  {
+   "id": "ko_112_l",
+   "art": "lesen",
+   "x": 126.0,
+   "y": 439.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Borstschrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_114_l",
+   "art": "lesen",
+   "x": 126.0,
+   "y": 307.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Schrein der Ertrunkenen. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_127_l",
+   "art": "lesen",
+   "x": 223.0,
+   "y": 268.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Wegelagerer. Ein verlassenes Lager. Die Asche ist noch warm – sie sind nicht weit."
+   }
+  },
+  {
+   "id": "ko_129_l",
+   "art": "lesen",
+   "x": 162.0,
+   "y": 391.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Alter Turm. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_132_l",
+   "art": "lesen",
+   "x": 237.0,
+   "y": 355.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Erikahof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_138_l",
+   "art": "lesen",
+   "x": 201.0,
+   "y": 442.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Wacholderwarte. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_141_l",
+   "art": "lesen",
+   "x": 85.0,
+   "y": 388.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Pfeifenstein. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  },
+  {
+   "id": "ko_147_l",
+   "art": "lesen",
+   "x": 165.0,
+   "y": 259.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Fuchsloch. Ein dunkler Spalt im Fels. Kalte Luft weht heraus."
+   }
+  },
+  {
+   "id": "ko_153_l",
+   "art": "lesen",
+   "x": 307.0,
+   "y": 433.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Blutstein. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  },
+  {
+   "id": "ko_156_l",
+   "art": "lesen",
+   "x": 282.0,
+   "y": 166.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Reusenhütte. Eine Fischerhütte. Netze hängen zum Trocknen, es riecht nach Salz und Tang."
+   }
+  },
+  {
+   "id": "ko_158_l",
+   "art": "lesen",
+   "x": 312.0,
+   "y": 52.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Heidefeuer. Ein Leuchtfeuer für die Boote draußen auf dem Wasser."
+   }
+  },
+  {
+   "id": "ko_159_l",
+   "art": "lesen",
+   "x": 432.0,
+   "y": 292.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Nebelkate. Eine Fischerhütte. Netze hängen zum Trocknen, es riecht nach Salz und Tang."
+   }
+  },
+  {
+   "id": "ko_161_l",
+   "art": "lesen",
+   "x": 333.0,
+   "y": 295.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Feuer am Kap. Ein Leuchtfeuer für die Boote draußen auf dem Wasser."
+   }
   }
  ],
  "senken": [

@@ -18,6 +18,83 @@
    "daten": {
     "text": "Ein Rastplatz am Steinweg. Die Asche im Feuerring ist noch warm."
    }
+  },
+  {
+   "id": "ko_21_l",
+   "art": "lesen",
+   "x": 51.11,
+   "y": 91.05,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hungerhof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_22_l",
+   "art": "lesen",
+   "x": 58.01,
+   "y": 347.04,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hilles Turm. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_30_l",
+   "art": "lesen",
+   "x": 47.0,
+   "y": 167.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Erlenbrunnen. Ein Brunnen am Wegrand. Das Wasser ist klar und kalt."
+   }
+  },
+  {
+   "id": "ko_32_l",
+   "art": "lesen",
+   "x": 12.8,
+   "y": 312.43,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eschenhof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_47_l",
+   "art": "lesen",
+   "x": 26.0,
+   "y": 257.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hof am Rotbach. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_48_l",
+   "art": "lesen",
+   "x": 63.96,
+   "y": 13.29,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Bernds Hof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_58_l",
+   "art": "lesen",
+   "x": 7.88,
+   "y": 203.48,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Altes Gemäuer. Mauerreste, halb eingesunken. Niemand weiß mehr, wer hier gewohnt hat."
+   }
   }
  ],
  "ausgaenge": [],

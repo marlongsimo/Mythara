@@ -131,6 +131,17 @@
    "daten": {
     "text": "Die alte Linde von Weidenhain. Zwischen ihren Wurzeln blühen Wildblumen."
    }
+  },
+  {
+   "id": "ko_31_l",
+   "art": "lesen",
+   "x": 121.0,
+   "y": 94.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Jagdlager. Ein Jägerlager: Feuerstelle, ein Zelt und Spuren, die in den Wald führen."
+   }
   }
  ],
  "ausgaenge": [],

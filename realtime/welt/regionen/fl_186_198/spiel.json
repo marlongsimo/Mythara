@@ -12,5 +12,83 @@
   "sperren": [],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "ko_1_l",
+   "art": "lesen",
+   "x": 143.0,
+   "y": 208.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Hängende Stein. Ein Findling, so groß wie ein Haus, liegt schief auf einem kleinen – man sagt, ein Riese habe ihn verloren."
+   }
+  },
+  {
+   "id": "ko_3_l",
+   "art": "lesen",
+   "x": 89.0,
+   "y": 40.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Sieben Linden. Sieben Linden im Kreis um einen Opferstein. Wer hier lügt, dem fällt ein Blatt auf den Kopf."
+   }
+  },
+  {
+   "id": "ko_10_l",
+   "art": "lesen",
+   "x": 166.0,
+   "y": 48.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Nesselnest. Ein verlassenes Lager. Die Asche ist noch warm – sie sind nicht weit."
+   }
+  },
+  {
+   "id": "ko_12_l",
+   "art": "lesen",
+   "x": 177.0,
+   "y": 264.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Krummer Turm. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_29_l",
+   "art": "lesen",
+   "x": 168.0,
+   "y": 138.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Gerstenhof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_59_l",
+   "art": "lesen",
+   "x": 126.0,
+   "y": 93.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Schlehenkate. Eine Fischerhütte. Netze hängen zum Trocknen, es riecht nach Salz und Tang."
+   }
+  },
+  {
+   "id": "ko_60_l",
+   "art": "lesen",
+   "x": 130.0,
+   "y": 6.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Grenzstein. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  }
+ ]
 }

@@ -8,16 +8,16 @@
    "anzahl": 7,
    "stufe": 32,
    "land": "Die Fahlen Weiten",
-   "region": "fl_186_183",
+   "region": "fl_201_183",
    "mitte": [
-    6352.5,
-    5980.5
+    6852.5,
+    6150.5
    ],
    "rechteck": [
-    6292,
-    5920,
-    6411,
-    6039
+    6792,
+    6090,
+    6911,
+    6209
    ],
    "meiden": [],
    "modell": "vorhanden"
@@ -178,33 +178,51 @@
    "land": "Die Fahlen Weiten",
    "region": "fl_186_183",
    "mitte": [
-    6300,
-    6155
+    6290,
+    6175
    ],
    "rechteck": [
-    6240,
-    6095,
-    6359,
-    6214
+    6230,
+    6115,
+    6349,
+    6234
    ],
    "meiden": [
     {
-     "x": 6329.5,
-     "y": 6088.8,
-     "r": 10,
-     "grund": "Sammelstelle Bäume am Weg (Fahle Weiten 41)"
+     "x": 6320,
+     "y": 6232,
+     "r": 12,
+     "grund": "Ruine Alte Wachruine"
+    },
+    {
+     "x": 6342.0,
+     "y": 6157.0,
+     "r": 18,
+     "grund": "Gehöft Krüppelhof"
+    },
+    {
+     "x": 6254.0,
+     "y": 6250.0,
+     "r": 16,
+     "grund": "Ort Föhrenau"
+    },
+    {
+     "x": 6320,
+     "y": 6232.8,
+     "r": 8,
+     "grund": "Questort/Lesestelle ruine"
+    },
+    {
+     "x": 6342.0,
+     "y": 6159.2,
+     "r": 8,
+     "grund": "Questort/Lesestelle ko_128_l"
     },
     {
      "x": 6350.8,
      "y": 6218.8,
      "r": 10,
      "grund": "Sammelstelle Adern am Weg (Fahle Weiten 38)"
-    },
-    {
-     "x": 6241.8,
-     "y": 6102.8,
-     "r": 10,
-     "grund": "Sammelstelle Adern am Weg (Fahle Weiten 44)"
     }
    ],
    "modell": "vorhanden"

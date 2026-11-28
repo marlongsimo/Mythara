@@ -73,6 +73,72 @@
    "daten": {
     "text": "Ein Obelisk für die Gefallenen der Feste. Hunderte Namen, kaum noch lesbar."
    }
+  },
+  {
+   "id": "ko_15_l",
+   "art": "lesen",
+   "x": 35.25,
+   "y": 61.14,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Rübenschrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_24_l",
+   "art": "lesen",
+   "x": 125.14,
+   "y": 54.94,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Alkes Schrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_44_l",
+   "art": "lesen",
+   "x": 6.0,
+   "y": 17.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinter den Birken. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_49_l",
+   "art": "lesen",
+   "x": 65.35,
+   "y": 8.3,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Schlehenlager. Ein Jägerlager: Feuerstelle, ein Zelt und Spuren, die in den Wald führen."
+   }
+  },
+  {
+   "id": "ko_51_l",
+   "art": "lesen",
+   "x": 111.0,
+   "y": 105.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Fallenstellerlager. Ein Jägerlager: Feuerstelle, ein Zelt und Spuren, die in den Wald führen."
+   }
+  },
+  {
+   "id": "ko_53_l",
+   "art": "lesen",
+   "x": 56.9,
+   "y": 111.11,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Holunderschrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
   }
  ],
  "ausgaenge": [],

@@ -731,6 +731,20 @@
  {"id":"naht_517","objekt":"stil_eiche_02","x":13.5,"y":127.5,"s":1.13},
  {"id":"naht_518","objekt":"stil_tanne_01","x":17.5,"y":127.5,"s":1.03,"spiegeln":true},
  {"id":"naht_519","objekt":"stil_tanne_01","x":22.5,"y":127.5,"s":0.91},
- {"id":"vd_nordwald_k1","objekt":"wegrand_feldstein_1","x":98.5,"y":109.5},
- {"id":"vd_nordwald_k2","objekt":"wegrand_feldstein_1","x":81.5,"y":109.5}
+ {"id":"ko_15_0","objekt":"moor_schrein_01","x":35,"y":58.95},
+ {"id":"ko_15_1","objekt":"wz_seelenlicht_grablicht","x":39,"y":62,"spiegeln":true},
+ {"id":"ko_24_0","objekt":"moor_schrein_01","x":125,"y":52.95,"spiegeln":true},
+ {"id":"ko_24_1","objekt":"wz_seelenlicht_grablicht","x":127.95,"y":52.23},
+ {"id":"ko_44_1","objekt":"k_zaun","x":6,"y":15,"spiegeln":true},
+ {"id":"ko_49_0","objekt":"welt_zelt_01","x":65.5,"y":6,"spiegeln":true},
+ {"id":"ko_49_1","objekt":"dorf_festfeuer_01","x":69.5,"y":5.75},
+ {"id":"ko_49_2","objekt":"welt_spuren_01","x":72.16,"y":4.76},
+ {"id":"ko_51_0","objekt":"welt_zelt_01","x":111,"y":103,"spiegeln":true},
+ {"id":"ko_51_1","objekt":"dorf_festfeuer_01","x":114,"y":104.25},
+ {"id":"ko_51_2","objekt":"welt_spuren_01","x":116.31,"y":105.39,"spiegeln":true},
+ {"id":"ko_53_0","objekt":"moor_schrein_01","x":57,"y":108.95,"spiegeln":true},
+ {"id":"ko_53_1","objekt":"wz_seelenlicht_grablicht","x":59.27,"y":111.19,"spiegeln":true},
+ {"id":"vd_nordwald_k1","objekt":"wegrand_feldstein_1","x":97.5,"y":109.5},
+ {"id":"vd_nordwald_k2","objekt":"wegrand_bildstock","x":77.5,"y":112.5,"spiegeln":true},
+ {"id":"vd_nordwald_k3","objekt":"wegrand_feldstein_1","x":91.5,"y":118.5}
 ]
