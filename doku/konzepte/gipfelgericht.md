@@ -1,5 +1,8 @@
 # Das Gipfelgericht – Boss-Minispiel für Rüstung der Stufe 70 (Vorschlag)
 
+> **Stand 27.11. (Konzept-Chat):** Durch die **Hüter der Hochlande** (Kanon) überholt, wird nicht weiterverfolgt.
+> **Ersatzidee im Hinterkopf** (Nutzer, 27.11.): **„Der Grauhorn-Aufstieg“** (Stufe 60–75). Expedition allein oder zu 2–4 durch 5 Höhenlager zum Gipfel: Kälte-Leiste (Feuer, warmes Essen, Zelte über die Berufe), Wetter-Ereignisse (Schneesturm, Lawine, Steinschlag), Hochland-Gegner, Rohstoffe nur am Berg. Je höher, desto bessere Gipfelbeute, umkehren jederzeit möglich. Lohn: Bergrohstoffe für alle Berufe, Bergsteiger-Ausrüstung, seltene Gipfeltrophäe.
+
 Konzept vom 27.11.2026 (Leitstelle), Wunsch des Nutzers: ein weiteres Minispiel **mit Bosskämpfen**, in dem man **Rüstungsteile der Stufe 70** bekommt.
 Eigener Riftmere-Entwurf, keine Kopie anderer Spiele. **Noch nicht entschieden** – erst nach Rückmeldung des Nutzers verteilen.
 

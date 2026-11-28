@@ -24,6 +24,10 @@
   "weiherhof": [
    6340,
    5834
+  ],
+  "reifbach": [
+   6424,
+   5722
   ]
  },
  "namen": [
@@ -56,6 +60,12 @@
    "Ort",
    6340,
    5834
+  ],
+  [
+   "Reifbach",
+   "Ort",
+   6424,
+   5722
   ]
  ],
  "grauwacht": {
@@ -151,7 +161,7 @@
     ]
    }
   ],
-  "gebaeude": 45
+  "gebaeude": 42
  },
  "banken": [
   {
@@ -222,6 +232,14 @@
     6598,
     5867.9
    ]
+  },
+  {
+   "id": "reifbach_bankkiste",
+   "ort": "Reifbach",
+   "kiste": [
+    6418,
+    5725.4
+   ]
   }
  ],
  "laeden": [
@@ -279,6 +297,17 @@
     0,
     -1
    ]
+  },
+  {
+   "id": "reifbach_laden",
+   "ort": "Reifbach",
+   "art": "Räucherfisch, Angelzeug",
+   "x": 6427,
+   "y": 5731.2,
+   "blick": [
+    0,
+    -1
+   ]
   }
  ],
  "stationen": [
@@ -329,6 +358,18 @@
    "station": "raeucherhuette",
    "x": 6330,
    "y": 5837.6
+  },
+  {
+   "id": "raeucherhuette_reifbach",
+   "station": "raeucherhuette",
+   "x": 6426,
+   "y": 5724.6
+  },
+  {
+   "id": "feuer_reifbach",
+   "station": "feuer",
+   "x": 6429,
+   "y": 5729.1
   }
  ],
  "npc": [
@@ -468,6 +509,18 @@
    "rolle": "Händlerin (Laden)",
    "x": 6337,
    "y": 5835.7
+  },
+  {
+   "id": "fischerin_reifbach",
+   "rolle": "Fischerin (Räucherfeuer)",
+   "x": 6427.5,
+   "y": 5729.1
+  },
+  {
+   "id": "haendler_reifbach",
+   "rolle": "Händler (Laden)",
+   "x": 6427,
+   "y": 5731.2
   }
  ],
  "fischplaetze": [
@@ -513,6 +566,39 @@
    "stehplatz": [
     6343.5,
     5850.5
+   ]
+  },
+  {
+   "id": "fischplatz_reifbach_bach",
+   "fisch": "bachling",
+   "stufe": 1,
+   "x": 6393.5,
+   "y": 5743.5,
+   "stehplatz": [
+    6394.5,
+    5743.5
+   ]
+  },
+  {
+   "id": "fischplatz_reifbach_bach_unten",
+   "fisch": "muehlbarsch",
+   "stufe": 10,
+   "x": 6402.5,
+   "y": 5722.5,
+   "stehplatz": [
+    6403.5,
+    5722.5
+   ]
+  },
+  {
+   "id": "fischplatz_reifbach_bucht",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 6411.5,
+   "y": 5704.5,
+   "stehplatz": [
+    6411.5,
+    5705.5
    ]
   },
   {
@@ -569,6 +655,20 @@
    "x": 6604.5,
    "y": 5884.5,
    "region": "fl_201_183"
+  },
+  {
+   "id": "reifbach_wegerich_1",
+   "art": "wegerich",
+   "x": 6414.5,
+   "y": 5712.5,
+   "region": "fl_186_169"
+  },
+  {
+   "id": "reifbach_ringelblume_1",
+   "art": "ringelblume",
+   "x": 6434.5,
+   "y": 5712.5,
+   "region": "fl_201_169"
   },
   {
    "id": "kohlstatt_wegerich_1",
@@ -1044,6 +1144,42 @@
     [
      6344,
      5787
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6424,
+     5731
+    ],
+    [
+     6418,
+     5750
+    ],
+    [
+     6412,
+     5776
+    ]
+   ],
+   "breite": 1.8,
+   "zeichen": "e"
+  },
+  {
+   "punkte": [
+    [
+     6438,
+     5723
+    ],
+    [
+     6480,
+     5730
+    ],
+    [
+     6530,
+     5752
     ]
    ],
    "breite": 1.8,

@@ -1,0 +1,74 @@
+[
+ {
+  "ort": "Fahle Weiten",
+  "bereit_ms": 2677,
+  "erstes_bild_ms": 2852,
+  "daten_mb": 18.5,
+  "anfragen": 300,
+  "fps_ruhig": 11.8,
+  "fps_gehen": 17.2,
+  "max_bild_ms": 117,
+  "ruckler": 0,
+  "info": "11 FPS · 10 Aufrufe · 25 Chunks",
+  "weg": [
+   6421,
+   6017,
+   6447,
+   6017
+  ]
+ },
+ {
+  "ort": "Fahle Weiten Heide",
+  "bereit_ms": 2700,
+  "erstes_bild_ms": 2972,
+  "daten_mb": 18.4,
+  "anfragen": 296,
+  "fps_ruhig": 13.1,
+  "fps_gehen": 17.6,
+  "max_bild_ms": 117,
+  "ruckler": 0,
+  "info": "13 FPS · 15 Aufrufe · 25 Chunks",
+  "weg": [
+   6575,
+   5705,
+   6590,
+   5705
+  ]
+ },
+ {
+  "ort": "Glutsande",
+  "bereit_ms": 2740,
+  "erstes_bild_ms": 2981,
+  "daten_mb": 18.5,
+  "anfragen": 300,
+  "fps_ruhig": 20,
+  "fps_gehen": 20.3,
+  "max_bild_ms": 67,
+  "ruckler": 0,
+  "info": "19 FPS · 6 Aufrufe · 25 Chunks",
+  "weg": [
+   6641,
+   7215,
+   6667,
+   7215
+  ]
+ },
+ {
+  "ort": "Hochlande",
+  "bereit_ms": 2769,
+  "erstes_bild_ms": 2959,
+  "daten_mb": 18.5,
+  "anfragen": 300,
+  "fps_ruhig": 20.8,
+  "fps_gehen": 18.5,
+  "max_bild_ms": 83,
+  "ruckler": 0,
+  "info": "20 FPS · 19 Aufrufe · 25 Chunks",
+  "weg": [
+   7783,
+   5794,
+   7810,
+   5794
+  ]
+ }
+]

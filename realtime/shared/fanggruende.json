@@ -977,6 +977,136 @@
      5663.5
     ]
    ]
+  },
+  {
+   "id": "fischplatz_ockerstrom_nord",
+   "name": "Am Ockerstrom (Norden)",
+   "art": "moorhecht",
+   "region": "fl_201_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6749.5,
+     7326.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_ockerstrom_sued",
+   "name": "Am Ockerstrom (Süden)",
+   "art": "wels",
+   "region": "fl_201_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6752.5,
+     7356.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_dornhag",
+   "name": "Teich bei Dornhag",
+   "art": "moorhecht",
+   "region": "fl_216_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     7292.5,
+     7382.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_wasserloch_1",
+   "name": "Wasserloch am Brunnenkreis",
+   "art": "moorhecht",
+   "region": "fl_216_211",
+   "aktiv": 1,
+   "felder": [
+    [
+     7072.5,
+     7182.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_wasserloch_3",
+   "name": "Wasserloch im Süden",
+   "art": "moorhecht",
+   "region": "fl_216_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     7233.5,
+     7560.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_wasserloch_4",
+   "name": "Wasserloch im Osten",
+   "art": "wels",
+   "region": "fl_231_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     7563.5,
+     7320.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_ockerstrom_muendung",
+   "name": "Mündung des Ockerstroms",
+   "art": "glutwels",
+   "region": "fl_201_239",
+   "aktiv": 1,
+   "felder": [
+    [
+     6793.5,
+     7674.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_reifbach_bach",
+   "name": "Reifbach: am Bach",
+   "art": "bachling",
+   "region": "fl_186_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6393.5,
+     5743.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_reifbach_bach_unten",
+   "name": "Reifbach: unterer Bach",
+   "art": "muehlbarsch",
+   "region": "fl_186_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6402.5,
+     5722.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_reifbach_bucht",
+   "name": "Reifbach: Bucht",
+   "art": "hering",
+   "region": "fl_186_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6411.5,
+     5704.5
+    ]
+   ]
   }
  ],
  "wurmacker": {

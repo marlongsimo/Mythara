@@ -81,6 +81,9 @@ if os.path.exists(_zp): stellen += json.load(open(_zp, encoding='utf8')).get('kr
 # Fahle Weiten füllen (#171): Kräuter an den neuen Orten und auf der Heide (fahleweiten_fuellen.mjs)
 _fp = os.path.join(RT, 'welt', 'fahleweiten_orte.json')
 if os.path.exists(_fp): stellen += json.load(open(_fp, encoding='utf8')).get('kraeuter', [])
+# Ockerlande (#172): Kräuter an den Wasserstellen (ockerlande.mjs)
+_op = os.path.join(RT, 'welt', 'ockerlande_orte.json')
+if os.path.exists(_op): stellen += json.load(open(_op, encoding='utf8')).get('kraeuter', [])
 # Phase 10 (#82, #133): Kräuterhof an der Küste (kueste.mjs, Hof 6418 · 7064) – Beete („a“, 6410–6425 × 7065–7070) mit vorhandenen Kräutern der Stufe 20–45
 # und Ringelblume für die Zucht-Quest; keine neuen Arten. Kessel vor dem Kräuterhaus (Objekt kraeuterhof_kessel).
 _beet = {'ringelblume': [(6411.5, 7066.5), (6415.5, 7069.5)], 'moorgloeckchen': [(6415.5, 7066.5), (6419.5, 7069.5)],

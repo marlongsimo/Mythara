@@ -48,7 +48,7 @@ const fremdeLesestellen = FW.interaktionen.map((i) => [i.x, i.y]);
 let nr = 0;
 const ding = (objekt, x, y, mehr = {}) => { const b = BIB.get(objekt); if (!b) throw new Error("unbekanntes Objekt " + objekt); if (b.kategorie !== "bewuchs" && Number.isInteger(y / 32)) y -= 0.01;
   const o = { id: mehr.id || `fwf_${objekt.replace(/^(dorf|graufurt|stil|k|moor|hand|welt|weidenhain|wald|burg|hoehle|wz|holz|waldmark|kueste)_/, "").replace(/_\d+$/, "")}_${++nr}`, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...mehr };
-  for (const r of koerperVon(o)) { const hit = koerper.find((q) => r[0] < q[2] && q[0] < r[2] && r[1] < q[3] && q[1] < r[3]); if (hit && b.kategorie === "gebaeude") throw new Error(`${o.id} überdeckt ${hit[4]}`); koerper.push(r); }
+  const rs = koerperVon(o); for (const r of rs) { const hit = koerper.find((q) => r[0] < q[2] && q[0] < r[2] && r[1] < q[3] && q[1] < r[3]); if (hit && b.kategorie === "gebaeude") throw new Error(`${o.id} überdeckt ${hit[4]}`); } koerper.push(...rs);   /* erst alle Körper prüfen: mehrteilige Gebäude überdecken sich nicht selbst */
   objekte.push(o); return o; };
 const lies = (id, x, y, text, mehr = {}) => interaktionen.push({ id, art: "lesen", x: +x.toFixed(2), y: +y.toFixed(2), radius: 1.8, abgleich: "keiner", daten: { text, ...mehr } });
 const weg = (punkte, breite = 1.8, zeichen = "e") => { const xs = punkte.map((p) => p[0]), ys = punkte.map((p) => p[1]); wege.push({ punkte, breite, zeichen });
@@ -97,7 +97,7 @@ const grauwacht = { mauer: [MAUER.x0, MAUER.y0, null, MAUER.y1], tore: { sued: [
   npc.push({ id: "torwache_grauwacht_1", rolle: "Torwache (Südtor)", x: TOR_SUED - 3, y: MAUER.y1 + 3, ausbau: "burg" }, { id: "torwache_grauwacht_2", rolle: "Torwache (Brückentor)", x: 6724, y: 5764.5, ausbau: "burg" });
   /* Kaserne im Nordwesten mit Übungsplatz und Bankkiste */
   male(6650, 5740, 6684, 5749, () => "p");
-  ding("dorf_heldenhalle_01", 6664, 5736, { id: "grauwacht_kaserne", s: 1.3, ...B }); ding("dorf_wachturm_01", 6651, 5725, { id: "grauwacht_kaserne_turm", ...B });
+  ding("grauwacht_kaserne_01", 6664, 5736, { id: "grauwacht_kaserne", ...B });   /* Modell von Figuren (#171) */ ding("dorf_wachturm_01", 6651, 5725, { id: "grauwacht_kaserne_turm", ...B });
   ding("steinhag_bankkiste", 6671.5, 5736.4, { id: "grauwacht_kaserne_bankkiste", ...B }); ding("k_banner_rot", 6658, 5738.4, B); ding("k_banner_rot", 6670, 5738.4, B);
   for (const [x, y] of [[6656, 5744], [6662, 5746], [6668, 5744]]) ding("dorf_heuballen_01", x, y, B);   /* Ziele am Übungsplatz */
   lies("grauwacht_kaserne", 6664, 5737.6, "Die Kaserne der Wacht. Drinnen hängen die Spieße in Reihen, draußen übt die Wache an Strohzielen.", B);
@@ -110,12 +110,12 @@ const grauwacht = { mauer: [MAUER.x0, MAUER.y0, null, MAUER.y1], tore: { sued: [
   grauwacht.laeden.push({ id: "grauwacht_stand_1", art: "Marktstand (vorhanden)", x: 6702, y: 5746.4 }, { id: "grauwacht_stand_2", art: "Marktstand (vorhanden)", x: 6710, y: 5746.4 }, { id: "grauwacht_stand_waffen", art: "Waffenstand (vorhanden)", x: 6710.5, y: 5754.4 }, { id: "grauwacht_taverne", art: "Taverne", x: 6729, y: 5752.4 });
   /* Handwerkergasse im Süden: Gasse vom Südtor nach Osten, Werkstätten an der Nordseite */
   weg([[TOR_SUED, MAUER.y1 + 3], [TOR_SUED, 5801], [6744, 5801]], 2.4, "p"); weg([[6690, 5801], [6699, 5793]], 2, "p");
-  const werk = [["hand_tebbes_schuppen", 6722, 5797, "grauwacht_gerberei", "Gerberei"], ["dorf_schuppen_holz_01", 6731, 5797, "grauwacht_tischlerei", "Tischlerei"], ["weidenhain_fachwerk_03", 6740, 5797, "grauwacht_weberei", "Weberei"]];
+  const werk = [["grauwacht_gerberei_01", 6722, 5797, "grauwacht_gerberei", "Gerberei"], ["grauwacht_tischlerei_01", 6731, 5797, "grauwacht_tischlerei", "Tischlerei"], ["grauwacht_weberei_01", 6740, 5797, "grauwacht_weberei", "Weberei"]];   /* Werkstätten von Figuren (#171), Läden davor (shared/laeden.ts) */
   for (const [o, x, y, id, name] of werk) { const w = baue(o, x, y, { id, ...B, rand: 0 }, 4); lies(id, w.x, w.y + 1.6, `Die ${name} in der Handwerkergasse.`, B); grauwacht.laeden.push({ id, art: name, x: w.x, y: +(w.y + 1.2).toFixed(1), blick: [0, 1] }); }
   ding("hand_werkbank_01", 6735.5, 5798.4, { id: "grauwacht_tischlerei_werkbank", ...B }); stationen.push({ id: "werkbank_grauwacht_tischlerei", station: "werkbank", x: 6735.5, y: 5799.6 });
   /* Häuser: ausbau „burg“, an den Gassen, außerhalb von Abtei, Burgfelsen, Kaserne, Platz und Werkstatt-Hof */
   const FREI = [[6654, 5750, 6690, 5788], [6648, 5718, 6686, 5750], [6693, 5780, 6713, 5794], [6698, 5742, 6714, 5756]];
-  const HAUS = ["graufurt_steinhaus_01", "graufurt_steinhaus_02", "graufurt_steinhaus_01", "dorf_haus_holz_01", "dorf_haus_holz_03", "weidenhain_fachwerk_02", "dorf_huette_holz_01"];
+  const HAUS = ["grauwacht_buergerhaus_01", "grauwacht_buergerhaus_02", "graufurt_steinhaus_01", "dorf_haus_holz_01", "grauwacht_buergerhaus_01", "dorf_haus_holz_03", "dorf_huette_holz_01"];   /* Bürgerhäuser von Figuren (#171) */
   weg([[MAUER.x0 + 5, MAUER.y0 + 6], [MAUER.x0 + 5, MAUER.y1 - 4]], 2, "p"); weg([[6714, 5786], [6744, 5786]], 2, "p"); weg([[6726, 5786], [6726, 5764]], 2, "p"); weg([[MAUER.x0 + 6, 5801], [TOR_SUED, 5801]], 2.4, "p"); weg([[6726, 5772], [6746, 5772]], 2, "p");   /* Mauergasse im Westen, Gassen im Osten */
   let neu = 0; const SOLL = 42;
   for (const pass of [4, 8]) for (let y = MAUER.y0 + 5; y < MAUER.y1 - 2 && neu < SOLL; y++) for (let x = MAUER.x0 + 4; x < ostEnde - 3 && neu < SOLL; x++) {
@@ -132,6 +132,7 @@ const grauwacht = { mauer: [MAUER.x0, MAUER.y0, null, MAUER.y1], tore: { sued: [
   orte.grauwacht = GW.platz; }
 
 /* ═══════════════════════ Neue Orte ═══════════════════════ */
+const ORT_REIF = [6424, 5722];
 const ORT = { huegelgrund: [6165, 5800], kohlstatt: [6420, 5878], brechstein: [6656, 5946], wollhag: [6570, 5738], weiherhof: [6340, 5834] };
 Object.assign(orte, ORT);
 /* ───── Hügelgrund: Dorf im Westen (Bank, Laden, Gasthaus mit Herd, Kräuterbeet) ───── */
@@ -221,6 +222,25 @@ Object.assign(orte, ORT);
   const kiste = baue("steinhag_bankkiste", cx + 3, cy - 2, { id: "heidrast_bankkiste", rand: 0 }, 7); lies("heidrast_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste von Heidrast, an den Brunnen gekettet. Was du einlegst, liegt auf deinem Konto.");
   banken.push({ id: "heidrast_bankkiste", ort: "Heidrast", kiste: [kiste.x, kiste.y + 1.4] });
   ["wegerich", "ringelblume"].forEach((a, i) => kraut(`heidrast_${a}_1`, a, cx - 8 + i * 16, cy + 12)); }
+
+/* ───── Reifbach (#171 Schritt 2): Fischerweiler an einem Bach, der in die Bucht der Nordküste fällt ───── */
+{ const BACH = [[6394, 5764], [6390, 5748], [6398, 5732], [6404, 5718], [6408, 5704]], [cx, cy] = [6424, 5722];
+  male(6378, 5698, 6420, 5770, (x, y) => { const d = strecke(x, y, BACH) + 0.25 * welle(x, y); return nass(jetzt(x, y)) ? null : d < 1.1 ? "~" : d < 2.3 ? (welle(x, y) > 0.2 ? "s" : ".") : null; });
+  ortsboden(cx, cy, 16, 12); eben.push([cx - 12, cy - 9, cx + 14, cy + 10]); orte.reifbach = [cx, cy]; namen.push(["Reifbach", "Ort", cx, cy]);
+  for (const [o, dx, dy, id] of [["moor_fischer_01", -4, -4, "reifbach_kate_1"], ["moor_fischer_01", 6, -6, "reifbach_kate_2"], ["moor_kate_01", 10, 4], ["weidenhain_kate_01", -2, 8]]) baue(o, cx + dx, cy + dy, id ? { id } : {}, 6);
+  const r = baue("kueste_raeucherhuette", cx + 2, cy + 1, { id: "reifbach_raeucherhuette", rand: 0 }, 5), f = baue("dorf_festfeuer_01", cx + 6, cy + 2, { id: "reifbach_feuer", rand: 0 }, 4);
+  stationen.push({ id: "raeucherhuette_reifbach", station: "raeucherhuette", x: r.x, y: r.y + 1.6 }, { id: "feuer_reifbach", station: "feuer", x: f.x, y: f.y + 1.6 });
+  const kiste = baue("steinhag_bankkiste", cx - 6, cy + 2, { id: "reifbach_bankkiste", rand: 0 }, 6); lies("reifbach_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste von Reifbach, salzverkrustet. Was du einlegst, liegt auf deinem Konto.");
+  banken.push({ id: "reifbach_bankkiste", ort: "Reifbach", kiste: [kiste.x, kiste.y + 1.4] });
+  const st = baue("dorf_marktstand_03", cx + 2, cy + 6, { id: "reifbach_laden", rand: 0 }, 5); laeden.push({ id: "reifbach_laden", ort: "Reifbach", art: "Räucherfisch, Angelzeug", x: st.x, y: +(st.y + 1.2).toFixed(1), blick: [0, -1] });
+  ding("kueste_netze", cx + 12, cy - 2, { id: "reifbach_netze" });
+  lies("reifbach", cx + 1.5, cy + 3.6, "Reifbach. Wo der kalte Bach ins Meer fällt, räuchern drei Familien ihren Fang – im Winter liegt Reif auf den Netzen.");
+  npc.push({ id: "fischerin_reifbach", rolle: "Fischerin (Räucherfeuer)", x: f.x - 1.5, y: f.y + 1.6 }, { id: "haendler_reifbach", rolle: "Händler (Laden)", x: st.x, y: st.y + 1.2 });
+  uferplatz("fischplatz_reifbach_bach", "bachling", 1, 6396, 5745, "Im Reifbach schießen kleine Bachlinge zwischen den Steinen.");
+  uferplatz("fischplatz_reifbach_bach_unten", "muehlbarsch", 10, 6404, 5722, "Am Unterlauf des Reifbachs stehen Mühlbarsche.");
+  uferplatz("fischplatz_reifbach_bucht", "hering", 20, 6414, 5708, "In der Bucht vor Reifbach ziehen Heringsschwärme.");
+  ["wegerich", "ringelblume"].forEach((a, i) => kraut(`reifbach_${a}_1`, a, cx - 10 + i * 20, cy - 10));
+  weg([[cx, cy + 9], [6418, 5750], [6412, 5776]], 1.8); weg([[cx + 14, cy + 1], [6480, 5730], [6530, 5752]], 1.8); }
 
 /* ───── Rastplätze an den langen Wegen ───── */
 for (const [id, x, y] of [["rast_talweg", 6300, 5790], ["rast_graeberweg", 6532, 5838], ["rast_nordweg", 6624, 6010]]) {

@@ -15,6 +15,7 @@ const NUTZER = { ["tok_anna_" + "x".repeat(30)]: "00000000-0000-0000-0000-000000
 const WERTE = { "00000000-0000-0000-0000-00000000a001": { ep: { schildwaechter: 300 }, seelen: 0 }, "00000000-0000-0000-0000-00000000b002": { ep: { kopfgeldjaeger: 120 }, seelen: 0 } }, SIEGE = [], buchungen = [];
 const EINL = []; const PROFIL = { "00000000-0000-0000-0000-00000000a001": "Anna", "00000000-0000-0000-0000-00000000b002": "Ben" }, AKTIV = { "00000000-0000-0000-0000-00000000b002": "kopfgeldjaeger" }, HELDSETZEN = [];
 const STELLE = {}; const HELD = { "00000000-0000-0000-0000-00000000a001": { geschlecht: "mann", frisur: "scheitel", bart: "vollbart", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", skill_geschick: 0, skill_staerke: 0, skill_fernkampf: 0, skill_magie: 0, inventar: { angelegt: { waffe: "ritterschwert", nebenhand: "rundschild" }, rucksack: ["jagdbogen", "hammer", "stamm_eiche", "lederpanzer", "spitzhacke_training", "holzbeil_training", "brot", { g: "splitter", n: 12 }], v: 2 }, quests: { die_gesperrte_strasse: { s: "fertig" } } } } /* Quest 1 erledigt: Jori läuft nicht herbei und stellt sich nicht auf den Beutel */, XPBUCH = []; const wer = (url) => (url.match(/user_id=eq\.([0-9a-f-]+)/) || [])[1];
+HELD["00000000-0000-0000-0000-00000000b002"] = JSON.parse(JSON.stringify(HELD["00000000-0000-0000-0000-00000000a001"])); /* #188: Ben meldet sich frisch an (eigener Browser-Zwischenspeicher) */
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
   if (req.url.startsWith("/fake/")) { res.setHeader("access-control-allow-origin", "*"); if (req.url === "/fake/einladen") { const a = JSON.parse(b || "{}"); EINL.push({ id: "e" + EINL.length, von: a.von, an: a.an, code: a.code }); return send(200, { ok: true }); }
     if (req.url.startsWith("/fake/einladungen")) return send(200, EINL.filter((e) => e.an === new URL(req.url, "http://x").searchParams.get("an")));
@@ -79,6 +80,18 @@ try {
   const leer = r.filter((x) => x.split(":")[1] !== "1");
   check(gl1 === gl0, `Der Rucksack legt keine WebGL-Fläche an (${gl0} → ${gl1})`);
   check(r.length >= 8 && leer.length === 0, `Auch nach gescheitertem Vorladen hat jeder Gegenstand ein festes Bild mit echtem Pfad, das lädt (${leer.length ? "fehlt: " + leer.join(", ") : r.length + " Bilder"})`);
+  /* #188 (Rückfall #166): frisch anmelden (leerer Zwischenspeicher), Rucksack öffnen, während die Bilder noch scheitern; danach ist das Netz wieder da –
+     ohne weitere Aktion müssen alle Fächer ihr Bild zeigen (vorher stand die Adresse sofort im Stil, ein Fehlschlag wurde nie wiederholt) */
+  { const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6448, 6442, "waldmark"]); ben.setDefaultTimeout(90000); let zu = true; const fertigB = new Set();
+    ben.on("requestfinished", (q) => fertigB.add(q.url()));
+    await ben.context().route(/img\/objekte3d\/.+\.(webp|png)/, (r) => (zu ? r.abort("failed") : r.fallback()));
+    await ben.goto(B + S + "&vorwaermen=0"); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
+    await ben.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && i.rucksack && i.rucksack.length; }, null, { timeout: 30000 }).catch(() => {});
+    await ben.click('#ez-leiste [data-l="rucksack"]'); await ben.waitForTimeout(3000); zu = false;
+    const zeigt = async () => (await ben.evaluate(() => [...document.querySelectorAll("#ez-rucksacktab canvas[data-bild]")].map((c) => ({ g: c.dataset.bild, bg: ((/url\("?([^")]+)"?\)/.exec(c.style.backgroundImage) || [])[1] || "") }))))
+      .map((x) => ({ ...x, da: Boolean(x.bg) && (x.bg.startsWith("data:") || [...fertigB].some((u) => u.endsWith(x.bg.replace(/^\.\.\//, "")))) }));
+    let f = await zeigt(); for (let i = 0; i < 30 && !(f.length && f.every((x) => x.da)); i++) { await ben.waitForTimeout(1000); f = await zeigt(); }
+    check(f.length >= 8 && f.every((x) => x.da), `Frisch angemeldet, Rucksack offen während die Bilder scheitern: danach erscheinen alle ohne weitere Aktion (${f.filter((x) => !x.da).map((x) => x.g).join(", ") || f.length + " Fächer"})`); }
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));
 console.log(fehler ? fehler + " Fehler" : "Rucksackbilder: alles in Ordnung"); process.exit(fehler ? 1 : 0);

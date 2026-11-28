@@ -11,7 +11,8 @@ const BERUFE = { holzfaellerei: 40, schmieden: 45, kochen: 45, splitterbinden: 3
 const viel = (g, n) => Array.from({ length: n }, () => g);
 const SACHEN = [];
 /* eine Waffe, wie man sie in dieser Stufe trägt (Heldenlevel 42+), statt des Anfänger-Ritterschwerts */
-const mitWaffe = (H) => { H.inventar.angelegt.waffe = "eidschwert_episch"; return H; };
+/* Tjark ist ein Boss (Stufe 46): ohne Rüstung fiel Tom unter Last manchmal – dann ging Tjark ohne Ziel (einmaliger Gegner) und die Wachen erledigten den Rest, ohne Questschritt */
+const mitWaffe = (H) => { Object.assign(H.inventar.angelegt, { waffe: "eidschwert_episch", nebenhand: "sternenschild_mythisch", brust: "eisenwacht_mythisch", beine: "eisenbeinschienen_mythisch", kopf: "eisenwachthelm_mythisch" }); return H; };
 const W = await starte({ sb: 8843, srv: 8844, helden: {
   /* Ida: Level 99, mit den Quests vor diesem Teil fertig */
   ida: mitWaffe(starkerHeld({ berufe: BERUFE, fertig: ["ostufer_das_gruene_licht", "grauwacht_der_weg", "grauwacht_die_glocke", "heidrast_mettes_schafe", "grauwacht_ruhelose_graeber"], rucksack: SACHEN })),
@@ -42,9 +43,18 @@ try {
     const ok = await sprich(tom, E3, "tjark", "kampf"); await schlaf(1500);
     const tj = () => z && z.w.find((w) => w[2] === "tjark");
     check(ok && Boolean(tj()), "„Ergib dich“: Tjark wird zum Gegner (Folge.angriff)"); 
-    const s = z ? await kaempfen(z, ["tjark"], () => erl(tom, E3, "tjark"), 180000) : 0;
-    { const t0 = Date.now(); while (!erl(tom, E3, "tjark") && Date.now() - t0 < 10000) await schlaf(250); } /* #178: als Boss bucht der Server erst den Bosszähler – der Schritt kommt ein paar Sekunden später */
-    check(erl(tom, E3, "tjark") && anzahl(tom, "tjarks_eid") === 0, `Tjark besiegt, sein Tod erledigt den Schritt (${s} Siege)`);
+    /* Tjark ist ein einmaliger Gegner (Folge.angriff): Hat er 20 s kein Ziel (EINMAL_WEG), geht er wieder. Unter Last (6 Tests gleichzeitig) kam
+       der Angriff manchmal zu spät – Tjark war weg und kaempfen() wartete bis zur Frist (rot nach rund 201 s, „0 Siege“). Dann erneut ansprechen. */
+    let s = 0, weg = 0; const tjOrt = tj() ? [tj()[4], tj()[5]] : null; /* Stelle in der Kampfwelt, an der Tjark erscheint */
+    for (let v = 0; z && v < 3 && !erl(tom, E3, "tjark"); v++) {
+      if (!tj()) { weg++; /* meist ist Tom gefallen (unter Last): erst wieder lebendig und zurück bei Tjark, sonst hat der neue Tjark gleich kein Ziel */
+        const ich = () => z.w.find((w) => w[1] === 1), nah = () => ich() && !ich()[10] && tjOrt && Math.hypot(ich()[4] - tjOrt[0], ich()[5] - tjOrt[1]) < 3;
+        await stelle(tom, T.x + 1, T.y); for (let i = 0; i < 120 && !nah(); i++) { if (i % 10 === 9) await stelle(tom, T.x + 1, T.y); await schlaf(500); } /* nach dem Wiederaufstehen läuft er zurück */
+        await sprich(tom, E3, "tjark", "kampf"); await schlaf(1500); }
+      s += await kaempfen(z, ["tjark"], () => erl(tom, E3, "tjark") || !tj(), 120000);
+      for (let i = 0; i < 100 && !erl(tom, E3, "tjark"); i++) await schlaf(100); } /* #178: als Boss bucht der Server erst den Bosszähler – der Schritt kommt ein paar Sekunden später */
+    await schlaf(1500);
+    check(erl(tom, E3, "tjark") && anzahl(tom, "tjarks_eid") === 0, `Tjark besiegt, sein Tod erledigt den Schritt (${s} Siege${weg ? `, ${weg}× war Tjark wieder fort und wurde neu angesprochen` : ""})`);
     if (z) { z.ws.close(); await schlaf(2500); } }
   check(await sprich(tom, E3, "wigand", "bericht") && fertig(tom, E3) && an(tom, E3, "grauwacht_burg"), "Tom: E3 über „Bericht erstatten“ fertig; grauwacht_burg an");
 

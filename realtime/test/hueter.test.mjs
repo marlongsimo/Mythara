@@ -113,12 +113,12 @@ console.log("\nRüstung der Stufe 70 (Entscheidung des Nutzers: defensiv schwäc
   let aus70 = 0; for (let i = 0; i < 400; i++) { const g = beuteAufloesen("@mythisch", Math.random); if (g && G[g].anforderung && G[g].anforderung.level >= 70) aus70++; }
   check(aus70 === 0, "„@mythisch“ gibt nie Stufe-70-Teile (nur von den Hütern)"); }
 
-console.log("\nGlutsteinschild (Entscheidung des Nutzers): Drop der Sandmutter, nur stark, 1 : 100");
+console.log("\nGlutsteinschild (Entscheidung des Nutzers): Drop der Sandmutter, nur stark, 1 : 60 (Ausgabe 1, vorher 1 : 100)");
 { const S = G.glutsteinschild, R = MONSTER.sandmutter.drops.find((d) => d.stark && d.wurf.some((w) => w.g === "glutsteinschild"));
   check(S && S.platz === "nebenhand" && S.seltenheit === "selten" && S.anforderung.level === 40 && S.abwehr.nah === 34 && S.bonus.geschick === 5 && S.bonus.staerke === 3 && !S.untauschbar && S.ebenen[0] === "schild.glutstein",
     "seltener Schild, Defense 40, Abwehr 34/34/−1, +5 Geschick, +3 Stärke, handelbar, Ebene schild.glutstein");
   check(Object.values(G).filter((g) => g.platz === "nebenhand" && g.bonus && (g.bonus.geschick || g.bonus.staerke)).length === 1, "der einzige Schild mit Angriffsboni");
-  check(R && R.wurf.length === 1 && R.wurf[0].chance === 1, "Sandmutter: eigener Wurf nur in der starken Fassung, 1 : 100"); }
+  check(R && R.wurf.length === 1 && Math.abs(R.wurf[0].chance - 100 / 60) < 1e-9, "Sandmutter: eigener Wurf nur in der starken Fassung, 1 : 60"); }
 
 console.log("\nBeute: Rüstung nur in der starken Fassung, insgesamt 1 : 75 je Sieg");
 for (const H of HUETER) { const R = MONSTER[H.typ].drops.find((d) => d.stark), satz = { grumhold: "steinvogt", sturmschwinge: "sturmfeder", frostwitwe: "frostschleier" }[H.typ];

@@ -44,7 +44,8 @@ const WEGE = [
 /* ───── Brücken: wo ein Weg Wasser kreuzt (Fluss), Brückenstück + Freigabe ───── */
 const objekte = [], interaktionen = [], freigeben = [], wegeAlt = [], objekteAlt = [], interaktionenAlt = [], feld = new Map();
 let n = 0;
-const bruecke = (x0, x1, y, id) => { for (let x = x0 + 4.9, i = 1; x < x1 + 3; x += 7.9, i++) objekte.push({ id: `${id}_${i}`, objekt: "dorf_bruecke_01", x: +x.toFixed(2), y: +(y + 1.3).toFixed(2) });
+const bruecke = (x0, x1, y, id) => { const n = Math.ceil((x1 - x0) / 6.4), m = (x0 + x1) / 2;   /* #187: Stücke von 6,4 lückenlos, mittig über dem Fluss */
+  for (let i = 0; i < n; i++) objekte.push({ id: `${id}_${i + 1}`, objekt: "dorf_bruecke_01", x: +(m + (i - (n - 1) / 2) * 6.4).toFixed(2), y: +(y + 1.3).toFixed(2) });
   freigeben.push({ art: "rechteck", x0: +(x0 - 0.5).toFixed(2), y0: +(y - 1.3).toFixed(2), x1: +(x1 + 0.5).toFixed(2), y1: +(y + 1.3).toFixed(2) }); };
 { /* Glutstraße über den grauen Fluss bei y ≈ 6789: Wasserbreite messen */
   const y = 6789; let a = 6700; while (!"~".includes(zeichen(a, y + 0.5)) && a < 6800) a++; let b = a; while ("~".includes(zeichen(b, y + 0.5))) b++;

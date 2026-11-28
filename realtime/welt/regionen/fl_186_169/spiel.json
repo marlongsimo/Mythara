@@ -138,6 +138,27 @@
    },
    {
     "art": "rechteck",
+    "x0": 454,
+    "y0": 328,
+    "x1": 455,
+    "y1": 329
+   },
+   {
+    "art": "rechteck",
+    "x0": 450,
+    "y0": 329,
+    "x1": 451,
+    "y1": 330
+   },
+   {
+    "art": "rechteck",
+    "x0": 452,
+    "y0": 325,
+    "x1": 453,
+    "y1": 326
+   },
+   {
+    "art": "rechteck",
     "x0": 410,
     "y0": 405,
     "x1": 411,
@@ -338,6 +359,67 @@
    }
   },
   {
+   "id": "reifbach_bankkiste",
+   "art": "lesen",
+   "x": 466,
+   "y": 317.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste von Reifbach, salzverkrustet. Was du einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "reifbach",
+   "art": "lesen",
+   "x": 473.5,
+   "y": 317.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Reifbach. Wo der kalte Bach ins Meer fällt, räuchern drei Familien ihren Fang – im Winter liegt Reif auf den Netzen."
+   }
+  },
+  {
+   "id": "fischplatz_reifbach_bach",
+   "art": "lesen",
+   "x": 442.5,
+   "y": 335.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Im Reifbach schießen kleine Bachlinge zwischen den Steinen.",
+    "fisch": "bachling",
+    "stufe": 1
+   }
+  },
+  {
+   "id": "fischplatz_reifbach_bach_unten",
+   "art": "lesen",
+   "x": 451.5,
+   "y": 314.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Unterlauf des Reifbachs stehen Mühlbarsche.",
+    "fisch": "muehlbarsch",
+    "stufe": 10
+   }
+  },
+  {
+   "id": "fischplatz_reifbach_bucht",
+   "art": "lesen",
+   "x": 459.5,
+   "y": 297.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "In der Bucht vor Reifbach ziehen Heringsschwärme.",
+    "fisch": "hering",
+    "stufe": 20
+   }
+  },
+  {
    "id": "rast_talweg",
    "art": "lesen",
    "x": 356.5,
@@ -353,6 +435,12 @@
   {
    "x": 236.1,
    "y": 367.1,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 452.5,
+   "y": 328,
    "r": 5,
    "tiefe": 1.1
   },

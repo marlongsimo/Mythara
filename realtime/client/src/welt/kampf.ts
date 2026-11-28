@@ -24,6 +24,8 @@ import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BI
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { eigenesBildnis, aktiverHeld } from "../held";
 import { inventar } from "../inventar";
+import { stufeVon } from "../../../shared/config";
+import { gegnerLv } from "../gefahranzeige";
 import { skillsSchreiben, skillAnzeige, meineKampfwerte, stufenVon, stilJetzt, autoLesen, xpDrops } from "../skills";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 import { Held, heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
@@ -236,7 +238,7 @@ export class WeltKampf {
     for (const f of this.figuren.values()) { if (f.tot) { this.figurSichtbar(f, false); continue; } const vx = f.zx - f.x, vy = f.zy - f.y, lauf = Math.hypot(vx, vy) > 0.03; f.x += vx * k; f.y += vy * k;
       const schild = Boolean(f.bits & BIT.schild), wechsel = lauf !== f.laeuft || schild !== f.schild; f.laeuft = lauf; f.schild = schild;
       const id = [...this.figuren.entries()].find(([, g]) => g === f)?.[0] || 0, n = f.held ? this.namen.get(id) : undefined;
-      const t = f.held ? (n ? `${n.name} · Lv ${n.stufe}` : HELDEN[f.typ]?.name || "") : `${MONSTER[f.typ]?.name || f.typ} · Lv ${MONSTER[f.typ]?.stufe || this.stufe}`; /* Weltzonen: Gegner mit eigenem Level und eigenen Werten */
+      const t = f.held ? (n ? `${n.name} · Lv ${n.stufe}` : HELDEN[f.typ]?.name || "") : `${MONSTER[f.typ]?.name || f.typ} · Lv ${MONSTER[f.typ] ? stufeVon(f.typ, f.max > 1 ? f.max : undefined) : this.stufe}`; /* Weltzonen: Gegner mit eigenem Level und eigenen Werten */
       this.figurZeichnen(f, vx, vy, lauf, wechsel, t, dt); }
     /* Minimap: Gegner rot, andere Helden blau – live, alle 200 ms */
     if (performance.now() - this.karteZeit > 200) { this.karteZeit = performance.now(); const k = document.getElementById("ez-karte");
@@ -266,9 +268,9 @@ export class WeltKampf {
   /* ---------- Eingaben ---------- */
   /** Antippen in der Welt: liegt dort ein Gegner (als Heiler: ein Verbündeter), wird er zum Ziel. true = erledigt */
   /** Welcher Gegner steht an dieser Weltstelle? (Aktionsmenü) */
-  zielBei(wx: number, wy: number): { name: string; stufe: number } | null { if (!this.z) return null; let best: [number, (typeof this.z.w)[number]] | null = null;
+  zielBei(wx: number, wy: number): { name: string; stufe: number; farbe: string } | null { if (!this.z) return null; let best: [number, (typeof this.z.w)[number]] | null = null;
     for (const e of this.z.w) { if (e[3] === 0 || e[10] || e[0] === this.ichId || scheibeVerborgen(e[2])) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e]; }
-    if (!best) return null; const M = MONSTER[best[1][2] as string] as { name?: string; stufe?: number } | undefined; return { name: M && M.name ? M.name : String(best[1][2]), stufe: (M && M.stufe) || 1 }; } /* Level getrennt: das Menü färbt es ein (#97) */
+    if (!best) return null; const M = MONSTER[best[1][2] as string] as { name?: string; stufe?: number } | undefined; const L = gegnerLv(String(best[1][2]), Number(best[1][8]) || undefined); return { name: M && M.name ? M.name : String(best[1][2]), stufe: L.stufe, farbe: L.farbe }; } /* Level getrennt: das Menü färbt es ein (#97) */
   antippen(wx: number, wy: number): boolean { if (!this.netz || !this.z) return false; const ich = this.z.w.find((e) => e[0] === this.ichId), heilt = Boolean(ich && HELDEN[ich[2]].modi[ich[12]].art === "heil");
     let best: [number, number] | null = null; for (const e of this.z.w) { if ((e[3] === 0) !== heilt || e[10] || e[0] === this.ichId || scheibeVerborgen(e[2])) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e[0]]; }
     if (!best) return false; this.netz.sende({ t: "ziel", id: best[1] }); return true; }

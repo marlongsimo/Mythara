@@ -730,5 +730,7 @@
  {"id":"naht_516","objekt":"stil_tanne_01","x":8.5,"y":127.5,"s":1.18,"spiegeln":true},
  {"id":"naht_517","objekt":"stil_eiche_02","x":13.5,"y":127.5,"s":1.13},
  {"id":"naht_518","objekt":"stil_tanne_01","x":17.5,"y":127.5,"s":1.03,"spiegeln":true},
- {"id":"naht_519","objekt":"stil_tanne_01","x":22.5,"y":127.5,"s":0.91}
+ {"id":"naht_519","objekt":"stil_tanne_01","x":22.5,"y":127.5,"s":0.91},
+ {"id":"vd_nordwald_k1","objekt":"wegrand_feldstein_1","x":98.5,"y":109.5},
+ {"id":"vd_nordwald_k2","objekt":"wegrand_feldstein_1","x":81.5,"y":109.5}
 ]

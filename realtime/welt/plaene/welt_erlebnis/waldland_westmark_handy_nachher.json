@@ -1,0 +1,38 @@
+[
+ {
+  "ort": "Kreuzwald",
+  "bereit_ms": 3128,
+  "erstes_bild_ms": 3334,
+  "daten_mb": 23.1,
+  "anfragen": 325,
+  "fps_ruhig": 5.9,
+  "fps_gehen": 5.5,
+  "max_bild_ms": 233,
+  "ruckler": 0,
+  "info": "6 FPS · 62 Aufrufe · 25 Chunks",
+  "weg": [
+   6399,
+   6509,
+   6425,
+   6509
+  ]
+ },
+ {
+  "ort": "Westmark",
+  "bereit_ms": 3185,
+  "erstes_bild_ms": 3392,
+  "daten_mb": 22.7,
+  "anfragen": 323,
+  "fps_ruhig": 10.9,
+  "fps_gehen": 8.7,
+  "max_bild_ms": 183,
+  "ruckler": 0,
+  "info": "10 FPS · 44 Aufrufe · 25 Chunks",
+  "weg": [
+   6290,
+   6510,
+   6316,
+   6510
+  ]
+ }
+]

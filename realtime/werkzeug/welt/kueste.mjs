@@ -27,7 +27,7 @@ let n = 0; const ding = (objekt, x, y, mehr = {}) => { if (!BIB.has(objekt)) thr
 const lies = (id, x, y, text, mehr = {}) => interaktionen.push({ id, art: mehr.tat ? "eingang" : "lesen", x: +x.toFixed(2), y: +y.toFixed(2), radius: mehr.tat ? 2.0 : 1.8, abgleich: "keiner", daten: { text, ...mehr } });
 const weg = (punkte, breite = 1.8, z = "e") => { const xs = punkte.map((p) => p[0]), ys = punkte.map((p) => p[1]);
   male(Math.min(...xs) - 3, Math.min(...ys) - 3, Math.max(...xs) + 3, Math.max(...ys) + 3, (x, y) => strecke(x, y, punkte) < breite / 2 + 0.15 * welle(x, y) && !"~wM".includes(zeichen(x, y)) ? z : null); };
-const steg = (x, y, id) => { ding("dorf_bruecke_01", x, y, { id }); freigeben.push({ art: "rechteck", x0: +(x - 4.9).toFixed(2), y0: +(y - 2.6).toFixed(2), x1: +(x + 3.0).toFixed(2), y1: y }); };
+const steg = (x, y, id, s = 1) => { ding("dorf_bruecke_01", x, y, { id, ...(s !== 1 ? { s } : {}) });   /* s: Stück auf den Abstand der Reihe strecken (#187: lückenlos) */ freigeben.push({ art: "rechteck", x0: +(x - 4.9).toFixed(2), y0: +(y - 2.6).toFixed(2), x1: +(x + 3.0).toFixed(2), y1: y }); };
 /* Fischplatz: erstes Wasserfeld neben einem begehbaren Stehplatz in Richtung (dx, dy) */
 const fischplatz = (id, fisch, stufe, x, y, dx, dy, text) => { let px = x, py = y; for (let i = 0; i < 40 && !"~wMo".includes(zeichen(px + dx, py + dy)); i++) { px += dx; py += dy; }
   const w = [px + dx, py + dy]; lies(id, px, py, text, { fisch, stufe }); vorschlag.fischplaetze.push({ id, fisch, stufe, x: +w[0].toFixed(1), y: +w[1].toFixed(1), stehplatz: [+px.toFixed(1), +py.toFixed(1)] }); };
@@ -55,9 +55,12 @@ npc.push({ id: "wache_suedstrasse", rolle: "Wache an der Südstraße (keine Sper
   const kai = []; for (let y = cy - 24; y < cy + 26; y += 1) { let x = cx; while (x > cx - 50 && !"~M".includes(zeichen(x - 1, y))) x--; if (x > cx - 50) kai.push([x, y]); }
   for (const [x, y] of kai) male(x, y, x + 3, y + 1, (u, v) => (!"~wM".includes(zeichen(u, v)) ? "p" : null));
   const kaiAn = (y) => kai.reduce((b, k) => (Math.abs(k[1] - y) < Math.abs(b[1] - y) ? k : b), kai[0]);
-  for (const [i, dy] of [[1, -10], [2, 2]]) { const [x, y] = kaiAn(cy + dy); steg(x - 1.1, y + 1.3, "kielmund_steg_" + i); }
-  { const [x, y] = kaiAn(cy + 14); ding("graufurt_faehre_01", x - 4, y + 2, { id: "kielmund_werft_boot" }); ding("dorf_holzstapel_01", x + 3, y - 1, { id: "kielmund_werft_holz" }); ding("wald_baumstamm_01", x + 4, y + 2.5); ding("k_kiste", x + 6, y - 1);
+  for (const [i, dy] of [[2, 2]]) { const [x, y] = kaiAn(cy + dy); steg(x - 1.1, y + 1.3, "kielmund_steg_" + i); }   /* #187: Steg 1 lag versetzt über der Kiel-Brücke */
+  { const [x, y] = kaiAn(cy + 14); ding("graufurt_faehre_01", x - 4, y + 2, { id: "kielmund_werft_boot" }); ding("dorf_holzstapel_01", x + 3, y - 1, { id: "kielmund_werft_holz" }); ding("k_kiste", x + 6, y - 1);
     lies("werft", x + 2, y + 3.2, "Die Werft von Kielmund. Auf der Helling liegt ein halbfertiger Rumpf, daneben Spanten und Pech."); }
+  { /* zweites Boot im Hafen, sobald die Werft es fertig hat (Quest „Kiel auf Stapel“, Schalter kielmund_neues_boot; Stadtstufe kielmund_boot in shared/stadtstufen.ts) */
+    const [x, y] = kaiAn(cy + 6); ding("graufurt_faehre_01", x - 4, y + 1, { id: "kielmund_neues_boot", ausbau: "kielmund_boot", spiegeln: true });
+    lies("kielmund_neues_boot", x + 1, y + 1.4, "Das neue Boot aus der Werft von Kielmund, frisch geteert. Am Bug steht in weißer Farbe ein Name.", { ausbau: "kielmund_boot" }); }
   { const [x, y] = kaiAn(cy - 4); lies("kai", x + 1.5, y, "Der Kai an der Kiel. Fässer, Taue, Möwen – und der Geruch von Hering."); fischplatz("fischplatz_kai", "hering", 20, x + 0.5, y + 0.5, -1, 0, "Am Kai beißen die Heringe."); }
   /* Häuser und Einrichtungen */
   ding("dorf_taverne_01", cx + 10, cy - 18, { id: "taverne_ankerkraut" }); lies("taverne_ankerkraut", cx + 11.5, cy - 17.4, "Die Taverne „Zum Ankerkraut“. Drinnen singt jemand von einem Schiff, das nie zurückkam.");
@@ -82,7 +85,7 @@ npc.push({ id: "wache_suedstrasse", rolle: "Wache an der Südstraße (keine Sper
     let land = 6400; while (land > 6360 && !meer(land - 1 + 0.5, PY - 1.3)) land--;   /* erstes Meerfeld westlich: dort setzt der Steg an */
     for (const [y, yy] of [[Y0 + 0.96, Y0 + 0.5], [Y1, Y1 - 0.5]]) { let a = X1 - 1.2; while (a > 6360 && !meer(a - 1.2, yy)) a -= 2.2; for (let x = a; x <= X1 - 1.2 + 0.01; x += 2.2) ding("k_hecke", x, y, { id: hid() }); }
     let lo = -Infinity, hi = Infinity; for (let y = Y0 + 1.7; y < Y1 + 0.01; y += 0.8) { const yy = Math.min(y, Y1 - 0.8); if (yy - 0.96 > TOR + 1.5 || yy < TOR - 1.5) { ding("k_hecke", X1 - 1.2, yy, { id: hid() }); if (yy < TOR) lo = Math.max(lo, yy); else hi = Math.min(hi, yy - 0.96); } }
-    for (let i = 0; i < 4; i++) steg(land + 4.9 - i * 6.8, PY, "fischerzunft_steg_" + (i + 1));   /* 6,8 Felder: ohne Lücke; das vierte Stück für die Zunft-Fische (#176) */
+    for (let i = 0; i < 4; i++) steg(land + 4.9 - i * 6.8, PY, "fischerzunft_steg_" + (i + 1), 1.0625);   /* #187: 6,4 lange Stücke auf 6,8 gestreckt, damit sie lückenlos aneinanderstoßen */   /* 6,8 Felder: ohne Lücke; das vierte Stück für die Zunft-Fische (#176) */
     const fang = [["seeaal", 45, 3], ["seeaal", 45, 5], ["klippenbarsch", 35, 7], ["seeaal", 45, 9], ["seeaal", 45, 11], ["hering", 20, 12]];
     fang.forEach(([f, st, dx], i) => fischplatz("fischerzunft_fang_" + (i + 1), f, st, land - dx + 0.5, i % 2 ? PY - 0.8 : PY - 1.8, 0, i % 2 ? 1 : -1, "Vom Privatsteg der Fischerzunft aus beißen " + { seeaal: "Seeaale", klippenbarsch: "Klippenbarsche", hering: "Heringe" }[f] + "."));
     /* #176: die Zunft-Fische ganz draußen am vierten Stegstück – Silberbarsch (70, Angel), Sturmhecht (80, Reuse), Tiefseeaal (90, Reuse), je zwei Stellen */
