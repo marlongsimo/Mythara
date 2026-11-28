@@ -94,7 +94,8 @@ export async function starte({ sb: SB, srv: SRV, helden, env = {} }) {
       /* unter Last (6 Tests gleichzeitig, CI) dauern Bosskämpfe länger: weiterkämpfen, solange am Ziel gekämpft wird – es verliert Leben oder blockt (Tjark blockt
          eine Weile; wer ihn dann beiseitelegte, ließ ihn sich erholen: 0 Siege nach der Frist) – höchstens 2 min je Ziel */
       let lpZuletzt = ziel[7], getroffen = Date.now(), gesehen = ab;
-      for (let i = 0; i < 1200; i++) { await schlaf(100); const neu = z.ev.slice(ab); if (neu.some((e) => e.a === "tot" && e.id === ziel[0])) { siege++; fiel = true; break; } if (bis(siege)) break;
+      for (let i = 0; i < 1200; i++) { await schlaf(100); const neu = z.ev.slice(ab); if (neu.some((e) => e.a === "tot" && e.id === ziel[0])) { /* „tot“ kommt auch, wenn ein einmaliger Gegner ohne Ziel geht (EINMAL_WEG) – Sieg nur mit „erlegt“ oder fast ohne Leben */
+          if (neu.some((e) => e.a === "erlegt" && e.typ === ziel[2]) || lpZuletzt <= ziel[8] * 0.35) { siege++; fiel = true; } break; } if (bis(siege)) break;
         if (neu.some((e) => e.a === "text" && e.id === ziel[0] && /Kämpft schon/.test(e.t || ""))) { gebunden = true; break; }
         const jetztW = z.w.find((w) => w[0] === ziel[0]); if (jetztW && jetztW[7] < lpZuletzt) { lpZuletzt = jetztW[7]; getroffen = Date.now(); }
         if (z.ev.slice(gesehen).some((e) => e.id === ziel[0] && (e.a === "schaden" || e.a === "block" || e.a === "hieb"))) getroffen = Date.now(); gesehen = z.ev.length;
