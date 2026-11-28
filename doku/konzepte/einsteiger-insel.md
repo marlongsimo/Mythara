@@ -4,6 +4,9 @@
 Kanon (28.11.): eigene Ankunftsinsel als Quest, etwa 10–15 min. Man lernt kurz Holzfällen, Bergbau, Schmieden, Fischen, Kochen und alle drei Kampfarten und wählt dort die Einsteiger-Ausrüstung. **Pflicht für alle neuen Figuren**, bestehende müssen nicht. Ziel: Ausgabe 2 oder später.
 Nutzer (28.11.): **Nach der Insel ist man in der Waldmark.**
 
+**Ablauf für einen neuen Account (Nutzer, 28.11.):** Registrierung im Spiel → **Heldeneditor nur für das Aussehen** → **Einsteiger-Insel** (Quest) → am Ende als **Questbelohnung die Ausrüstung zur Wahl** → Ankunft in der Waldmark.
+**Entschieden (Nutzer, 28.11.):** Bestehende Figuren besuchen die Insel **erstmal nicht**. Die **Waffenwahl** gibt es nicht mehr im Heldeneditor, sondern **am Ende der Insel-Quest**. Die Insel ist **gemeinsam für alle** (man sieht andere Neue), die Quest-Schritte zählt jeder für sich.
+
 ## Geschichte
 
 Man kommt mit dem Auswandererschiff **„Seeschwalbe“** von jenseits des Endlosen Meeres, um in den Splitterlanden neu anzufangen.
@@ -78,8 +81,5 @@ Nach der Regel „Belohnung zur Auswahl“ (Kanon): Die Wahl geschieht im Abschl
 | Oberfläche | Hilfetexte und Zielpfeil für Einsteiger; Heldeneditor ohne Waffenwahl |
 | Integration | Kiefernstamm, Schiffsbeschläge (Questgegenstand), Werte der Plünderer, Lohn, Einbau |
 
-## Offen (an den Nutzer, höchstens 3)
-
-1. Dürfen **bestehende Figuren** die Insel **freiwillig** besuchen (z. B. ein Kapitän am Anleger der Waldmark bringt sie hin, Lohn nur XP, keine zweite Ausrüstung)? Oder ist sie nur für neue Figuren?
-2. Soll die Waffenwahl im **Heldeneditor wegfallen**, sodass man nur noch auf der Insel wählt?
-3. Ist die Insel **für alle gemeinsam** (man sieht andere Neue) oder eine **eigene Instanz** je Spieler?
+## Offen
+- Alles Grundsätzliche entschieden (28.11.). Feinheiten (Werte der Plünderer, Lohn) bei Integration.
