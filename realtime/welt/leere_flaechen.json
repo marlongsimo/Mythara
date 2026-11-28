@@ -1,125 +1,788 @@
 {
- "hinweis": "Leere Flächen (leere_flaechen.py): begehbares, offenes Land, auf dem im Umkreis von 30 Feldern kein Objekt steht – man läuft dort mehr als 60 Felder, ohne etwas zu sehen. Weltfelder.",
+ "hinweis": "Leere Flächen (leere_flaechen.py): begehbares, offenes Land, auf dem im Umkreis von 30 Feldern kein Weg, kein Ort und keine Arbeitsstelle liegt (Bewuchs zählt nicht) – man läuft dort mehr als 60 Felder, ohne etwas zu sehen. Weltfelder.",
  "radius": 30,
  "flaechen": [
   {
    "mitte": [
-    7602,
-    6862
+    7344,
+    7464
    ],
    "punkt": [
-    7610,
-    6865
+    7347,
+    7474
    ],
-   "felder": 286,
+   "felder": 669833,
    "ausdehnung": [
-    96,
-    124
+    1290,
+    1331
    ],
-   "gebiet": "fl_231_211",
-   "land": "Glutsande"
-  },
-  {
-   "mitte": [
-    7848,
-    7288
-   ],
-   "punkt": [
-    7848,
-    7288
-   ],
-   "felder": 117,
-   "ausdehnung": [
-    72,
-    73
-   ],
-   "gebiet": "fl_231_225",
-   "land": "Glutsande"
-  },
-  {
-   "mitte": [
-    6041,
-    6371
-   ],
-   "punkt": [
-    6040,
-    6371
-   ],
-   "felder": 104,
-   "ausdehnung": [
-    79,
-    78
-   ],
-   "gebiet": "fl_186_198",
-   "land": "Süden/Küste"
-  },
-  {
-   "mitte": [
-    7866,
-    7639
-   ],
-   "punkt": [
-    7866,
-    7639
-   ],
-   "felder": 100,
-   "ausdehnung": [
-    75,
-    85
-   ],
-   "gebiet": "fl_231_225",
+   "gebiet": "fl_201_225",
    "land": "Ockerlande"
   },
   {
    "mitte": [
-    7602,
-    5416
+    7531,
+    5790
    ],
    "punkt": [
-    7602,
-    5416
+    7531,
+    5790
    ],
-   "felder": 80,
+   "felder": 402718,
    "ausdehnung": [
-    86,
-    83
+    1001,
+    987
    ],
    "gebiet": "fl_231_169",
    "land": "Hochlande"
   },
   {
    "mitte": [
-    6078,
-    6608
+    6688,
+    7190
    ],
    "punkt": [
-    6078,
-    6608
+    6688,
+    7190
    ],
-   "felder": 57,
+   "felder": 302344,
    "ausdehnung": [
-    67,
-    78
+    757,
+    1287
    ],
-   "gebiet": "fl_186_198",
+   "gebiet": "fl_216_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6309,
+    6095
+   ],
+   "punkt": [
+    6309,
+    6095
+   ],
+   "felder": 280005,
+   "ausdehnung": [
+    729,
+    1307
+   ],
+   "gebiet": "fl_186_183",
+   "land": "Fahle Weiten"
+  },
+  {
+   "mitte": [
+    7102,
+    6609
+   ],
+   "punkt": [
+    7102,
+    6609
+   ],
+   "felder": 97297,
+   "ausdehnung": [
+    598,
+    506
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7131,
+    5511
+   ],
+   "punkt": [
+    7131,
+    5511
+   ],
+   "felder": 83384,
+   "ausdehnung": [
+    350,
+    641
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6781,
+    6047
+   ],
+   "punkt": [
+    6781,
+    6047
+   ],
+   "felder": 67981,
+   "ausdehnung": [
+    384,
+    502
+   ],
+   "gebiet": "fl_201_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6248,
+    6831
+   ],
+   "punkt": [
+    6248,
+    6831
+   ],
+   "felder": 40431,
+   "ausdehnung": [
+    452,
+    227
+   ],
+   "gebiet": "fl_186_211",
    "land": "Süden/Küste"
   },
   {
    "mitte": [
-    6913,
-    6166
+    7039,
+    6066
    ],
    "punkt": [
-    6913,
-    6166
+    7039,
+    6066
    ],
-   "felder": 52,
+   "felder": 22165,
    "ausdehnung": [
-    72,
-    79
+    311,
+    258
    ],
    "gebiet": "fl_216_183",
    "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6345,
+    7151
+   ],
+   "punkt": [
+    6345,
+    7151
+   ],
+   "felder": 16944,
+   "ausdehnung": [
+    269,
+    248
+   ],
+   "gebiet": "fl_186_211",
+   "land": "Süden/Küste"
+  },
+  {
+   "mitte": [
+    6777,
+    6638
+   ],
+   "punkt": [
+    6777,
+    6638
+   ],
+   "felder": 14342,
+   "ausdehnung": [
+    168,
+    247
+   ],
+   "gebiet": "graufurt",
+   "land": "Grenzland"
+  },
+  {
+   "mitte": [
+    6862,
+    5679
+   ],
+   "punkt": [
+    6855,
+    5660
+   ],
+   "felder": 14181,
+   "ausdehnung": [
+    226,
+    302
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6845,
+    6781
+   ],
+   "punkt": [
+    6845,
+    6781
+   ],
+   "felder": 13843,
+   "ausdehnung": [
+    286,
+    216
+   ],
+   "gebiet": "fl_201_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    7247,
+    6740
+   ],
+   "punkt": [
+    7247,
+    6740
+   ],
+   "felder": 10575,
+   "ausdehnung": [
+    244,
+    197
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6819,
+    6479
+   ],
+   "punkt": [
+    6819,
+    6479
+   ],
+   "felder": 7750,
+   "ausdehnung": [
+    214,
+    265
+   ],
+   "gebiet": "graufurt",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6305,
+    6612
+   ],
+   "punkt": [
+    6305,
+    6629
+   ],
+   "felder": 5867,
+   "ausdehnung": [
+    248,
+    147
+   ],
+   "gebiet": "westmark",
+   "land": "Grenzland"
+  },
+  {
+   "mitte": [
+    6645,
+    5657
+   ],
+   "punkt": [
+    6645,
+    5657
+   ],
+   "felder": 5446,
+   "ausdehnung": [
+    184,
+    176
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Fahle Weiten"
+  },
+  {
+   "mitte": [
+    6706,
+    6673
+   ],
+   "punkt": [
+    6706,
+    6673
+   ],
+   "felder": 4872,
+   "ausdehnung": [
+    97,
+    234
+   ],
+   "gebiet": "graufurt",
+   "land": "Grenzland"
+  },
+  {
+   "mitte": [
+    6635,
+    6432
+   ],
+   "punkt": [
+    6635,
+    6432
+   ],
+   "felder": 3894,
+   "ausdehnung": [
+    140,
+    140
+   ],
+   "gebiet": "osthang",
+   "land": "Grenzland"
+  },
+  {
+   "mitte": [
+    6123,
+    7048
+   ],
+   "punkt": [
+    6123,
+    7048
+   ],
+   "felder": 2855,
+   "ausdehnung": [
+    124,
+    222
+   ],
+   "gebiet": "fl_186_211",
+   "land": "Süden/Küste"
+  },
+  {
+   "mitte": [
+    6305,
+    6302
+   ],
+   "punkt": [
+    6305,
+    6302
+   ],
+   "felder": 2681,
+   "ausdehnung": [
+    157,
+    108
+   ],
+   "gebiet": "fl_186_183",
+   "land": "Süden/Küste"
+  },
+  {
+   "mitte": [
+    7507,
+    6494
+   ],
+   "punkt": [
+    7507,
+    6494
+   ],
+   "felder": 1929,
+   "ausdehnung": [
+    121,
+    128
+   ],
+   "gebiet": "fl_231_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6508,
+    5684
+   ],
+   "punkt": [
+    6508,
+    5684
+   ],
+   "felder": 1815,
+   "ausdehnung": [
+    173,
+    109
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Fahle Weiten"
+  },
+  {
+   "mitte": [
+    7270,
+    5249
+   ],
+   "punkt": [
+    7270,
+    5249
+   ],
+   "felder": 1240,
+   "ausdehnung": [
+    167,
+    99
+   ],
+   "gebiet": "fl_216_155",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7439,
+    6674
+   ],
+   "punkt": [
+    7439,
+    6674
+   ],
+   "felder": 806,
+   "ausdehnung": [
+    79,
+    133
+   ],
+   "gebiet": "fl_231_198",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6466,
+    5831
+   ],
+   "punkt": [
+    6466,
+    5831
+   ],
+   "felder": 712,
+   "ausdehnung": [
+    99,
+    92
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Fahle Weiten"
+  },
+  {
+   "mitte": [
+    7146,
+    5874
+   ],
+   "punkt": [
+    7146,
+    5874
+   ],
+   "felder": 539,
+   "ausdehnung": [
+    81,
+    101
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6226,
+    7212
+   ],
+   "punkt": [
+    6226,
+    7212
+   ],
+   "felder": 500,
+   "ausdehnung": [
+    108,
+    93
+   ],
+   "gebiet": "fl_186_225",
+   "land": "Süden/Küste"
+  },
+  {
+   "mitte": [
+    6844,
+    5850
+   ],
+   "punkt": [
+    6844,
+    5850
+   ],
+   "felder": 499,
+   "ausdehnung": [
+    114,
+    131
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6907,
+    5680
+   ],
+   "punkt": [
+    6907,
+    5680
+   ],
+   "felder": 435,
+   "ausdehnung": [
+    103,
+    123
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6847,
+    6900
+   ],
+   "punkt": [
+    6847,
+    6900
+   ],
+   "felder": 400,
+   "ausdehnung": [
+    119,
+    84
+   ],
+   "gebiet": "fl_201_211",
+   "land": "Glutsande"
+  },
+  {
+   "mitte": [
+    6382,
+    6951
+   ],
+   "punkt": [
+    6382,
+    6951
+   ],
+   "felder": 371,
+   "ausdehnung": [
+    98,
+    79
+   ],
+   "gebiet": "fl_186_211",
+   "land": "Süden/Küste"
+  },
+  {
+   "mitte": [
+    6148,
+    7060
+   ],
+   "punkt": [
+    6148,
+    7060
+   ],
+   "felder": 365,
+   "ausdehnung": [
+    81,
+    87
+   ],
+   "gebiet": "fl_186_211",
+   "land": "Süden/Küste"
+  },
+  {
+   "mitte": [
+    6397,
+    6405
+   ],
+   "punkt": [
+    6397,
+    6405
+   ],
+   "felder": 275,
+   "ausdehnung": [
+    82,
+    79
+   ],
+   "gebiet": "nordwald",
+   "land": "Grenzland"
+  },
+  {
+   "mitte": [
+    6301,
+    7031
+   ],
+   "punkt": [
+    6301,
+    7031
+   ],
+   "felder": 272,
+   "ausdehnung": [
+    89,
+    80
+   ],
+   "gebiet": "fl_186_211",
+   "land": "Süden/Küste"
+  },
+  {
+   "mitte": [
+    7573,
+    7545
+   ],
+   "punkt": [
+    7573,
+    7543
+   ],
+   "felder": 234,
+   "ausdehnung": [
+    106,
+    83
+   ],
+   "gebiet": "fl_231_225",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    6593,
+    5809
+   ],
+   "punkt": [
+    6593,
+    5809
+   ],
+   "felder": 164,
+   "ausdehnung": [
+    80,
+    81
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Fahle Weiten"
+  },
+  {
+   "mitte": [
+    6782,
+    7705
+   ],
+   "punkt": [
+    6782,
+    7705
+   ],
+   "felder": 102,
+   "ausdehnung": [
+    77,
+    74
+   ],
+   "gebiet": "fl_201_239",
+   "land": "Ockerlande"
+  },
+  {
+   "mitte": [
+    7130,
+    5941
+   ],
+   "punkt": [
+    7130,
+    5941
+   ],
+   "felder": 91,
+   "ausdehnung": [
+    74,
+    81
+   ],
+   "gebiet": "fl_216_183",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6414,
+    6542
+   ],
+   "punkt": [
+    6414,
+    6542
+   ],
+   "felder": 73,
+   "ausdehnung": [
+    71,
+    68
+   ],
+   "gebiet": "waldweg",
+   "land": "Grenzland"
+  },
+  {
+   "mitte": [
+    6862,
+    5719
+   ],
+   "punkt": [
+    6862,
+    5719
+   ],
+   "felder": 62,
+   "ausdehnung": [
+    78,
+    66
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6730,
+    6296
+   ],
+   "punkt": [
+    6730,
+    6296
+   ],
+   "felder": 46,
+   "ausdehnung": [
+    71,
+    76
+   ],
+   "gebiet": "fl_201_183",
+   "land": "Fahle Weiten"
+  },
+  {
+   "mitte": [
+    6552,
+    6469
+   ],
+   "punkt": [
+    6552,
+    6469
+   ],
+   "felder": 43,
+   "ausdehnung": [
+    70,
+    64
+   ],
+   "gebiet": "waldweg",
+   "land": "Grenzland"
+  },
+  {
+   "mitte": [
+    6582,
+    5778
+   ],
+   "punkt": [
+    6582,
+    5778
+   ],
+   "felder": 38,
+   "ausdehnung": [
+    72,
+    72
+   ],
+   "gebiet": "fl_201_169",
+   "land": "Fahle Weiten"
+  },
+  {
+   "mitte": [
+    6992,
+    5770
+   ],
+   "punkt": [
+    6992,
+    5770
+   ],
+   "felder": 29,
+   "ausdehnung": [
+    68,
+    65
+   ],
+   "gebiet": "fl_216_169",
+   "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    7372,
+    6653
+   ],
+   "punkt": [
+    7372,
+    6653
+   ],
+   "felder": 25,
+   "ausdehnung": [
+    65,
+    68
+   ],
+   "gebiet": "fl_216_198",
+   "land": "Glutsande"
   }
  ]
 }
