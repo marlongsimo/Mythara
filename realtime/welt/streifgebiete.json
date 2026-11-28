@@ -11,13 +11,13 @@
    "region": "fl_186_183",
    "mitte": [
     6352.5,
-    6020.5
+    5980.5
    ],
    "rechteck": [
     6292,
-    5960,
+    5920,
     6411,
-    6079
+    6039
    ],
    "meiden": [],
    "modell": "vorhanden"
@@ -167,6 +167,40 @@
     6949
    ],
    "meiden": [],
+   "modell": "vorhanden"
+  },
+  {
+   "id": "streifgebiet_wildschwein_westwald",
+   "name": "Wildschweine im Westwald",
+   "gegner": "wildschwein",
+   "anzahl": 7,
+   "stufe": 18,
+   "land": "Die Fahlen Weiten",
+   "region": "fl_186_183",
+   "mitte": [
+    6280,
+    6175
+   ],
+   "rechteck": [
+    6220,
+    6115,
+    6339,
+    6234
+   ],
+   "meiden": [
+    {
+     "x": 6320,
+     "y": 6232,
+     "r": 12,
+     "grund": "Ruine Alte Wachruine"
+    },
+    {
+     "x": 6320,
+     "y": 6232.8,
+     "r": 8,
+     "grund": "Questort/Lesestelle ruine"
+    }
+   ],
    "modell": "vorhanden"
   }
  ]

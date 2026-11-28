@@ -576,6 +576,30 @@
    "y": 5722
   },
   {
+   "name": "Pechtann",
+   "art": "Dorf",
+   "x": 6470,
+   "y": 6095
+  },
+  {
+   "name": "Harzlichtung",
+   "art": "Ort",
+   "x": 6230,
+   "y": 6045
+  },
+  {
+   "name": "Verfallene Pechhütte",
+   "art": "Ruine",
+   "x": 6200,
+   "y": 6126
+  },
+  {
+   "name": "Jägerlager",
+   "art": "Ort",
+   "x": 6402,
+   "y": 6172
+  },
+  {
    "name": "Rotlehm",
    "art": "Stadt",
    "x": 6830,

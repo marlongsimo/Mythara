@@ -55,17 +55,17 @@
   },
   {
    "mitte": [
-    6309,
-    6095
+    6259,
+    5852
    ],
    "punkt": [
-    6309,
-    6095
+    6259,
+    5870
    ],
-   "felder": 280005,
+   "felder": 102708,
    "ausdehnung": [
-    729,
-    1307
+    646,
+    716
    ],
    "gebiet": "fl_186_183",
    "land": "Fahle Weiten"
@@ -106,6 +106,23 @@
   },
   {
    "mitte": [
+    6182,
+    6341
+   ],
+   "punkt": [
+    6182,
+    6341
+   ],
+   "felder": 77394,
+   "ausdehnung": [
+    418,
+    640
+   ],
+   "gebiet": "fl_186_198",
+   "land": "Grenzland"
+  },
+  {
+   "mitte": [
     6781,
     6047
    ],
@@ -120,6 +137,23 @@
    ],
    "gebiet": "fl_201_183",
    "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6537,
+    6236
+   ],
+   "punkt": [
+    6537,
+    6236
+   ],
+   "felder": 44050,
+   "ausdehnung": [
+    354,
+    282
+   ],
+   "gebiet": "fl_201_183",
+   "land": "Fahle Weiten"
   },
   {
    "mitte": [
@@ -409,6 +443,23 @@
    ],
    "gebiet": "fl_216_155",
    "land": "Hochlande"
+  },
+  {
+   "mitte": [
+    6581,
+    6037
+   ],
+   "punkt": [
+    6581,
+    6037
+   ],
+   "felder": 1068,
+   "ausdehnung": [
+    120,
+    101
+   ],
+   "gebiet": "fl_201_183",
+   "land": "Fahle Weiten"
   },
   {
    "mitte": [

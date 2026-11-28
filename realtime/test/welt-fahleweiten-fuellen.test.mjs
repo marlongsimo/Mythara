@@ -11,7 +11,7 @@ import { gemeinsam, bibliothek, region, WELT } from "../werkzeug/welt/laden.mjs"
 
 let ok = true; const check = (b, t, e = []) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) { ok = false; for (const z of e.slice(0, 12)) console.log("      " + z); } };
 const G = await gemeinsam(), bib = bibliothek(), lies = (f) => JSON.parse(readFileSync(join(WELT, f), "utf8"));
-const FO = lies("fahleweiten_orte.json"), BOX = [6000, 5560, 6800, 6160], BIB = new Map(JSON.parse(readFileSync(join(WELT, "bibliothek", "objekte.json"), "utf8")).objekte.map((o) => [o.id, o]));
+const FO = lies("fahleweiten_orte.json"), BOX = [6000, 5560, 6800, 6260]   /* bis 6260: Jägerlager und Alte Wachruine (Westwald) */, BIB = new Map(JSON.parse(readFileSync(join(WELT, "bibliothek", "objekte.json"), "utf8")).objekte.map((o) => [o.id, o]));
 const R = new G.WeltRaster(), IA = new Map(), OBJ = [];
 for (const n of readdirSync(join(WELT, "regionen"))) { const rp = join(WELT, "regionen", n, "region.json"); if (!existsSync(rp)) continue; const r = JSON.parse(readFileSync(rp, "utf8")); if (r.entwurf || r.ebene) continue;
   const x0 = r.ursprung[0] * 32, y0 = r.ursprung[1] * 32, x1 = x0 + r.chunks[0] * 32, y1 = y0 + r.chunks[1] * 32; if (x1 < BOX[0] || x0 > BOX[2] || y1 < BOX[1] || y0 > BOX[3]) continue;
@@ -35,7 +35,7 @@ check(mit(...platz), "der Platz ist mit Stadtmauer von Heidrast aus erreichbar (
   const lw = FO.grauwacht.laeden.filter((l) => !mit(l.x, l.y, 1.6)).map((l) => l.id); check(!lw.length, "alle Läden erreichbar", lw); }
 
 console.log("\nNeue Orte, Heidrast");
-for (const [k, name] of [["huegelgrund", "Hügelgrund"], ["kohlstatt", "Kohlstatt"], ["brechstein", "Brechstein"], ["wollhag", "Wollhag"], ["weiherhof", "Weiherhof"], ["reifbach", "Reifbach"]]) {
+for (const [k, name] of [["huegelgrund", "Hügelgrund"], ["kohlstatt", "Kohlstatt"], ["brechstein", "Brechstein"], ["wollhag", "Wollhag"], ["weiherhof", "Weiherhof"], ["reifbach", "Reifbach"], ["pechtann", "Pechtann"]]) {
   const [cx, cy] = FO.orte[k], geb = OBJ.filter((o) => Math.hypot(o.x - cx, o.y - cy) < 26 && BIB.get(o.objekt)?.kategorie === "gebaeude").length;
   const bank = FO.banken.find((b) => b.ort === name), laden = FO.laeden.find((l) => l.ort === name), st = FO.stationen.some((s) => Math.hypot(s.x - cx, s.y - cy) < 30);
   const ia = [...IA.values()].filter((i) => i.id.startsWith(k)), weg = ia.filter((i) => !mit(i.x, i.y)).map((i) => i.id);
@@ -43,6 +43,13 @@ for (const [k, name] of [["huegelgrund", "Hügelgrund"], ["kohlstatt", "Kohlstat
 { const [cx, cy] = HEIDRAST, geb = OBJ.filter((o) => Math.hypot(o.x - cx, o.y - cy) < 24 && BIB.get(o.objekt)?.kategorie === "gebaeude").length; check(geb >= 8 && IA.has("heidrast_bankkiste"), `Heidrast: ${geb} Gebäude, Bankkiste`); }
 { const nw = FO.npc.filter((n) => !mit(n.x, n.y, 1.4)).map((n) => n.id); check(!nw.length, `${FO.npc.length} NPC-Plätze erreichbar`, nw);
   const rw = FO.rastplaetze.filter((id) => !IA.has(id) || !mit(IA.get(id).x, IA.get(id).y)); check(FO.rastplaetze.length >= 3 && !rw.length, `${FO.rastplaetze.length} Rastplätze an den Wegen`, rw); }
+
+/* Westwald (Leitstelle 28.11.): Pechtann mit Wegen in alle vier Richtungen; Harzlichtung, Pechhütte, Jägerlager erreichbar; die Wölfe von E2 bleiben unberührt */
+{ const WW = FO.westwald, ziele = { Harzlichtung: WW.lichtung, "Verfallene Pechhütte": WW.huette, "Jägerlager": WW.lager, Grenzposten: [6642, 6080], "Alte Wachruine": [6326, 6228], Brechstein: [6612, 5972] };
+  const weg = Object.entries(ziele).filter(([, p]) => !mit(p[0], p[1], 2)).map(([n]) => n); check(!weg.length, "Pechtann: Harzlichtung, Pechhütte, Jägerlager und die Wege zu Grenzposten, Alter Wachruine und Brechstein erreichbar", weg);
+  const W = WW.woelfe, drin = OBJ.filter((o) => /^(pechtann|jaegerlager|rast_harzlichtung)/.test(o.id) && o.x > W[0] && o.x < W[2] && o.y > W[1] && o.y < W[3]).map((o) => o.id);
+  const ST = lies("streifgebiete.json").gebiete, ws = ST.find((g) => g.gegner === "wildschwein" && /Westwald/.test(g.name));
+  check(!drin.length && ws && ST.some((g) => g.id === "streifgebiet_heidewolf_weiten"), `Wölfe von E2 unberührt, Streifgebiet „${ws?.name}“ bei ${ws?.mitte?.join("|")}`, drin); }
 
 console.log("\nArbeit: Fischen, Kräuter, Holz und Erz");
 { const fw = FO.fischplaetze.filter((f) => !mit(...f.stehplatz, 1) || R.begehbar(f.x, f.y)).map((f) => f.id); check(FO.fischplaetze.length >= 5 && !fw.length, `${FO.fischplaetze.length} Fischplätze (Weiher, Küste) – Stehplatz erreichbar, Fanggrund im Wasser`, fw);

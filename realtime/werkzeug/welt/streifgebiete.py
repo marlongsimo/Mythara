@@ -115,6 +115,19 @@ for art, land, name, anzahl in WUNSCH:
                     'rechteck': [int(x0 + X0), int(y0 + Y0), int(x0 + X0 + SEITE - 1), int(y0 + Y0 + SEITE - 1)], 'meiden': [{'x': round(m[0], 1), 'y': round(m[1], 1), 'r': m[2], 'grund': m[3]} for m in mz],
                     'modell': 'vorhanden' if art in MONSTER else 'fehlt'})
     print(f"{name}: Mitte {cx:.0f}|{cy:.0f}, Stufe {stufe}, {len(mz)} Meidekreise, Platzdichte {wert:.1f}")
+# feste Gebiete ohne vorhandene Gegnerplätze (Leitstelle 28.11.: Wildschweine im Westwald bei Pechtann, Stufe 18)
+FEST = [('wildschwein', 'Die Fahlen Weiten', 'Wildschweine im Westwald', 7, (6280, 6165), 18)]
+for art, land, name, anzahl, (fx, fy), stufe in FEST:
+    best = None
+    for dx in (0, -10, 10, -20, 20):
+        for dy in (0, -10, 10):
+            b = bewerte(fx + dx, fy + dy, art, [{'x': fx, 'y': fy, 'land': land}])
+            if b and (best is None or b[0] > best[0][0]): best = (b, fx + dx, fy + dy)
+    if not best: print(f'{name}: kein Gebiet'); continue
+    (wert, haupt, mz, (x0, y0)), cx, cy = best
+    gebiete.append({'id': 'streifgebiet_' + art + '_westwald', 'name': name, 'gegner': art, 'anzahl': anzahl, 'stufe': stufe, 'land': land, 'region': REG[int(cy) - Y0, int(cx) - X0], 'mitte': [round(cx, 1), round(cy, 1)],
+                    'rechteck': [int(x0 + X0), int(y0 + Y0), int(x0 + X0 + SEITE - 1), int(y0 + Y0 + SEITE - 1)], 'meiden': [{'x': round(m[0], 1), 'y': round(m[1], 1), 'r': m[2], 'grund': m[3]} for m in mz], 'modell': 'vorhanden' if art in MONSTER else 'fehlt'})
+    print(f"{name}: Mitte {cx:.0f}|{cy:.0f}, Stufe {stufe}, {len(mz)} Meidekreise")
 json.dump({'hinweis': 'Streifgebiete (#143), erzeugt von werkzeug/welt/streifgebiete.py, gelesen von werkzeug/weltzonen.py (Systeme, 25ac9794). KEIN Rudel: jedes Tier streift einzeln. '
            'Je Gebiet: id, gegner (Name aus config.ts), anzahl (Tiere), rechteck [x0, y0, x1, y1] in Weltfeldern einschließlich, ganz in region; '
            'zur Auskunft: name, stufe, land, mitte, modell, meiden (Orte/Questorte/Sammelstellen in der Fläche, Kreise).', 'gebiete': gebiete}, open(os.path.join(W, 'streifgebiete.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
