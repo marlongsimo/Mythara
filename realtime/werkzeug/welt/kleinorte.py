@@ -138,12 +138,13 @@ BESONDERS = {
 rng = random.Random('kleinorte-' + schritt)
 def umgebung(x, y):
     i, j = x - X0, y - Y0; w = G[max(0, j - 8):j + 9, max(0, i - 8):i + 9]
-    wald = np.isin(w, list('ftj')).mean(); heide = np.isin(w, list('Tg,')).mean(); wueste = np.isin(w, list('uylL')).mean()
-    return dict(wald=wald, heide=heide, wueste=wueste, meer=dmeer[j, i], see=dsee[j, i], fels=dfels[j, i], weg=dweg[j, i])
+    wald = np.isin(w, list('ftj')).mean(); heide = np.isin(w, list('Tg,')).mean(); wueste = np.isin(w, list('uylL')).mean(); schnee = np.isin(w, list('S')).mean()
+    return dict(wald=wald, heide=heide, wueste=wueste, schnee=schnee, meer=dmeer[j, i], see=dsee[j, i], fels=dfels[j, i], weg=dweg[j, i])
 def art_waehlen(u, l):
     if u['meer'] < 9: return rng.choice(['fischer', 'fischer', 'leuchtfeuer'])
     if u['see'] < 7: return rng.choice(['muehle', 'fischer', 'muehle'])
     if u['fels'] < 6: return rng.choice(['hoehle', 'hoehle', 'turm'])
+    if u['schnee'] > 0.4: return rng.choice(['hirten', 'stein', 'ruine', 'turm', 'schrein', 'jaeger'])   # Schneeland (Süden der Ockerlande)
     if u['weg'] > 55: return rng.choice(['banditen', 'ruine', 'schrein', 'stein'])
     if u['wald'] > 0.5: return rng.choice(['jaeger', 'koehler', 'ruine', 'schrein'])
     if u['wueste'] > 0.5: return rng.choice(['brunnen', 'hirten', 'ruine', 'lager', 'stein'])
@@ -158,8 +159,24 @@ def name_fuer(art, l):
         if n not in benutzt: benutzt.add(n); return n
     return None
 
-# ───── 1. Besonderheiten, 2. Kleinorte (unregelmäßig) ─────
-punkte = [(x, y, 'benannt', n) for x, y, n in BENANNT]
+# ───── 0. Neue Siedlungen des Schritts (Skizze der Leitstelle; werden eigens gebaut), 1. Besonderheiten, 2. Kleinorte (unregelmäßig) ─────
+# fest: [Name, Art, x, y, Halbmesser frei]; „lücke“: in der größten Lücke des Gebiets [x0, y0, x1, y1]
+SIEDLUNGEN = {'schritt2': [('Rotbucht', 'Hafenstadt', 7800, 7390, 60), ('Tonbrenn', 'Dorf', 7470, 7210, 40), ('Schneerast', 'Dorf', 7300, 7715, 40),
+                           ('Wacht am Weißen Ende', 'Ruine', 'lücke', (6640, 7600, 8400, 8200), 25), ('Karawanenlager', 'Lager', 'lücke', (6640, 7300, 7250, 7750), 25)]}
+ABSTAND = {'schritt2': (44, 70)}   # Abstand der Kleinorte (Schritt 1: 50–78); die Ockerlande sind weit und leer
+punkte = [(x, y, 'benannt', n) for x, y, n in BENANNT]; siedlungen = []
+for name, art, x, y, *rest in SIEDLUNGEN.get(schritt, []):
+    if x == 'lücke':
+        bx = y; rr = rest[0]; mm = np.ones((H, B), bool)
+        for a, b, _, _ in punkte:
+            i, j = int(a - X0), int(b - Y0)
+            if 0 <= i < B and 0 <= j < H: mm[j, i] = False
+        dd = ndimage.distance_transform_edt(mm); dd[~kand] = 0; box = np.zeros((H, B), bool); box[max(0, bx[1] - Y0):bx[3] - Y0, max(0, bx[0] - X0):bx[2] - X0] = True; dd[~box] = 0
+        if art == 'Lager': dd[~ndimage.binary_erosion(np.isin(G, list('uylL')), iterations=4)] = 0   # Karawanenlager auf Lehm und Sand
+        j, i = np.unravel_index(int(dd.argmax()), dd.shape); x, y = int(i + X0), int(j + Y0)
+    else: rr = rest[0]
+    punkte.append((x, y, 'benannt', name)); siedlungen.append({'name': name, 'art': art, 'x': x, 'y': y, 'frei': rr})
+    kand &= ~((xx + X0 + 0.5 - x) ** 2 + (yy + Y0 + 0.5 - y) ** 2 < (rr + 20) ** 2)
 def frei_von(x, y, mind):
     return all((x - a) ** 2 + (y - b) ** 2 >= (mind if t != 'benannt' else max(45, mind - 10)) ** 2 for a, b, t, _ in punkte)
 neu = []
@@ -172,18 +189,19 @@ for l in LAENDER:
             i, j = int(a - X0), int(b - Y0)
             if 0 <= i < B and 0 <= j < H: mm[j, i] = False
         dd = ndimage.distance_transform_edt(mm); dd[~m] = 0
+        if l == 'Ockerlande': dd[ndimage.binary_dilation(np.isin(G, list('S')), iterations=10) | ~ndimage.binary_dilation(np.isin(G, list('uylL')), iterations=6)] = 0   # Besonderheiten der Wüste: auf Lehm und Sand, nicht im Schneeland
         j, i = np.unravel_index(int(dd.argmax()), dd.shape)
         if dd[j, i] < 40: continue
         x, y = int(i + X0), int(j + Y0); punkte.append((x, y, art, name)); u = umgebung(x, y)
-        neu.append({'name': name, 'art': art, 'artname': ARTNAME[art], 'land': l, 'x': x, 'y': y, 'besonders': True, 'text': text, 'feldweg': bool(u['weg'] < 60), 'abseits': bool(u['weg'] >= 60), 'region': REG[j, i]})
+        neu.append({'name': name, 'art': art, 'artname': ARTNAME[art], 'land': l, 'x': x, 'y': y, 'besonders': True, 'text': text, 'feldweg': bool(u['weg'] < 60), 'abseits': bool(u['weg'] >= 60), 'schnee': bool(u['schnee'] > 0.4), 'region': REG[j, i]})
     ys, xs = np.nonzero(m[::3, ::3]); order = list(zip(xs * 3, ys * 3)); rng.shuffle(order)
     for i, j in order:
-        x, y = int(i + X0), int(j + Y0); mind = rng.uniform(50, 78)
+        x, y = int(i + X0), int(j + Y0); mind = rng.uniform(*ABSTAND.get(schritt, (50, 78)))
         if not frei_von(x, y, mind): continue
         u = umgebung(x, y); art = art_waehlen(u, l); name = name_fuer(art, l)
         if not name: continue
         punkte.append((x, y, art, name))
-        neu.append({'name': name, 'art': art, 'artname': ARTNAME[art], 'land': l, 'x': x, 'y': y, 'besonders': False, 'feldweg': bool(u['weg'] < 60), 'abseits': bool(u['weg'] >= 60), 'region': REG[j, i]})
+        neu.append({'name': name, 'art': art, 'artname': ARTNAME[art], 'land': l, 'x': x, 'y': y, 'besonders': False, 'feldweg': bool(u['weg'] < 60), 'abseits': bool(u['weg'] >= 60), 'schnee': bool(u['schnee'] > 0.4), 'region': REG[j, i]})
 
 # ───── Messung: Abstand zum nächsten benannten Ort, vorher / nachher (nur in den Ländern des Schritts) ─────
 def messung(pts):
@@ -196,7 +214,7 @@ def messung(pts):
 vor = messung([(x, y) for x, y, _ in BENANNT]); nach = messung([(x, y) for x, y, _, _ in punkte])
 from collections import Counter
 erg = {'hinweis': f'Kleinorte {schritt} (kleinorte.py): PLAN zur Freigabe – noch nichts gebaut. Weltfelder.', 'schritt': schritt, 'laender': LAENDER, 'anzahl': len(neu),
-       'je_art': dict(Counter(q['artname'] for q in neu)), 'je_land': dict(Counter(q['land'] for q in neu)), 'messung': {'vorher': vor, 'nachher': nach}, 'objekte_je_art': OBJEKTE, 'orte': neu}
+       'je_art': dict(Counter(q['artname'] for q in neu)), 'je_land': dict(Counter(q['land'] for q in neu)), 'messung': {'vorher': vor, 'nachher': nach}, 'objekte_je_art': OBJEKTE, 'siedlungen': siedlungen, 'orte': neu}
 os.makedirs(os.path.join(W, 'plaene'), exist_ok=True)
 _alt = os.path.join(W, 'plaene', f'kleinorte_{schritt}.json')
 if '--namen-behalten' in sys.argv and os.path.exists(_alt):   # Namen aus kleinorte_namen.py behalten (Lage ist gleich: fester Zufall)
@@ -218,6 +236,9 @@ FARBE = {'hof': (230, 200, 60), 'weiler': (230, 160, 40), 'muehle': (90, 160, 23
          'stein': (220, 220, 220), 'hoehle': (80, 60, 50), 'banditen': (230, 40, 40), 'brunnen': (120, 200, 230), 'jaeger': (60, 200, 90), 'koehler': (40, 40, 40), 'hirten': (240, 240, 150), 'lager': (200, 160, 120)}
 for x, y, n in BENANNT:
     if x0 <= x - X0 < x1 and y0 <= y - Y0 < y1: c = P(x, y); dr.rectangle([c[0] - 4, c[1] - 4, c[0] + 4, c[1] + 4], fill=(255, 255, 255), outline=(0, 0, 0)); dr.text((c[0] + 6, c[1] - 7), n, fill=(255, 255, 255), font=SCHRIFT_F)
+for q in siedlungen:   # neue Siedlungen des Schritts: großes rotes Quadrat, Freiraum als Kreis
+    c = P(q['x'], q['y']); r = q['frei']; dr.ellipse([c[0] - r, c[1] - r, c[0] + r, c[1] + r], outline=(255, 60, 40), width=2)
+    dr.rectangle([c[0] - 7, c[1] - 7, c[0] + 7, c[1] + 7], fill=(255, 60, 40), outline=(0, 0, 0)); dr.text((c[0] + 10, c[1] - 8), f"{q['name']} ({q['art']}, neu)", fill=(255, 240, 230), font=SCHRIFT_F)
 for q in neu:
     c = P(q['x'], q['y']); r = 6 if q['besonders'] else 4; dr.ellipse([c[0] - r, c[1] - r, c[0] + r, c[1] + r], fill=FARBE.get(q['art'], (255, 0, 255)), outline=(255, 255, 0) if q['besonders'] else (0, 0, 0), width=2 if q['besonders'] else 1)
     dr.text((c[0] + 6, c[1] - 6), q['name'], fill=(255, 255, 160) if q['besonders'] else (20, 20, 20), font=SCHRIFT)
@@ -225,6 +246,6 @@ for q in neu:
 ly = 10
 for a, f in FARBE.items():
     if any(q['art'] == a for q in neu): dr.ellipse([10, ly, 20, ly + 10], fill=f, outline=(0, 0, 0)); dr.text((26, ly - 2), ARTNAME[a], fill=(255, 255, 255), font=SCHRIFT); ly += 14
-dr.text((10, ly + 4), f'Quadrat: vorhandene Orte · Kreis: neu ({len(neu)}) · gelb umrandet: Besonderheit', fill=(255, 255, 255), font=SCHRIFT)
+dr.text((10, ly + 4), f'Quadrat weiß: vorhandene Orte · rot: neue Siedlungen ({len(siedlungen)}) · Kreis: neu ({len(neu)}) · gelb umrandet: Besonderheit', fill=(255, 255, 255), font=SCHRIFT)
 bild.save(os.path.join(W, 'plaene', f'kleinorte_{schritt}.png'))
 print(f'{schritt} {LAENDER}: {len(neu)} Kleinorte {dict(Counter(q["artname"] for q in neu))} · vorher {vor} · nachher {nach}')
