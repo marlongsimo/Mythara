@@ -4,9 +4,9 @@ Rolle Quests, 27.11.2026. Grundlage: `doku/konzepte/phase-12.md` und die Kurzfas
 Stellen aus Welts Bau (#172, 9187427c): `welt/ockerlande_orte.json`, `welt/festland/plan_ockerlande.json`.
 
 - **Datei:** `realtime/shared/quest_ockerlande.ts`
-- **Im Spiel:** I1 und I2
-- **Entwurf:** I3 und I4. Sie kommen ins Spiel, sobald ihre Bausteine da sind.
-- **Welt-Test:** `realtime/test/ockerlande-welt.test.mjs` (Ports 8867/8868, etwa 110 s) spielt I1 und I2 durch. Den Teil für I3 überspringt er, solange I3 Entwurf ist.
+- **Im Spiel:** I1, I2 und I3 (I3 seit 28.11., die Sammelstellen der Ockerlande sind in `shared/bergbau_standorte.json`)
+- **Entwurf:** I4. Sie kommt ins Spiel, sobald ihre Bausteine da sind.
+- **Welt-Test:** `realtime/test/ockerlande-welt.test.mjs` (Ports 8867/8868, etwa 110 s) spielt I1, I2 und I3 durch (etwa 120 s).
 - **Neue Gegenstände:** keine.
 - **Drachenarm:** nichts.
 
@@ -37,7 +37,6 @@ Die Plätze kommen aus den NPC-Plätzen der Welt. Ruben Weit (`troedler_sandquel
 
 ## Was fehlt
 
-- **I3, für Integration:** die Sammelstellen der Ockerlande (`welt/sammelstellen.json`, u. a. `steinbruch_am_roten_tisch_sterneisen_1`) nach `shared/bergbau_standorte.json` übernehmen. Sonst gibt der Steinbruch dem Server kein Erz.
 - **I4:**
   - **Systeme/Figuren:** Gegner `ockermutter`.
     - Modell: Ockerhyäne, groß.
