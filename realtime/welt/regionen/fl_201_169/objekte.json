@@ -427,7 +427,7 @@
  {"id":"ko_131_1","objekt":"dorf_festfeuer_01","x":54,"y":422.25},
  {"id":"ko_136_0","objekt":"weidenhain_bauernhaus_01","x":195,"y":422},
  {"id":"ko_136_1","objekt":"k_zaun","x":200,"y":424},
- {"id":"ko_136_2","objekt":"wegrand_heuhaufen","x":190,"y":424},
+ {"id":"ko_136_2","objekt":"wegrand_heuhaufen","x":191.5,"y":426},
  {"id":"ko_142_0","objekt":"moor_fischer_01","x":201,"y":188},
  {"id":"ko_142_1","objekt":"kueste_netze","x":205.5,"y":189.5,"spiegeln":true},
  {"id":"ko_146_0","objekt":"moor_schrein_01","x":102,"y":265.95},
@@ -1479,6 +1479,6 @@
  {"id":"vd_fl_201_169_k47","objekt":"wegrand_feldstein_1","x":447.5,"y":428.5},
  {"id":"vd_fl_201_169_k48","objekt":"wegrand_feldstein_3","x":254,"y":428.5},
  {"id":"vd_fl_201_169_k49","objekt":"wegrand_ruine_bogen","x":174.45,"y":430.08,"spiegeln":true},
- {"id":"vd_fl_201_169_k50","objekt":"wegrand_feldstein_1","x":193.5,"y":431.5},
- {"id":"vd_fl_201_169_k51","objekt":"wegrand_feldstein_1","x":130.5,"y":434.5}
+ {"id":"vd_fl_201_169_k50","objekt":"wegrand_feldstein_3","x":129,"y":433},
+ {"id":"vd_fl_201_169_k51","objekt":"wegrand_feldstein_1","x":186.5,"y":436.5,"spiegeln":true}
 ]

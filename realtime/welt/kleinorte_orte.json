@@ -57,8 +57,8 @@
    "name": "Brandstätte",
    "art": "ruine",
    "land": "Grenzland",
-   "x": 6566.1,
-   "y": 6557.7,
+   "x": 6562.8,
+   "y": 6566.4,
    "lesestelle": "ko_5_l",
    "besonders": false,
    "abseits": false,
@@ -69,8 +69,8 @@
    "name": "Moosschrein",
    "art": "schrein",
    "land": "Grenzland",
-   "x": 6583.1,
-   "y": 6457.0,
+   "x": 6578.7,
+   "y": 6449.6,
    "lesestelle": "ko_6_l",
    "besonders": false,
    "abseits": false,
@@ -81,8 +81,8 @@
    "name": "Rübenkreuz",
    "art": "schrein",
    "land": "Grenzland",
-   "x": 6383.3,
-   "y": 6492.8,
+   "x": 6377.6,
+   "y": 6500.4,
    "lesestelle": "ko_7_l",
    "besonders": false,
    "abseits": false,
@@ -93,8 +93,8 @@
    "name": "Kiefernwarte",
    "art": "turm",
    "land": "Grenzland",
-   "x": 6666.0,
-   "y": 6619.0,
+   "x": 6657.5,
+   "y": 6617.1,
    "lesestelle": "ko_8_l",
    "besonders": false,
    "abseits": false,
@@ -105,8 +105,8 @@
    "name": "Hof am Dorfteich",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6387.9,
-   "y": 6570.9,
+   "x": 6391.9,
+   "y": 6575.0,
    "lesestelle": "ko_9_l",
    "besonders": false,
    "abseits": false,
@@ -129,8 +129,8 @@
    "name": "Versteck am Schwarzwasser",
    "art": "banditen",
    "land": "Grenzland",
-   "x": 6760.0,
-   "y": 6451.0,
+   "x": 6762.9,
+   "y": 6448.3,
    "lesestelle": "ko_11_l",
    "besonders": false,
    "abseits": true,
@@ -153,8 +153,8 @@
    "name": "Eschenau",
    "art": "weiler",
    "land": "Grenzland",
-   "x": 6503.0,
-   "y": 6385.0,
+   "x": 6502.7,
+   "y": 6384.1,
    "lesestelle": "ko_13_l",
    "besonders": false,
    "abseits": false,
@@ -165,8 +165,8 @@
    "name": "Hopfenhof",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6188.0,
-   "y": 6630.0,
+   "x": 6184.4,
+   "y": 6632.2,
    "lesestelle": "ko_14_l",
    "besonders": false,
    "abseits": false,
@@ -177,8 +177,8 @@
    "name": "Rübenschrein",
    "art": "schrein",
    "land": "Grenzland",
-   "x": 6307.3,
-   "y": 6394.9,
+   "x": 6309.0,
+   "y": 6397.0,
    "lesestelle": "ko_15_l",
    "besonders": false,
    "abseits": false,
@@ -190,7 +190,7 @@
    "art": "schrein",
    "land": "Grenzland",
    "x": 6693.0,
-   "y": 6374.8,
+   "y": 6376.0,
    "lesestelle": "ko_16_l",
    "besonders": false,
    "abseits": false,
@@ -201,8 +201,8 @@
    "name": "Hinterm Moor",
    "art": "brunnen",
    "land": "Grenzland",
-   "x": 6708.0,
-   "y": 6709.0,
+   "x": 6706.5,
+   "y": 6705.5,
    "lesestelle": "ko_17_l",
    "besonders": false,
    "abseits": false,
@@ -213,8 +213,8 @@
    "name": "Leere Mauern",
    "art": "ruine",
    "land": "Grenzland",
-   "x": 6375.3,
-   "y": 6655.9,
+   "x": 6376.0,
+   "y": 6655.0,
    "lesestelle": "ko_18_l",
    "besonders": false,
    "abseits": false,
@@ -225,8 +225,8 @@
    "name": "Distelbrunnen",
    "art": "brunnen",
    "land": "Grenzland",
-   "x": 6780.0,
-   "y": 6574.0,
+   "x": 6779.9,
+   "y": 6573.6,
    "lesestelle": "ko_19_l",
    "besonders": false,
    "abseits": false,
@@ -237,8 +237,8 @@
    "name": "Bruns Meiler",
    "art": "koehler",
    "land": "Grenzland",
-   "x": 6545.1,
-   "y": 6646.6,
+   "x": 6553.3,
+   "y": 6642.5,
    "lesestelle": "ko_20_l",
    "besonders": false,
    "abseits": false,
@@ -249,8 +249,8 @@
    "name": "Hungerhof",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6643.1,
-   "y": 6488.8,
+   "x": 6634.7,
+   "y": 6492.9,
    "lesestelle": "ko_21_l",
    "besonders": false,
    "abseits": false,
@@ -261,8 +261,8 @@
    "name": "Hilles Turm",
    "art": "turm",
    "land": "Grenzland",
-   "x": 6650.0,
-   "y": 6744.8,
+   "x": 6645.1,
+   "y": 6744.9,
    "lesestelle": "ko_22_l",
    "besonders": false,
    "abseits": false,
@@ -273,8 +273,8 @@
    "name": "Igelwarte",
    "art": "turm",
    "land": "Grenzland",
-   "x": 6451.4,
-   "y": 6577.6,
+   "x": 6450.8,
+   "y": 6575.1,
    "lesestelle": "ko_23_l",
    "besonders": false,
    "abseits": false,
@@ -285,8 +285,8 @@
    "name": "Alkes Schrein",
    "art": "schrein",
    "land": "Grenzland",
-   "x": 6397.1,
-   "y": 6388.7,
+   "x": 6399.0,
+   "y": 6388.0,
    "lesestelle": "ko_24_l",
    "besonders": false,
    "abseits": false,
@@ -297,8 +297,8 @@
    "name": "Spukhof",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6448.7,
-   "y": 6490.4,
+   "x": 6444.9,
+   "y": 6498.0,
    "lesestelle": "ko_25_l",
    "besonders": false,
    "abseits": false,
@@ -357,8 +357,8 @@
    "name": "Erlenbrunnen",
    "art": "brunnen",
    "land": "Grenzland",
-   "x": 6639.0,
-   "y": 6565.0,
+   "x": 6635.0,
+   "y": 6567.2,
    "lesestelle": "ko_30_l",
    "besonders": false,
    "abseits": false,
@@ -369,8 +369,8 @@
    "name": "Jagdlager",
    "art": "jaeger",
    "land": "Grenzland",
-   "x": 6521.0,
-   "y": 6748.0,
+   "x": 6519.8,
+   "y": 6742.7,
    "lesestelle": "ko_31_l",
    "besonders": false,
    "abseits": false,
@@ -381,8 +381,8 @@
    "name": "Eschenhof",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6604.8,
-   "y": 6710.2,
+   "x": 6604.1,
+   "y": 6713.6,
    "lesestelle": "ko_32_l",
    "besonders": false,
    "abseits": false,
@@ -405,8 +405,8 @@
    "name": "Bettlerschrein",
    "art": "schrein",
    "land": "Grenzland",
-   "x": 6390.0,
-   "y": 6751.0,
+   "x": 6388.9,
+   "y": 6750.5,
    "lesestelle": "ko_34_l",
    "besonders": false,
    "abseits": false,
@@ -429,8 +429,8 @@
    "name": "Kleindorf",
    "art": "weiler",
    "land": "Grenzland",
-   "x": 6235.0,
-   "y": 6722.0,
+   "x": 6230.3,
+   "y": 6726.7,
    "lesestelle": "ko_36_l",
    "besonders": false,
    "abseits": false,
@@ -441,8 +441,8 @@
    "name": "Bienenschrein",
    "art": "schrein",
    "land": "Grenzland",
-   "x": 6471.1,
-   "y": 6342.1,
+   "x": 6471.0,
+   "y": 6340.0,
    "lesestelle": "ko_37_l",
    "besonders": false,
    "abseits": false,
@@ -453,8 +453,8 @@
    "name": "Ruprechts Schrein",
    "art": "schrein",
    "land": "Grenzland",
-   "x": 6776.7,
-   "y": 6750.5,
+   "x": 6777.1,
+   "y": 6751.7,
    "lesestelle": "ko_38_l",
    "besonders": false,
    "abseits": false,
@@ -465,8 +465,8 @@
    "name": "Birkennest",
    "art": "banditen",
    "land": "Grenzland",
-   "x": 6763.0,
-   "y": 6667.0,
+   "x": 6762.7,
+   "y": 6671.1,
    "lesestelle": "ko_39_l",
    "besonders": false,
    "abseits": true,
@@ -501,7 +501,7 @@
    "name": "Tinis Hof",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6321.0,
+   "x": 6320.0,
    "y": 6613.0,
    "lesestelle": "ko_42_l",
    "besonders": false,
@@ -525,8 +525,8 @@
    "name": "Hinter den Birken",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6278.0,
-   "y": 6351.0,
+   "x": 6279.5,
+   "y": 6342.0,
    "lesestelle": "ko_44_l",
    "besonders": false,
    "abseits": false,
@@ -537,8 +537,8 @@
    "name": "Hasellager",
    "art": "jaeger",
    "land": "Grenzland",
-   "x": 6480.0,
-   "y": 6632.9,
+   "x": 6479.0,
+   "y": 6634.0,
    "lesestelle": "ko_45_l",
    "besonders": false,
    "abseits": false,
@@ -561,8 +561,8 @@
    "name": "Hof am Rotbach",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6618.0,
-   "y": 6655.0,
+   "x": 6619.2,
+   "y": 6656.3,
    "lesestelle": "ko_47_l",
    "besonders": false,
    "abseits": false,
@@ -573,8 +573,8 @@
    "name": "Bernds Hof",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6656.0,
-   "y": 6411.1,
+   "x": 6646.3,
+   "y": 6412.6,
    "lesestelle": "ko_48_l",
    "besonders": false,
    "abseits": false,
@@ -585,8 +585,8 @@
    "name": "Schlehenlager",
    "art": "jaeger",
    "land": "Grenzland",
-   "x": 6337.4,
-   "y": 6342.1,
+   "x": 6337.2,
+   "y": 6347.6,
    "lesestelle": "ko_49_l",
    "besonders": false,
    "abseits": false,
@@ -621,8 +621,8 @@
    "name": "Kiefernmeiler",
    "art": "koehler",
    "land": "Grenzland",
-   "x": 6419.4,
-   "y": 6620.7,
+   "x": 6420.0,
+   "y": 6619.0,
    "lesestelle": "ko_52_l",
    "besonders": false,
    "abseits": false,
@@ -633,8 +633,8 @@
    "name": "Holunderschrein",
    "art": "schrein",
    "land": "Grenzland",
-   "x": 6328.9,
-   "y": 6444.9,
+   "x": 6330.0,
+   "y": 6445.0,
    "lesestelle": "ko_53_l",
    "besonders": false,
    "abseits": false,
@@ -645,8 +645,8 @@
    "name": "Tammes Meiler",
    "art": "koehler",
    "land": "Grenzland",
-   "x": 6591.9,
-   "y": 6397.2,
+   "x": 6588.0,
+   "y": 6397.0,
    "lesestelle": "ko_54_l",
    "besonders": false,
    "abseits": false,
@@ -657,8 +657,8 @@
    "name": "Holunderhof",
    "art": "hof",
    "land": "Grenzland",
-   "x": 6758.0,
-   "y": 6516.0,
+   "x": 6759.1,
+   "y": 6509.5,
    "lesestelle": "ko_55_l",
    "besonders": false,
    "abseits": false,
@@ -669,8 +669,8 @@
    "name": "Leerer Turm",
    "art": "turm",
    "land": "Grenzland",
-   "x": 6330.0,
-   "y": 6562.0,
+   "x": 6322.9,
+   "y": 6559.9,
    "lesestelle": "ko_56_l",
    "besonders": false,
    "abseits": false,
@@ -681,8 +681,8 @@
    "name": "Birkenwinkel",
    "art": "weiler",
    "land": "Grenzland",
-   "x": 6708.0,
-   "y": 6645.7,
+   "x": 6719.6,
+   "y": 6645.1,
    "lesestelle": "ko_57_l",
    "besonders": false,
    "abseits": false,
@@ -693,8 +693,8 @@
    "name": "Altes Gemäuer",
    "art": "ruine",
    "land": "Grenzland",
-   "x": 6599.9,
-   "y": 6601.3,
+   "x": 6599.1,
+   "y": 6588.9,
    "lesestelle": "ko_58_l",
    "besonders": false,
    "abseits": false,
@@ -945,7 +945,7 @@
    "name": "Lager am Moorgraben",
    "art": "jaeger",
    "land": "Fahle Weiten",
-   "x": 6902.0,
+   "x": 6909.9,
    "y": 6634.0,
    "lesestelle": "ko_79_l",
    "besonders": false,
@@ -1137,8 +1137,8 @@
    "name": "Lerchenbrunnen",
    "art": "brunnen",
    "land": "Fahle Weiten",
-   "x": 6837.0,
-   "y": 6622.0,
+   "x": 6839.5,
+   "y": 6625.5,
    "lesestelle": "ko_95_l",
    "besonders": false,
    "abseits": false,
@@ -1641,8 +1641,8 @@
    "name": "Hohe Wacht",
    "art": "turm",
    "land": "Fahle Weiten",
-   "x": 6867.0,
-   "y": 6568.0,
+   "x": 6866.1,
+   "y": 6566.2,
    "lesestelle": "ko_137_l",
    "besonders": false,
    "abseits": false,
@@ -1941,8 +1941,8 @@
    "name": "Pilgerschrein",
    "art": "schrein",
    "land": "Fahle Weiten",
-   "x": 6800.7,
-   "y": 6489.7,
+   "x": 6797.9,
+   "y": 6494.4,
    "lesestelle": "ko_162_l",
    "besonders": false,
    "abseits": false,
@@ -1989,8 +1989,8 @@
    "name": "Alte Mühle",
    "art": "muehle",
    "land": "Fahle Weiten",
-   "x": 6610.0,
-   "y": 5934.0,
+   "x": 6604.9,
+   "y": 5927.1,
    "lesestelle": "ko_166_l",
    "besonders": false,
    "abseits": false,
@@ -2037,32 +2037,32 @@
   [
    "Brandstätte",
    "Ruine",
-   6566.1,
-   6557.7
+   6562.8,
+   6566.4
   ],
   [
    "Moosschrein",
    "Ort",
-   6583.1,
-   6457.0
+   6578.7,
+   6449.6
   ],
   [
    "Rübenkreuz",
    "Ort",
-   6383.3,
-   6492.8
+   6377.6,
+   6500.4
   ],
   [
    "Kiefernwarte",
    "Ort",
-   6666.0,
-   6619.0
+   6657.5,
+   6617.1
   ],
   [
    "Hof am Dorfteich",
    "Gehöft",
-   6387.9,
-   6570.9
+   6391.9,
+   6575.0
   ],
   [
    "Nesselnest",
@@ -2073,8 +2073,8 @@
   [
    "Versteck am Schwarzwasser",
    "Lager",
-   6760.0,
-   6451.0
+   6762.9,
+   6448.3
   ],
   [
    "Krummer Turm",
@@ -2085,80 +2085,80 @@
   [
    "Eschenau",
    "Ort",
-   6503.0,
-   6385.0
+   6502.7,
+   6384.1
   ],
   [
    "Hopfenhof",
    "Gehöft",
-   6188.0,
-   6630.0
+   6184.4,
+   6632.2
   ],
   [
    "Rübenschrein",
    "Ort",
-   6307.3,
-   6394.9
+   6309.0,
+   6397.0
   ],
   [
    "Stiller Schrein",
    "Ort",
    6693.0,
-   6374.8
+   6376.0
   ],
   [
    "Hinterm Moor",
    "Ort",
-   6708.0,
-   6709.0
+   6706.5,
+   6705.5
   ],
   [
    "Leere Mauern",
    "Ruine",
-   6375.3,
-   6655.9
+   6376.0,
+   6655.0
   ],
   [
    "Distelbrunnen",
    "Ort",
-   6780.0,
-   6574.0
+   6779.9,
+   6573.6
   ],
   [
    "Bruns Meiler",
    "Ort",
-   6545.1,
-   6646.6
+   6553.3,
+   6642.5
   ],
   [
    "Hungerhof",
    "Gehöft",
-   6643.1,
-   6488.8
+   6634.7,
+   6492.9
   ],
   [
    "Hilles Turm",
    "Ort",
-   6650.0,
-   6744.8
+   6645.1,
+   6744.9
   ],
   [
    "Igelwarte",
    "Ort",
-   6451.4,
-   6577.6
+   6450.8,
+   6575.1
   ],
   [
    "Alkes Schrein",
    "Ort",
-   6397.1,
-   6388.7
+   6399.0,
+   6388.0
   ],
   [
    "Spukhof",
    "Gehöft",
-   6448.7,
-   6490.4
+   6444.9,
+   6498.0
   ],
   [
    "Telses Schrein",
@@ -2187,20 +2187,20 @@
   [
    "Erlenbrunnen",
    "Ort",
-   6639.0,
-   6565.0
+   6635.0,
+   6567.2
   ],
   [
    "Jagdlager",
    "Ort",
-   6521.0,
-   6748.0
+   6519.8,
+   6742.7
   ],
   [
    "Eschenhof",
    "Gehöft",
-   6604.8,
-   6710.2
+   6604.1,
+   6713.6
   ],
   [
    "Lerchenhof",
@@ -2211,8 +2211,8 @@
   [
    "Bettlerschrein",
    "Ort",
-   6390.0,
-   6751.0
+   6388.9,
+   6750.5
   ],
   [
    "Immes Turm",
@@ -2223,26 +2223,26 @@
   [
    "Kleindorf",
    "Ort",
-   6235.0,
-   6722.0
+   6230.3,
+   6726.7
   ],
   [
    "Bienenschrein",
    "Ort",
-   6471.1,
-   6342.1
+   6471.0,
+   6340.0
   ],
   [
    "Ruprechts Schrein",
    "Ort",
-   6776.7,
-   6750.5
+   6777.1,
+   6751.7
   ],
   [
    "Birkennest",
    "Lager",
-   6763.0,
-   6667.0
+   6762.7,
+   6671.1
   ],
   [
    "Martens Schrein",
@@ -2259,7 +2259,7 @@
   [
    "Tinis Hof",
    "Gehöft",
-   6321.0,
+   6320.0,
    6613.0
   ],
   [
@@ -2271,14 +2271,14 @@
   [
    "Hinter den Birken",
    "Gehöft",
-   6278.0,
-   6351.0
+   6279.5,
+   6342.0
   ],
   [
    "Hasellager",
    "Ort",
-   6480.0,
-   6632.9
+   6479.0,
+   6634.0
   ],
   [
    "Gretes Turm",
@@ -2289,20 +2289,20 @@
   [
    "Hof am Rotbach",
    "Gehöft",
-   6618.0,
-   6655.0
+   6619.2,
+   6656.3
   ],
   [
    "Bernds Hof",
    "Gehöft",
-   6656.0,
-   6411.1
+   6646.3,
+   6412.6
   ],
   [
    "Schlehenlager",
    "Ort",
-   6337.4,
-   6342.1
+   6337.2,
+   6347.6
   ],
   [
    "Hirschlager",
@@ -2319,44 +2319,44 @@
   [
    "Kiefernmeiler",
    "Ort",
-   6419.4,
-   6620.7
+   6420.0,
+   6619.0
   ],
   [
    "Holunderschrein",
    "Ort",
-   6328.9,
-   6444.9
+   6330.0,
+   6445.0
   ],
   [
    "Tammes Meiler",
    "Ort",
-   6591.9,
-   6397.2
+   6588.0,
+   6397.0
   ],
   [
    "Holunderhof",
    "Gehöft",
-   6758.0,
-   6516.0
+   6759.1,
+   6509.5
   ],
   [
    "Leerer Turm",
    "Ort",
-   6330.0,
-   6562.0
+   6322.9,
+   6559.9
   ],
   [
    "Birkenwinkel",
    "Ort",
-   6708.0,
-   6645.7
+   6719.6,
+   6645.1
   ],
   [
    "Altes Gemäuer",
    "Ruine",
-   6599.9,
-   6601.3
+   6599.1,
+   6588.9
   ],
   [
    "Schlehenkate",
@@ -2481,7 +2481,7 @@
   [
    "Lager am Moorgraben",
    "Ort",
-   6902.0,
+   6909.9,
    6634.0
   ],
   [
@@ -2577,8 +2577,8 @@
   [
    "Lerchenbrunnen",
    "Ort",
-   6837.0,
-   6622.0
+   6839.5,
+   6625.5
   ],
   [
    "Bei den Steinen",
@@ -2829,8 +2829,8 @@
   [
    "Hohe Wacht",
    "Ort",
-   6867.0,
-   6568.0
+   6866.1,
+   6566.2
   ],
   [
    "Wacholderwarte",
@@ -2979,8 +2979,8 @@
   [
    "Pilgerschrein",
    "Ort",
-   6800.7,
-   6489.7
+   6797.9,
+   6494.4
   ],
   [
    "Moorschrein",
@@ -3003,8 +3003,8 @@
   [
    "Alte Mühle",
    "Ort",
-   6610.0,
-   5934.0
+   6604.9,
+   5927.1
   ],
   [
    "Aalkate",

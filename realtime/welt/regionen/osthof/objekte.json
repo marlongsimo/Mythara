@@ -226,8 +226,7 @@
  {"id":"naht_757","objekt":"stil_eiche_01","x":68.5,"y":63.5,"s":1.15,"spiegeln":true},
  {"id":"naht_758","objekt":"stil_tanne_01","x":78.5,"y":63.5,"s":1.23,"spiegeln":true},
  {"id":"naht_759","objekt":"stil_linde_01","x":84.5,"y":63.5,"s":1.07,"spiegeln":true},
- {"id":"ko_6_0","objekt":"moor_schrein_01","x":87,"y":56.95},
- {"id":"ko_6_1","objekt":"wz_seelenlicht_grablicht","x":92.19,"y":56.52},
+ {"id":"ko_6_0","objekt":"moor_schrein_01","x":83,"y":49.95,"spiegeln":true},
  {"id":"vd_osthof_k1","objekt":"wegrand_huette_feld","x":19,"y":40.5,"dreh":90},
  {"id":"vd_osthof_k2","objekt":"wegrand_zaun_flecht","x":16.5,"y":51.41,"dreh":90}
 ]

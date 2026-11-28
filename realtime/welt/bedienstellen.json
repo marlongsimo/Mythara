@@ -235,6 +235,32 @@
    "region": null
   },
   {
+   "id": "ko_14_0_ofen",
+   "station": "backofen",
+   "x": 6182.2,
+   "y": 6628.6,
+   "quelle": "Bauplan weidenhain_bauernhaus_01 (aschenwerth)",
+   "innen": true,
+   "gebaeude": "ko_14_0",
+   "bauplan": "weidenhain_bauernhaus_01",
+   "region": "aschenwerth",
+   "innenraum": [
+    6181,
+    6628,
+    6187,
+    6632
+   ],
+   "tuer": [
+    6184.5,
+    6632
+   ],
+   "stehplatz": null,
+   "von_aussen_in_greifweite": [
+    6180.85,
+    6630.75
+   ]
+  },
+  {
    "id": "ko_36_1_kessel",
    "station": "kessel",
    "x": 6235.8,
@@ -407,32 +433,58 @@
    ]
   },
   {
-   "id": "ko_13_1_kessel",
-   "station": "kessel",
-   "x": 6508.8,
-   "y": 6384.4,
-   "quelle": "Bauplan dorf_huette_holz_02 (nordsaum)",
+   "id": "ko_55_0_ofen",
+   "station": "backofen",
+   "x": 6757.2,
+   "y": 6506.6,
+   "quelle": "Bauplan weidenhain_bauernhaus_01 (graufurt)",
    "innen": true,
-   "gebaeude": "ko_13_1",
-   "bauplan": "dorf_huette_holz_02",
-   "region": "nordsaum",
+   "gebaeude": "ko_55_0",
+   "bauplan": "weidenhain_bauernhaus_01",
+   "region": "graufurt",
    "innenraum": [
+    6756,
     6506,
-    6383,
-    6510,
-    6386
+    6762,
+    6510
    ],
    "tuer": [
-    6507.5,
-    6386
+    6759.5,
+    6510
+   ],
+   "stehplatz": null,
+   "von_aussen_in_greifweite": [
+    6755.85,
+    6508.75
+   ]
+  },
+  {
+   "id": "ko_57_1_kessel",
+   "station": "kessel",
+   "x": 6720.8,
+   "y": 6643.4,
+   "quelle": "Bauplan dorf_huette_holz_02 (graufurt)",
+   "innen": true,
+   "gebaeude": "ko_57_1",
+   "bauplan": "dorf_huette_holz_02",
+   "region": "graufurt",
+   "innenraum": [
+    6718,
+    6642,
+    6722,
+    6645
+   ],
+   "tuer": [
+    6719.5,
+    6645
    ],
    "stehplatz": [
-    6507.8,
-    6385.05
+    6719.8,
+    6644.05
    ],
    "von_aussen_in_greifweite": [
-    6507.95,
-    6386.8
+    6719.95,
+    6645.8
    ]
   },
   {
@@ -503,29 +555,55 @@
    ]
   },
   {
-   "id": "ko_47_0_ofen",
+   "id": "ko_21_0_ofen",
    "station": "backofen",
-   "x": 6616.2,
-   "y": 6651.6,
+   "x": 6633.2,
+   "y": 6489.6,
    "quelle": "Bauplan weidenhain_bauernhaus_01 (osthang)",
    "innen": true,
-   "gebaeude": "ko_47_0",
+   "gebaeude": "ko_21_0",
    "bauplan": "weidenhain_bauernhaus_01",
    "region": "osthang",
    "innenraum": [
-    6615,
-    6651,
-    6621,
-    6655
+    6632,
+    6489,
+    6638,
+    6493
    ],
    "tuer": [
-    6618.5,
-    6655
+    6635.5,
+    6493
    ],
    "stehplatz": null,
    "von_aussen_in_greifweite": [
-    6614.85,
-    6653.75
+    6631.85,
+    6491.75
+   ]
+  },
+  {
+   "id": "ko_48_0_ofen",
+   "station": "backofen",
+   "x": 6644.2,
+   "y": 6409.6,
+   "quelle": "Bauplan weidenhain_bauernhaus_01 (osthang)",
+   "innen": true,
+   "gebaeude": "ko_48_0",
+   "bauplan": "weidenhain_bauernhaus_01",
+   "region": "osthang",
+   "innenraum": [
+    6643,
+    6409,
+    6649,
+    6413
+   ],
+   "tuer": [
+    6646.5,
+    6413
+   ],
+   "stehplatz": null,
+   "von_aussen_in_greifweite": [
+    6642.85,
+    6411.75
    ]
   },
   {
@@ -665,27 +743,27 @@
   {
    "id": "ko_25_0_ofen",
    "station": "backofen",
-   "x": 6447.2,
-   "y": 6486.6,
+   "x": 6443.2,
+   "y": 6494.6,
    "quelle": "Bauplan weidenhain_bauernhaus_01 (waldweg)",
    "innen": true,
    "gebaeude": "ko_25_0",
    "bauplan": "weidenhain_bauernhaus_01",
    "region": "waldweg",
    "innenraum": [
-    6446,
-    6486,
-    6452,
-    6490
+    6442,
+    6494,
+    6448,
+    6498
    ],
    "tuer": [
-    6449.5,
-    6490
+    6445.5,
+    6498
    ],
    "stehplatz": null,
    "von_aussen_in_greifweite": [
-    6445.85,
-    6488.75
+    6441.85,
+    6496.75
    ]
   },
   {
@@ -1036,7 +1114,7 @@
   {
    "id": "ko_42_0_ofen",
    "station": "backofen",
-   "x": 6319.2,
+   "x": 6318.2,
    "y": 6609.6,
    "quelle": "Bauplan weidenhain_bauernhaus_01 (westmark)",
    "innen": true,
@@ -1044,18 +1122,18 @@
    "bauplan": "weidenhain_bauernhaus_01",
    "region": "westmark",
    "innenraum": [
-    6318,
+    6317,
     6609,
-    6324,
+    6323,
     6613
    ],
    "tuer": [
-    6321.5,
+    6320.5,
     6613
    ],
    "stehplatz": null,
    "von_aussen_in_greifweite": [
-    6317.85,
+    6316.85,
     6611.75
    ]
   },

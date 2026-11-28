@@ -15,6 +15,7 @@ FREIGEGEBEN = ['schritt1']   # Schritte mit Freigabe des Nutzers (KANON; Schritt
 BIB = {o['id']: o for o in lies(W, 'bibliothek', 'objekte.json')['objekte']}
 ARTEN = {a['zeichen']: a for a in lies(W, 'bibliothek', 'gelaende.json')['arten']}
 GRUND = os.path.join(W, 'festland', 'kleinorte_grund.json'); grund = lies(GRUND) if os.path.exists(GRUND) else {}
+BAEUME = os.path.join(W, 'festland', 'kleinorte_baeume.json'); baeume = lies(BAEUME) if os.path.exists(BAEUME) else {}   # für Lichtungen entfernte Bäume (kommen bei --entfernen zurück)
 
 def schreibe_obj(d, obj):
     with open(os.path.join(d, 'objekte.json'), 'w', encoding='utf8') as f:
@@ -31,7 +32,8 @@ for n in os.listdir(os.path.join(W, 'regionen')):
 def entfernen():
     for n in REGIONEN:
         d = os.path.join(W, 'regionen', n); obj = lies(d, 'objekte.json'); rest = [o for o in obj if not str(o.get('id', '')).startswith('ko_')]
-        if len(rest) != len(obj): schreibe_obj(d, rest)
+        da = {o.get('id') for o in rest}; zurueck = [o for o in baeume.get(n, []) if o.get('id') not in da]   # Bäume der Lichtungen zurück
+        if len(rest) != len(obj) or zurueck: schreibe_obj(d, rest + zurueck)
         sp = lies(d, 'spiel.json'); ia = [i for i in sp.get('interaktionen', []) if not str(i.get('id', '')).startswith('ko_')]
         if len(ia) != len(sp.get('interaktionen', [])):
             sp['interaktionen'] = ia; json.dump(sp, open(os.path.join(d, 'spiel.json'), 'w', encoding='utf8'), indent=1, ensure_ascii=False)
@@ -41,7 +43,8 @@ def entfernen():
                 x, y = map(int, k.split(','))
                 if 0 <= y < len(z) and 0 <= x < len(z[0]) and z[y][x] == 'e': z[y][x] = c
             open(os.path.join(d, 'gelaende.txt'), 'w', encoding='utf8').write('\n'.join(''.join(l) for l in z) + '\n')
-    if os.path.exists(GRUND): os.remove(GRUND)
+    for f in (GRUND, BAEUME):
+        if os.path.exists(f): os.remove(f)
     on = lies(W, 'ortsnamen.json'); rest = [o for o in on['orte'] if 'ko' not in o]
     if len(rest) != len(on['orte']): on['orte'] = rest; json.dump(on, open(os.path.join(W, 'ortsnamen.json'), 'w', encoding='utf8'), indent=1, ensure_ascii=False); open(os.path.join(W, 'ortsnamen.json'), 'a').write('\n')
 entfernen()
@@ -101,6 +104,29 @@ def zeichen(x, y):
     D = daten(n); i, j = int(x - D['ux']), int(y - D['uy'])
     return D['z'][j][i] if 0 <= j < len(D['z']) and 0 <= i < len(D['z'][0]) else 'M'
 def begehbar(c): return bool(ARTEN.get(c, {}).get('begehbar')) and not ARTEN.get(c, {}).get('wasser')
+def rahmen(o):   # Bildrechteck in Feldern (wie verdichten.py, test/welt-waldmark.test.mjs „Sichtbarkeit“)
+    d = BIB[o['objekt']]; s_ = o.get('s', 1) * d.get('massstab', 1); bb, hh = d['groesse'][0] * s_ / 48, d['groesse'][1] * s_ / 48; ax = 1 - d['anker'][0] if o.get('spiegeln') else d['anker'][0]
+    if d.get('sichtbar'): fx, fy = d['anker'][0] * d['groesse'][0], d['anker'][1] * d['groesse'][1]; return (o['x'] + (d['sichtbar'][0] - fx) * s_ / 48, o['y'] + (d['sichtbar'][1] - fy) * s_ / 48, o['x'] + (d['sichtbar'][2] - fx) * s_ / 48, o['y'] + (d['sichtbar'][3] - fy) * s_ / 48)
+    return (o['x'] - ax * bb, o['y'] - d['anker'][1] * hh, o['x'] + (1 - ax) * bb, o['y'] + (1 - d['anker'][1]) * hh)
+def verdeckt(o, D):   # Baumkronen davor (südlich) bedecken mehr als 5 % des Bildes (Bäume verdecken nichts, sie dürfen sich überdecken)
+    if BIB[o['objekt']]['kategorie'] == 'bewuchs': return False
+    r = rahmen(o); f = (r[2] - r[0]) * (r[3] - r[1]); su = 0
+    for q in D['obj'] + D['neu_obj']:
+        if q['y'] <= o['y'] - 0.6 or abs(q['x'] - o['x']) > 12 or q['y'] - o['y'] > 14 or BIB.get(q['objekt'], {}).get('kategorie') != 'bewuchs': continue
+        k = rahmen(q); su += max(0, min(r[2], k[2] + 0.6) - max(r[0], k[0] - 0.6)) * max(0, min(r[3], k[3] + 0.6) - max(r[1], k[1] - 0.6))
+    return su > 0.05 * f
+def nah_gebaeude(x, y, r=6):   # ein Gebäude (auch Nachbarregion) näher als r: dort kein Feldweg
+    n = region_bei(x, y); D = daten(n)
+    return any(abs(o['x'] + D['ux'] - x) < r and abs(o['y'] + D['uy'] - y) < r and BIB.get(o['objekt'], {}).get('kategorie') == 'gebaeude' for o in D['obj'])
+
+def lichtung(x0, y0):   # Bäume am Ort (r 5) und davor (südlich, die Kronen verdecken sonst den Ort) herausnehmen, merken
+    n = region_bei(x0, y0); D = daten(n); weg = []
+    for o in D['obj']:
+        if BIB.get(o['objekt'], {}).get('kategorie') != 'bewuchs' or o['objekt'].startswith('samm_'): continue
+        x, y = o['x'] + D['ux'], o['y'] + D['uy']
+        if math.hypot(x - x0, y - y0) < 5 or (y0 - 1 < y < y0 + 11 and abs(x - x0) < 6): weg.append(o)
+    if weg: D['obj'] = [o for o in D['obj'] if o not in weg]; D['lichtung'] = D.get('lichtung', []) + weg
+
 def frei(x, y, r):   # nichts im Umkreis r (Objekte der Region und schon gesetzte)
     n = region_bei(x, y); D = daten(n)
     for o in D['obj'] + D['neu_obj']:
@@ -133,18 +159,23 @@ for schritt in FREIGEGEBEN:
         teile = TEILE.get(q['art'], TEILE['lager']); sonder_text = None
         if q['name'] in SONDER: teile, sonder_text = SONDER[q['name']]
         if q['art'] == 'muehle' and any(zeichen(x0 + dx, y0 + dy) in '~w' for dx in range(-8, 9, 2) for dy in range(-8, 9, 2)): teile = [('weidenhain_muehle_01', 0, 0, 1), ('dorf_holzstapel_01', 4, 2, 1)]
-        gesetzt = []
-        for k, (ob, dx, dy, s) in enumerate(teile):
-            if ob not in BIB: continue
-            for v in range(30):   # Platz suchen: begehbar, frei, gleiche Region wie der Ort
-                a, rr = rng.random() * 6.283, (v / 10)
-                x, y = x0 + dx + math.cos(a) * rr, y0 + dy + math.sin(a) * rr
-                n = region_bei(x, y)
-                if not n or n != region_bei(x0, y0) or not begehbar(zeichen(x, y)) or not frei(x, y, 0.8 if sonder_text is not None or q['name'] in SONDER else 2.2 if BIB[ob]['kategorie'] != 'gebaeude' else 4.5): continue
-                D = daten(n); o = {'id': f'{kid}_{k}', 'objekt': ob, 'x': round(x - D['ux'], 2), 'y': round(y - D['uy'], 2)}
-                if s != 1: o['s'] = s
-                if rng.random() < 0.5 and BIB[ob].get('spiegelbar', True) and BIB[ob]['kategorie'] != 'gebaeude': o['spiegeln'] = True
-                D['neu_obj'].append(o); gesetzt.append((x, y)); break
+        def versuch():
+            gesetzt = []
+            for k, (ob, dx, dy, s) in enumerate(teile):
+                if ob not in BIB: continue
+                for v in range(30 if gesetzt else 120):   # Platz suchen: begehbar, frei, nicht hinter Kronen, gleiche Region wie der Ort (Hauptstück bis 12 Felder weit)
+                    a, rr = rng.random() * 6.283, (v / 10)
+                    x, y = x0 + dx + math.cos(a) * rr, y0 + dy + math.sin(a) * rr
+                    n = region_bei(x, y)
+                    if not n or n != region_bei(x0, y0) or not begehbar(zeichen(x, y)) or not frei(x, y, 0.8 if sonder_text is not None or q['name'] in SONDER else 2.2 if BIB[ob]['kategorie'] != 'gebaeude' else 4.5): continue
+                    D = daten(n); o = {'id': f'{kid}_{k}', 'objekt': ob, 'x': round(x - D['ux'], 2), 'y': round(y - D['uy'], 2)}
+                    if s != 1: o['s'] = s
+                    if rng.random() < 0.5 and BIB[ob].get('spiegelbar', True) and BIB[ob]['kategorie'] != 'gebaeude': o['spiegeln'] = True
+                    if verdeckt(o, D): continue
+                    D['neu_obj'].append(o); gesetzt.append((x, y)); break
+            return gesetzt
+        gesetzt = versuch()
+        if not gesetzt: lichtung(x0, y0); gesetzt = versuch()   # im dichten Wald: kleine Lichtung schlagen
         if not gesetzt: continue
         hx, hy = gesetzt[0]; n = region_bei(hx, hy); D = daten(n)
         # Lesestelle vor dem Hauptstück: das nächste begehbare, von keinem Körper verdeckte Feld (vorn/südlich zuerst)
@@ -173,7 +204,7 @@ for schritt in FREIGEGEBEN:
                         m = region_bei(x + ox, y + oy)
                         if not m: continue
                         E = daten(m); i, j = int(x + ox - E['ux']), int(y + oy - E['uy'])
-                        if 0 <= j < len(E['z']) and 0 <= i < len(E['z'][0]) and E['z'][j][i] in '.,ftjgTyulLsv':
+                        if 2 <= j < len(E['z']) - 2 and 2 <= i < len(E['z'][0]) - 2 and E['z'][j][i] in '.,ftjgTyulLsv' and not nah_gebaeude(x + ox, y + oy):   # nicht am Regionsrand (Grenzen: Weg auf Weg), nicht an Häusern
                             E['grund'].setdefault(f'{i},{j}', E['z'][j][i]); E['z'][j][i] = 'e'
         orte.append({'id': kid, 'name': q['name'], 'art': q['art'], 'land': q['land'], 'x': round(hx, 1), 'y': round(hy, 1), 'lesestelle': f'{kid}_l', 'besonders': q['besonders'], 'abseits': q.get('abseits', False), 'region': n})
         namen.append([q['name'], ORTART.get(q['art'], 'Ort'), round(hx, 1), round(hy, 1)])
@@ -181,15 +212,16 @@ for schritt in FREIGEGEBEN:
 # ───── schreiben ─────
 gr = {}
 for n, D in DATEN.items():
-    if not D['neu_obj'] and not D['neu_ia'] and not D['grund']: continue
+    if not D['neu_obj'] and not D['neu_ia'] and not D['grund'] and not D.get('lichtung'): continue
     d = os.path.join(W, 'regionen', n)
     schreibe_obj(d, D['obj'] + D['neu_obj'])
     D['sp']['interaktionen'] = D['sp'].get('interaktionen', []) + D['neu_ia']; json.dump(D['sp'], open(os.path.join(d, 'spiel.json'), 'w', encoding='utf8'), indent=1, ensure_ascii=False)
     if D['grund']:
         open(os.path.join(d, 'gelaende.txt'), 'w', encoding='utf8').write('\n'.join(''.join(l) for l in D['z']) + '\n'); gr[n] = D['grund']
 json.dump(gr, open(GRUND, 'w', encoding='utf8'))
+json.dump({n: D['lichtung'] for n, D in DATEN.items() if D.get('lichtung')}, open(BAEUME, 'w', encoding='utf8'), ensure_ascii=False)
 on = lies(W, 'ortsnamen.json'); on['orte'] += [{'name': o['name'], 'art': ORTART.get(o['art'], 'Ort'), 'x': o['x'], 'y': o['y'], 'ko': o['id']} for o in orte]   # Karte und Schriftzug (Oberfläche); „ko“ = Kleinort
 json.dump(on, open(os.path.join(W, 'ortsnamen.json'), 'w', encoding='utf8'), indent=1, ensure_ascii=False); open(os.path.join(W, 'ortsnamen.json'), 'a').write('\n')
 json.dump({'hinweis': 'Kleinorte (kleinorte_bauen.py): gebaute Orte der freigegebenen Schritte – Namen (auch in ortsnamen.json mit „ko“), Lesestellen, Lage. Weltfelder.', 'schritte': FREIGEGEBEN, 'orte': orte, 'namen': namen},
           open(os.path.join(W, 'kleinorte_orte.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
-print(f'Kleinorte: {len(orte)} gebaut ({sum(len(D["neu_obj"]) for D in DATEN.values())} Objekte, {sum(len(D["neu_ia"]) for D in DATEN.values())} Lesestellen, {sum(len(g) for g in gr.values())} Feldweg-Felder)')
+print(f'Kleinorte: {len(orte)} gebaut ({sum(len(D.get("lichtung", [])) for D in DATEN.values())} Bäume für Lichtungen, {sum(len(D["neu_obj"]) for D in DATEN.values())} Objekte, {sum(len(D["neu_ia"]) for D in DATEN.values())} Lesestellen, {sum(len(g) for g in gr.values())} Feldweg-Felder)')

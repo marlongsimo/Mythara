@@ -46,8 +46,8 @@
   {
    "id": "ko_5_l",
    "art": "lesen",
-   "x": 230.07,
-   "y": 95.94,
+   "x": 226.8,
+   "y": 104.59,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -57,8 +57,8 @@
   {
    "id": "ko_7_l",
    "art": "lesen",
-   "x": 47.29,
-   "y": 31.03,
+   "x": 41.63,
+   "y": 38.57,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -68,8 +68,8 @@
   {
    "id": "ko_9_l",
    "art": "lesen",
-   "x": 51.9,
-   "y": 109.06,
+   "x": 55.87,
+   "y": 113.24,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -79,8 +79,8 @@
   {
    "id": "ko_18_l",
    "art": "lesen",
-   "x": 37.15,
-   "y": 191.88,
+   "x": 42.2,
+   "y": 191.0,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -90,8 +90,8 @@
   {
    "id": "ko_20_l",
    "art": "lesen",
-   "x": 208.03,
-   "y": 184.47,
+   "x": 217.3,
+   "y": 180.65,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -101,8 +101,8 @@
   {
    "id": "ko_23_l",
    "art": "lesen",
-   "x": 115.4,
-   "y": 115.79,
+   "x": 114.77,
+   "y": 113.34,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -112,8 +112,8 @@
   {
    "id": "ko_25_l",
    "art": "lesen",
-   "x": 112.67,
-   "y": 28.64,
+   "x": 108.93,
+   "y": 36.24,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -123,8 +123,8 @@
   {
    "id": "ko_45_l",
    "art": "lesen",
-   "x": 142.93,
-   "y": 170.82,
+   "x": 143.0,
+   "y": 172.2,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -145,8 +145,8 @@
   {
    "id": "ko_52_l",
    "art": "lesen",
-   "x": 83.43,
-   "y": 158.91,
+   "x": 84.0,
+   "y": 157.2,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {

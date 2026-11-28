@@ -3,30 +3,30 @@
  "gebiete": {
   "fl_186_198": {
    "schritt": "grenzland",
-   "bewuchs": 75,
-   "gruppen": 35,
+   "bewuchs": 80,
+   "gruppen": 34,
    "kleinigkeiten": 0,
    "tiere": 0
   },
   "westried": {
    "schritt": "grenzland",
-   "bewuchs": 142,
+   "bewuchs": 143,
    "gruppen": 60,
-   "kleinigkeiten": 18,
-   "tiere": 2
+   "kleinigkeiten": 19,
+   "tiere": 1
   },
   "nordwald": {
    "schritt": "grenzland",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 3,
+   "kleinigkeiten": 2,
    "tiere": 0
   },
   "nordsaum": {
    "schritt": "grenzland",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 6,
+   "kleinigkeiten": 7,
    "tiere": 0
   },
   "osthof": {
@@ -47,7 +47,7 @@
    "schritt": "grenzland",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 1,
+   "kleinigkeiten": 2,
    "tiere": 1
   },
   "weidenhain": {
@@ -82,7 +82,7 @@
    "schritt": "moor",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 0,
+   "kleinigkeiten": 1,
    "tiere": 0
   },
   "aschenwerth": {
@@ -94,23 +94,23 @@
   },
   "ostufer": {
    "schritt": "moor",
-   "bewuchs": 11,
-   "gruppen": 7,
-   "kleinigkeiten": 29,
-   "tiere": 2
+   "bewuchs": 22,
+   "gruppen": 12,
+   "kleinigkeiten": 32,
+   "tiere": 5
   },
   "graufurt": {
    "schritt": "moor",
    "bewuchs": 0,
    "gruppen": 0,
-   "kleinigkeiten": 10,
-   "tiere": 2
+   "kleinigkeiten": 11,
+   "tiere": 3
   },
   "fl_186_169": {
    "schritt": "fahleweiten",
-   "bewuchs": 515,
-   "gruppen": 237,
-   "kleinigkeiten": 44,
+   "bewuchs": 535,
+   "gruppen": 255,
+   "kleinigkeiten": 42,
    "tiere": 1
   },
   "fl_186_183": {
@@ -122,10 +122,10 @@
   },
   "fl_201_183": {
    "schritt": "fahleweiten",
-   "bewuchs": 1084,
-   "gruppen": 489,
-   "kleinigkeiten": 112,
-   "tiere": 9
+   "bewuchs": 1088,
+   "gruppen": 486,
+   "kleinigkeiten": 114,
+   "tiere": 5
   },
   "fl_201_169": {
    "schritt": "fahleweiten",
@@ -138,8 +138,8 @@
    "schritt": "glutsande",
    "bewuchs": 1275,
    "gruppen": 549,
-   "kleinigkeiten": 80,
-   "tiere": 8
+   "kleinigkeiten": 81,
+   "tiere": 4
   },
   "fl_216_198": {
    "schritt": "glutsande",
@@ -306,23 +306,16 @@
  "tiere": [
   {
    "id": "vd_tier_westried_1",
-   "tier": "Huhn",
-   "x": 6198.8,
-   "y": 6486.5,
-   "region": "westried"
-  },
-  {
-   "id": "vd_tier_westried_2",
-   "tier": "Rind",
-   "x": 6218.5,
-   "y": 6511.5,
+   "tier": "Schaf",
+   "x": 6183.6,
+   "y": 6483.9,
    "region": "westried"
   },
   {
    "id": "vd_tier_osthang_1",
-   "tier": "Huhn",
-   "x": 6598.3,
-   "y": 6502.1,
+   "tier": "Rind",
+   "x": 6645.9,
+   "y": 6497.6,
    "region": "osthang"
   },
   {
@@ -341,16 +334,37 @@
   },
   {
    "id": "vd_tier_ostufer_1",
-   "tier": "Schaf",
-   "x": 6814.9,
-   "y": 6510.0,
+   "tier": "Rind",
+   "x": 6790.0,
+   "y": 6508.8,
    "region": "ostufer"
   },
   {
    "id": "vd_tier_ostufer_2",
+   "tier": "Schaf",
+   "x": 6815.0,
+   "y": 6508.4,
+   "region": "ostufer"
+  },
+  {
+   "id": "vd_tier_ostufer_3",
+   "tier": "Schaf",
+   "x": 6816.9,
+   "y": 6512.3,
+   "region": "ostufer"
+  },
+  {
+   "id": "vd_tier_ostufer_4",
    "tier": "Ziege",
-   "x": 6854.4,
-   "y": 6617.3,
+   "x": 6827.7,
+   "y": 6679.7,
+   "region": "ostufer"
+  },
+  {
+   "id": "vd_tier_ostufer_5",
+   "tier": "Schaf",
+   "x": 6815.2,
+   "y": 6689.0,
    "region": "ostufer"
   },
   {
@@ -362,16 +376,23 @@
   },
   {
    "id": "vd_tier_graufurt_2",
-   "tier": "Schaf",
-   "x": 6665.2,
-   "y": 6646.4,
+   "tier": "Huhn",
+   "x": 6696.3,
+   "y": 6548.6,
+   "region": "graufurt"
+  },
+  {
+   "id": "vd_tier_graufurt_3",
+   "tier": "Huhn",
+   "x": 6666.1,
+   "y": 6650.2,
    "region": "graufurt"
   },
   {
    "id": "vd_tier_fl_186_169_1",
-   "tier": "Huhn",
-   "x": 6139.3,
-   "y": 5796.1,
+   "tier": "Rind",
+   "x": 6252.4,
+   "y": 5774.0,
    "region": "fl_186_169"
   },
   {
@@ -404,65 +425,37 @@
   },
   {
    "id": "vd_tier_fl_201_183_1",
-   "tier": "Huhn",
-   "x": 6563.2,
-   "y": 5869.2,
+   "tier": "Rind",
+   "x": 6562.1,
+   "y": 5869.8,
    "region": "fl_201_183"
   },
   {
    "id": "vd_tier_fl_201_183_2",
    "tier": "Huhn",
-   "x": 6444.8,
-   "y": 5886.1,
+   "x": 6548.9,
+   "y": 6084.0,
    "region": "fl_201_183"
   },
   {
    "id": "vd_tier_fl_201_183_3",
-   "tier": "Huhn",
-   "x": 6616.0,
-   "y": 5920.8,
+   "tier": "Schaf",
+   "x": 6523.9,
+   "y": 6084.3,
    "region": "fl_201_183"
   },
   {
    "id": "vd_tier_fl_201_183_4",
-   "tier": "Ziege",
-   "x": 6605.2,
-   "y": 5948.7,
+   "tier": "Rind",
+   "x": 6654.6,
+   "y": 6123.5,
    "region": "fl_201_183"
   },
   {
    "id": "vd_tier_fl_201_183_5",
-   "tier": "Rind",
-   "x": 6687.0,
-   "y": 5939.3,
-   "region": "fl_201_183"
-  },
-  {
-   "id": "vd_tier_fl_201_183_6",
-   "tier": "Rind",
-   "x": 6582.5,
-   "y": 5974.8,
-   "region": "fl_201_183"
-  },
-  {
-   "id": "vd_tier_fl_201_183_7",
-   "tier": "Huhn",
-   "x": 6648.0,
-   "y": 6053.0,
-   "region": "fl_201_183"
-  },
-  {
-   "id": "vd_tier_fl_201_183_8",
    "tier": "Ziege",
-   "x": 6542.3,
-   "y": 6080.5,
-   "region": "fl_201_183"
-  },
-  {
-   "id": "vd_tier_fl_201_183_9",
-   "tier": "Huhn",
-   "x": 6514.7,
-   "y": 6085.8,
+   "x": 6711.0,
+   "y": 6167.1,
    "region": "fl_201_183"
   },
   {
@@ -474,58 +467,30 @@
   },
   {
    "id": "vd_tier_fl_201_211_1",
-   "tier": "Schaf",
-   "x": 6451.4,
-   "y": 6958.6,
+   "tier": "Huhn",
+   "x": 6452.8,
+   "y": 6966.0,
    "region": "fl_201_211"
   },
   {
    "id": "vd_tier_fl_201_211_2",
-   "tier": "Ziege",
-   "x": 6481.2,
-   "y": 6960.2,
+   "tier": "Huhn",
+   "x": 6474.3,
+   "y": 6962.2,
    "region": "fl_201_211"
   },
   {
    "id": "vd_tier_fl_201_211_3",
-   "tier": "Huhn",
-   "x": 6500.3,
-   "y": 6962.0,
+   "tier": "Ziege",
+   "x": 6491.9,
+   "y": 6957.2,
    "region": "fl_201_211"
   },
   {
    "id": "vd_tier_fl_201_211_4",
-   "tier": "Schaf",
-   "x": 6458.5,
-   "y": 6986.2,
-   "region": "fl_201_211"
-  },
-  {
-   "id": "vd_tier_fl_201_211_5",
-   "tier": "Huhn",
-   "x": 6462.5,
-   "y": 7039.4,
-   "region": "fl_201_211"
-  },
-  {
-   "id": "vd_tier_fl_201_211_6",
-   "tier": "Ziege",
-   "x": 6470.1,
-   "y": 7041.6,
-   "region": "fl_201_211"
-  },
-  {
-   "id": "vd_tier_fl_201_211_7",
-   "tier": "Huhn",
-   "x": 6461.2,
-   "y": 7052.6,
-   "region": "fl_201_211"
-  },
-  {
-   "id": "vd_tier_fl_201_211_8",
-   "tier": "Schaf",
-   "x": 6462.8,
-   "y": 7123.2,
+   "tier": "Rind",
+   "x": 6450.0,
+   "y": 7002.0,
    "region": "fl_201_211"
   },
   {
