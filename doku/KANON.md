@@ -152,7 +152,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Feste Live-Zeiten** (3:00 und 16:00 Uhr deutscher Zeit, 15-Minuten-Countdown im Spiel, Bugfixes jederzeit) – Vorlage in #96 (geschlossen, „für später“).
 - Kutschennetz zwischen den Großstädten · Handelskontor (`doku/konzepte/handelskontor.md`) · Splitterinsel
 
-- **Einsteiger-Insel** (28.11.): Eigene Riftmere-Ankunftsinsel als Quest (ca. 10–15 min). Man lernt kurz Holzfällen, Bergbau, Schmieden, Fischen, Kochen und Kämpfen in allen drei Kampfarten und wählt dort die Einsteiger-Ausrüstung. **Pflicht für alle neuen Figuren ab Einführung**; schon bestehende Figuren müssen sie nicht machen. Das Konzept schreibt der Konzept-Chat. Vorgesehen für Ausgabe 2 oder später.
+- **Einsteiger-Insel „Ankerholm“** (28.11., abgesegnet; `doku/konzepte/einsteiger-insel.md`): Ablauf für neue Accounts: Registrierung → Heldeneditor **nur Aussehen** (die Waffenwahl entfällt) → Quest „Gestrandet auf Ankerholm“ (~12 min, 8 Schritte: Holz, Erz/Schmelzen/Schmieden, Fischen/Kochen, drei Übungspuppen je eine Kampfart, Plünderer + Mini-Boss „Schwarzer Ole“) → im Abschlussfenster einen **Trainingssatz wählen** (Nah/Fern/Magie; die anderen verkauft Brann Hackebeil günstig) → **sofortige Ankunft am Anleger der Waldmark**, dort beginnt Quest 1. Die Insel ist **gemeinsam** für alle, der Fortschritt zählt je Spieler. **Pflicht nur für neue Figuren**; bestehende Figuren besuchen sie vorerst nicht. Die Insel ist **nicht** Teil der Schiffslinien.
 
 ## Offen (Fragen an den Nutzer)
 
