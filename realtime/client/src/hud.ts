@@ -4,6 +4,7 @@
  * darunter links die aktive Quest mit ihren Schritten (zum Ein- und Ausklappen), unten links das Team, unten rechts die Menüknöpfe.
  * Nur was es im Spiel wirklich gibt; Händler, Schmiede, Taverne, Post und Taschen kommen, wenn sie gebaut sind.
  */
+import { bilderPruefen } from "./rahmen";
 import { blockieren, blockierteNamen } from "./welt";
 import { dropsAn, dropsSetzen, daecherAus, daecherAusSetzen } from "./skills";
 import { musikAus, musikAusSetzen } from "./musik";
@@ -185,12 +186,17 @@ export function menueTafel(zu: () => void) {
       <p class="ehinweis" hidden>Figurenbilder wechseln nach dem Neuladen.</p>
     </div><div class="erechts">
     <button type="button" class="weltknopf" data-t="welt"><span>Welt</span><b>Riftmere 1</b><i>›</i></button>
+    <button type="button" class="weltknopf" data-t="bilder"><span>Bilder prüfen</span><b></b><i>›</i></button>
     <button type="button" class="weltknopf" data-t="blockiert"><span>Blockierte Spieler</span><b>${blockierteNamen().length}</b><i>›</i></button>
     ${n ? `<button type="button" class="abmelden" data-t="ab">Abmelden <small>${n}</small></button>` : `<button type="button" class="abmelden" data-t="hin">Anmelden</button>`}</div></div>
     <p class="klein">Riftmere · <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> · <a href="impressum.html" target="_blank" rel="noopener">Impressum</a></p></div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
   f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f) { schliessen(); return; } if (!t) return; const w = t.dataset.t;
     if (w === "welt") { weltenFenster(f.querySelector(".tafel") as HTMLElement); return; }
+    if (w === "bilder") { const r = bilderPruefen(); (t.querySelector("b") as HTMLElement).textContent = `${r.ok} ok · ${r.fehler} Fehler · ${r.offen} offen`;
+      let p = f.querySelector<HTMLElement>(".bilderbericht"); if (!p) { p = document.createElement("p"); p.className = "klein bilderbericht"; t.after(p); }
+      p.textContent = (r.ok + r.fehler + r.offen === 0 ? "Noch keine Bilder geladen – erst den Rucksack öffnen. " : "") + (r.leinwand ? `${r.leinwand} Fächer ohne Bild. ` : "") + (r.ersteFehler ? `Erste fehlerhafte Adresse: ${r.ersteFehler}` : r.fehler ? "" : "Alle Bilder geladen.");
+      p.style.wordBreak = "break-all"; return; }
     if (w === "blockiert") { blockiertFenster(f.querySelector(".tafel") as HTMLElement); return; }
     if (w === "daecher") { daecherAusSetzen(!daecherAus()); t.classList.toggle("an", daecherAus()); t.setAttribute("aria-checked", String(daecherAus())); return; }
     if (w === "musik") { musikAusSetzen(!musikAus()); t.classList.toggle("an", !musikAus()); t.setAttribute("aria-checked", String(!musikAus())); return; }

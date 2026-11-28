@@ -49,11 +49,13 @@ TESTS=(
   welt-zunft
   welt-fahleweiten
   welt-kielmund
+  welt-kleinorte
   steinhag-welt
   kielmund-welt
   ockerlande-welt
   drops-selten
   waffen-welt
+  pechtann-welt
   phase5
   phase8-10
   abholen
@@ -92,6 +94,7 @@ TESTS=(
   gegner-stufe
   gefahr
   sperren
+  kennungen
   zunft-rohstoffe
   zunft
   bank-orte

@@ -17,7 +17,8 @@ const groesse = SG.filter((g) => { const b = g.rechteck[2] - g.rechteck[0] + 1, 
 const format = SG.filter((g) => !g.id || !g.gegner || !Number.isInteger(g.anzahl) || g.rechteck?.length !== 4 || /rudel/i.test(g.id + g.name)).map((g) => g.id); check(!format.length, "Format für weltzonen.py: id, gegner, anzahl (Zahl), rechteck; kein „Rudel“", format);
 const MON = readFileSync(join(WELT, "..", "shared", "config.ts"), "utf8"), unbekannt = SG.filter((g) => !new RegExp(`^\\s{2}${g.gegner}: \\{ name:`, "m").test(MON)).map((g) => g.gegner); check(!unbekannt.length, "alle Gegner haben Werte in shared/config.ts", unbekannt);
 const anzahl = SG.filter((g) => g.anzahl < 5 || g.anzahl > 7).map((g) => g.id); check(!anzahl.length, "5–7 Tiere je Gebiet", anzahl);
-const stufe = SG.filter((g) => { const l = GP.filter((p) => p.gegner.includes(g.gegner) && (p.land === g.land || g.land === "Süden")).map((p) => p.stufe); return !l.length || Math.abs(g.stufe - l[0]) > 4; }).map((g) => g.id);
+const stufe = SG.filter((g) => { const l = GP.filter((p) => p.gegner.includes(g.gegner) && (p.land === g.land || g.land === "Süden")).map((p) => p.stufe); if (!l.length) { const m = MON.match(new RegExp(`^\\s{2}${g.gegner}: \\{ name: "[^"]*", stufe: (\\d+)`, "m")); if (m) l.push(+m[1]); }   /* feste Gebiete ohne Gegnerplätze der Art (Wildschweine im Westwald): Stufe aus shared/config.ts */
+  return !l.length || Math.abs(g.stufe - l[0]) > 4; }).map((g) => g.id);
 check(!stufe.length, "Stufe wie die Art in der Gegend", stufe);
 const R = new G.WeltRaster(), geladen = new Set();
 const draussen = []; for (const g of SG) { const r = JSON.parse(readFileSync(join(WELT, "regionen", g.region, "region.json"), "utf8")), x0 = r.ursprung[0] * 32, y0 = r.ursprung[1] * 32, [a, b, c, d] = g.rechteck; if (a < x0 || b < y0 || c >= x0 + r.chunks[0] * 32 || d >= y0 + r.chunks[1] * 32) draussen.push(g.id); }

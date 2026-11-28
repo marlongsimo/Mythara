@@ -40,7 +40,7 @@ const ORTE = { ...Object.fromEntries(Object.entries(OKO.orte || {}).filter(([, v
 const HL = lies("hochlande_orte.json");
 for (const r of HL.reisende || []) for (let i = 1; i < r.punkte.length; i++) { const [ax, ay] = r.punkte[i - 1], [bx, by] = r.punkte[i], L = Math.hypot(bx - ax, by - ay); for (let t = 0; t <= L; t += 2) hinder.push([ax + (bx - ax) * t / L, ay + (by - ay) * t / L, 3]); }   /* Wege der Reisenden (Bergleute Steinhag → Erzberg) frei halten */
 const KMO = lies("kielmund_orte.json"), STAEDTE = [HL.hauptstadt?.mauer, KMO.mauer && [6370, ...KMO.mauer.slice(1)]].filter(Boolean), STADT = STAEDTE[0], inStadt = (x, y, r = 0) => STAEDTE.some((S) => x > S[0] - r && x < S[2] + r && y > S[1] - r && y < S[3] + r);   /* Steinhag (#167), Kielmund (#174) */   /* Hauptstadt Steinhag (#167): in den Mauern keine Sammelstellen */
-const ORTSRADIUS = { rotlehm: 80, brunnenkreis: 22, dornhag: 26, tafelrast: 20, reifbach: 20, grauwacht: 70, huegelgrund: 30, kohlstatt: 22, brechstein: 20, wollhag: 22, weiherhof: 26, haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 80, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
+const ORTSRADIUS = { rotlehm: 80, brunnenkreis: 22, dornhag: 26, tafelrast: 20, reifbach: 20, grauwacht: 70, huegelgrund: 30, kohlstatt: 22, brechstein: 20, wollhag: 22, weiherhof: 26, pechtann: 24, harzlichtung: 12, haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 80, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
 
 /* ───── Gruppen: Ort, Art (holz/erz), Arten der Bäume bzw. Adern, Name ───── */
 const fest = (liste) => liste.filter((p) => p.x !== undefined).map((p) => ({ id: p.id, art: p.art, x: p.x, y: p.y }));
@@ -122,6 +122,7 @@ const PLAN = [
   ["brechstein", "erz", ["eisen", "eisen", "schwarzeisen"], "Eisenbruch am Grauen Fels"], ["brechstein", "erz", ["schwarzeisen", "sterneisen", "sterneisen"], "Sterneisen im Grauen Fels"],
   ["wollhag", "holz", ["tanne", "tanne", "eiche"], "Windbäume bei Wollhag"], ["wollhag", "erz", ["kupfer", "eisen", "eisen"], "Steine auf der Schafheide"],
   ["reifbach", "holz", ["tanne", "eibe", "eibe"], "Bäume am Reifbach"], ["reifbach", "erz", ["kupfer", "eisen", "schwarzeisen"], "Adern an der Bucht"],
+  ["pechtann", "holz", ["tanne", "tanne", "eibe", "eibe"], "Harzwald bei Pechtann"], ["harzlichtung", "holz", ["tanne", "eibe", "moorweide"], "Bäume an der Harzlichtung"],   /* Westwald (Leitstelle 28.11.) */
   ["weiherhof", "holz", ["moorweide", "moorweide", "eibe"], "Weiden am Weiher"], ["weiherhof", "erz", ["kupfer", "eisen", "eisen"], "Senke am Weiherhof"],
   /* Ockerlande (#172, Gefahr 45–65): Holz am Strom und in den Hainen, Erz an den Tafelbergen – Stufen wie in den Glutsanden (ab 35) */
   ["rotlehm", "holz", ["moorweide", "moorweide", "kernbaum"], "Weiden am Ockerstrom"], ["rotlehm", "erz", ["sterneisen", "sterneisen", "splittereisen"], "Ockerbruch bei Rotlehm"],

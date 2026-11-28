@@ -40,6 +40,34 @@
    },
    {
     "art": "rechteck",
+    "x0": 67,
+    "y0": 229,
+    "x1": 68,
+    "y1": 230
+   },
+   {
+    "art": "rechteck",
+    "x0": 62,
+    "y0": 229,
+    "x1": 63,
+    "y1": 230
+   },
+   {
+    "art": "rechteck",
+    "x0": 63,
+    "y0": 224,
+    "x1": 64,
+    "y1": 225
+   },
+   {
+    "art": "rechteck",
+    "x0": 68,
+    "y0": 225,
+    "x1": 69,
+    "y1": 226
+   },
+   {
+    "art": "rechteck",
     "x0": 152,
     "y0": 40,
     "x1": 153,
@@ -187,6 +215,69 @@
    },
    {
     "art": "rechteck",
+    "x0": 156,
+    "y0": 226,
+    "x1": 157,
+    "y1": 227
+   },
+   {
+    "art": "rechteck",
+    "x0": 151,
+    "y0": 224,
+    "x1": 152,
+    "y1": 225
+   },
+   {
+    "art": "rechteck",
+    "x0": 155,
+    "y0": 220,
+    "x1": 156,
+    "y1": 221
+   },
+   {
+    "art": "rechteck",
+    "x0": 111,
+    "y0": 165,
+    "x1": 112,
+    "y1": 166
+   },
+   {
+    "art": "rechteck",
+    "x0": 106,
+    "y0": 163,
+    "x1": 107,
+    "y1": 164
+   },
+   {
+    "art": "rechteck",
+    "x0": 110,
+    "y0": 159,
+    "x1": 111,
+    "y1": 160
+   },
+   {
+    "art": "rechteck",
+    "x0": 33,
+    "y0": 276,
+    "x1": 34,
+    "y1": 277
+   },
+   {
+    "art": "rechteck",
+    "x0": 28,
+    "y0": 274,
+    "x1": 29,
+    "y1": 275
+   },
+   {
+    "art": "rechteck",
+    "x0": 32,
+    "y0": 270,
+    "x1": 33,
+    "y1": 271
+   },
+   {
+    "art": "rechteck",
     "x0": 472,
     "y0": 47,
     "x1": 473,
@@ -331,6 +422,69 @@
     "y0": 413,
     "x1": 273,
     "y1": 414
+   },
+   {
+    "art": "rechteck",
+    "x0": 105,
+    "y0": 229,
+    "x1": 106,
+    "y1": 230
+   },
+   {
+    "art": "rechteck",
+    "x0": 100,
+    "y0": 230,
+    "x1": 101,
+    "y1": 231
+   },
+   {
+    "art": "rechteck",
+    "x0": 102,
+    "y0": 226,
+    "x1": 103,
+    "y1": 227
+   },
+   {
+    "art": "rechteck",
+    "x0": 77,
+    "y0": 196,
+    "x1": 78,
+    "y1": 197
+   },
+   {
+    "art": "rechteck",
+    "x0": 72,
+    "y0": 197,
+    "x1": 73,
+    "y1": 198
+   },
+   {
+    "art": "rechteck",
+    "x0": 74,
+    "y0": 193,
+    "x1": 75,
+    "y1": 194
+   },
+   {
+    "art": "rechteck",
+    "x0": 141,
+    "y0": 129,
+    "x1": 142,
+    "y1": 130
+   },
+   {
+    "art": "rechteck",
+    "x0": 136,
+    "y0": 129,
+    "x1": 137,
+    "y1": 130
+   },
+   {
+    "art": "rechteck",
+    "x0": 138,
+    "y0": 125,
+    "x1": 139,
+    "y1": 126
    }
   ],
   "freigeben": []
@@ -447,6 +601,50 @@
    }
   },
   {
+   "id": "pechtann_pechsiederei",
+   "art": "lesen",
+   "x": 33.6,
+   "y": 244.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Pechsiederei. Im Kessel brodelt Harz zu Pech – für Fackeln, Fässer und die Bootsbauer in Kielmund."
+   }
+  },
+  {
+   "id": "pechtann_bankkiste",
+   "art": "lesen",
+   "x": 43,
+   "y": 244.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste von Pechtann – mit Pech versiegelt. Was du einlegst, liegt auf deinem Konto."
+   }
+  },
+  {
+   "id": "pechtann",
+   "art": "lesen",
+   "x": 40.5,
+   "y": 239.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Pechtann. Ein Dorf der Harzsammler mitten im Westwald – die Kiefern weinen hier Harz, und die Leute machen Pech daraus."
+   }
+  },
+  {
+   "id": "pechtann_jaegerhuette",
+   "art": "lesen",
+   "x": 48,
+   "y": 232.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Hütte der Jägerin. Felle hängen zum Trocknen, an der Wand lehnt ein Bogen."
+   }
+  },
+  {
    "id": "wegweiser_heidrast_lesen",
    "x": 171,
    "y": 25.2,
@@ -472,6 +670,391 @@
    "daten": {
     "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
     "station": "feuer"
+   }
+  },
+  {
+   "id": "ko_65_l",
+   "art": "lesen",
+   "x": 327.0,
+   "y": 371.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Versunkene Hof. Ein Hof, halb im Moor versunken. Nur ein Stück Mauer schaut noch heraus."
+   }
+  },
+  {
+   "id": "ko_68_l",
+   "art": "lesen",
+   "x": 120.0,
+   "y": 195.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ottos Kate. Eine Fischerhütte. Netze hängen zum Trocknen, es riecht nach Salz und Tang."
+   }
+  },
+  {
+   "id": "ko_69_l",
+   "art": "lesen",
+   "x": 243.0,
+   "y": 333.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Stille Mühle. Eine Windmühle. Die Flügel knarren, auch wenn kaum Wind geht."
+   }
+  },
+  {
+   "id": "ko_73_l",
+   "art": "lesen",
+   "x": 163.0,
+   "y": 366.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ödes Feld. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  },
+  {
+   "id": "ko_75_l",
+   "art": "lesen",
+   "x": 327.0,
+   "y": 174.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Borstkreuz. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_78_l",
+   "art": "lesen",
+   "x": 81.0,
+   "y": 396.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hirtenschrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_80_l",
+   "art": "lesen",
+   "x": 31.0,
+   "y": 117.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Moornest. Ein verlassenes Lager. Die Asche ist noch warm – sie sind nicht weit."
+   }
+  },
+  {
+   "id": "ko_81_l",
+   "art": "lesen",
+   "x": 249.0,
+   "y": 207.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Wiebkes Hof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_88_l",
+   "art": "lesen",
+   "x": 107.0,
+   "y": 282.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Föhrenfeld. Ein paar Hütten um einen Brunnen – hier kennt jeder jeden."
+   }
+  },
+  {
+   "id": "ko_90_l",
+   "art": "lesen",
+   "x": 18.0,
+   "y": 177.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ginsterwarte. Ein Wachturm am Rand der Wege. Von oben sieht man weit."
+   }
+  },
+  {
+   "id": "ko_92_l",
+   "art": "lesen",
+   "x": 25.0,
+   "y": 378.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Binsenstein. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  },
+  {
+   "id": "ko_94_l",
+   "art": "lesen",
+   "x": 126.0,
+   "y": 57.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Tiefer Brunnen. Ein Brunnen am Wegrand. Das Wasser ist klar und kalt."
+   }
+  },
+  {
+   "id": "ko_96_l",
+   "art": "lesen",
+   "x": 316.0,
+   "y": 48.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Bei den Steinen. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  },
+  {
+   "id": "ko_98_l",
+   "art": "lesen",
+   "x": 54.0,
+   "y": 48.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Konrads Schrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_99_l",
+   "art": "lesen",
+   "x": 322.0,
+   "y": 243.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Bleichruh. Mauerreste, halb eingesunken. Niemand weiß mehr, wer hier gewohnt hat."
+   }
+  },
+  {
+   "id": "ko_102_l",
+   "art": "lesen",
+   "x": 276.0,
+   "y": 111.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Meiler am Eulenbach. Ein Kohlenmeiler qualmt still vor sich hin."
+   }
+  },
+  {
+   "id": "ko_105_l",
+   "art": "lesen",
+   "x": 182.0,
+   "y": 309.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Nebelau. Ein paar Hütten um einen Brunnen – hier kennt jeder jeden."
+   }
+  },
+  {
+   "id": "ko_107_l",
+   "art": "lesen",
+   "x": 248.0,
+   "y": 405.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Erikalager. Ein Jägerlager: Feuerstelle, ein Zelt und Spuren, die in den Wald führen."
+   }
+  },
+  {
+   "id": "ko_110_l",
+   "art": "lesen",
+   "x": 138.0,
+   "y": 123.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Kranichhof. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_117_l",
+   "art": "lesen",
+   "x": 221.0,
+   "y": 153.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Rabenau. Ein paar Hütten um einen Brunnen – hier kennt jeder jeden."
+   }
+  },
+  {
+   "id": "ko_119_l",
+   "art": "lesen",
+   "x": 23.0,
+   "y": 303.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Drei Höfe. Ein paar Hütten um einen Brunnen – hier kennt jeder jeden."
+   }
+  },
+  {
+   "id": "ko_121_l",
+   "art": "lesen",
+   "x": 75.0,
+   "y": 150.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hof am Weidengraben. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_122_l",
+   "art": "lesen",
+   "x": 186.0,
+   "y": 204.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hof am Hasenbach. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_133_l",
+   "art": "lesen",
+   "x": 166.0,
+   "y": 435.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Totenstein. Alte Steine, aufgerichtet von Leuten, die keiner mehr kennt."
+   }
+  },
+  {
+   "id": "ko_135_l",
+   "art": "lesen",
+   "x": 100.0,
+   "y": 339.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Galgenvogelnest. Ein verlassenes Lager. Die Asche ist noch warm – sie sind nicht weit."
+   }
+  },
+  {
+   "id": "ko_139_l",
+   "art": "lesen",
+   "x": 99.0,
+   "y": 6.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Sumpfkreuz. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_144_l",
+   "art": "lesen",
+   "x": 254.0,
+   "y": 276.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Wolfsbuckel. Ein paar Hütten um einen Brunnen – hier kennt jeder jeden."
+   }
+  },
+  {
+   "id": "ko_149_l",
+   "art": "lesen",
+   "x": 274.0,
+   "y": 162.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Alte Schanze. Mauerreste, halb eingesunken. Niemand weiß mehr, wer hier gewohnt hat."
+   }
+  },
+  {
+   "id": "ko_152_l",
+   "art": "lesen",
+   "x": 300.0,
+   "y": 315.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hof am Mühlbach. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_154_l",
+   "art": "lesen",
+   "x": 240.0,
+   "y": 48.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hof am Schwarzwasser. Ein einsamer Hof. Der Bauer hebt kurz die Hand und arbeitet weiter."
+   }
+  },
+  {
+   "id": "ko_157_l",
+   "art": "lesen",
+   "x": 87.0,
+   "y": 96.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ilsabes Schrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_163_l",
+   "art": "lesen",
+   "x": 327.0,
+   "y": 120.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Moorschrein. Ein kleiner Schrein. Jemand hat frische Blumen hingelegt."
+   }
+  },
+  {
+   "id": "ko_165_l",
+   "art": "lesen",
+   "x": 149.0,
+   "y": 240.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Dornlager. Ein Jägerlager: Feuerstelle, ein Zelt und Spuren, die in den Wald führen."
+   }
+  },
+  {
+   "id": "ko_166_l",
+   "art": "lesen",
+   "x": 172.95,
+   "y": 73.31,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Alte Mühle. Eine Windmühle. Die Flügel knarren, auch wenn kaum Wind geht."
+   }
+  },
+  {
+   "id": "ko_167_l",
+   "art": "lesen",
+   "x": 300.0,
+   "y": 426.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Aalkate. Eine Fischerhütte. Netze hängen zum Trocknen, es riecht nach Salz und Tang."
    }
   }
  ],
@@ -509,6 +1092,24 @@
   {
    "x": 272.7,
    "y": 415.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 102.7,
+   "y": 228.7,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 74.7,
+   "y": 195.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 138.9,
+   "y": 128.3,
    "r": 5,
    "tiefe": 1.1
   }

@@ -3,10 +3,9 @@
 Rolle Quests, 27.11.2026. Wunsch des Nutzers: Fernkampf und Magie bekommen je eine Quest-Waffe, wie der Nahkampf den Waldsäbel. Die Kurzfassung hat der Nutzer freigegeben.
 
 - **Datei:** `realtime/shared/quest_waffen.ts`
-- **Stand:** **Entwurf** in `shared/quest_entwuerfe.ts`, bis Integration die zwei Waffen einträgt. Der Server lädt Entwürfe nicht, deshalb geht nichts halb fertig live.
+- **Stand:** **im Spiel** (28.11.). Integration hat die zwei Waffen und die Gegnerfamilien `wild`/`untot` eingetragen.
 - **Welt-Test:** `realtime/test/waffen-welt.test.mjs` (Ports 8881/8882)
-  - Mit vorläufigen Waffen im Probelauf: grün in 31 s.
-  - Solange die Quests Entwurf sind, endet der Test sofort grün.
+  - Mit den echten Waffen grün in 34 s.
 
 | Quest | Kennung | Ablauf | Quer | Lohn |
 |---|---|---|---|---|
@@ -37,4 +36,4 @@ Hartwig bietet zuerst den Waldsäbel (Q3) an, solange der offen ist. Danach biet
 
 Der Bonus „gegen“ gilt schon für jede Angriffsart (`shared/sim.ts`: `waffe.gegen[familie]`). Systeme muss dafür nichts bauen.
 
-Ist beides da, nehme ich die zwei Quests aus den Entwürfen in `shared/quests.ts` auf und lasse den Welt-Test laufen.
+Beides ist da (ausgabe/naechste 8690bd643).
