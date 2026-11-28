@@ -12159,84 +12159,6 @@
    }
   },
   {
-   "id": "hochland_bruecke_mitte_ow",
-   "name": "Steinbrücke Mittelstück (West–Ost)",
-   "kategorie": "sonderort",
-   "bild": "img/welt/stil/hochland_bruecke_mitte_ow.webp",
-   "groesse": [
-    401,
-    269
-   ],
-   "anker": [
-    0.5,
-    0.8773
-   ],
-   "massstab": 1,
-   "kollision": null,
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/hochland_objekte.py (Baukasten Brücke zur Furt, #153), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/hochlande/bruecke_mitte_ow.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
-   "id": "hochland_bruecke_kopf_w",
-   "name": "Brückenkopf West",
-   "kategorie": "sonderort",
-   "bild": "img/welt/stil/hochland_bruecke_kopf_w.webp",
-   "groesse": [
-    410,
-    301
-   ],
-   "anker": [
-    0.5,
-    0.887
-   ],
-   "massstab": 1,
-   "kollision": null,
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/hochland_objekte.py (Baukasten Brücke zur Furt, #153), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/hochlande/bruecke_kopf_w.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
-   "id": "hochland_bruecke_kopf_o",
-   "name": "Brückenkopf Ost",
-   "kategorie": "sonderort",
-   "bild": "img/welt/stil/hochland_bruecke_kopf_o.webp",
-   "groesse": [
-    410,
-    306
-   ],
-   "anker": [
-    0.5,
-    0.8889
-   ],
-   "massstab": 1,
-   "kollision": null,
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/hochland_objekte.py (Baukasten Brücke zur Furt, #153), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/hochlande/bruecke_kopf_o.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
    "id": "steinhag_schmelzofen",
    "name": "Schmelzofen",
    "kategorie": "bauteil",
@@ -13993,71 +13915,6 @@
    }
   },
   {
-   "id": "kueste_kaimauer_gerade",
-   "name": "Kaimauer (gerade)",
-   "kategorie": "bauteil",
-   "bild": "img/welt/stil/kueste_kaimauer_gerade.webp",
-   "groesse": [
-    218,
-    208
-   ],
-   "anker": [
-    0.5,
-    0.9087
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -2.0,
-    "y": -0.6,
-    "b": 4.0,
-    "h": 1.2
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/kueste/kaimauer_gerade.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
-   "id": "kueste_kaimauer_ecke",
-   "name": "Kaimauer (Ecke)",
-   "kategorie": "bauteil",
-   "bild": "img/welt/stil/kueste_kaimauer_ecke.webp",
-   "groesse": [
-    155,
-    216
-   ],
-   "anker": [
-    0.5,
-    0.9352
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -2.0,
-    "y": -0.6,
-    "b": 2.6,
-    "h": 1.2
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/kueste/kaimauer_ecke.glb",
-    "wind": 0,
-    "fest": true
-   },
-   "hinweis": "Kollision deckt nur den Schenkel entlang x; den zweiten Schenkel (entlang y, Wasser bei +x) bitte mit kaimauer_gerade gedreht ergänzen oder Kollision im Ort setzen"
-  },
-  {
    "id": "ocker_zelt_gross",
    "name": "Karawanenzelt",
    "kategorie": "gebaeude",
@@ -14177,38 +14034,6 @@
    }
   },
   {
-   "id": "ocker_dornenhecke",
-   "name": "Dornenhecke",
-   "kategorie": "bauteil",
-   "bild": "img/welt/stil/ocker_dornenhecke.webp",
-   "groesse": [
-    178,
-    106
-   ],
-   "anker": [
-    0.5,
-    0.8491
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -1.5,
-    "y": -0.3,
-    "b": 3.0,
-    "h": 0.6
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/glutsande/dornenhecke.glb",
-    "wind": 0.03,
-    "fest": false
-   }
-  },
-  {
    "id": "wegrand_bildstock",
    "name": "Bildstock",
    "kategorie": "kleinteil",
@@ -14320,102 +14145,6 @@
    "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
    "modell3d": {
     "url": "img/objekte3d/wegrand/lesesteinhaufen.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
-   "id": "wegrand_zaun_latten",
-   "name": "Lattenzaun",
-   "kategorie": "bauteil",
-   "bild": "img/welt/stil/wegrand_zaun_latten.webp",
-   "groesse": [
-    146,
-    113
-   ],
-   "anker": [
-    0.5,
-    0.8761
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -1.5,
-    "y": -0.1,
-    "b": 3.0,
-    "h": 0.2
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/wegrand/zaun_latten.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
-   "id": "wegrand_zaun_flecht",
-   "name": "Flechtzaun",
-   "kategorie": "bauteil",
-   "bild": "img/welt/stil/wegrand_zaun_flecht.webp",
-   "groesse": [
-    141,
-    101
-   ],
-   "anker": [
-    0.5,
-    0.8713
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -1.5,
-    "y": -0.1,
-    "b": 3.0,
-    "h": 0.2
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/wegrand/zaun_flecht.glb",
-    "wind": 0,
-    "fest": true
-   }
-  },
-  {
-   "id": "wegrand_zaun_stein",
-   "name": "Trockenmauer",
-   "kategorie": "bauteil",
-   "bild": "img/welt/stil/wegrand_zaun_stein.webp",
-   "groesse": [
-    154,
-    95
-   ],
-   "anker": [
-    0.5,
-    0.8526
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -1.5,
-    "y": -0.3,
-    "b": 3.0,
-    "h": 0.6
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
-   "modell3d": {
-    "url": "img/objekte3d/wegrand/zaun_stein.glb",
     "wind": 0,
     "fest": true
    }
@@ -18522,6 +18251,249 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "hochland_bruecke_mitte_ow",
+   "name": "Steinbrücke Mittelstück (West–Ost)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/hochland_bruecke_mitte_ow.webp",
+   "groesse": [
+    350,
+    231
+   ],
+   "anker": [
+    0.5,
+    0.8745
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "../img/objekte3d/hochlande/bruecke_mitte_ow.glb"
+   }
+  },
+  {
+   "id": "hochland_bruecke_kopf_w",
+   "name": "Brückenkopf West",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/hochland_bruecke_kopf_w.webp",
+   "groesse": [
+    355,
+    269
+   ],
+   "anker": [
+    0.5,
+    0.8922
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "../img/objekte3d/hochlande/bruecke_kopf_w.glb"
+   }
+  },
+  {
+   "id": "hochland_bruecke_kopf_o",
+   "name": "Brückenkopf Ost",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/hochland_bruecke_kopf_o.webp",
+   "groesse": [
+    355,
+    236
+   ],
+   "anker": [
+    0.5,
+    0.8771
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "../img/objekte3d/hochlande/bruecke_kopf_o.glb"
+   }
+  },
+  {
+   "id": "kueste_kaimauer_gerade",
+   "name": "Kaimauer (gerade)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/kueste_kaimauer_gerade.webp",
+   "groesse": [
+    212,
+    160
+   ],
+   "anker": [
+    0.5,
+    0.8812
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "../img/objekte3d/kueste/kaimauer_gerade.glb"
+   }
+  },
+  {
+   "id": "kueste_kaimauer_ecke",
+   "name": "Kaimauer (Ecke)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/kueste_kaimauer_ecke.webp",
+   "groesse": [
+    141,
+    189
+   ],
+   "anker": [
+    0.5,
+    0.9312
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "../img/objekte3d/kueste/kaimauer_ecke.glb"
+   }
+  },
+  {
+   "id": "wegrand_zaun_latten",
+   "name": "Lattenzaun",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/wegrand_zaun_latten.webp",
+   "groesse": [
+    164,
+    74
+   ],
+   "anker": [
+    0.5,
+    0.7973
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "../img/objekte3d/wegrand/zaun_latten.glb"
+   }
+  },
+  {
+   "id": "wegrand_zaun_flecht",
+   "name": "Flechtzaun",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/wegrand_zaun_flecht.webp",
+   "groesse": [
+    162,
+    64
+   ],
+   "anker": [
+    0.5,
+    0.7656
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "../img/objekte3d/wegrand/zaun_flecht.glb"
+   }
+  },
+  {
+   "id": "wegrand_zaun_stein",
+   "name": "Trockenmauer",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/wegrand_zaun_stein.webp",
+   "groesse": [
+    159,
+    89
+   ],
+   "anker": [
+    0.5,
+    0.8315
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "../img/objekte3d/wegrand/zaun_stein.glb"
+   }
+  },
+  {
+   "id": "ocker_dornenhecke",
+   "name": "Dornenhecke",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/ocker_dornenhecke.webp",
+   "groesse": [
+    204,
+    97
+   ],
+   "anker": [
+    0.5,
+    0.8144
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "../img/objekte3d/glutsande/dornenhecke.glb"
+   }
   }
  ]
 }
